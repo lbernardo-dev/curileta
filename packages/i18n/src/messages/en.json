@@ -1,0 +1,30 @@
+{
+  "navigation": {
+    "home": "Home",
+    "curileta": "Curileta",
+    "characters": "Characters",
+    "adventures": "Adventures",
+    "books": "Books",
+    "videos": "Videos",
+    "songs": "Songs",
+    "world": "World",
+    "news": "News",
+    "collaborations": "Collaborations",
+    "press": "Press",
+    "contact": "Contact"
+  },
+  "home": {
+    "heroTitle": "A World to Discover",
+    "heroSubtitle": "Join Curileta on an unforgettable journey full of curiosity, friendship, and wonder.",
+    "ctaStart": "Start the Adventure",
+    "ctaCurileta": "Meet Curileta",
+    "friendsTitle": "Curileta's Friends",
+    "booksTitle": "Open the Pages of an Adventure",
+    "videosTitle": "Adventures on YouTube",
+    "closingTitle": "Shall We Keep Exploring?"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to main content",
+    "switchLanguage": "Switch language"
+  }
+}

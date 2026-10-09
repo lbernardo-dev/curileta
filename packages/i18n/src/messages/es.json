@@ -1,0 +1,30 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "curileta": "Curileta",
+    "characters": "Personajes",
+    "adventures": "Aventuras",
+    "books": "Libros",
+    "videos": "Vídeos",
+    "songs": "Canciones",
+    "world": "Mundo",
+    "news": "Novedades",
+    "collaborations": "Colaboraciones",
+    "press": "Prensa",
+    "contact": "Contacto"
+  },
+  "home": {
+    "heroTitle": "Un mundo por descubrir",
+    "heroSubtitle": "Acompaña a Curileta en un viaje inolvidable lleno de curiosidad, amistad y aprendizaje.",
+    "ctaStart": "Comenzar la aventura",
+    "ctaCurileta": "Conoce a Curileta",
+    "friendsTitle": "Los amigos de Curileta",
+    "booksTitle": "Abre las páginas de una aventura",
+    "videosTitle": "Aventuras en YouTube",
+    "closingTitle": "¿Seguimos explorando?"
+  },
+  "accessibility": {
+    "skipToContent": "Saltar al contenido principal",
+    "switchLanguage": "Cambiar idioma"
+  }
+}

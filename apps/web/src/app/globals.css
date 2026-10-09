@@ -1,0 +1,51 @@
+@import '@curileta/design-system/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--background-canvas);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar for brand personality */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--background-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-curileta-green);
+    border-radius: 9999px;
+    border: 2px solid var(--background-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-curileta-green-dark);
+  }
+}
+
+/* Reduced motion global overrides */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
