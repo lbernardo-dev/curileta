@@ -14,6 +14,7 @@ import {
   Pause,
   ExternalLink,
   ChevronRight,
+  ChevronLeft,
   Mountain,
   Sun,
   Snowflake,
@@ -154,7 +155,19 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     ];
   }, [initialLocations]);
 
-  const activeDestination = locationsList.find((loc) => loc.id === selectedId) || locationsList[0];
+  const currentIndex = locationsList.findIndex((loc) => loc.id === selectedId);
+  const activeIndex = currentIndex !== -1 ? currentIndex : 0;
+  const activeDestination = locationsList[activeIndex] || locationsList[0];
+
+  const handlePrevLocation = () => {
+    const prevIndex = (activeIndex - 1 + locationsList.length) % locationsList.length;
+    focusLocation(locationsList[prevIndex]);
+  };
+
+  const handleNextLocation = () => {
+    const nextIndex = (activeIndex + 1) % locationsList.length;
+    focusLocation(locationsList[nextIndex]);
+  };
 
   // Referencias para controlar Three.js desde React
   const targetRotationRef = useRef<{ x: number; y: number }>({ x: 0.2, y: 0 });
@@ -300,6 +313,34 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       const line = new THREE.Line(lineGeo, lineMat);
       pinGroup.add(line);
     });
+
+    // 4.5 Arcos aéreos 3D que conectan las paradas consecutivas de la expedición
+    const arcGroup = new THREE.Group();
+    globeGroup.add(arcGroup);
+
+    for (let i = 0; i < locationsList.length - 1; i++) {
+      const start = latLngToVector3(locationsList[i].coordinates.lat, locationsList[i].coordinates.lng, GLOBE_RADIUS * 1.01);
+      const end = latLngToVector3(locationsList[i + 1].coordinates.lat, locationsList[i + 1].coordinates.lng, GLOBE_RADIUS * 1.01);
+
+      const mid = start.clone().add(end).multiplyScalar(0.5);
+      const distance = start.distanceTo(end);
+      const altitude = GLOBE_RADIUS * (1.08 + Math.min(distance * 0.15, 0.45));
+      mid.normalize().multiplyScalar(altitude);
+
+      const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+      const points = curve.getPoints(36);
+      const arcGeo = new THREE.BufferGeometry().setFromPoints(points);
+      const arcMat = new THREE.LineDashedMaterial({
+        color: 0xf59e0b,
+        dashSize: 0.08,
+        gapSize: 0.05,
+        transparent: true,
+        opacity: 0.65,
+      });
+      const arcLine = new THREE.Line(arcGeo, arcMat);
+      arcLine.computeLineDistances();
+      arcGroup.add(arcLine);
+    }
 
     // 5. Luces de escena (ambiental, luz direccional dorada y luz de borde celeste)
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
@@ -509,35 +550,65 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               )}
             </div>
 
-            {/* Controles de cámara 3D */}
-            <div className="flex items-center gap-3 mt-4 bg-slate-950/90 border border-slate-800 px-4 py-2 rounded-full shadow-lg">
+            {/* Controles de navegación secuencial y cámara 3D */}
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
+              {/* Botón Parada Anterior */}
               <button
-                onClick={() => setIsAutoRotating(!isAutoRotating)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-amber-400 transition-colors"
-                title={isAutoRotating ? 'Pausar giro automático' : 'Reanudar giro automático'}
+                onClick={handlePrevLocation}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800/90 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold text-slate-200 border border-slate-700 transition-all cursor-pointer shadow-md group"
               >
-                {isAutoRotating ? <Pause className="w-3.5 h-3.5 text-amber-400" /> : <Play className="w-3.5 h-3.5 text-emerald-400" />}
-                <span>{isAutoRotating ? 'Pausar giro' : 'Giro continuo'}</span>
+                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Parada anterior</span>
               </button>
-              <div className="w-px h-4 bg-slate-800" />
+
+              {/* Indicador de Etapa y Controles de Cámara */}
+              <div className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 px-3.5 py-1.5 rounded-full shadow-lg">
+                <span className="text-[11px] font-mono font-black text-amber-400 tracking-wider">
+                  ETAPA {activeIndex + 1}/{locationsList.length}
+                </span>
+                <div className="w-px h-3.5 bg-slate-800" />
+                <button
+                  onClick={() => setIsAutoRotating(!isAutoRotating)}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-amber-400 transition-colors"
+                  title={isAutoRotating ? 'Pausar giro automático' : 'Reanudar giro automático'}
+                >
+                  {isAutoRotating ? <Pause className="w-3 h-3 text-amber-400" /> : <Play className="w-3 h-3 text-emerald-400" />}
+                  <span className="hidden sm:inline">{isAutoRotating ? 'Pausar' : 'Girar'}</span>
+                </button>
+                <div className="w-px h-3.5 bg-slate-800" />
+                <button
+                  onClick={() => focusLocation(activeDestination)}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-sky-400 transition-colors"
+                  title="Recentrar vista en destino actual"
+                >
+                  <RotateCcw className="w-3 h-3 text-sky-400" />
+                  <span className="hidden sm:inline">Recentrar</span>
+                </button>
+              </div>
+
+              {/* Botón Siguiente Parada */}
               <button
-                onClick={() => focusLocation(activeDestination)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-amber-400 transition-colors"
-                title="Recentrar vista en destino actual"
+                onClick={handleNextLocation}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800/90 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold text-slate-200 border border-slate-700 transition-all cursor-pointer shadow-md group"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-sky-400" />
-                <span>Recentrar</span>
+                <span>Siguiente parada</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
           </div>
 
           {/* Ficha de Expedición del Destino Seleccionado */}
           <div className="lg:col-span-5 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-amber-400/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-            {/* Distintivo de Pasaporte */}
+            {/* Distintivo de Pasaporte y Etapa */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono font-bold">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>SELLO: {activeDestination.passportStamp?.code || 'EXP-00'}</span>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-amber-300 font-mono text-[11px] font-black border border-amber-500/30">
+                  ETAPA {activeIndex + 1}/{locationsList.length}
+                </span>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono font-bold">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>SELLO: {activeDestination.passportStamp?.code || 'EXP-00'}</span>
+                </div>
               </div>
               <div className="text-xs font-mono text-emerald-400 font-bold">
                 {activeDestination.coordinates.lat > 0 ? `${activeDestination.coordinates.lat}°N` : `${Math.abs(activeDestination.coordinates.lat)}°S`},{' '}

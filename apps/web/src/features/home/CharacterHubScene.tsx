@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Locale } from '@curileta/i18n';
@@ -207,6 +207,30 @@ const DEFAULT_CHARACTERS: Character[] = [
   },
 ];
 
+// Componente para cargar imagen 3D local con fallback a arte CMS
+const CharacterAvatar: React.FC<{
+  character: Character;
+  locale: Locale;
+  className?: string;
+}> = ({ character, locale, className = 'w-full h-full object-cover' }) => {
+  const [imgSrc, setImgSrc] = useState<string>(`/images/characters/${character.slug}.png`);
+
+  const handleError = () => {
+    if (imgSrc !== character.mainImage.url) {
+      setImgSrc(character.mainImage.url);
+    }
+  };
+
+  return (
+    <img
+      src={imgSrc}
+      alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
+      className={className}
+      onError={handleError}
+    />
+  );
+};
+
 // Componente individual de Tarjeta con Efecto 3D Tilt
 const TiltCharacterCard: React.FC<{
   character: Character;
@@ -293,9 +317,9 @@ const TiltCharacterCard: React.FC<{
       <div className="relative w-28 h-28 mx-auto my-3 group-hover:scale-105 transition-transform duration-500">
         <div className="w-full h-full rounded-2xl bg-gradient-to-tr from-emerald-500 via-amber-400 to-sky-400 p-1 shadow-lg shadow-emerald-900/50">
           <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-950 relative">
-            <img
-              src={character.mainImage.url}
-              alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
+            <CharacterAvatar
+              character={character}
+              locale={locale}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           </div>
@@ -374,6 +398,25 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   const charactersList = initialCharacters && initialCharacters.length > 0 ? initialCharacters : DEFAULT_CHARACTERS;
   const [selectedCharacter, setSelectedCharacter] = useState<Character>(charactersList[0]);
   const [activeTab, setActiveTab] = useState<'biografia' | 'mochila' | 'curiosidades'>('biografia');
+  const [filterCategory, setFilterCategory] = useState<
+    'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania'
+  >('todos');
+
+  const filteredCharacters = useMemo(() => {
+    if (filterCategory === 'protagonistas') {
+      return charactersList.filter((c) => ['curileta', 'pompon'].includes(c.id));
+    }
+    if (filterCategory === 'america-africa') {
+      return charactersList.filter((c) => ['quetzal', 'lulu', 'emi'].includes(c.id));
+    }
+    if (filterCategory === 'europa') {
+      return charactersList.filter((c) => ['picu', 'gino', 'lola'].includes(c.id));
+    }
+    if (filterCategory === 'asia-oceania') {
+      return charactersList.filter((c) => ['zipi-bot', 'joey-canguro', 'kiki', 'bao'].includes(c.id));
+    }
+    return charactersList;
+  }, [charactersList, filterCategory]);
 
   return (
     <section id="escena-personajes" className="relative py-28 bg-slate-950 text-white overflow-hidden">
@@ -385,7 +428,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
             <Sparkles className="w-4 h-4 text-amber-400" />
             <span>Escena 03 — El Espacio de los Personajes</span>
@@ -401,9 +444,35 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           </p>
         </div>
 
+        {/* Filtros por Región / Categoría */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+          {[
+            { id: 'todos', label: `Todos los Exploradores (${charactersList.length})` },
+            { id: 'protagonistas', label: 'Protagonistas' },
+            { id: 'america-africa', label: 'América & África' },
+            { id: 'europa', label: 'Europa' },
+            { id: 'asia-oceania', label: 'Asia & Oceanía' },
+          ].map((cat) => {
+            const isCatActive = filterCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setFilterCategory(cat.id as any)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
+                  isCatActive
+                    ? 'bg-emerald-400 text-slate-950 border-emerald-300 shadow-lg shadow-emerald-400/20 scale-105 font-black'
+                    : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-emerald-500/50 hover:text-white'
+                }`}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Cuadrícula de Tarjetas con Efecto 3D Tilt */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {charactersList.map((character) => (
+          {filteredCharacters.map((character) => (
             <TiltCharacterCard
               key={character.id}
               character={character}
@@ -425,9 +494,9 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
             {/* Retrato y datos principales */}
             <div className="lg:col-span-4 text-center lg:text-left flex flex-col items-center lg:items-start">
               <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl mb-4">
-                <img
-                  src={selectedCharacter.mainImage.url}
-                  alt={selectedCharacter.mainImage.alt[locale] || selectedCharacter.mainImage.alt.es}
+                <CharacterAvatar
+                  character={selectedCharacter}
+                  locale={locale}
                   className="w-full h-full object-cover rounded-[22px]"
                 />
               </div>

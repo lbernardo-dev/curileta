@@ -4,6 +4,7 @@ import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { HeroScene } from '@/features/home/HeroScene';
 import { Globe3DScene } from '@/features/home/Globe3DScene';
+import { LettersScene } from '@/features/home/LettersScene';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
 import { YouTubeScene } from '@/features/home/YouTubeScene';
@@ -79,6 +80,9 @@ export default async function HomePage({
 
       {/* Escena 02 — Globo Terráqueo 3D Interactivo con Three.js */}
       <Globe3DScene locale={locale as Locale} locations={locations} />
+
+      {/* Escena 02.5 — El Baúl Postal: Cartas a Pompón con Matasellos y Polaroids */}
+      <LettersScene locale={locale as Locale} />
 
       {/* Escena 03 — El Espacio de los Personajes con Efecto 3D Tilt y Fichas de Explorador */}
       <CharacterHubScene locale={locale as Locale} characters={characters} />

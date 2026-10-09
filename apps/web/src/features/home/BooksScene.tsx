@@ -18,24 +18,26 @@ interface BookItem {
 
 const FEATURED_BOOKS: BookItem[] = [
   {
-    id: 'el-misterio-del-quetzal',
-    title: 'El Misterio del Quetzal Dorado',
-    subtitle: 'Volumen 1 — México y las Selvas Mágicas',
-    age: '5–10 años',
-    description: 'Curileta y Pompón aterrizan en las tierras del sol para descifrar un antiguo mapa de plumas y templos perdidos.',
-    destinations: ['México', 'Teotihuacán'],
-    color: 'from-amber-600 via-orange-600 to-amber-700',
-    badge: 'Disponible en librerías',
+    id: 'las-aventuras-de-curileta',
+    title: 'Las Aventuras de Curileta',
+    subtitle: 'La Vuelta al Mundo de una Pequeña Lagartija',
+    age: '4–10 años',
+    description:
+      'La historia oficial de una curiosa lagartija que viaja por México, Perú, Egipto, Islandia, Japón, Australia, Nueva Zelanda, China, Italia y Francia, enviando cartas y sellos a su amigo Pompón, hasta descubrir que el mayor tesoro es el hogar.',
+    destinations: ['México', 'Perú', 'Egipto', 'Islandia', 'Japón', 'Australia', 'Nueva Zelanda', 'China', 'Italia', 'Francia', 'España'],
+    color: 'from-emerald-600 via-amber-600 to-teal-700',
+    badge: 'Libro Oficial • Novedad 2026',
   },
   {
-    id: 'las-auroras-de-hielo',
-    title: 'Las Auroras del Confín Helado',
-    subtitle: 'Volumen 2 — Islandia y los Géiseres',
-    age: '6–12 años',
-    description: 'Una expedición bajo las estrellas danzantes del ártico para ayudar a un pequeño zorro polar a encontrar su manada.',
-    destinations: ['Islandia', 'Glaciares'],
-    color: 'from-cyan-600 via-blue-600 to-teal-700',
-    badge: 'Próxima publicación',
+    id: 'curileta-y-el-misterio-marino',
+    title: 'Curileta y el Misterio Marino',
+    subtitle: 'Volumen 2 — El Mar de Filipinas y las Marianas',
+    age: '5–11 años',
+    description:
+      'Inspirado en la travesía en velero con el pez volador Glub y las aguas bioluminiscentes, una expedición a las profundidades más secretas de la Tierra.',
+    destinations: ['Mar de Filipinas', 'Fosa de las Marianas', 'Arrecifes'],
+    color: 'from-cyan-600 via-blue-600 to-indigo-800',
+    badge: 'Próxima Expedición',
   },
 ];
 
