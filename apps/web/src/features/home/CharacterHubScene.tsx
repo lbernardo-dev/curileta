@@ -206,19 +206,7 @@ const getCharacterTheme = (id: string): CharacterTheme => {
   );
 };
 
-// Galería Oficial de Renders 3D Pixar de Alta Fidelidad
-export const PIXAR_3D_GALLERY: Record<string, string> = {
-  curileta: '/images/characters/gallery_3d/curileta-pixar-3d.jpg',
-  pompon: '/images/characters/gallery_3d/pompon-pixar-3d.jpg',
-  quetzal: '/images/characters/gallery_3d/quetzal-pixar-3d.jpg',
-  lulu: '/images/characters/gallery_3d/lulu-pixar-3d.jpg',
-  emi: '/images/characters/gallery_3d/emi-pixar-3d.jpg',
-  'zipi-bot': '/images/characters/gallery_3d/zipibot-pixar-3d.jpg',
-  bao: '/images/characters/gallery_3d/bao-pixar-3d.jpg',
-  gino: '/images/characters/gallery_3d/gino-pixar-3d.jpg',
-};
-
-// Mapa de rutas WebP locales clásicas
+// Mapa de rutas WebP locales oficiales
 const getCharacterImagePath = (slug: string): string => {
   switch (slug) {
     case 'curileta':
@@ -272,23 +260,17 @@ const getCharacterImagePath = (slug: string): string => {
   }
 };
 
-// Componente de Avatar con fallback dinámico y soporte 3D Pixar
+// Componente de Avatar con fallback dinámico
 const CharacterAvatar: React.FC<{
   character: Character;
   locale: Locale;
   className?: string;
-  renderMode?: 'pixar3d' | 'classic';
-}> = ({ character, locale, className = 'w-full h-full object-cover', renderMode = 'pixar3d' }) => {
-  const pixarPath = PIXAR_3D_GALLERY[character.id] || PIXAR_3D_GALLERY[character.slug];
-  const usePixar = renderMode === 'pixar3d' && Boolean(pixarPath);
-  const initialPath = usePixar ? pixarPath! : (character.mainImage?.url || getCharacterImagePath(character.slug));
-  const [imgSrc, setImgSrc] = useState<string>(initialPath);
+}> = ({ character, locale, className = 'w-full h-full object-cover' }) => {
+  const [imgSrc, setImgSrc] = useState<string>(() => character.mainImage?.url || getCharacterImagePath(character.slug));
 
   useEffect(() => {
-    const pPath = PIXAR_3D_GALLERY[character.id] || PIXAR_3D_GALLERY[character.slug];
-    const isP = renderMode === 'pixar3d' && Boolean(pPath);
-    setImgSrc(isP ? pPath! : (character.mainImage?.url || getCharacterImagePath(character.slug)));
-  }, [character.slug, character.id, character.mainImage?.url, renderMode]);
+    setImgSrc(character.mainImage?.url || getCharacterImagePath(character.slug));
+  }, [character.slug, character.mainImage?.url]);
 
   const handleError = () => {
     const fallback = getCharacterImagePath(character.slug);
@@ -391,17 +373,9 @@ const TiltCharacterCard: React.FC<{
             <span>{theme.flag}</span>
             <span className="truncate max-w-[120px]">{theme.region}</span>
           </span>
-          <div className="flex items-center gap-1">
-            {(Boolean(PIXAR_3D_GALLERY[character.id]) || Boolean(PIXAR_3D_GALLERY[character.slug])) && (
-              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow-sm flex items-center gap-0.5">
-                <Sparkles className="w-2.5 h-2.5" />
-                <span>3D</span>
-              </span>
-            )}
-            <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-bold shrink-0">
-              #{character.id.toUpperCase().slice(0, 8)}
-            </span>
-          </div>
+          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-bold shrink-0">
+            #{character.id.toUpperCase().slice(0, 8)}
+          </span>
         </div>
 
         {/* Retrato 3D con halo cromático */}
@@ -508,7 +482,6 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
     'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania'
   >('todos');
   const [lightboxCharacter, setLightboxCharacter] = useState<Character | null>(null);
-  const [lightboxMode, setLightboxMode] = useState<'pixar3d' | 'classic'>('pixar3d');
 
   // Escuchar tecla Escape para cerrar modal
   useEffect(() => {
@@ -897,53 +870,22 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
             />
 
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-              {/* Imagen 3D ampliada con marco de expedición */}
-              <div className="flex flex-col items-center gap-3 shrink-0">
-                <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl">
-                  <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-950 flex items-center justify-center">
-                    <CharacterAvatar
-                      character={lightboxCharacter}
-                      locale={locale}
-                      renderMode={lightboxMode}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+              {/* Imagen oficial con marco de expedición */}
+              <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl shrink-0">
+                <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-950 flex items-center justify-center">
+                  <CharacterAvatar
+                    character={lightboxCharacter}
+                    locale={locale}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-
-                {/* Switcher de estilo: Pixar 3D vs Álbum Clásico */}
-                {(Boolean(PIXAR_3D_GALLERY[lightboxCharacter.id]) || Boolean(PIXAR_3D_GALLERY[lightboxCharacter.slug])) && (
-                  <div className="inline-flex rounded-full p-1 bg-slate-100 dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700 text-[11px] font-bold">
-                    <button
-                      type="button"
-                      onClick={() => setLightboxMode('pixar3d')}
-                      className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-                        lightboxMode === 'pixar3d'
-                          ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      ✨ Pixar 3D Cinema
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setLightboxMode('classic')}
-                      className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-                        lightboxMode === 'classic'
-                          ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      🎨 Álbum Clásico
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Información y botones */}
               <div className="text-center sm:text-left space-y-3 flex-1">
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                   <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400">
-                    ★ {lightboxMode === 'pixar3d' && (PIXAR_3D_GALLERY[lightboxCharacter.id] || PIXAR_3D_GALLERY[lightboxCharacter.slug]) ? 'RENDER PIXAR 3D' : 'ILUSTRACIÓN OFICIAL'}
+                    ★ FICHA OFICIAL
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                     {getCharacterTheme(lightboxCharacter.id).flag} {getCharacterTheme(lightboxCharacter.id).region}
@@ -974,16 +916,12 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 {/* Botones de acción */}
                 <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
                   <a
-                    href={
-                      lightboxMode === 'pixar3d' && (PIXAR_3D_GALLERY[lightboxCharacter.id] || PIXAR_3D_GALLERY[lightboxCharacter.slug])
-                        ? (PIXAR_3D_GALLERY[lightboxCharacter.id] || PIXAR_3D_GALLERY[lightboxCharacter.slug])
-                        : (lightboxCharacter.mainImage?.url || getCharacterImagePath(lightboxCharacter.slug))
-                    }
-                    download={`Curileta_${lightboxCharacter.slug}_${lightboxMode}.jpg`}
+                    href={lightboxCharacter.mainImage?.url || getCharacterImagePath(lightboxCharacter.slug)}
+                    download={`Curileta_Personaje_${lightboxCharacter.slug}_Oficial.webp`}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-md transition-colors cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Descargar Imagen</span>
+                    <span>Descargar Imagen Oficial</span>
                   </a>
 
                   <Link

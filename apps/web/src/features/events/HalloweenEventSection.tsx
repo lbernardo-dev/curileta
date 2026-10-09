@@ -141,9 +141,9 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
             <div className="lg:col-span-5 relative">
               <div className="relative aspect-video lg:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-2 border-orange-500/50 group">
                 <img
-                  src="/images/events/halloween-special-2026.jpg"
-                  alt="Especial de Halloween Curileta y Pompón"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
+                  src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1000&auto=format&fit=crop&q=80"
+                  alt="Especial de Halloween Curileta y Pompón — Próximamente"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
 
