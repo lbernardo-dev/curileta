@@ -54,7 +54,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“True adventure is not just imagining places, but feeling them beneath your paws!”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/curileta-main.webp',
       alt: { es: 'Curileta con mochila y sombrero de exploradora', en: 'Curileta with backpack and explorer hat' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -99,7 +99,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Whenever a letter arrives, I feel the whole world fits right into our tree!”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/pompon-main.webp',
       alt: { es: 'Pompón el conejito bajo el árbol', en: 'Pompón the bunny under the tree' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -142,7 +142,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Stones are not merely rocks: they are calendars to converse with the stars.”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/quetzal-main.webp',
       alt: { es: 'Quetzal en vuelo majestuoso', en: 'Quetzal in flight' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -185,7 +185,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Climb onto my back, little lizard: on freezing peaks, warmth is meant to be shared.”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/lulu-main.webp',
       alt: { es: 'Lulú la llama andina en Machu Picchu', en: 'Lulú the llama at Machu Picchu' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -227,7 +227,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Seeking treasure? In this blazing desert, true treasure is shade.”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/emi-main.webp',
       alt: { es: 'Emi el escarabajo de Egipto', en: 'Emi the beetle of Egypt' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -269,7 +269,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“It takes true bravery to travel this far! Snow falls above while warm waters embrace us below.”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/picu-main.webp',
       alt: { es: 'Picu el frailecillo en Islandia', en: 'Picu the puffin in Iceland' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -311,54 +311,11 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Beep-boop! In Tokyo the future and ancient temples ride the same bullet train!”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/zipi-bot-main.webp',
       alt: { es: 'Zipi-Bot el robot en Tokio', en: 'Zipi-Bot the robot in Tokyo' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
     relatedLocations: ['japon'],
-  },
-  {
-    id: 'joey-canguro',
-    name: 'Mamá Canguro & Bebé Canguro',
-    slug: 'joey-canguro',
-    passportRole: {
-      es: 'Familia Saltarina del Outback & Custodios de Joey',
-      en: 'Outback Hoppers & Keepers of Joey the plush toy',
-    },
-    shortDescription: {
-      es: 'Mamá Canguro y su cría. Curileta rescata a Joey (el querido koala de peluche del bebé canguro) y recibe a cambio saltos de 4 metros.',
-      en: 'Mama Kangaroo and her joey. Curileta rescues Joey (the baby’s beloved plush koala) and earns 4-meter leaps across the red earth.',
-    },
-    biography: {
-      es: 'En las tierras rojas del Outback, de la bolsa de Mamá Canguro se cayó el peluche favorito de su bebé canguro: un koala de trapo llamado Joey que el pequeño necesitaba para dormir. Curileta corrió veloz para devolverlo hasta Uluru. En agradecimiento, Mamá Canguro le regaló un emocionante paseo a grandes saltos hasta Hyams Beach.',
-      en: 'Across red Uluru, Curileta rescued the baby kangaroo’s favorite plush koala Joey, earning thrilling 4-meter leap rides to Hyams Beach.',
-    },
-    species: 'Familia Canguro del Outback',
-    personality: ['Saltarines', 'Generosos', 'Protectores', 'Veloces'],
-    values: ['Agradecimiento', 'Familia'],
-    explorerStats: {
-      curiosity: 88,
-      courage: 93,
-      agility: 100,
-      wisdom: 86,
-    },
-    backpackItems: [
-      { es: 'Joey, el koala de peluche favorito del bebé canguro', en: 'Joey, the baby kangaroo’s favorite plush koala' },
-      { es: 'Arena hiperblanca de Hyams Beach en un frasco', en: 'Ultra-white Hyams Beach sand' },
-    ],
-    curiosityFacts: [
-      { es: 'Sus saltos pueden alcanzar los 4 metros de altura y avanzar 9 metros en un solo brinco.', en: 'Can leap 4 meters high and 9 meters forward in a single bound.' },
-    ],
-    voiceQuote: {
-      es: '«No importa qué tan grande sea el salto: lo importante es disfrutar del vuelo.»',
-      en: '“No matter how big the leap: what matters most is enjoying the flight.”',
-    },
-    mainImage: {
-      url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80',
-      alt: { es: 'Familia Canguro en el Outback', en: 'Kangaroo family in the Outback' },
-    },
-    relatedBooks: ['las-aventuras-de-curileta'],
-    relatedLocations: ['australia'],
   },
   {
     id: 'kiki',
@@ -396,7 +353,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Kia ora! Look up at the cave ceiling: down here, stars shine underground!”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/kiki-main.webp',
       alt: { es: 'Kiki el Kiwi en los bosques de helechos', en: 'Kiki the Kiwi among ferns' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -439,7 +396,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“The Great Wall resembles a sleeping dragon, but the strongest bond is friendship.”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/bao-main.webp',
       alt: { es: 'Bao el oso panda gigante en China', en: 'Bao the giant panda in China' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -482,7 +439,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Mamma mia! In Italy pizza dough flies like a saucer and gelato tastes like heaven!”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/gino-main.webp',
       alt: { es: 'Gino el ratoncito chef en Italia', en: 'Gino the mouse chef in Italy' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -525,7 +482,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“The forest you seek is not found with feet, but with the heart.”',
     },
     mainImage: {
-      url: '/images/characters/lola.webp',
+      url: '/images/characters/lola-main.webp',
       alt: { es: 'Lola la tortuga mora en España', en: 'Lola the tortoise in Spain' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -568,7 +525,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Hold tight to my fur: the Outback is traversed flying over the ground!”',
     },
     mainImage: {
-      url: '/images/characters/mama-canguro.webp',
+      url: '/images/characters/canguro-mama-main.webp',
       alt: { es: 'Mamá Canguro en el desierto australiano', en: 'Mama Kangaroo in the Outback' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -610,7 +567,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Joey is back! Thank you, little green-hat friend!”',
     },
     mainImage: {
-      url: '/images/characters/bebe-canguro.webp',
+      url: '/images/characters/canguro-bebe-main.webp',
       alt: { es: 'Bebé Canguro asomando de la bolsa', en: 'Baby Kangaroo peeking from the pouch' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -652,7 +609,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“(A gentle and fluffy hug that calms any storm)”',
     },
     mainImage: {
-      url: '/images/characters/joey.webp',
+      url: '/images/characters/joey-main.webp',
       alt: { es: 'Joey el koala de trapo', en: 'Joey the plush koala' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -694,7 +651,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“The sea does not end at the surface: sometimes we take flight to touch reflected stars!”',
     },
     mainImage: {
-      url: '/images/characters/pez-volador.webp',
+      url: '/images/characters/pez-volador-main.webp',
       alt: { es: 'Glub el pez volador planeando sobre el mar', en: 'Glub the flying fish gliding over water' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -736,7 +693,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Being uniquely different is the greatest gift nature can bestow.”',
     },
     mainImage: {
-      url: '/images/characters/ornitorrinco.webp',
+      url: '/images/characters/ornitorrinco-main.webp',
       alt: { es: 'Ornitorrinco nadando en el arroyo', en: 'Platypus swimming in the creek' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -778,7 +735,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“What a fascinating hat! Can it be eaten or is it for collecting stars?”',
     },
     mainImage: {
-      url: '/images/characters/emu.webp',
+      url: '/images/characters/emu-main.webp',
       alt: { es: 'Emú curioso en la llanura australiana', en: 'Curious emu on Australian plains' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -820,7 +777,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Woof! Is that cheese scent from the fridge or that mysterious talking baguette?”',
     },
     mainImage: {
-      url: '/images/characters/basset.webp',
+      url: '/images/characters/basset-main.webp',
       alt: { es: 'Barnaby el perro basset hound con orejas largas', en: 'Barnaby the basset hound with long ears' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -862,7 +819,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“Tell Pompón that in the Andes a whole family awaits him with sweet corn!”',
     },
     mainImage: {
-      url: '/images/characters/cobaya.webp',
+      url: '/images/characters/cobaya-main.webp',
       alt: { es: 'Cobaya andina en las montañas de Perú', en: 'Andean guinea pig in the mountains of Peru' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
@@ -1034,7 +991,7 @@ export const INITIAL_LOCATIONS: Location[] = [
       { es: 'Los huevos de Emú son de color verde oscuro casi negro y pesan como 12 huevos de gallina.', en: 'Emu eggs are dark green and weigh as much as 12 chicken eggs.' },
       { es: 'El ornitorrinco tiene pico de pato, cola de castor y es mamífero que pone huevos.', en: 'The platypus has a duck bill, beaver tail, and is an egg-laying mammal.' },
     ],
-    characters: ['curileta', 'joey-canguro'],
+    characters: ['curileta', 'canguro-mama', 'canguro-bebe', 'joey', 'ornitorrinco', 'emu'],
   },
   {
     id: 'nueva-zelanda',
@@ -1386,7 +1343,7 @@ export const INITIAL_BOOKS: Book[] = [
       { storeName: 'Casa del Libro', url: 'https://www.casadellibro.com' },
       { storeName: 'Amazon Libros', url: 'https://www.amazon.es' },
     ],
-    characters: ['curileta', 'pompon', 'quetzal', 'lulu', 'emi', 'picu', 'zipi-bot', 'joey-canguro', 'kiki', 'bao', 'gino', 'lola'],
+    characters: ['curileta', 'pompon', 'quetzal', 'lulu', 'emi', 'picu', 'zipi-bot', 'canguro-mama', 'canguro-bebe', 'joey', 'kiki', 'bao', 'gino', 'lola', 'pez-volador', 'ornitorrinco', 'emu', 'basset', 'cobaya'],
     locations: ['espana-inicio', 'mexico', 'peru', 'egipto', 'islandia', 'japon', 'australia', 'nueva-zelanda', 'china', 'italia', 'francia', 'espana-regreso'],
   },
 ];
@@ -2643,6 +2600,9 @@ export class LocalCMSProvider implements CMSProvider {
   }
 
   async getCharacterBySlug(slug: string, locale?: string): Promise<Character | null> {
+    if (slug === 'joey-canguro') {
+      return INITIAL_CHARACTERS.find((c) => c.slug === 'canguro-mama') || null;
+    }
     return INITIAL_CHARACTERS.find((c) => c.slug === slug) || null;
   }
 

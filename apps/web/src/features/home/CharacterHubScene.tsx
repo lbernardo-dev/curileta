@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Locale } from '@curileta/i18n';
-import { Character } from '@curileta/cms';
+import { Character, INITIAL_CHARACTERS } from '@curileta/cms';
 import {
   Sparkles,
   Compass,
@@ -19,6 +18,10 @@ import {
   X,
   MapPin,
   Smile,
+  Download,
+  ZoomIn,
+  Eye,
+  ExternalLink,
 } from 'lucide-react';
 
 interface CharacterHubSceneProps {
@@ -26,188 +29,184 @@ interface CharacterHubSceneProps {
   characters?: Character[];
 }
 
-const DEFAULT_CHARACTERS: Character[] = [
-  {
-    id: 'curileta',
-    name: 'Curileta',
-    slug: 'curileta',
-    passportRole: {
-      es: 'Gran Cartógrafa & Líder de Expedición',
-      en: 'Master Cartographer & Expedition Leader',
-    },
-    shortDescription: {
-      es: 'Valiente, bondadosa y eternamente curiosa. Lleva siempre su mapa y su brújula mágica.',
-      en: 'Brave, kind-hearted, and perpetually curious. Always carries her magical map and compass.',
-    },
-    biography: {
-      es: 'Curileta nació en el corazón del Bosque Encantado. Su mayor anhelo es conocer todas las culturas, idiomas y maravillas naturales del planeta junto a sus inseparables amigos.',
-      en: 'Curileta was born in the heart of the Enchanted Forest. Her greatest wish is to explore all cultures, languages, and natural wonders of the planet alongside her friends.',
-    },
-    species: 'Aventurera Principal',
-    personality: ['Curiosa', 'Empática', 'Aventurera', 'Leal'],
-    values: ['Respeto por la naturaleza', 'Amistad', 'Diversidad cultural'],
-    explorerStats: {
-      curiosity: 99,
-      courage: 92,
-      agility: 88,
-      wisdom: 85,
-    },
-    backpackItems: [
-      { es: 'Brújula solar de latón dorado', en: 'Golden solar brass compass' },
-      { es: 'Cuaderno de bitácora con mapas secretos', en: 'Logbook with secret expedition maps' },
-      { es: 'Lupa de cristal de cuarzo esmeralda', en: 'Emerald quartz magnifying glass' },
-    ],
-    curiosityFacts: [
-      { es: 'Sabe orientarse de noche siguiendo la Constelación de la Liebre Dorada.', en: 'Navigates by night following the Golden Hare Constellation.' },
-      { es: 'Colecciona semillas de árboles antiguos de cada país que visita.', en: 'Collects ancient tree seeds from every visited country.' },
-    ],
-    voiceQuote: {
-      es: '«¡El mundo es demasiado grande y hermoso como para quedarse quietos!»',
-      en: '“The world is too vast and wonderful to ever stand still!”',
-    },
-    mainImage: {
-      url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80',
-      alt: { es: 'Retrato oficial de Curileta exploradora', en: 'Official portrait of explorer Curileta' },
-    },
-    relatedBooks: ['el-misterio-del-quetzal', 'las-auroras-de-hielo'],
-    relatedLocations: ['mexico', 'islandia', 'peru'],
-  },
-  {
-    id: 'pompon',
-    name: 'Pompón',
-    slug: 'pompon',
-    passportRole: {
-      es: 'Guardián de Provisiones & Logística',
-      en: 'Quartermaster & Provisions Guardian',
-    },
-    shortDescription: {
-      es: 'El fiel compañero prudente. Cuida las provisiones y tiene un corazón gigantesco.',
-      en: 'The prudent and loyal companion. Watches over the supplies and has a gigantic heart.',
-    },
-    biography: {
-      es: 'Pompón es un conejo de pelaje blanco que ama la tranquilidad del Bosque Encantado, pero su lealtad incondicional hacia Curileta lo lleva a superar cualquier temor en cada expedición.',
-      en: 'Pompón is a white-furred rabbit who loves the calm of the Enchanted Forest, but his loyalty to Curileta leads him to conquer all fears on each expedition.',
-    },
-    species: 'Conejo del Bosque Encantado',
-    personality: ['Prudente', 'Tierno', 'Organizado', 'Divertido'],
-    values: ['Cuidado mutuo', 'Previsión', 'Valentía interior'],
-    explorerStats: {
-      curiosity: 82,
-      courage: 76,
-      agility: 94,
-      wisdom: 90,
-    },
-    backpackItems: [
-      { es: 'Kit de primeros auxilios y vendajes suaves', en: 'First-aid kit and herbal balms' },
-      { es: 'Frasco de zanahorias confitadas energéticas', en: 'Jar of energizing candied carrots' },
-      { es: 'Cantimplora de agua de manantial', en: 'Pure mountain spring water canteen' },
-    ],
-    curiosityFacts: [
-      { es: 'Sus orejas pueden detectar cambios en la dirección del viento 30 minutos antes.', en: 'His ears detect wind shifts 30 minutes in advance.' },
-      { es: 'Tiene un registro contable de cada manzana y provisión de la expedición.', en: 'Keeps an exact inventory of every apple and ration.' },
-    ],
-    voiceQuote: {
-      es: '«¡Revisemos la mochila dos veces antes de cruzar ese puente colgante!»',
-      en: '“Let’s check the backpack twice before crossing that rope bridge!”',
-    },
-    mainImage: {
-      url: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=800&auto=format&fit=crop&q=80',
-      alt: { es: 'Pompón con su pequeña mochila de explorador', en: 'Pompón with his explorer backpack' },
-    },
-    relatedBooks: ['el-misterio-del-quetzal'],
-    relatedLocations: ['mexico'],
-  },
-  {
-    id: 'quetzal',
-    name: 'Quetzal',
-    slug: 'quetzal',
-    passportRole: {
-      es: 'Vigía Aéreo & Descifrador de Leyendas',
-      en: 'Aerial Scout & Legend Decipherer',
-    },
-    shortDescription: {
-      es: 'El sabio vigía de los vientos tropicales. Conoce los secretos de las selvas y templos.',
-      en: 'The wise lookout of tropical winds. Knows the secrets of rainforests and ancient temples.',
-    },
-    biography: {
-      es: 'Guardián milenario de plumaje iridiscente que habita en las copas de los árboles de Mesoamérica. Ayuda a Curileta y sus amigos a descifrar leyendas y respetar la fauna local.',
-      en: 'An ancient guardian with iridescent feathers dwelling in Mesoamerican tree canopies. Helps Curileta and her friends decipher legends and honor local wildlife.',
-    },
-    species: 'Ave Sagrada de Mesoamérica',
-    personality: ['Sabio', 'Ágil', 'Protector', 'Poético'],
-    values: ['Preservación de la selva', 'Historia ancestral', 'Libertad'],
-    explorerStats: {
-      curiosity: 95,
-      courage: 90,
-      agility: 99,
-      wisdom: 98,
-    },
-    backpackItems: [
-      { es: 'Amuleto de jade para invocar corrientes térmicas', en: 'Jade thermal talisman' },
-      { es: 'Prisma de luz para emitir señales en vuelo', en: 'Light prism for flight signaling' },
-    ],
-    curiosityFacts: [
-      { es: 'Puede volar en silencio absoluto entre el dosel selvático.', en: 'Can glide in total silence across rainforest canopies.' },
-      { es: 'Entiende más de 12 dialectos antiguos de los pájaros de América.', en: 'Understands over 12 ancient bird dialects.' },
-    ],
-    voiceQuote: {
-      es: '«Mira la tierra desde lo alto: no hay fronteras, solo valles que abrazan ríos.»',
-      en: '“Gaze upon the earth from above: no borders exist, only valleys embracing rivers.”',
-    },
-    mainImage: {
-      url: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&auto=format&fit=crop&q=80',
-      alt: { es: 'Quetzal en pleno vuelo sobre la selva', en: 'Quetzal in full flight over the canopy' },
-    },
-    relatedBooks: ['el-misterio-del-quetzal'],
-    relatedLocations: ['mexico'],
-  },
-  {
-    id: 'lulu',
-    name: 'Lulú',
-    slug: 'lulu',
-    passportRole: {
-      es: 'Navegante de Mares & Aguas Glaciares',
-      en: 'Sea Navigator & Glacial Waters Guide',
-    },
-    shortDescription: {
-      es: 'La experta en corrientes marinas, risas y saltos de ola. Siempre dispuesta a jugar.',
-      en: 'The expert in ocean currents, laughter, and wave riding. Always ready to play.',
-    },
-    biography: {
-      es: 'Lulú es una nutria marina apasionada por las aguas cristalinas. Conoce los secretos de los arrecifes y enseña a los exploradores a nadar sin miedo a lo desconocido.',
-      en: 'Lulú is a sea otter passionate about crystal-clear waters. She knows reef secrets and teaches explorers to swim without fear of the unknown.',
-    },
-    species: 'Nutria Marina de las Costas',
-    personality: ['Jovial', 'Atlética', 'Solidaria', 'Curiosa'],
-    values: ['Protección de los océanos', 'Alegría de vivir', 'Generosidad'],
-    explorerStats: {
-      curiosity: 91,
-      courage: 88,
-      agility: 96,
-      wisdom: 80,
-    },
-    backpackItems: [
-      { es: 'Piedra pulida favorita para abrir caracoles', en: 'Favorite smooth pebble for shells' },
-      { es: 'Cuerda de algas marinas ultra resistente', en: 'Ultra-durable kelp fiber rope' },
-    ],
-    curiosityFacts: [
-      { es: 'Aguanta la respiración bajo el agua helada más de 6 minutos.', en: 'Holds breath in freezing waters for over 6 minutes.' },
-      { es: 'Duerme flotando sobre su espalda agarrada de la mano de sus amigos.', en: 'Sleeps floating on her back holding hands with friends.' },
-    ],
-    voiceQuote: {
-      es: '«¡Zambúllete hondo! Quien no se moja nunca descubre los tesoros del fondo.»',
-      en: '“Dive deep! Whoever stays dry never discovers the seabed treasures.”',
-    },
-    mainImage: {
-      url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80',
-      alt: { es: 'Lulú flotando feliz en el agua', en: 'Lulú floating joyfully in the water' },
-    },
-    relatedBooks: ['las-auroras-de-hielo'],
-    relatedLocations: ['islandia'],
-  },
-];
+interface CharacterTheme {
+  flag: string;
+  region: string;
+  gradient: string;
+  glowColor: string;
+  badgeBg: string;
+  badgeText: string;
+}
 
-// Mapa de imágenes 3D locales renderizadas por el usuario
+const CHARACTER_THEMES: Record<string, CharacterTheme> = {
+  curileta: {
+    flag: '🇪🇸',
+    region: 'Bosque Encantado / Global',
+    gradient: 'from-emerald-400 via-amber-300 to-emerald-500',
+    glowColor: 'rgba(16, 185, 129, 0.45)',
+    badgeBg: 'bg-emerald-950/90 border-emerald-500/50',
+    badgeText: 'text-emerald-300',
+  },
+  pompon: {
+    flag: '🇪🇸',
+    region: 'Bosque Encantado (España)',
+    gradient: 'from-slate-100 via-sky-200 to-indigo-300',
+    glowColor: 'rgba(186, 230, 253, 0.45)',
+    badgeBg: 'bg-sky-950/90 border-sky-400/50',
+    badgeText: 'text-sky-300',
+  },
+  quetzal: {
+    flag: '🇲🇽',
+    region: 'Teotihuacán (México)',
+    gradient: 'from-emerald-500 via-teal-300 to-amber-400',
+    glowColor: 'rgba(20, 184, 166, 0.45)',
+    badgeBg: 'bg-teal-950/90 border-teal-500/50',
+    badgeText: 'text-teal-300',
+  },
+  lulu: {
+    flag: '🇵🇪',
+    region: 'Machu Picchu (Perú)',
+    gradient: 'from-amber-400 via-orange-400 to-rose-400',
+    glowColor: 'rgba(251, 146, 60, 0.45)',
+    badgeBg: 'bg-amber-950/90 border-amber-500/50',
+    badgeText: 'text-amber-300',
+  },
+  emi: {
+    flag: '🇪🇬',
+    region: 'Giza & El Cairo (Egipto)',
+    gradient: 'from-amber-300 via-yellow-500 to-blue-600',
+    glowColor: 'rgba(234, 179, 8, 0.45)',
+    badgeBg: 'bg-yellow-950/90 border-yellow-500/50',
+    badgeText: 'text-yellow-300',
+  },
+  picu: {
+    flag: '🇮🇸',
+    region: 'Laguna Azul (Islandia)',
+    gradient: 'from-sky-400 via-cyan-300 to-orange-400',
+    glowColor: 'rgba(56, 189, 248, 0.45)',
+    badgeBg: 'bg-cyan-950/90 border-cyan-500/50',
+    badgeText: 'text-cyan-300',
+  },
+  'zipi-bot': {
+    flag: '🇯🇵',
+    region: 'Tokio & Shibuya (Japón)',
+    gradient: 'from-fuchsia-500 via-purple-400 to-cyan-400',
+    glowColor: 'rgba(217, 70, 239, 0.45)',
+    badgeBg: 'bg-purple-950/90 border-fuchsia-500/50',
+    badgeText: 'text-fuchsia-300',
+  },
+  'canguro-mama': {
+    flag: '🇦🇺',
+    region: 'Uluru & Outback (Australia)',
+    gradient: 'from-orange-500 via-amber-400 to-red-500',
+    glowColor: 'rgba(249, 115, 22, 0.45)',
+    badgeBg: 'bg-orange-950/90 border-orange-500/50',
+    badgeText: 'text-orange-300',
+  },
+  'canguro-bebe': {
+    flag: '🇦🇺',
+    region: 'Uluru & Hyams Beach (Australia)',
+    gradient: 'from-amber-300 via-yellow-200 to-orange-300',
+    glowColor: 'rgba(252, 211, 77, 0.45)',
+    badgeBg: 'bg-amber-950/90 border-amber-400/50',
+    badgeText: 'text-yellow-300',
+  },
+  joey: {
+    flag: '🇦🇺',
+    region: 'Uluru (Australia)',
+    gradient: 'from-teal-300 via-emerald-200 to-slate-300',
+    glowColor: 'rgba(94, 234, 212, 0.45)',
+    badgeBg: 'bg-slate-900 border-teal-400/50',
+    badgeText: 'text-teal-200',
+  },
+  kiki: {
+    flag: '🇳🇿',
+    region: 'Cuevas de Waitomo (Nueva Zelanda)',
+    gradient: 'from-teal-400 via-emerald-400 to-sky-300',
+    glowColor: 'rgba(45, 212, 191, 0.45)',
+    badgeBg: 'bg-emerald-950/90 border-emerald-500/50',
+    badgeText: 'text-emerald-300',
+  },
+  bao: {
+    flag: '🇨🇳',
+    region: 'Gran Muralla & Bambú (China)',
+    gradient: 'from-emerald-400 via-lime-300 to-amber-400',
+    glowColor: 'rgba(132, 204, 22, 0.45)',
+    badgeBg: 'bg-lime-950/90 border-lime-500/50',
+    badgeText: 'text-lime-300',
+  },
+  gino: {
+    flag: '🇮🇹',
+    region: 'Florencia & Roma (Italia)',
+    gradient: 'from-emerald-500 via-amber-300 to-red-400',
+    glowColor: 'rgba(239, 68, 68, 0.45)',
+    badgeBg: 'bg-rose-950/90 border-rose-500/50',
+    badgeText: 'text-rose-300',
+  },
+  lola: {
+    flag: '🇪🇸',
+    region: 'Andalucía & Bosque (España)',
+    gradient: 'from-amber-500 via-yellow-400 to-emerald-600',
+    glowColor: 'rgba(245, 158, 11, 0.45)',
+    badgeBg: 'bg-amber-950/90 border-amber-500/50',
+    badgeText: 'text-amber-300',
+  },
+  'pez-volador': {
+    flag: '🌊',
+    region: 'Mar de Filipinas & Océano Pacífico',
+    gradient: 'from-cyan-400 via-blue-400 to-indigo-500',
+    glowColor: 'rgba(56, 189, 248, 0.45)',
+    badgeBg: 'bg-blue-950/90 border-cyan-500/50',
+    badgeText: 'text-cyan-300',
+  },
+  ornitorrinco: {
+    flag: '🇦🇺',
+    region: 'Arroyos del Outback (Australia)',
+    gradient: 'from-teal-500 via-cyan-400 to-amber-600',
+    glowColor: 'rgba(20, 184, 166, 0.45)',
+    badgeBg: 'bg-teal-950/90 border-teal-500/50',
+    badgeText: 'text-teal-300',
+  },
+  emu: {
+    flag: '🇦🇺',
+    region: 'Llanuras del Outback (Australia)',
+    gradient: 'from-emerald-500 via-teal-400 to-amber-500',
+    glowColor: 'rgba(16, 185, 129, 0.45)',
+    badgeBg: 'bg-emerald-950/90 border-emerald-500/50',
+    badgeText: 'text-emerald-300',
+  },
+  basset: {
+    flag: '🇫🇷',
+    region: 'Alpes Franceses (Francia)',
+    gradient: 'from-amber-600 via-orange-400 to-yellow-300',
+    glowColor: 'rgba(217, 119, 6, 0.45)',
+    badgeBg: 'bg-amber-950/90 border-amber-600/50',
+    badgeText: 'text-amber-300',
+  },
+  cobaya: {
+    flag: '🇵🇪',
+    region: 'Valle Sagrado de los Andes (Perú)',
+    gradient: 'from-purple-500 via-pink-400 to-amber-400',
+    glowColor: 'rgba(168, 85, 247, 0.45)',
+    badgeBg: 'bg-purple-950/90 border-purple-500/50',
+    badgeText: 'text-purple-300',
+  },
+};
+
+const getCharacterTheme = (id: string): CharacterTheme => {
+  return (
+    CHARACTER_THEMES[id] || {
+      flag: '🗺️',
+      region: 'Expedición Mundial',
+      gradient: 'from-emerald-400 via-amber-300 to-sky-400',
+      glowColor: 'rgba(16, 185, 129, 0.3)',
+      badgeBg: 'bg-slate-900 border-slate-700',
+      badgeText: 'text-slate-300',
+    }
+  );
+};
+
+// Mapa de rutas WebP locales
 const getCharacterImagePath = (slug: string): string => {
   switch (slug) {
     case 'curileta':
@@ -261,21 +260,22 @@ const getCharacterImagePath = (slug: string): string => {
   }
 };
 
-// Componente para cargar imagen 3D local con fallback a arte CMS
+// Componente de Avatar con fallback dinámico
 const CharacterAvatar: React.FC<{
   character: Character;
   locale: Locale;
   className?: string;
 }> = ({ character, locale, className = 'w-full h-full object-cover' }) => {
-  const [imgSrc, setImgSrc] = useState<string>(() => getCharacterImagePath(character.slug));
+  const [imgSrc, setImgSrc] = useState<string>(() => character.mainImage?.url || getCharacterImagePath(character.slug));
 
-  React.useEffect(() => {
-    setImgSrc(getCharacterImagePath(character.slug));
-  }, [character.slug]);
+  useEffect(() => {
+    setImgSrc(character.mainImage?.url || getCharacterImagePath(character.slug));
+  }, [character.slug, character.mainImage?.url]);
 
   const handleError = () => {
-    if (character.mainImage?.url && imgSrc !== character.mainImage.url) {
-      setImgSrc(character.mainImage.url);
+    const fallback = getCharacterImagePath(character.slug);
+    if (imgSrc !== fallback) {
+      setImgSrc(fallback);
     }
   };
 
@@ -285,17 +285,19 @@ const CharacterAvatar: React.FC<{
       alt={character.mainImage?.alt?.[locale] || character.mainImage?.alt?.es || character.name}
       className={className}
       onError={handleError}
+      loading="lazy"
     />
   );
 };
 
-// Componente individual de Tarjeta con Efecto 3D Tilt
+// Tarjeta individual con Efecto 3D Tilt y Glare
 const TiltCharacterCard: React.FC<{
   character: Character;
   locale: Locale;
   isSelected: boolean;
   onSelect: () => void;
-}> = ({ character, locale, isSelected, onSelect }) => {
+  onOpenZoom: (c: Character) => void;
+}> = ({ character, locale, isSelected, onSelect, onOpenZoom }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState<string>('');
   const [glarePosition, setGlarePosition] = useState<{ x: number; y: number; opacity: number }>({
@@ -303,6 +305,8 @@ const TiltCharacterCard: React.FC<{
     y: 50,
     opacity: 0,
   });
+
+  const theme = getCharacterTheme(character.id);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
@@ -315,14 +319,14 @@ const TiltCharacterCard: React.FC<{
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateX = ((y - centerY) / centerY) * -12; // Inclinación eje X
-    const rotateY = ((x - centerX) / centerX) * 12; // Inclinación eje Y
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
 
-    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`);
+    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.025, 1.025, 1.025)`);
     setGlarePosition({
       x: (x / rect.width) * 100,
       y: (y / rect.height) * 100,
-      opacity: 0.25,
+      opacity: 0.22,
     });
   };
 
@@ -343,16 +347,16 @@ const TiltCharacterCard: React.FC<{
       onClick={onSelect}
       style={{
         transform,
-        transition: 'transform 0.15s ease-out',
+        transition: 'transform 0.15s ease-out, border-color 0.2s ease, box-shadow 0.2s ease',
         transformStyle: 'preserve-3d',
       }}
-      className={`group relative rounded-3xl p-6 cursor-pointer border transition-all duration-300 backdrop-blur-xl ${
+      className={`group relative rounded-3xl p-5 cursor-pointer border transition-all duration-300 backdrop-blur-xl flex flex-col justify-between ${
         isSelected
-          ? 'bg-gradient-to-b from-emerald-900/90 via-slate-900/95 to-slate-950 border-amber-400 shadow-2xl shadow-emerald-500/30 ring-2 ring-amber-400/50'
-          : 'bg-slate-900/70 border-emerald-500/20 hover:border-emerald-500/50 hover:bg-slate-900/90 shadow-xl'
+          ? 'bg-gradient-to-b from-slate-900/95 via-slate-900 to-slate-950 border-amber-400 shadow-2xl ring-2 ring-amber-400/40'
+          : 'bg-slate-900/75 border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 shadow-xl'
       }`}
     >
-      {/* Brillo dinámico de reflejo 3D */}
+      {/* Glare 3D interactivo */}
       <div
         className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-200"
         style={{
@@ -360,90 +364,107 @@ const TiltCharacterCard: React.FC<{
         }}
       />
 
-      {/* Sello / Insignia de Rol de Aventurero */}
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider">
-          <Award className="w-3 h-3 text-amber-400" />
-          <span>{character.species || 'Explorador'}</span>
-        </span>
-        <span className="text-xs font-mono text-emerald-400 font-bold">
-          ID: {character.id.toUpperCase()}
-        </span>
-      </div>
+      <div>
+        {/* Cabecera de la tarjeta: País / Región + ID */}
+        <div className="flex items-center justify-between gap-1.5 mb-3">
+          <span
+            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${theme.badgeBg} ${theme.badgeText} shadow-sm`}
+          >
+            <span>{theme.flag}</span>
+            <span className="truncate max-w-[120px]">{theme.region}</span>
+          </span>
+          <span className="text-[10px] font-mono text-slate-400 font-bold shrink-0">
+            #{character.id.toUpperCase().slice(0, 8)}
+          </span>
+        </div>
 
-      {/* Retrato del personaje con marco circular de latón */}
-      <div className="relative w-28 h-28 mx-auto my-3 group-hover:scale-105 transition-transform duration-500">
-        <div className="w-full h-full rounded-2xl bg-gradient-to-tr from-emerald-500 via-amber-400 to-sky-400 p-1 shadow-lg shadow-emerald-900/50">
-          <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-950 relative">
-            <CharacterAvatar
-              character={character}
-              locale={locale}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            />
+        {/* Retrato 3D con halo cromático */}
+        <div className="relative w-28 h-28 mx-auto my-2 group-hover:scale-105 transition-transform duration-500">
+          <div className={`w-full h-full rounded-2xl bg-gradient-to-tr ${theme.gradient} p-1 shadow-lg`}>
+            <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-950 relative">
+              <CharacterAvatar
+                character={character}
+                locale={locale}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              {/* Botón de lupa rápida */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenZoom(character);
+                }}
+                title="Ampliar Render 3D"
+                className="absolute bottom-1 right-1 p-1 rounded-lg bg-slate-950/80 hover:bg-amber-400 hover:text-slate-950 text-white border border-white/20 transition-all opacity-0 group-hover:opacity-100 shadow-md cursor-pointer"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Nombre y Rol */}
-      <div className="text-center mt-3">
-        <h3 className="text-2xl font-black text-white tracking-tight leading-tight group-hover:text-amber-300 transition-colors">
-          {character.name}
-        </h3>
-        <p className="text-xs font-extrabold text-emerald-400 mt-1 uppercase tracking-wide">
-          {roleText}
-        </p>
-      </div>
-
-      {/* Cita célebre de expedición */}
-      {character.voiceQuote && (
-        <p className="text-xs text-slate-300/90 text-center italic mt-3 px-2 line-clamp-2">
-          {character.voiceQuote[locale] || character.voiceQuote.es}
-        </p>
-      )}
-
-      {/* Barras Rápidas de Atributos */}
-      {character.explorerStats && (
-        <div className="mt-4 pt-3 border-t border-slate-800 space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] font-bold text-slate-300">
-            <span className="flex items-center gap-1 text-amber-300">
-              <Compass className="w-3 h-3" /> Curiosidad
-            </span>
-            <span className="font-mono text-amber-400">{character.explorerStats.curiosity}%</span>
-          </div>
-          <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-            <div
-              className="bg-gradient-to-r from-amber-500 to-amber-300 h-full rounded-full transition-all duration-700"
-              style={{ width: `${character.explorerStats.curiosity}%` }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-[11px] font-bold text-slate-300 pt-1">
-            <span className="flex items-center gap-1 text-emerald-300">
-              <Shield className="w-3 h-3" /> Valentía
-            </span>
-            <span className="font-mono text-emerald-400">{character.explorerStats.courage}%</span>
-          </div>
-          <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-            <div
-              className="bg-gradient-to-r from-emerald-500 to-emerald-300 h-full rounded-full transition-all duration-700"
-              style={{ width: `${character.explorerStats.courage}%` }}
-            />
-          </div>
+        {/* Nombre y Rol */}
+        <div className="text-center mt-2.5">
+          <h3 className="text-xl font-black text-white tracking-tight leading-tight group-hover:text-amber-300 transition-colors">
+            {character.name}
+          </h3>
+          <p className="text-[11px] font-bold text-emerald-400 mt-1 uppercase tracking-wide line-clamp-1">
+            {roleText}
+          </p>
         </div>
-      )}
 
-      {/* Botón interactivo */}
-      <div className="mt-5 text-center">
-        <span
-          className={`inline-flex items-center gap-1.5 text-xs font-bold px-4 py-1.5 rounded-full transition-colors ${
-            isSelected
-              ? 'bg-amber-400 text-slate-950 font-black shadow-md'
-              : 'text-slate-300 group-hover:text-amber-400'
-          }`}
-        >
-          <span>{isSelected ? '★ Ficha Activa' : 'Abrir Pasaporte'}</span>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </span>
+        {/* Cita célebre de expedición */}
+        {character.voiceQuote && (
+          <p className="text-[11px] text-slate-300/85 text-center italic mt-2.5 px-1 line-clamp-2 leading-relaxed">
+            {character.voiceQuote[locale] || character.voiceQuote.es}
+          </p>
+        )}
+      </div>
+
+      {/* Sección inferior: Atributos y Botón Pasaporte */}
+      <div className="mt-4 pt-3 border-t border-slate-800/80">
+        {character.explorerStats && (
+          <div className="space-y-1.5 mb-3">
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-300">
+              <span className="flex items-center gap-1 text-amber-300">
+                <Compass className="w-3 h-3" /> Curiosidad
+              </span>
+              <span className="font-mono text-amber-400">{character.explorerStats.curiosity}%</span>
+            </div>
+            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-amber-500 to-amber-300 h-full rounded-full"
+                style={{ width: `${character.explorerStats.curiosity}%` }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-300 pt-0.5">
+              <span className="flex items-center gap-1 text-emerald-300">
+                <Shield className="w-3 h-3" /> Valentía
+              </span>
+              <span className="font-mono text-emerald-400">{character.explorerStats.courage}%</span>
+            </div>
+            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-emerald-500 to-emerald-300 h-full rounded-full"
+                style={{ width: `${character.explorerStats.courage}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="text-center pt-1">
+          <span
+            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-full transition-colors w-full justify-center ${
+              isSelected
+                ? 'bg-amber-400 text-slate-950 font-black shadow-md'
+                : 'bg-slate-800/90 text-slate-300 group-hover:bg-emerald-950 group-hover:text-emerald-300 group-hover:border group-hover:border-emerald-500/40'
+            }`}
+          >
+            <span>{isSelected ? '★ Pasaporte Activo' : 'Abrir Pasaporte'}</span>
+            <ChevronRight className="w-3 h-3" />
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -453,12 +474,25 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   locale,
   characters: initialCharacters = [],
 }) => {
-  const charactersList = initialCharacters && initialCharacters.length > 0 ? initialCharacters : DEFAULT_CHARACTERS;
+  const charactersList =
+    initialCharacters && initialCharacters.length > 0 ? initialCharacters : INITIAL_CHARACTERS;
   const [selectedCharacter, setSelectedCharacter] = useState<Character>(charactersList[0]);
   const [activeTab, setActiveTab] = useState<'biografia' | 'mochila' | 'curiosidades'>('biografia');
   const [filterCategory, setFilterCategory] = useState<
     'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania'
   >('todos');
+  const [lightboxCharacter, setLightboxCharacter] = useState<Character | null>(null);
+
+  // Escuchar tecla Escape para cerrar modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLightboxCharacter(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const filteredCharacters = useMemo(() => {
     if (filterCategory === 'protagonistas') {
@@ -475,7 +509,6 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         [
           'zipi-bot',
           'pez-volador',
-          'joey-canguro',
           'canguro-mama',
           'canguro-bebe',
           'joey',
@@ -488,6 +521,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
     }
     return charactersList;
   }, [charactersList, filterCategory]);
+
+  const selectedTheme = getCharacterTheme(selectedCharacter.id);
 
   return (
     <section id="escena-personajes" className="relative py-28 bg-slate-950 text-white overflow-hidden">
@@ -507,11 +542,11 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
             La Alianza de los<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-amber-300 to-emerald-200">
-              Grandes Exploradores.
+              19 Grandes Exploradores.
             </span>
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-            Mueve el cursor sobre las fichas 3D para sentir el relieve de su pasaporte oficial. Cada personaje posee habilidades únicas indispensables para descifrar los enigmas del mundo.
+            Mueve el cursor sobre las fichas 3D para sentir el relieve de su pasaporte oficial. Cada personaje posee habilidades únicas indispensables para descifrar los enigmas del mundo. Haz clic en la lupa para ampliar su diseño 3D en alta definición.
           </p>
         </div>
 
@@ -519,10 +554,10 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
           {[
             { id: 'todos', label: `Todos los Exploradores (${charactersList.length})` },
-            { id: 'protagonistas', label: 'Protagonistas' },
-            { id: 'america-africa', label: 'América & África' },
-            { id: 'europa', label: 'Europa' },
-            { id: 'asia-oceania', label: 'Asia & Oceanía' },
+            { id: 'protagonistas', label: 'Protagonistas (2)' },
+            { id: 'america-africa', label: 'América & África (4)' },
+            { id: 'europa', label: 'Europa (4)' },
+            { id: 'asia-oceania', label: 'Asia & Oceanía (9)' },
           ].map((cat) => {
             const isCatActive = filterCategory === cat.id;
             return (
@@ -550,6 +585,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               locale={locale}
               isSelected={selectedCharacter.id === character.id}
               onSelect={() => setSelectedCharacter(character)}
+              onOpenZoom={(c) => setLightboxCharacter(c)}
             />
           ))}
         </div>
@@ -564,17 +600,33 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Retrato y datos principales */}
             <div className="lg:col-span-4 text-center lg:text-left flex flex-col items-center lg:items-start">
-              <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl mb-4">
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl mb-4 group">
                 <CharacterAvatar
                   key={selectedCharacter.id}
                   character={selectedCharacter}
                   locale={locale}
-                  className="w-full h-full object-cover rounded-[22px]"
+                  className="w-full h-full object-cover rounded-[22px] group-hover:scale-105 transition-transform duration-300"
                 />
+                <button
+                  type="button"
+                  onClick={() => setLightboxCharacter(selectedCharacter)}
+                  className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 text-white font-bold text-xs rounded-[22px] transition-opacity cursor-pointer backdrop-blur-xs"
+                >
+                  <ZoomIn className="w-4 h-4 text-amber-400" />
+                  <span>Ampliar Render 3D</span>
+                </button>
               </div>
 
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider mb-2">
-                ★ PASAPORTE OFICIAL: {selectedCharacter.id.toUpperCase()}
+              <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start mb-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider">
+                  ★ PASAPORTE: {selectedCharacter.id.toUpperCase()}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${selectedTheme.badgeBg} ${selectedTheme.badgeText}`}
+                >
+                  <span>{selectedTheme.flag}</span>
+                  <span>{selectedTheme.region}</span>
+                </span>
               </div>
 
               <h3 className="text-3xl font-black text-white">{selectedCharacter.name}</h3>
@@ -584,12 +636,16 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   : selectedCharacter.species}
               </p>
 
-              {selectedCharacter.id === 'joey-canguro' && (
-                <div className="mt-2.5 flex flex-wrap items-center gap-1.5 justify-center lg:justify-start">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase mr-1">Familia & Tesoro:</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700 font-bold">Mamá Canguro</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700 font-bold">Bebé Canguro</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/40 font-bold">★ Joey (Koala de trapo)</span>
+              {/* Nota Canónica especial si es Pompón o la familia Canguro */}
+              {selectedCharacter.id === 'pompon' && (
+                <div className="mt-3 p-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs leading-relaxed text-left">
+                  <strong>Nota Canónica:</strong> Pompón permanece en el Bosque Encantado custodiando el árbol más alto y el buzón postal. No viaja físicamente por el mundo, pero vive cada aventura en las cartas de Curileta.
+                </div>
+              )}
+
+              {selectedCharacter.id === 'joey' && (
+                <div className="mt-3 p-3 rounded-2xl bg-teal-950/40 border border-teal-500/30 text-teal-200 text-xs leading-relaxed text-left">
+                  <strong>Amigo Inseparable:</strong> Joey es el koala de peluche del bebé canguro que Curileta rescató en Uluru para devolverle la sonrisa a la familia del Outback.
                 </div>
               )}
 
@@ -600,10 +656,20 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                     key={trait}
                     className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700"
                   >
-                    {trait}
+                    ✨ {trait}
                   </span>
                 ))}
               </div>
+
+              {/* Botón rápido para abrir lightbox */}
+              <button
+                type="button"
+                onClick={() => setLightboxCharacter(selectedCharacter)}
+                className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-amber-300 transition-colors cursor-pointer"
+              >
+                <Eye className="w-3.5 h-3.5 text-amber-400" />
+                <span>Examinar modelo 3D en alta definición</span>
+              </button>
             </div>
 
             {/* Pestañas Interactivas de Contenido */}
@@ -662,24 +728,32 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                     </div>
                   )}
 
-                  {/* Estadísticas de explorador completas */}
+                  {/* Estadísticas de Explorador en 4 Dimensiones */}
                   {selectedCharacter.explorerStats && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-amber-400 block">Curiosidad</span>
-                        <span className="text-xl font-black text-white">{selectedCharacter.explorerStats.curiosity}%</span>
+                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Curiosidad</span>
+                        <span className="text-lg font-mono font-black text-amber-400">
+                          {selectedCharacter.explorerStats.curiosity}%
+                        </span>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-emerald-400 block">Valentía</span>
-                        <span className="text-xl font-black text-white">{selectedCharacter.explorerStats.courage}%</span>
+                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Valentía</span>
+                        <span className="text-lg font-mono font-black text-emerald-400">
+                          {selectedCharacter.explorerStats.courage}%
+                        </span>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-sky-400 block">Agilidad</span>
-                        <span className="text-xl font-black text-white">{selectedCharacter.explorerStats.agility}%</span>
+                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Agilidad</span>
+                        <span className="text-lg font-mono font-black text-sky-400">
+                          {selectedCharacter.explorerStats.agility}%
+                        </span>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-purple-400 block">Sabiduría</span>
-                        <span className="text-xl font-black text-white">{selectedCharacter.explorerStats.wisdom}%</span>
+                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Sabiduría</span>
+                        <span className="text-lg font-mono font-black text-purple-400">
+                          {selectedCharacter.explorerStats.wisdom}%
+                        </span>
                       </div>
                     </div>
                   )}
@@ -689,10 +763,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               {/* Contenido de la pestaña Mochila */}
               {activeTab === 'mochila' && (
                 <div className="space-y-4 animate-in fade-in duration-200">
-                  <p className="text-sm text-slate-300">
-                    Objetos imprescindibles que {selectedCharacter.name} guarda en su equipaje de aventura:
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <p className="text-xs text-slate-400">Objetos mágicos y herramientas que lleva en su bolsa de viaje:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedCharacter.backpackItems && selectedCharacter.backpackItems.length > 0 ? (
                       selectedCharacter.backpackItems.map((item, idx) => (
                         <div
@@ -734,7 +806,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               )}
 
               {/* Enlace al perfil completo del personaje */}
-              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+              <div className="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
                 <Link
                   href={`/${locale}/personajes/${selectedCharacter.slug}`}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg shadow-amber-400/20 transition-all cursor-pointer"
@@ -742,17 +814,136 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   <span>Conocer a fondo a {selectedCharacter.name}</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
-                <Link
-                  href={`/${locale}/personajes`}
-                  className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
-                >
-                  Ver todos los personajes →
-                </Link>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setLightboxCharacter(selectedCharacter)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 rounded-full transition-colors cursor-pointer"
+                  >
+                    <ZoomIn className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Ampliar 3D</span>
+                  </button>
+                  <Link
+                    href={`/${locale}/fondos`}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-4 py-2.5 rounded-full hover:bg-emerald-900 transition-colors shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Fondos 2K</span>
+                  </Link>
+                  <Link
+                    href={`/${locale}/personajes`}
+                    className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+                  >
+                    Ver los 19 →
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal / Lightbox 3D a pantalla completa */}
+      {lightboxCharacter && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200"
+          onClick={() => setLightboxCharacter(null)}
+        >
+          <div
+            className="relative max-w-2xl w-full bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-950 border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Botón cerrar */}
+            <button
+              type="button"
+              onClick={() => setLightboxCharacter(null)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer z-20"
+              aria-label="Cerrar vista 3D"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Resplandor del tema */}
+            <div
+              className="absolute -top-20 -left-20 w-72 h-72 rounded-full blur-3xl pointer-events-none opacity-30"
+              style={{ backgroundColor: getCharacterTheme(lightboxCharacter.id).glowColor }}
+            />
+
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+              {/* Imagen 3D ampliada con marco de expedición */}
+              <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl shrink-0">
+                <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-950 flex items-center justify-center">
+                  <CharacterAvatar
+                    character={lightboxCharacter}
+                    locale={locale}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Información y botones */}
+              <div className="text-center sm:text-left space-y-3 flex-1">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400">
+                    ★ RENDER OFICIAL 3D
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                    {getCharacterTheme(lightboxCharacter.id).flag} {getCharacterTheme(lightboxCharacter.id).region}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white">
+                    {lightboxCharacter.name}
+                  </h3>
+                  <p className="text-xs font-extrabold text-emerald-400 uppercase tracking-wide mt-0.5">
+                    {lightboxCharacter.passportRole
+                      ? lightboxCharacter.passportRole[locale] || lightboxCharacter.passportRole.es
+                      : lightboxCharacter.species}
+                  </p>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  {lightboxCharacter.shortDescription[locale] || lightboxCharacter.shortDescription.es}
+                </p>
+
+                {lightboxCharacter.voiceQuote && (
+                  <p className="text-xs text-amber-300/90 italic border-l-2 border-amber-400 pl-3">
+                    {lightboxCharacter.voiceQuote[locale] || lightboxCharacter.voiceQuote.es}
+                  </p>
+                )}
+
+                {/* Botones de acción */}
+                <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                  <a
+                    href={lightboxCharacter.mainImage?.url || getCharacterImagePath(lightboxCharacter.slug)}
+                    download={`Curileta_Personaje_${lightboxCharacter.slug}_3D.webp`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-md transition-colors cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Descargar Imagen 3D</span>
+                  </a>
+
+                  <Link
+                    href={`/${locale}/personajes/${lightboxCharacter.slug}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 transition-colors"
+                  >
+                    <span>Abrir Pasaporte</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <Link
+                    href={`/${locale}/fondos`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                  >
+                    <span>Fondos 2K</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
