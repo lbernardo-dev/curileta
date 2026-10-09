@@ -32,9 +32,10 @@ export default function ContactPage({
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.honeypot) {
       // Detección de bot por honeypot
@@ -46,9 +47,27 @@ export default function ContactPage({
       return;
     }
 
-    // Éxito en la validación client-side
+    setLoading(true);
     setError(null);
-    setSubmitted(true);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al enviar el mensaje.');
+      }
+
+      setSubmitted(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al procesar el mensaje.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -215,10 +234,11 @@ export default function ContactPage({
 
             <button
               type="submit"
-              className="w-full py-4 rounded-full font-black text-sm bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full py-4 rounded-full font-black text-sm bg-amber-400 hover:bg-amber-300 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <Send className="w-4 h-4 text-emerald-950" />
-              <span>Enviar Mensaje al Equipo Oficial</span>
+              <span>{loading ? 'Enviando solicitud...' : 'Enviar Mensaje al Equipo Oficial'}</span>
             </button>
           </form>
         )}

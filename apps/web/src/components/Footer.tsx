@@ -68,7 +68,12 @@ export const Footer: React.FC<{ locale: Locale }> = ({ locale }) => {
               </li>
               <li>
                 <Link href={`/${locale}/videos`} className="hover:text-emerald-400 transition-colors">
-                  Vídeos y Canciones
+                  Vídeos Oficiales
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/canciones`} className="hover:text-emerald-400 transition-colors">
+                  Cancionero & Música
                 </Link>
               </li>
             </ul>
@@ -88,6 +93,11 @@ export const Footer: React.FC<{ locale: Locale }> = ({ locale }) => {
               <li>
                 <Link href={`/${locale}/prensa`} className="hover:text-emerald-400 transition-colors">
                   Sala de Prensa & Media Kit
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/eventos`} className="hover:text-emerald-400 transition-colors">
+                  Agenda de Eventos
                 </Link>
               </li>
               <li>
