@@ -11,19 +11,23 @@ import {
   RotateCcw,
   Play,
   Pause,
-  ExternalLink,
   ChevronRight,
   ChevronLeft,
-  Mountain,
-  Sun,
-  Snowflake,
-  Award,
   BookOpen,
   X,
   Search,
   Info,
 } from 'lucide-react';
 import { Location, NarrativeMilestone } from '@curileta/cms';
+import {
+  createPixarEarthCanvas,
+  createPixarCloudsCanvas,
+} from './globe/pixarEarthTexture';
+import {
+  createPixarMonumentMesh,
+  createPixarBadgeSprite,
+  getMonumentConfig,
+} from './globe/monumentModels';
 
 interface Globe3DSceneProps {
   locale: Locale;
@@ -44,13 +48,35 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   const [isMilestonesModalOpen, setIsMilestonesModalOpen] = useState<boolean>(false);
   const [milestoneSearch, setMilestoneSearch] = useState<string>('');
 
-  // Destinos por defecto si no vienen pasados
+  // Destinos de la expedición
   const locationsList: Location[] = useMemo(() => {
     if (initialLocations && initialLocations.length > 0) return initialLocations;
     return [
       {
+        id: 'espana-inicio',
+        name: { es: 'El Bosque Encantado', en: 'The Enchanted Forest' },
+        slug: 'espana-inicio',
+        country: { es: 'España (Partida)', en: 'Spain (Departure)' },
+        theme: { es: 'El árbol más alto, la mochila y la promesa a Pompón', en: 'The tallest tree & promise to Pompón' },
+        climate: { es: 'Brisa templada mediterránea', en: 'Temperate Mediterranean' },
+        coordinates: { lat: 40.41, lng: -3.70 },
+        passportStamp: { icon: 'Compass', code: 'ESP-HOME-00', color: '#10B981' },
+        description: {
+          es: 'El hogar secreto de Curileta y Pompón. Un bosque mágico donde los árboles guardan historias y comienza la gran expedición por el mundo.',
+          en: 'Curileta and Pompón’s secret home where the world expedition begins.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'El Bosque Encantado en España', en: 'The Enchanted Forest in Spain' },
+        },
+        curiosities: [
+          { es: 'Es un lugar invisible para los humanos que no tienen curiosidad en el corazón.', en: 'Invisible to those lacking curiosity in their hearts.' },
+        ],
+        characters: ['curileta', 'pompon'],
+      },
+      {
         id: 'mexico',
-        name: { es: 'Teotihuacán y Selvas', en: 'Teotihuacan & Jungles' },
+        name: { es: 'Teotihuacán & Chichén Itzá', en: 'Teotihuacan & Chichen Itza' },
         slug: 'mexico',
         country: { es: 'México', en: 'Mexico' },
         theme: { es: 'Misterio de las pirámides y el vuelo del Quetzal', en: 'Pyramids mystery and the Quetzal flight' },
@@ -73,7 +99,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       },
       {
         id: 'peru',
-        name: { es: 'Machu Picchu y Valle Sagrado', en: 'Machu Picchu & Sacred Valley' },
+        name: { es: 'Machu Picchu & Valle Sagrado', en: 'Machu Picchu & Sacred Valley' },
         slug: 'peru',
         country: { es: 'Perú', en: 'Peru' },
         theme: { es: 'Montañas sagradas y senderos entre nubes', en: 'Sacred peaks and cloud trails' },
@@ -96,69 +122,201 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       },
       {
         id: 'egipto',
-        name: { es: 'El Nilo y Pirámides de Guiza', en: 'The Nile & Giza Pyramids' },
+        name: { es: 'El Nilo & Pirámides de Guiza', en: 'The Nile & Giza Pyramids' },
         slug: 'egipto',
         country: { es: 'Egipto', en: 'Egypt' },
-        theme: { es: 'Arenas doradas y acertijos del pasado', en: 'Golden sands and riddles of the past' },
-        climate: { es: 'Desértico y soleado', en: 'Desert and bright sunshine' },
+        theme: { es: 'El calor dorado de Ra y el escarabajo sagrado Emi', en: 'Golden heat of Ra & sacred beetle Emi' },
+        climate: { es: 'Desértico cálido', en: 'Warm desert' },
         coordinates: { lat: 29.97, lng: 31.13 },
-        passportStamp: { icon: 'Compass', code: 'EGY-CAI-03', color: '#EAB308' },
+        passportStamp: { icon: 'Sun', code: 'EGY-CAI-03', color: '#EAB308' },
         description: {
-          es: 'El río más legendario del planeta bajo la mirada de la Esfinge y jeroglíficos que guardan estrellas.',
-          en: 'The most legendary river on Earth beneath the gaze of the Sphinx and star-filled hieroglyphs.',
+          es: 'Monumentos eternos bañados por el oro del desierto y el susurro milenario del gran río Nilo.',
+          en: 'Eternal monuments bathed in desert gold alongside the Nile river.',
         },
         heroImage: {
           url: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=800&auto=format&fit=crop&q=80',
-          alt: { es: 'Pirámides de Guiza', en: 'Pyramids of Giza' },
+          alt: { es: 'Pirámides de Guiza', en: 'Giza Pyramids' },
         },
         curiosities: [
-          { es: 'El Nilo fluye de sur a norte a lo largo de más de 6.600 kilómetros.', en: 'The Nile flows South to North across more than 6,600 km.' },
+          { es: 'Las pirámides se orientaron con las estrellas de la constelación de Orión.', en: 'Pyramids aligned with Orion constellation stars.' },
         ],
         characters: ['curileta', 'emi'],
       },
       {
         id: 'islandia',
-        name: { es: 'Auroras Boreales y Géiseres', en: 'Northern Lights & Geysers' },
+        name: { es: 'Laguna Azul & Glaciares', en: 'Blue Lagoon & Glaciers' },
         slug: 'islandia',
         country: { es: 'Islandia', en: 'Iceland' },
-        theme: { es: 'Fuego y hielo en el confín ártico', en: 'Fire and ice on the Arctic edge' },
-        climate: { es: 'Subártico marítimo', en: 'Maritime subarctic' },
-        coordinates: { lat: 64.96, lng: -19.02 },
-        passportStamp: { icon: 'Sparkles', code: 'ISL-REK-04', color: '#38BDF8' },
+        theme: { es: 'Fuego, hielo y el vuelo del frailecillo Picu', en: 'Fire, ice and puffin Picu flight' },
+        climate: { es: 'Subártico volcánico', en: 'Volcanic subarctic' },
+        coordinates: { lat: 64.14, lng: -21.94 },
+        passportStamp: { icon: 'Snowflake', code: 'ISL-REK-04', color: '#38BDF8' },
         description: {
-          es: 'Cascadas cristalinas, géiseres danzantes y el cielo nocturno encendido de luces verdes y violetas.',
-          en: 'Crystal waterfalls, dancing geysers, and night skies ablaze with green and violet light.',
+          es: 'La tierra donde las auroras boreales bailan en el cielo nocturno y las aguas termales brotan de la nieve.',
+          en: 'Land of northern lights dancing over snowy thermal geysers.',
         },
         heroImage: {
           url: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=800&auto=format&fit=crop&q=80',
-          alt: { es: 'Aurora boreal en Islandia', en: 'Aurora borealis in Iceland' },
+          alt: { es: 'Laguna Azul en Islandia', en: 'Blue Lagoon in Iceland' },
         },
         curiosities: [
-          { es: 'Islandia obtiene casi el 100% de su energía de la fuerza de la tierra (geotermia).', en: 'Iceland gets nearly 100% of its energy from geothermal power.' },
+          { es: 'Bajo el hielo ártico duermen más de 130 volcanes activos.', en: 'Over 130 active volcanoes sleep under arctic ice.' },
         ],
         characters: ['curileta', 'picu'],
       },
       {
         id: 'japon',
-        name: { es: 'Monte Fuji y Bosques de Kioto', en: 'Mount Fuji & Kyoto Forests' },
+        name: { es: 'Tokio & Monte Fuji', en: 'Tokyo & Mount Fuji' },
         slug: 'japon',
         country: { es: 'Japón', en: 'Japan' },
-        theme: { es: 'Jardines zen, cerezos en flor y linternas rojas', en: 'Zen gardens, cherry blossoms and red lanterns' },
-        climate: { es: 'Templado estacional', en: 'Seasonal temperate' },
-        coordinates: { lat: 35.36, lng: 138.72 },
-        passportStamp: { icon: 'Award', code: 'JPN-FUJ-05', color: '#F43F5E' },
+        theme: { es: 'Tecnología futurista, robots musicales y cerezos', en: 'Futuristic tech, musical robots & cherry blossoms' },
+        climate: { es: 'Templado insular', en: 'Insular temperate' },
+        coordinates: { lat: 35.67, lng: 139.65 },
+        passportStamp: { icon: 'Sparkles', code: 'JPN-TOK-05', color: '#EF4444' },
         description: {
-          es: 'El delicado equilibrio entre la sabiduría de los bosques milenarios y el respeto por cada estación.',
-          en: 'The delicate harmony between ancient forest wisdom and reverence for each season.',
+          es: 'El delicado equilibrio entre la sabiduría de los bosques milenarios y el tren bala del futuro.',
+          en: 'Harmonious balance of ancient temple wisdom and bullet train future.',
         },
         heroImage: {
           url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop&q=80',
-          alt: { es: 'Monte Fuji coronado de nieve', en: 'Snowcapped Mount Fuji' },
+          alt: { es: 'Monte Fuji y Tokio', en: 'Mount Fuji and Tokyo' },
         },
         curiosities: [
-          { es: 'El Monte Fuji es en realidad tres volcanes superpuestos uno sobre otro.', en: 'Mount Fuji is actually three volcanoes stacked atop one another.' },
+          { es: 'El tren bala Shinkansen no se retrasa más de 30 segundos al año.', en: 'Shinkansen bullet trains average under 30 seconds delay per year.' },
         ],
         characters: ['curileta', 'zipi-bot'],
+      },
+      {
+        id: 'australia',
+        name: { es: 'Uluru & Hyams Beach', en: 'Uluru & Hyams Beach' },
+        slug: 'australia',
+        country: { es: 'Australia', en: 'Australia' },
+        theme: { es: 'Tierra roja, saltos de 4 metros y el peluche Joey', en: 'Red earth, 4-meter leaps & plush Joey' },
+        climate: { es: 'Desierto Outback cálido', en: 'Warm Outback desert' },
+        coordinates: { lat: -25.34, lng: 131.03 },
+        passportStamp: { icon: 'Award', code: 'AUS-ULU-06', color: '#EA580C' },
+        description: {
+          es: 'La tierra donde Uluru brilla con fuego al atardecer y las playas tienen la arena más blanca del mundo.',
+          en: 'Where Uluru glows fiery red at dusk and sand is the whitest on Earth.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'Uluru en Australia', en: 'Uluru in Australia' },
+        },
+        curiosities: [
+          { es: 'Hyams Beach tiene la arena más blanca del mundo registrada en Guinness.', en: 'Hyams Beach holds Guinness record for whitest sand.' },
+        ],
+        characters: ['curileta', 'canguro-mama', 'canguro-bebe', 'joey'],
+      },
+      {
+        id: 'nueva-zelanda',
+        name: { es: 'Waitomo & Hobbiton', en: 'Waitomo & Hobbiton' },
+        slug: 'nueva-zelanda',
+        country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+        theme: { es: 'Cielos de luz bajo tierra, casitas de Hobbit y helechos', en: 'Glowworm caves, Hobbit houses & ferns' },
+        climate: { es: 'Bosque húmedo templado', en: 'Temperate rainforest' },
+        coordinates: { lat: -38.68, lng: 176.07 },
+        passportStamp: { icon: 'Sparkles', code: 'NZL-WAI-07', color: '#84CC16' },
+        description: {
+          es: 'Bosques de helechos plateados y colinas de cuento con chimeneas y puertas redondas.',
+          en: 'Silver fern forests and fairytale hills with round doors.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'Colinas de Nueva Zelanda', en: 'New Zealand hills' },
+        },
+        curiosities: [
+          { es: 'Las larvas de Waitomo emiten luz azul mágica para orientar a los exploradores.', en: 'Waitomo glowworms emit blue light guiding nocturnal explorers.' },
+        ],
+        characters: ['curileta', 'kiki'],
+      },
+      {
+        id: 'china',
+        name: { es: 'La Gran Muralla & Bambú', en: 'The Great Wall & Bamboo' },
+        slug: 'china',
+        country: { es: 'China', en: 'China' },
+        theme: { es: 'El dragón de piedra de 21.000 km y el panda Bao', en: 'The 21,000km stone dragon & panda Bao' },
+        climate: { es: 'Continental montañoso', en: 'Mountainous continental' },
+        coordinates: { lat: 40.43, lng: 116.57 },
+        passportStamp: { icon: 'Award', code: 'CHN-BEI-08', color: '#DC2626' },
+        description: {
+          es: 'Una muralla infinita sobre las cumbres donde el panda Bao enseña caracteres de caligrafía.',
+          en: 'An endless wall over mountain ridges where panda Bao shares bamboo.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'La Gran Muralla China', en: 'Great Wall of China' },
+        },
+        curiosities: [
+          { es: 'Mide más de 21.000 kilómetros y parece el lomo de un dragón dormido.', en: 'Measures over 21,000 km resembling a sleeping dragon spine.' },
+        ],
+        characters: ['curileta', 'bao'],
+      },
+      {
+        id: 'italia',
+        name: { es: 'Florencia & Coliseo', en: 'Florence & Colosseum' },
+        slug: 'italia',
+        country: { es: 'Italia', en: 'Italy' },
+        theme: { es: 'El aroma a albahaca, pizza al vuelo y el ratón Gino', en: 'Basil aroma, flying pizza & mouse Gino' },
+        climate: { es: 'Mediterráneo soleado', en: 'Sunny Mediterranean' },
+        coordinates: { lat: 41.90, lng: 12.49 },
+        passportStamp: { icon: 'Sun', code: 'ITA-ROM-09', color: '#D97706' },
+        description: {
+          es: 'Calles adoquinadas donde el arte milenario se funde con la cocina de Gino el ratón chef.',
+          en: 'Cobblestone streets blending ancient art with Gino the chef mouse recipes.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'Coliseo de Roma en Italia', en: 'Roman Colosseum in Italy' },
+        },
+        curiosities: [
+          { es: 'El Coliseo podía llenarse de agua para librar batallas navales con barquitos.', en: 'Colosseum could be flooded for mini naval battles.' },
+        ],
+        characters: ['curileta', 'gino'],
+      },
+      {
+        id: 'francia',
+        name: { es: 'Alpes Franceses & París', en: 'French Alps & Paris' },
+        slug: 'francia',
+        country: { es: 'Francia', en: 'France' },
+        theme: { es: 'La Torre Eiffel, el perro Barnaby y la baguette parlante', en: 'Eiffel Tower, Barnaby & the baguette' },
+        climate: { es: 'Alpino fresco y templado', en: 'Alpine fresh' },
+        coordinates: { lat: 48.85, lng: 2.35 },
+        passportStamp: { icon: 'Compass', code: 'FRA-PAR-10', color: '#6366F1' },
+        description: {
+          es: 'Autocaravanas cruzando puertos alpinos nevados y la silueta mágica de la Torre Eiffel.',
+          en: 'Campers crossing snowy alpine passes and the magical Eiffel Tower.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'Torre Eiffel en Francia', en: 'Eiffel Tower in France' },
+        },
+        curiosities: [
+          { es: 'La Torre Eiffel crece hasta 15 centímetros en verano por la dilatación del hierro.', en: 'Eiffel Tower grows up to 15 cm in summer heat.' },
+        ],
+        characters: ['curileta', 'basset'],
+      },
+      {
+        id: 'espana-regreso',
+        name: { es: 'Regreso al Bosque Encantado', en: 'Return to the Forest' },
+        slug: 'espana-regreso',
+        country: { es: 'España (Llegada)', en: 'Spain (Arrival)' },
+        theme: { es: 'El abrazo con Pompón bajo el árbol y la mochila llena de recuerdos', en: 'Reunion with Pompón & memory backpack' },
+        climate: { es: 'Cálido hogar mediterráneo', en: 'Warm Mediterranean home' },
+        coordinates: { lat: 40.41, lng: -3.70 },
+        passportStamp: { icon: 'Award', code: 'ESP-END-11', color: '#10B981' },
+        description: {
+          es: 'El viaje culmina donde empezó: Curileta vuelve al árbol más alto para abrazar a Pompón y compartir las cartas y tesoros del mundo.',
+          en: 'The expedition concludes under the tallest tree sharing world treasures.',
+        },
+        heroImage: {
+          url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&auto=format&fit=crop&q=80',
+          alt: { es: 'Reencuentro en el Bosque Encantado', en: 'Reunion in the Enchanted Forest' },
+        },
+        curiosities: [
+          { es: 'El buzón de madera contenía exactamente 41 sellos de todos los continentes.', en: 'The mailbox held exactly 41 stamps from every continent.' },
+        ],
+        characters: ['curileta', 'pompon', 'lola'],
       },
     ];
   }, [initialLocations]);
@@ -166,6 +324,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   const currentIndex = locationsList.findIndex((loc) => loc.id === selectedId);
   const activeIndex = currentIndex !== -1 ? currentIndex : 0;
   const activeDestination = locationsList[activeIndex] || locationsList[0];
+  const activeMonumentConfig = getMonumentConfig(activeDestination.id);
 
   const handlePrevLocation = () => {
     const prevIndex = (activeIndex - 1 + locationsList.length) % locationsList.length;
@@ -177,10 +336,19 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     focusLocation(locationsList[nextIndex]);
   };
 
-  // Referencias para controlar Three.js desde React
-  const targetRotationRef = useRef<{ x: number; y: number }>({ x: 0.2, y: 0 });
-  const currentRotationRef = useRef<{ x: number; y: number }>({ x: 0.2, y: 0 });
+  // Referencias para controlar Three.js
+  const targetRotationRef = useRef<{ x: number; y: number }>({ x: 0.35, y: -Math.PI / 2 });
+  const currentRotationRef = useRef<{ x: number; y: number }>({ x: 0.35, y: -Math.PI / 2 });
   const globeGroupRef = useRef<THREE.Group | null>(null);
+  const monumentMeshesRef = useRef<
+    Array<{
+      id: string;
+      group: THREE.Group;
+      badge: THREE.Sprite;
+      normal: THREE.Vector3;
+      basePos: THREE.Vector3;
+    }>
+  >([]);
 
   // Conversión de Lat/Lng a coordenadas esféricas 3D
   const latLngToVector3 = (lat: number, lng: number, radius: number): THREE.Vector3 => {
@@ -228,15 +396,14 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     // Escena, cámara y renderizador Three.js
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 4.2;
+    camera.position.z = 4.3;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.35;
 
-    // Limpiar contenido previo si hubiese
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
@@ -245,148 +412,166 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     scene.add(globeGroup);
     globeGroupRef.current = globeGroup;
 
-    const GLOBE_RADIUS = 1.45;
+    const GLOBE_RADIUS = 1.48;
 
-    // 1. Esfera base del planeta (azul noche profundo / pergamino esmeralda)
+    // 1. ESFERA DEL PLANETA CON TEXTURA PROCEDURAL PIXAR (Océanos zafiro/turquesa y continentes detallados)
+    const earthCanvas = createPixarEarthCanvas();
+    const earthTexture = new THREE.CanvasTexture(earthCanvas);
+    earthTexture.colorSpace = THREE.SRGBColorSpace;
+    earthTexture.needsUpdate = true;
+
     const sphereGeometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64);
-    const sphereMaterial = new THREE.MeshPhongMaterial({
-      color: 0x062821,
-      emissive: 0x021712,
-      specular: 0x10b981,
-      shininess: 25,
-      transparent: true,
-      opacity: 0.95,
+    const sphereMaterial = new THREE.MeshStandardMaterial({
+      map: earthTexture,
+      roughness: 0.65,
+      metalness: 0.08,
     });
     const globeMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
     globeGroup.add(globeMesh);
 
-    // 2. Malla de meridianos y paralelos estilo cartografía mágica
-    const wireframeGeometry = new THREE.WireframeGeometry(
-      new THREE.SphereGeometry(GLOBE_RADIUS * 1.002, 24, 24)
-    );
-    const wireframeMaterial = new THREE.LineBasicMaterial({
-      color: 0x34d399,
-      transparent: true,
-      opacity: 0.18,
-    });
-    const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
-    globeGroup.add(wireframe);
+    // 2. CAPA VOLUMÉTRICA DE NUBES FLOTANTES PIXAR
+    const cloudsCanvas = createPixarCloudsCanvas();
+    const cloudsTexture = new THREE.CanvasTexture(cloudsCanvas);
+    cloudsTexture.needsUpdate = true;
 
-    // 3. Anillos ecuatoriales y trópicos luminosos
-    const equatorGeo = new THREE.RingGeometry(GLOBE_RADIUS * 1.01, GLOBE_RADIUS * 1.03, 64);
-    const equatorMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
-      side: THREE.DoubleSide,
+    const cloudsGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 1.022, 48, 48);
+    const cloudsMat = new THREE.MeshStandardMaterial({
+      map: cloudsTexture,
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.65,
+      depthWrite: false,
+      roughness: 1.0,
     });
-    const equator = new THREE.Mesh(equatorGeo, equatorMat);
-    equator.rotation.x = Math.PI / 2;
-    globeGroup.add(equator);
+    const cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
+    globeGroup.add(cloudsMesh);
 
-    // 4. Pines y Marcadores 3D para cada ubicación
-    const pinGroup = new THREE.Group();
-    globeGroup.add(pinGroup);
+    // 3. HALO CELESTIAL ATMOSFÉRICO (Resplandor estilo Pixar)
+    const atmosphereGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 1.055, 48, 48);
+    const atmosphereMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.22,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
+    scene.add(atmosphereMesh);
+
+    // 4. MONUMENTOS 3D PROCEDURALES Y CARTELES ANIMADOS PIXAR PARA CADA DESTINO
+    const monumentsGroup = new THREE.Group();
+    globeGroup.add(monumentsGroup);
+    monumentMeshesRef.current = [];
 
     locationsList.forEach((loc) => {
-      const pos = latLngToVector3(loc.coordinates.lat, loc.coordinates.lng, GLOBE_RADIUS * 1.01);
+      const pos = latLngToVector3(loc.coordinates.lat, loc.coordinates.lng, GLOBE_RADIUS);
+      const normal = pos.clone().normalize();
 
-      // Pin esférico con brillo
-      const pinGeo = new THREE.SphereGeometry(0.045, 16, 16);
-      const pinColor = loc.passportStamp?.color ? new THREE.Color(loc.passportStamp.color) : new THREE.Color(0xf59e0b);
-      const pinMat = new THREE.MeshBasicMaterial({ color: pinColor });
-      const pinMesh = new THREE.Mesh(pinGeo, pinMat);
-      pinMesh.position.copy(pos);
-      pinGroup.add(pinMesh);
+      // Monumento 3D representativo
+      const monument = createPixarMonumentMesh(loc.id);
+      monument.position.copy(pos);
+      // Orientar perpendicular a la superficie del planeta
+      monument.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+      monument.userData = { locationId: loc.id };
+      monumentsGroup.add(monument);
 
-      // Anillo de pulso exterior
-      const ringGeo = new THREE.RingGeometry(0.06, 0.08, 24);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: pinColor,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.7,
+      // Cartel / Emblema flotante 3D (Billboard sprite)
+      const badgePos = pos.clone().multiplyScalar(1.14);
+      const badge = createPixarBadgeSprite(loc.id);
+      badge.position.copy(badgePos);
+      badge.userData = { locationId: loc.id };
+      monumentsGroup.add(badge);
+
+      monumentMeshesRef.current.push({
+        id: loc.id,
+        group: monument,
+        badge,
+        normal,
+        basePos: badgePos,
       });
-      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.copy(pos);
-      ringMesh.lookAt(new THREE.Vector3(0, 0, 0));
-      pinGroup.add(ringMesh);
-
-      // Línea radial conectora
-      const lineGeo = new THREE.BufferGeometry().setFromPoints([
-        pos,
-        pos.clone().multiplyScalar(1.08),
-      ]);
-      const lineMat = new THREE.LineBasicMaterial({ color: pinColor, transparent: true, opacity: 0.8 });
-      const line = new THREE.Line(lineGeo, lineMat);
-      pinGroup.add(line);
     });
 
-    // 4.5 Arcos aéreos 3D que conectan las paradas consecutivas de la expedición
+    // 5. RUTAS AÉREAS CURVAS ANIMADAS CON LÍNEAS DISCONTINUAS (EL SENDERO DE CURILETA)
     const arcGroup = new THREE.Group();
     globeGroup.add(arcGroup);
+    const arcMaterials: THREE.LineDashedMaterial[] = [];
 
     for (let i = 0; i < locationsList.length - 1; i++) {
-      const start = latLngToVector3(locationsList[i].coordinates.lat, locationsList[i].coordinates.lng, GLOBE_RADIUS * 1.01);
-      const end = latLngToVector3(locationsList[i + 1].coordinates.lat, locationsList[i + 1].coordinates.lng, GLOBE_RADIUS * 1.01);
+      const start = latLngToVector3(
+        locationsList[i].coordinates.lat,
+        locationsList[i].coordinates.lng,
+        GLOBE_RADIUS * 1.01
+      );
+      const end = latLngToVector3(
+        locationsList[i + 1].coordinates.lat,
+        locationsList[i + 1].coordinates.lng,
+        GLOBE_RADIUS * 1.01
+      );
 
       const mid = start.clone().add(end).multiplyScalar(0.5);
       const distance = start.distanceTo(end);
-      const altitude = GLOBE_RADIUS * (1.08 + Math.min(distance * 0.15, 0.45));
+      const altitude = GLOBE_RADIUS * (1.1 + Math.min(distance * 0.16, 0.42));
       mid.normalize().multiplyScalar(altitude);
 
       const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-      const points = curve.getPoints(36);
+      const points = curve.getPoints(40);
       const arcGeo = new THREE.BufferGeometry().setFromPoints(points);
+
       const arcMat = new THREE.LineDashedMaterial({
         color: 0xf59e0b,
         dashSize: 0.08,
-        gapSize: 0.05,
+        gapSize: 0.045,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.75,
       });
+      arcMaterials.push(arcMat);
+
       const arcLine = new THREE.Line(arcGeo, arcMat);
       arcLine.computeLineDistances();
       arcGroup.add(arcLine);
     }
 
-    // 5. Luces de escena (ambiental, luz direccional dorada y luz de borde celeste)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    // 6. LUCES DE ESCENA CÁLIDA ESTILO ANIMACIÓN PIXAR
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.15);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfef3c7, 1.8);
-    sunLight.position.set(5, 4, 3);
+    const sunLight = new THREE.DirectionalLight(0xfef3c7, 2.2);
+    sunLight.position.set(5, 5, 4);
     scene.add(sunLight);
 
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    const rimLight = new THREE.DirectionalLight(0x06b6d4, 1.4);
     rimLight.position.set(-5, -2, -3);
     scene.add(rimLight);
 
-    // 6. Polvo estelar / partículas mágicas alrededor del globo
+    // 7. POLVO ESTELAR Y CONSTELACIONES ALREDEDOR DEL GLOBO
     const starsGeo = new THREE.BufferGeometry();
-    const starCount = 350;
+    const starCount = 380;
     const starCoords = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount * 3; i += 3) {
-      starCoords[i] = (Math.random() - 0.5) * 12;
-      starCoords[i + 1] = (Math.random() - 0.5) * 12;
-      starCoords[i + 2] = (Math.random() - 0.5) * 12;
+      starCoords[i] = (Math.random() - 0.5) * 14;
+      starCoords[i + 1] = (Math.random() - 0.5) * 14;
+      starCoords[i + 2] = (Math.random() - 0.5) * 14;
     }
     starsGeo.setAttribute('position', new THREE.BufferAttribute(starCoords, 3));
     const starsMat = new THREE.PointsMaterial({
-      color: 0xfcd34d,
-      size: 0.04,
+      color: 0xfde047,
+      size: 0.038,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.7,
     });
     const stars = new THREE.Points(starsGeo, starsMat);
     scene.add(stars);
 
-    // 7. Interacción de arrastre con ratón / toque
+    // 8. INTERACCIÓN DE ARRASTRE Y RAYCASTER (CLIC EN MONUMENTO)
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
+    let dragDistance = 0;
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
     const onPointerDown = (e: MouseEvent | TouchEvent) => {
       isDragging = true;
+      dragDistance = 0;
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
       previousMousePosition = { x: clientX, y: clientY };
@@ -399,18 +584,46 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
       const deltaX = clientX - previousMousePosition.x;
       const deltaY = clientY - previousMousePosition.y;
+      dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
 
       targetRotationRef.current.y += deltaX * 0.005;
       targetRotationRef.current.x = Math.max(
-        -Math.PI / 2.5,
-        Math.min(Math.PI / 2.5, targetRotationRef.current.x + deltaY * 0.005)
+        -Math.PI / 2.4,
+        Math.min(Math.PI / 2.4, targetRotationRef.current.x + deltaY * 0.005)
       );
 
       previousMousePosition = { x: clientX, y: clientY };
     };
 
-    const onPointerUp = () => {
+    const onPointerUp = (e: MouseEvent | TouchEvent) => {
       isDragging = false;
+
+      // Si no hubo arrastre apreciable, verificar si se pulsó sobre un monumento
+      if (dragDistance < 6) {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : (e as MouseEvent).clientX;
+        const clientY = 'changedTouches' in e ? e.changedTouches[0].clientY : (e as MouseEvent).clientY;
+
+        mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(monumentsGroup.children, true);
+
+        if (intersects.length > 0) {
+          let target = intersects[0].object;
+          while (target.parent && !target.userData?.locationId) {
+            target = target.parent as any;
+          }
+          const locId = target.userData?.locationId;
+          if (locId) {
+            const clickedLoc = locationsList.find((l) => l.id === locId);
+            if (clickedLoc) {
+              focusLocation(clickedLoc);
+            }
+          }
+        }
+      }
     };
 
     const domElement = renderer.domElement;
@@ -422,25 +635,52 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     window.addEventListener('touchmove', onPointerMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
-    // Bucle de renderizado con interpolación suave
+    // 9. BUCLE DE RENDERIZADO CON ANIMACIÓN PIXAR
     let animationFrameId: number;
+    let clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
 
-      // Auto-rotación cuando no se interactúa
+      // Giro suave automático
       if (isAutoRotating && !isDragging && !isHovered) {
-        targetRotationRef.current.y += 0.0018;
+        targetRotationRef.current.y += 0.0016;
       }
 
-      // Suavizado inercial (lerp)
+      // Rotación independiente de nubes
+      cloudsMesh.rotation.y += 0.0007;
+
+      // Animación de los trazos discontinuos de vuelo de Curileta
+      arcMaterials.forEach((mat) => {
+        (mat as any).dashOffset = ((mat as any).dashOffset || 0) - 0.015;
+      });
+
+      // Animación viva de los monumentos y carteles Pixar (idle bobbing + scale active)
+      monumentMeshesRef.current.forEach((item, idx) => {
+        // Flotación suave del cartel con offset vertical
+        const bob = Math.sin(elapsedTime * 2.8 + idx) * 0.015;
+        const targetPos = item.basePos.clone().add(item.normal.clone().multiplyScalar(bob));
+        item.badge.position.copy(targetPos);
+
+        // Si es el monumento actualmente enfocado, destacar y escalar con suavidad
+        const isCurrent = item.id === selectedId;
+        const targetScale = isCurrent ? 1.35 : 1.0;
+        item.group.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+        item.badge.scale.lerp(
+          new THREE.Vector3(isCurrent ? 0.42 : 0.32, isCurrent ? 0.42 : 0.32, 1),
+          0.1
+        );
+      });
+
+      // Suavizado inercial (lerp) del giro del globo
       currentRotationRef.current.x += (targetRotationRef.current.x - currentRotationRef.current.x) * 0.07;
       currentRotationRef.current.y += (targetRotationRef.current.y - currentRotationRef.current.y) * 0.07;
 
       globeGroup.rotation.x = currentRotationRef.current.x;
       globeGroup.rotation.y = currentRotationRef.current.y;
 
-      // Rotación sutil de estrellas
+      // Rotación suave del campo de estrellas
       stars.rotation.y += 0.0003;
 
       renderer.render(scene, camera);
@@ -448,7 +688,6 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
     animate();
 
-    // Manejo de redimensionamiento
     const handleResize = () => {
       if (!container) return;
       const newWidth = container.clientWidth;
@@ -474,7 +713,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         container.removeChild(domElement);
       }
     };
-  }, [locationsList, isAutoRotating, isHovered]);
+  }, [locationsList, isAutoRotating, isHovered, selectedId]);
 
   return (
     <section id="escena-mapa" className="relative py-28 bg-slate-950 text-white overflow-hidden">
@@ -486,16 +725,16 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
             <Globe className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '15s' }} />
-            <span>Escena 02 — Cartografía 3D Interactiva</span>
+            <span>Escena 02 — Cartografía 3D Animada Estilo Pixar</span>
           </div>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-            El Globo se ilumina.<br />
+            El Globo se Ilumina.<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-300 to-sky-300">
-              La Tierra te llama en 3D.
+              Océanos, Continentes & Monumentos 3D.
             </span>
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-            Arrastra el globo terráqueo con el ratón o el dedo, explora los meridianos luminosos y pulsa en cualquier destino para enfocar su cuaderno de expedición oficial.
+            Descubre los continentes ilustrados, las aguas turquesas y los monumentos 3D del libro. Pulsa o arrastra el planeta para explorar las pirámides, templos, montañas y el gran árbol de Curileta.
           </p>
         </div>
 
@@ -504,22 +743,23 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
           {/* Fondo estético de rejilla */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_40%,rgba(16,185,129,0.1),transparent)] pointer-events-none" />
 
-          {/* Selector rápido de destinos */}
+          {/* Selector rápido de destinos con iconos de monumentos */}
           <div className="lg:col-span-12 flex flex-wrap items-center justify-center gap-2 pb-4 border-b border-slate-800">
             {locationsList.map((loc) => {
               const isSelected = selectedId === loc.id;
+              const monument = getMonumentConfig(loc.id);
               return (
                 <button
                   key={loc.id}
                   onClick={() => focusLocation(loc)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
                     isSelected
                       ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/20 scale-105 font-black'
                       : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80 border border-slate-700'
                   }`}
                   aria-pressed={isSelected}
                 >
-                  <MapPin className="w-3.5 h-3.5" />
+                  <span>{monument.emoji}</span>
                   <span>{loc.country[locale] || loc.country.es}</span>
                 </button>
               );
@@ -534,17 +774,14 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               className="w-full aspect-square max-h-[480px] sm:max-h-[520px] rounded-2xl flex items-center justify-center relative cursor-grab active:cursor-grabbing select-none"
-              aria-label="Globo terráqueo interactivo en 3D"
+              aria-label="Globo terráqueo animado en 3D con monumentos estilo Pixar"
             >
               {!webglSupported && (
                 <div className="w-full h-full min-h-[380px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-slate-950 to-emerald-950/80 rounded-2xl border border-amber-400/40 relative overflow-hidden">
-                  {/* Anillos celestiales y esfera cartográfica animada */}
                   <div className="relative w-64 h-64 flex items-center justify-center my-4">
                     <div className="absolute inset-0 rounded-full border-2 border-emerald-400/40 animate-[spin_20s_linear_infinite]" />
                     <div className="absolute inset-4 rounded-full border-2 border-dashed border-amber-400/50 animate-[spin_15s_linear_infinite_reverse]" />
-                    <div className="absolute inset-8 rounded-full border border-sky-400/40 animate-[spin_30s_linear_infinite]" />
-                    {/* Núcleo del planeta */}
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-emerald-950 via-slate-900 to-emerald-900 border-2 border-amber-400/70 shadow-2xl shadow-emerald-500/30 flex flex-col items-center justify-center text-center p-3 relative">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-emerald-950 via-slate-900 to-emerald-900 border-2 border-amber-400/70 shadow-2xl flex flex-col items-center justify-center text-center p-3">
                       <Compass className="w-9 h-9 text-amber-400 animate-pulse" />
                       <span className="text-[10px] font-black uppercase text-amber-300 mt-1">
                         {activeDestination.country[locale] || activeDestination.country.es}
@@ -607,14 +844,15 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
           {/* Ficha de Expedición del Destino Seleccionado */}
           <div className="lg:col-span-5 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-amber-400/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-            {/* Distintivo de Pasaporte y Etapa */}
+            {/* Distintivo de Pasaporte y Monumento 3D Oficial */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-amber-300 font-mono text-[11px] font-black border border-amber-500/30">
-                  ETAPA {activeIndex + 1}/{locationsList.length}
+                <span className="px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 font-mono text-[11px] font-black shadow-md flex items-center gap-1">
+                  <span>{activeMonumentConfig.emoji}</span>
+                  <span>{activeMonumentConfig.name}</span>
                 </span>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono font-bold">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-amber-300 text-xs font-mono font-bold border border-slate-700">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
                   <span>SELLO: {activeDestination.passportStamp?.code || 'EXP-00'}</span>
                 </div>
               </div>
@@ -687,8 +925,12 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                         ? 'Picu el Frailecillo'
                         : charSlug === 'zipi-bot'
                         ? 'Zipi-Bot'
-                        : charSlug === 'joey-canguro'
-                        ? 'Mamá Canguro & Bebé (con Joey)'
+                        : charSlug === 'canguro-mama'
+                        ? 'Mamá Canguro'
+                        : charSlug === 'canguro-bebe'
+                        ? 'Bebé Canguro'
+                        : charSlug === 'joey'
+                        ? 'Joey (Peluche)'
                         : charSlug === 'kiki'
                         ? 'Kiki el Kiwi'
                         : charSlug === 'bao'
@@ -714,21 +956,6 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                     * Pompón permanece en el Bosque Encantado custodiando el hogar y esperando las cartas de Curileta.
                   </p>
                 )}
-              </div>
-            )}
-
-            {/* Lugares mencionados como curiosidad (sin visita presencial) */}
-            {activeDestination.mentionedPlaces && activeDestination.mentionedPlaces.length > 0 && (
-              <div className="mt-4 p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30">
-                <span className="text-[10px] font-mono font-black uppercase tracking-wider text-amber-400 block mb-1">
-                  Mencionado en el libro como Curiosidad (sin visita presencial):
-                </span>
-                {activeDestination.mentionedPlaces.map((m) => (
-                  <p key={m.id} className="text-xs text-slate-300">
-                    <strong className="text-white">{m.name[locale] || m.name.es}:</strong>{' '}
-                    {m.curiosityFact[locale] || m.curiosityFact.es}
-                  </p>
-                ))}
               </div>
             )}
 
