@@ -724,7 +724,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   }, [locationsList, isAutoRotating, isHovered, selectedId]);
 
   return (
-    <section id="escena-mapa" className="relative py-28 bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
+    <section id="escena-mapa" className="relative z-10 py-28 bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Trazado estético superior */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-amber-400 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.8)]" />
 

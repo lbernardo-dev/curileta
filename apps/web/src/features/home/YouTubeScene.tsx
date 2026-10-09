@@ -241,7 +241,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   }, [allVideos, selectedCategory]);
 
   return (
-    <section id="escena-youtube" className="py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative">
+    <section id="escena-youtube" className="relative z-10 py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
       {/* Resplandor ambiental de fondo */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(239,68,68,0.12),transparent)] pointer-events-none" />
 

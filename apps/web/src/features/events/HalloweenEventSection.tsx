@@ -70,7 +70,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
   return (
     <section
       id="evento-halloween"
-      className="relative py-28 bg-gradient-to-b from-[#180829] via-[#240e3b] to-[#0c0517] text-white overflow-hidden"
+      className="relative z-10 py-28 bg-gradient-to-b from-[#180829] via-[#240e3b] to-[#0c0517] text-white overflow-hidden"
     >
       {/* Luces y ambientación mágica de Halloween estilo Pixar */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(249,115,22,0.22),transparent)] pointer-events-none" />

@@ -13,7 +13,10 @@ export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   };
 
   return (
-    <section className="relative py-32 bg-gradient-to-b from-white via-emerald-50/40 to-slate-100 dark:from-slate-900 dark:via-emerald-950 dark:to-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden text-center">
+    <section
+      id="cierre-expedicion"
+      className="relative z-10 py-32 bg-gradient-to-b from-white via-emerald-50/40 to-slate-100 dark:from-slate-900 dark:via-emerald-950 dark:to-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden text-center"
+    >
       {/* Horizon glow */}
       <div className="absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(16,185,129,0.25),transparent)] pointer-events-none" />
 

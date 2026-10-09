@@ -43,7 +43,7 @@ const FEATURED_BOOKS: BookItem[] = [
 
 export const BooksScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   return (
-    <section className="py-28 bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative">
+    <section id="escena-libros" className="relative z-10 py-28 bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-500/40 text-amber-900 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-4">

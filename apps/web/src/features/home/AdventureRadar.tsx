@@ -162,7 +162,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
   return (
     <section
       id="radar-curileta"
-      className="relative py-24 bg-gradient-to-b from-emerald-950 via-slate-950 to-slate-950 text-white overflow-hidden transition-colors duration-300"
+      className="relative z-10 py-24 bg-gradient-to-b from-emerald-950 via-slate-950 to-slate-950 text-white overflow-hidden transition-colors duration-300"
     >
       {/* Resplandor y círculos de radar de fondo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">

@@ -588,7 +588,7 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   };
 
   return (
-    <section id="escena-cartas" className="relative py-28 bg-amber-50/40 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
+    <section id="escena-cartas" className="relative z-10 py-28 bg-amber-50/40 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
       {/* Trazado estético superior */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-rose-500 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
 

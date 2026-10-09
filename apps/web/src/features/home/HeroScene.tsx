@@ -101,7 +101,7 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   };
 
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden py-10 px-4 sm:px-6 lg:px-8 text-slate-900 dark:text-white transition-colors duration-500">
+    <section className="relative z-10 min-h-[92vh] flex flex-col items-center justify-center overflow-hidden py-10 px-4 sm:px-6 lg:px-8 text-slate-900 dark:text-white transition-colors duration-500">
       {/* ============================================================
           FONDO Y AMBIENTACIÓN CINEMÁTICA CON PROFUNDIDAD
           ============================================================ */}
@@ -408,13 +408,18 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
         </div>
       </div>
 
-      {/* Indicador de scroll de sendero al final */}
-      <div className="mt-10 flex flex-col items-center gap-1.5 text-emerald-800 dark:text-emerald-400/80 animate-bounce">
-        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-100 dark:bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-800 shadow-sm">
-          {isEn ? 'Follow the luminous trail' : 'Sigue el sendero luminoso'}
+      {/* Indicador de scroll de sendero de aventura al final */}
+      <a
+        href="#escena-mapa"
+        className="mt-8 flex flex-col items-center gap-1.5 text-emerald-800 dark:text-emerald-400/80 group hover:scale-105 transition-all cursor-pointer"
+        aria-label={isEn ? 'Scroll along the adventure map trail' : 'Avanzar por el sendero del mapa de aventuras'}
+      >
+        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-100 dark:bg-emerald-950/80 group-hover:bg-amber-100 dark:group-hover:bg-amber-950/80 px-3.5 py-1 rounded-full border border-emerald-300 dark:border-emerald-800 group-hover:border-amber-400 shadow-sm text-emerald-900 dark:text-emerald-300 group-hover:text-amber-800 dark:group-hover:text-amber-300 transition-colors flex items-center gap-1.5">
+          <span>🧭</span>
+          <span>{isEn ? 'Follow the Adventure Map Trail' : 'Sigue el Sendero del Mapa de Aventuras'}</span>
         </span>
-        <ArrowDown className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-      </div>
+        <ArrowDown className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:text-amber-500 animate-bounce transition-colors" />
+      </a>
     </section>
   );
 };

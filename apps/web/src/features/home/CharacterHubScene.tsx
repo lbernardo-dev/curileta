@@ -534,7 +534,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   const selectedTheme = getCharacterTheme(selectedCharacter.id);
 
   return (
-    <section id="escena-personajes" className="relative py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
+    <section id="escena-personajes" className="relative z-10 py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Línea divisoria superior */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-emerald-500 to-sky-400 shadow-[0_0_20px_rgba(16,185,129,0.8)]" />
 

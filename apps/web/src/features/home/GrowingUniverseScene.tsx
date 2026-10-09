@@ -34,7 +34,7 @@ export const GrowingUniverseScene: React.FC<{ locale: Locale }> = ({ locale }) =
   ];
 
   return (
-    <section className="py-28 bg-gradient-to-b from-emerald-50/60 via-teal-50/30 to-emerald-50/60 dark:from-slate-950 dark:via-emerald-950 dark:to-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative">
+    <section className="relative z-10 py-28 bg-gradient-to-b from-emerald-50/60 via-teal-50/30 to-emerald-50/60 dark:from-slate-950 dark:via-emerald-950 dark:to-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4">

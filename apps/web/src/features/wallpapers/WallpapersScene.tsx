@@ -94,7 +94,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
   };
 
   return (
-    <section id="galeria-fondos" className={`relative ${embedded ? 'py-16' : 'py-24'} bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden`}>
+    <section id="galeria-fondos" className={`relative z-10 ${embedded ? 'py-16' : 'py-24'} bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden`}>
       {/* Resplandor ambiental de fondo */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(16,185,129,0.15),transparent)] pointer-events-none" />
 

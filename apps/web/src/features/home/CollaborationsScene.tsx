@@ -25,7 +25,7 @@ export const CollaborationsScene: React.FC<{ locale: Locale }> = ({ locale }) =>
   ];
 
   return (
-    <section className="py-24 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white transition-colors duration-300">
+    <section className="relative z-10 py-24 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950 border border-emerald-200 dark:border-slate-800 p-8 sm:p-12 lg:p-16 shadow-xl dark:shadow-2xl">
           <div className="max-w-3xl">
