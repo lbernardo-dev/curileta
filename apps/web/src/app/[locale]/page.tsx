@@ -10,6 +10,7 @@ import { YouTubeScene } from '@/features/home/YouTubeScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
+import { GlowingTrail } from '@curileta/motion';
 
 export async function generateMetadata({
   params,
@@ -62,6 +63,9 @@ export default async function HomePage({
 
   return (
     <article className="flex flex-col w-full relative">
+      {/* Hilo visual conductor: Sendero luminoso continuo animado con GSAP */}
+      <GlowingTrail />
+
       {/* Escena 01 — Hero: Bosque Encantado y Curileta */}
       <HeroScene locale={locale as Locale} />
 
