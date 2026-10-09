@@ -36,7 +36,7 @@ export default async function VideosPage({
         </p>
       </div>
 
-      <YouTubeScene locale={locale as Locale} videos={videos} />
+      <YouTubeScene locale={locale as Locale} videos={videos} hideHeader={true} />
     </div>
   );
 }

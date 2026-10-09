@@ -26,12 +26,14 @@ interface WallpapersSceneProps {
   locale: Locale;
   wallpapers: Wallpaper[];
   embedded?: boolean;
+  hideHeader?: boolean;
 }
 
 export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
   locale,
   wallpapers = [],
   embedded = false,
+  hideHeader = false,
 }) => {
   const [deviceFilter, setDeviceFilter] = useState<'all' | 'mobile' | 'desktop'>('all');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'personajes' | 'paisajes' | 'arte'>('all');
@@ -98,23 +100,25 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera Principal */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            <span>Galería Oficial de Fondos de Pantalla</span>
+        {!hideHeader && (
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
+              <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+              <span>Galería Oficial de Fondos de Pantalla</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+              Lleva la Aventura Contigo.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-600 to-sky-600 dark:from-emerald-300 dark:via-amber-300 dark:to-sky-300">
+                Fondos de Pantalla en 2K Ultra HD.
+              </span>
+            </h2>
+
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+              Descarga gratis ilustraciones oficiales, personajes 3D y paisajes del viaje adaptados a la resolución exacta de tu teléfono móvil o pantalla de ordenador.
+            </p>
           </div>
-
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            Lleva la Aventura Contigo.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-600 to-sky-600 dark:from-emerald-300 dark:via-amber-300 dark:to-sky-300">
-              Fondos de Pantalla en 2K Ultra HD.
-            </span>
-          </h2>
-
-          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Descarga gratis ilustraciones oficiales, personajes 3D y paisajes del viaje adaptados a la resolución exacta de tu teléfono móvil o pantalla de ordenador.
-          </p>
-        </div>
+        )}
 
         {/* Barra de Filtros y Búsqueda */}
         <div className="bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 mb-10 shadow-lg dark:shadow-xl backdrop-blur-xl space-y-4">

@@ -26,7 +26,7 @@ const NEWS_ARTICLES = [
     category: 'YouTube & Animación',
     date: '28 de Mayo, 2026',
     excerpt: 'Estrenamos videoclip en el canal oficial de YouTube con música original para bailar y cantar en familia. ¡No te pierdas los pasos de Pompón!',
-    image: 'https://images.unsplash.com/photo-1511497584788-87676104235f?w=800&auto=format&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&auto=format&fit=crop&q=80',
     badgeColor: 'bg-red-500/20 text-red-300 border-red-500/30',
   },
   {

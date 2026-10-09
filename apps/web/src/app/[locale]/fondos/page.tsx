@@ -41,7 +41,7 @@ export default async function FondosPage({
         </p>
       </div>
 
-      <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} />
+      <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} hideHeader={true} />
     </div>
   );
 }

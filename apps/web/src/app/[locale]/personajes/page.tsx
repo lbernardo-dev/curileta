@@ -55,7 +55,7 @@ export default async function CharactersPage({
       </div>
 
       {/* Hub Interactivo 3D con filtrado y pasaporte */}
-      <CharacterHubScene locale={locale as Locale} characters={characters} />
+      <CharacterHubScene locale={locale as Locale} characters={characters} hideHeader={true} />
 
       {/* Directorio de enlaces directos a cada ficha individual */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-12 border-t border-slate-200 dark:border-slate-900">

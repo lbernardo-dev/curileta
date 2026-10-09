@@ -22,6 +22,7 @@ import {
 interface YouTubeSceneProps {
   locale: Locale;
   videos?: Video[];
+  hideHeader?: boolean;
 }
 
 const DEFAULT_VIDEOS: Video[] = [
@@ -34,7 +35,7 @@ const DEFAULT_VIDEOS: Video[] = [
     },
     slug: 'capitulo-01-arbol-mas-alto',
     youtubeId: 'dQw4w9WgXcQ',
-    thumbnail: 'https://images.unsplash.com/photo-1511497584788-87676104235f?w=800&auto=format&fit=crop&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&auto=format&fit=crop&q=80',
     type: 'episode',
     episodeNumber: 1,
     duration: '09:24',
@@ -204,7 +205,7 @@ const DEFAULT_VIDEOS: Video[] = [
     },
     slug: 'short-el-emu-y-el-sombrero',
     youtubeId: 'dQw4w9WgXcQ',
-    thumbnail: 'https://images.unsplash.com/photo-1550935515-fdfd4107662c?w=600&auto=format&fit=crop&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&auto=format&fit=crop&q=80',
     type: 'short',
     duration: '00:32',
     publishedAt: '2026-09-20',
@@ -216,7 +217,11 @@ const DEFAULT_VIDEOS: Video[] = [
   },
 ];
 
-export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: propVideos = [] }) => {
+export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
+  locale,
+  videos: propVideos = [],
+  hideHeader = false,
+}) => {
   const allVideos = propVideos && propVideos.length > 0 ? propVideos : DEFAULT_VIDEOS;
   const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'song' | 'short'>('todos');
   const [activeModalVideo, setActiveModalVideo] = useState<Video | null>(null);
@@ -242,23 +247,25 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera de la sección */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/40 text-red-800 dark:text-red-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Youtube className="w-4 h-4 text-red-600 dark:text-red-500" />
-            <span>Escena 05 — El Canal Oficial de YouTube</span>
+        {!hideHeader && (
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/40 text-red-800 dark:text-red-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
+              <Youtube className="w-4 h-4 text-red-600 dark:text-red-500" />
+              <span>Escena 05 — El Canal Oficial de YouTube</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+              La página se mueve.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-600 to-rose-600 dark:from-red-400 dark:via-amber-300 dark:to-rose-400">
+                Las historias cantan y cobran vida.
+              </span>
+            </h2>
+
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+              Descubre nuestro universo audiovisual en tres formatos pensados para disfrutar en familia: capítulos completos de la serie animada, canciones y videoclips oficiales, y divertidos micro-momentos en YouTube Shorts.
+            </p>
           </div>
-
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            La página se mueve.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-600 to-rose-600 dark:from-red-400 dark:via-amber-300 dark:to-rose-400">
-              Las historias cantan y cobran vida.
-            </span>
-          </h2>
-
-          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Descubre nuestro universo audiovisual en tres formatos pensados para disfrutar en familia: capítulos completos de la serie animada, canciones y videoclips oficiales, y divertidos micro-momentos en YouTube Shorts.
-          </p>
-        </div>
+        )}
 
         {/* Pestañas de filtrado de formatos */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 mb-12">

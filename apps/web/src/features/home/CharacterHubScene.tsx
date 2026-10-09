@@ -27,6 +27,7 @@ import {
 interface CharacterHubSceneProps {
   locale: Locale;
   characters?: Character[];
+  hideHeader?: boolean;
 }
 
 interface CharacterTheme {
@@ -379,7 +380,7 @@ const TiltCharacterCard: React.FC<{
         </div>
 
         {/* Retrato 3D con halo cromático */}
-        <div className="relative w-28 h-28 mx-auto my-2 group-hover:scale-105 transition-transform duration-500">
+        <div className="relative w-32 h-32 mx-auto my-2 group-hover:scale-105 transition-transform duration-500">
           <div className={`w-full h-full rounded-2xl bg-gradient-to-tr ${theme.gradient} p-1 shadow-lg`}>
             <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-950 relative">
               <CharacterAvatar
@@ -408,7 +409,7 @@ const TiltCharacterCard: React.FC<{
           <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-amber-500 dark:group-hover:text-amber-300 transition-colors">
             {character.name}
           </h3>
-          <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wide line-clamp-1">
+          <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wide line-clamp-2 min-h-[2.2rem] flex items-center justify-center">
             {roleText}
           </p>
         </div>
@@ -473,6 +474,7 @@ const TiltCharacterCard: React.FC<{
 export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   locale,
   characters: initialCharacters = [],
+  hideHeader = false,
 }) => {
   const charactersList =
     initialCharacters && initialCharacters.length > 0 ? initialCharacters : INITIAL_CHARACTERS;
@@ -534,21 +536,23 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            <span>Escena 03 — El Espacio de los Personajes</span>
+        {!hideHeader && (
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
+              <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+              <span>Escena 03 — El Espacio de los Personajes</span>
+            </div>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+              La Alianza de los<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
+                19 Grandes Exploradores.
+              </span>
+            </h2>
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+              Mueve el cursor sobre las fichas 3D para sentir el relieve de su pasaporte oficial. Cada personaje posee habilidades únicas indispensables para descifrar los enigmas del mundo. Haz clic en la lupa para ampliar su diseño 3D en alta definición.
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            La Alianza de los<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
-              19 Grandes Exploradores.
-            </span>
-          </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Mueve el cursor sobre las fichas 3D para sentir el relieve de su pasaporte oficial. Cada personaje posee habilidades únicas indispensables para descifrar los enigmas del mundo. Haz clic en la lupa para ampliar su diseño 3D en alta definición.
-          </p>
-        </div>
+        )}
 
         {/* Filtros por Región / Categoría */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-10">

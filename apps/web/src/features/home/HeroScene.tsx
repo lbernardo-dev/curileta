@@ -37,19 +37,21 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
           Curileta abre su mapa mágico. El viento susurra nuevos destinos y la mayor aventura de tu vida está a un scroll de distancia.
         </p>
 
-        {/* Interactive Curileta Emblem / Hero Figure preview */}
+        {/* Interactive Curileta 3D Hero Character */}
         <div className="relative my-8 group cursor-pointer">
-          <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-gradient-to-tr from-emerald-600 via-amber-400 to-emerald-300 p-1 shadow-2xl shadow-emerald-500/30 group-hover:scale-105 transition-all duration-500">
-            <div className="w-full h-full rounded-full bg-emerald-950 flex flex-col items-center justify-center p-4 border border-emerald-400/30 relative overflow-hidden">
-              <Compass className="w-20 h-20 text-emerald-400 group-hover:rotate-90 transition-transform duration-700" />
-              <span className="text-xs font-black uppercase tracking-widest text-amber-300 mt-2">
-                Mapa en Mano
-              </span>
-              <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative w-52 h-52 sm:w-64 sm:h-64 rounded-full bg-gradient-to-tr from-emerald-500 via-amber-400 to-teal-300 p-1.5 shadow-2xl shadow-emerald-500/40 group-hover:scale-105 transition-all duration-500">
+            <div className="w-full h-full rounded-full bg-gradient-to-b from-emerald-900 to-slate-950 flex flex-col items-center justify-end p-2 border border-emerald-400/40 relative overflow-hidden">
+              <img
+                src="/images/characters/curileta-main.webp"
+                alt="Curileta la Lagartija Exploradora"
+                className="w-44 h-44 sm:w-56 sm:h-56 object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-emerald-500/10 pointer-events-none" />
             </div>
           </div>
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-amber-400 text-emerald-950 text-xs font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap">
-            ¡Hola, soy Curileta! 👋
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-300 text-emerald-950 text-xs sm:text-sm font-black px-5 py-1.5 rounded-full shadow-lg shadow-amber-500/30 whitespace-nowrap border border-amber-200 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-900" />
+            <span>¡Hola, soy Curileta! 👋</span>
           </div>
         </div>
 
