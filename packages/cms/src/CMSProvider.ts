@@ -9,6 +9,7 @@ import {
   NarrativeMilestone,
   MentionedCuriosity,
   Wallpaper,
+  SeasonalEvent,
 } from './models';
 
 /**
@@ -28,4 +29,6 @@ export interface CMSProvider {
   getNarrativeMilestones(locale?: string): Promise<NarrativeMilestone[]>;
   getMentionedCuriosities(locale?: string): Promise<MentionedCuriosity[]>;
   getWallpapers(locale?: string): Promise<Wallpaper[]>;
+  getActiveEvent(locale?: string): Promise<SeasonalEvent | null>;
+  getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]>;
 }

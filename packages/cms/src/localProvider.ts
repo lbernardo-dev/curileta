@@ -10,6 +10,7 @@ import {
   NarrativeMilestone,
   MentionedCuriosity,
   Wallpaper,
+  SeasonalEvent,
 } from './models';
 
 export const INITIAL_CHARACTERS: Character[] = [
@@ -2594,6 +2595,77 @@ export const INITIAL_WALLPAPERS: Wallpaper[] = [
   },
 ];
 
+export const INITIAL_SEASONAL_EVENTS: SeasonalEvent[] = [
+  {
+    id: 'halloween-2026',
+    slug: 'especial-halloween-calabazas-encantadas',
+    name: {
+      es: 'Especial de Halloween: El Huerto de Calabazas Encantadas',
+      en: 'Halloween Special: The Enchanted Pumpkin Patch',
+    },
+    tagline: {
+      es: '¡Una noche mágica de luces, linternas y misterios amistosos en el Bosque!',
+      en: 'A magical night of lanterns, friendly mysteries, and enchanted autumn fun!',
+    },
+    themeKey: 'halloween',
+    active: true,
+    startDate: '2026-10-15T00:00:00Z',
+    endDate: '2026-11-05T23:59:59Z',
+    bannerImage: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1600&auto=format&fit=crop&q=80',
+    ambientDecorations: {
+      glowColor: 'rgba(249, 115, 22, 0.45)',
+      accentColor: '#f97316',
+      floatingEmojis: ['🎃', '✨', '🦇', '🍂', '🕯️', '🌙', '🧙‍♀️', '🍬'],
+    },
+    specialChapter: {
+      id: 'capitulo-halloween-01',
+      title: {
+        es: 'Capítulo Especial: La Noche de las Calabazas Brillantes',
+        en: 'Special Episode: Night of the Glowing Pumpkins',
+      },
+      synopsis: {
+        es: 'Curileta y Pompón encuentran un sendero de hojas doradas que conduce al claro oculto del Bosque. Allí, las calabazas sabias no asustan: ¡iluminan el camino de las luciérnagas y guardan adivinanzas ancestrales!',
+        en: 'Curileta and Pompón follow a golden leaf trail to the hidden forest clearing, discovering wise pumpkins that light up the night for friendly fireflies.',
+      },
+      releaseDate: '2026-10-31',
+      status: 'coming_soon',
+      badgeText: {
+        es: '🎃 PRÓXIMAMENTE • ESTRENO 31 DE OCTUBRE',
+        en: '🎃 COMING SOON • PREMIERE OCTOBER 31',
+      },
+      thumbnail: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=800&auto=format&fit=crop&q=80',
+      youtubeId: 'dQw4w9WgXcQ',
+    },
+    featuredWallpapers: ['wp-mob-01', 'wp-dsk-01'],
+    activities: [
+      {
+        title: {
+          es: 'Máscara Imprimible de Curileta Hechicera',
+          en: 'Printable Curileta Sorceress Mask',
+        },
+        description: {
+          es: 'Descarga en PDF de alta resolución, colorea y recorta tu máscara para la noche de Halloween.',
+          en: 'High-res PDF download: color and cut your mask for Halloween night.',
+        },
+        icon: '🎭',
+        status: 'coming_soon',
+      },
+      {
+        title: {
+          es: 'Receta Secreta: Galletas de Calabaza de Pompón',
+          en: 'Secret Recipe: Pompón’s Pumpkin Cookies',
+        },
+        description: {
+          es: 'Una receta deliciosa y segura para cocinar en familia con canela y calabaza asada.',
+          en: 'A delicious, child-safe family recipe with roasted pumpkin and sweet cinnamon.',
+        },
+        icon: '🍪',
+        status: 'coming_soon',
+      },
+    ],
+  },
+];
+
 export class LocalCMSProvider implements CMSProvider {
   async getCharacters(locale?: string): Promise<Character[]> {
     return INITIAL_CHARACTERS;
@@ -2644,6 +2716,14 @@ async getVideos(locale?: string): Promise<Video[]> {
 
   async getWallpapers(locale?: string): Promise<Wallpaper[]> {
     return INITIAL_WALLPAPERS;
+  }
+
+  async getActiveEvent(locale?: string): Promise<SeasonalEvent | null> {
+    return INITIAL_SEASONAL_EVENTS.find((e) => e.active) || null;
+  }
+
+  async getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]> {
+    return INITIAL_SEASONAL_EVENTS;
   }
 }
 

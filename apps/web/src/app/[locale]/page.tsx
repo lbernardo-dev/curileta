@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { HeroScene } from '@/features/home/HeroScene';
+import { HalloweenEventSection } from '@/features/events/HalloweenEventSection';
 import { Globe3DScene } from '@/features/home/Globe3DScene';
+import { AdventureRadar } from '@/features/home/AdventureRadar';
 import { LettersScene } from '@/features/home/LettersScene';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
@@ -65,13 +67,14 @@ export default async function HomePage({
   }
 
   // Carga de datos dinámicos gestionables desde Backend / CMS
-  const [locations, characters, waypoints, milestones, videos, wallpapers] = await Promise.all([
+  const [locations, characters, waypoints, milestones, videos, wallpapers, activeEvent] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
     cmsProvider.getTrailWaypoints(locale),
     cmsProvider.getNarrativeMilestones(locale),
     cmsProvider.getVideos(locale),
     cmsProvider.getWallpapers(locale),
+    cmsProvider.getActiveEvent(locale),
   ]);
 
   return (
@@ -82,8 +85,14 @@ export default async function HomePage({
       {/* Escena 01 — Hero: Bosque Encantado y Curileta */}
       <HeroScene locale={locale as Locale} />
 
+      {/* Evento Estacional Activo: Especial de Halloween (Con cuenta regresiva y badges Próximamente) */}
+      <HalloweenEventSection locale={locale as Locale} event={activeEvent} />
+
       {/* Escena 02 — Globo Terráqueo 3D Interactivo con Three.js */}
       <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />
+
+      {/* Radar de Aventuras: Detección de localización del usuario y recomendaciones de proximidad */}
+      <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />
 
       {/* Escena 02.5 — El Baúl Postal: Cartas a Pompón con Matasellos y Polaroids */}
       <LettersScene locale={locale as Locale} />
@@ -111,3 +120,4 @@ export default async function HomePage({
     </article>
   );
 }
+

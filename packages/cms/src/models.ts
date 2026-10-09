@@ -176,3 +176,36 @@ export interface Wallpaper {
   fileSizeBytes?: string;
 }
 
+export interface SeasonalEvent {
+  id: string;
+  slug: string;
+  name: LocalizedString;
+  tagline: LocalizedString;
+  themeKey: 'halloween' | 'christmas' | 'spring' | 'summer';
+  active: boolean;
+  startDate: string;
+  endDate: string;
+  bannerImage: string;
+  ambientDecorations: {
+    glowColor: string;
+    accentColor: string;
+    floatingEmojis: string[];
+  };
+  specialChapter: {
+    id: string;
+    title: LocalizedString;
+    synopsis: LocalizedString;
+    releaseDate: string;
+    status: 'coming_soon' | 'published';
+    badgeText: LocalizedString;
+    thumbnail: string;
+    youtubeId?: string;
+  };
+  featuredWallpapers?: string[];
+  activities?: Array<{
+    title: LocalizedString;
+    description: LocalizedString;
+    icon: string;
+    status: 'coming_soon' | 'published';
+  }>;
+}
