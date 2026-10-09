@@ -101,7 +101,10 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   };
 
   return (
-    <section className="relative z-10 min-h-[92vh] flex flex-col items-center justify-center overflow-hidden py-10 px-4 sm:px-6 lg:px-8 text-slate-900 dark:text-white transition-colors duration-500">
+    <section
+      id="hero-scene"
+      className="relative z-10 min-h-[92vh] flex flex-col items-center justify-center overflow-hidden py-10 px-4 sm:px-6 lg:px-8 text-slate-900 dark:text-white transition-colors duration-500"
+    >
       {/* ============================================================
           FONDO Y AMBIENTACIÓN CINEMÁTICA CON PROFUNDIDAD
           ============================================================ */}

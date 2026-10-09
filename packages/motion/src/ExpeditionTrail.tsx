@@ -2,12 +2,29 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Tent,
+  Ghost,
+  Globe2,
+  Radar,
+  Mail,
+  Users,
+  BookOpen,
+  Clapperboard,
+  Image,
+  Trophy,
   Compass,
   Navigation,
+  Sun,
+  Mountain,
+  Snowflake,
+  Anchor,
+  Bot,
+  Footprints,
+  Shield,
+  Heart,
+  UtensilsCrossed,
+  Palette,
   Sparkles,
-  BookOpen,
-  Radio,
-  Award,
   X,
   MapPin,
   ChevronDown,
@@ -16,6 +33,82 @@ import {
   Flag,
 } from 'lucide-react';
 import { TrailWaypoint } from '@curileta/cms';
+
+/**
+ * Mapeo temático exhaustivo de iconos representativos de cada capítulo y hito.
+ * Evita iconos genéricos y asocia a cada capítulo de aventura un icono único y distintivo.
+ */
+export const getChapterIcon = (iconName: string, className = 'w-4 h-4') => {
+  switch (iconName) {
+    case 'Tent':
+    case 'Camp':
+      return <Tent className={className} />;
+    case 'Ghost':
+    case 'Pumpkin':
+    case 'Halloween':
+      return <Ghost className={className} />;
+    case 'Globe2':
+    case 'Globe':
+    case 'Earth':
+      return <Globe2 className={className} />;
+    case 'Radar':
+    case 'Gps':
+      return <Radar className={className} />;
+    case 'Mail':
+    case 'Letter':
+    case 'Post':
+      return <Mail className={className} />;
+    case 'Users':
+    case 'Crew':
+    case 'Friends':
+      return <Users className={className} />;
+    case 'BookOpen':
+    case 'Book':
+      return <BookOpen className={className} />;
+    case 'Clapperboard':
+    case 'Cinema':
+    case 'Video':
+    case 'Tv':
+    case 'Radio':
+      return <Clapperboard className={className} />;
+    case 'Image':
+    case 'Wallpaper':
+    case 'Photo':
+      return <Image className={className} />;
+    case 'Trophy':
+    case 'Treasure':
+    case 'Award':
+      return <Trophy className={className} />;
+    case 'Compass':
+      return <Compass className={className} />;
+    case 'Navigation':
+      return <Navigation className={className} />;
+    case 'Sun':
+      return <Sun className={className} />;
+    case 'Mountain':
+      return <Mountain className={className} />;
+    case 'Snowflake':
+      return <Snowflake className={className} />;
+    case 'Anchor':
+      return <Anchor className={className} />;
+    case 'Bot':
+      return <Bot className={className} />;
+    case 'Footprints':
+      return <Footprints className={className} />;
+    case 'Shield':
+      return <Shield className={className} />;
+    case 'Heart':
+      return <Heart className={className} />;
+    case 'UtensilsCrossed':
+      return <UtensilsCrossed className={className} />;
+    case 'Palette':
+      return <Palette className={className} />;
+    case 'Sparkles':
+      return <Sparkles className={className} />;
+    default:
+      return <Compass className={className} />;
+  }
+};
 
 export interface AdventureTrailConnectorProps {
   stepNumber: number;
@@ -38,6 +131,115 @@ export interface TreasureDestinationMarkProps {
   className?: string;
 }
 
+export interface ChapterRailItem {
+  id: string;
+  targetId: string;
+  stepNumber: number;
+  title: { es: string; en: string };
+  subtitle: { es: string; en: string };
+  iconName: string;
+  themeColor: string;
+}
+
+export const HOME_CHAPTER_RAIL_ITEMS: ChapterRailItem[] = [
+  {
+    id: 'hero-scene',
+    targetId: '#hero-scene',
+    stepNumber: 1,
+    title: { es: 'Campamento Base', en: 'Base Camp' },
+    subtitle: { es: 'El Bosque Encantado', en: 'The Enchanted Forest' },
+    iconName: 'Tent',
+    themeColor: '#10B981',
+  },
+  {
+    id: 'evento-halloween',
+    targetId: '#evento-halloween',
+    stepNumber: 2,
+    title: { es: 'Huerto de Calabazas', en: 'Pumpkin Orchard' },
+    subtitle: { es: 'Especial de Halloween 🎃', en: 'Halloween Special 🎃' },
+    iconName: 'Ghost',
+    themeColor: '#F97316',
+  },
+  {
+    id: 'escena-mapa',
+    targetId: '#escena-mapa',
+    stepNumber: 3,
+    title: { es: 'Globo Aerostático 3D', en: '3D Hot Air Balloon' },
+    subtitle: { es: 'Cartografía de 40 Culturas', en: '40 Cultures Cartography' },
+    iconName: 'Globe2',
+    themeColor: '#0EA5E9',
+  },
+  {
+    id: 'radar-curileta',
+    targetId: '#radar-curileta',
+    stepNumber: 4,
+    title: { es: 'Radar GPS de Aventuras', en: 'GPS Adventure Radar' },
+    subtitle: { es: 'Sonda y Rastreos Cercanos', en: 'Atmospheric Tracking' },
+    iconName: 'Radar',
+    themeColor: '#06B6D4',
+  },
+  {
+    id: 'escena-cartas',
+    targetId: '#escena-cartas',
+    stepNumber: 5,
+    title: { es: 'El Baúl Postal de Pompón', en: "Pompón's Mail Chest" },
+    subtitle: { es: 'Cartas, Matasellos & Polaroids', en: 'Letters, Postmarks & Polaroids' },
+    iconName: 'Mail',
+    themeColor: '#F43F5E',
+  },
+  {
+    id: 'escena-personajes',
+    targetId: '#escena-personajes',
+    stepNumber: 6,
+    title: { es: 'La Tripulación (19 Amigos)', en: 'The Crew (19 Friends)' },
+    subtitle: { es: 'Campamento de Amistad', en: 'Friendship Camp' },
+    iconName: 'Users',
+    themeColor: '#8B5CF6',
+  },
+  {
+    id: 'escena-libros',
+    targetId: '#escena-libros',
+    stepNumber: 7,
+    title: { es: 'Bóveda de Libros Ilustrados', en: 'Illustrated Books Vault' },
+    subtitle: { es: 'Historias Físicas 3D & Secretos', en: 'Physical 3D Books & Secrets' },
+    iconName: 'BookOpen',
+    themeColor: '#EC4899',
+  },
+  {
+    id: 'escena-youtube',
+    targetId: '#escena-youtube',
+    stepNumber: 8,
+    title: { es: 'Estación de Transmisión', en: 'Broadcast Station' },
+    subtitle: { es: 'Cine, Canciones & YouTube', en: 'Cinema, Songs & YouTube' },
+    iconName: 'Clapperboard',
+    themeColor: '#EF4444',
+  },
+  {
+    id: 'galeria-fondos',
+    targetId: '#galeria-fondos',
+    stepNumber: 9,
+    title: { es: 'Mirador de Recuerdos 2K', en: '2K Memory Viewpoint' },
+    subtitle: { es: 'Fondos de Pantalla & Postales', en: 'Wallpapers & Postcards' },
+    iconName: 'Image',
+    themeColor: '#A855F7',
+  },
+  {
+    id: 'cierre-expedicion',
+    targetId: '#meta-gran-tesoro',
+    stepNumber: 10,
+    title: { es: 'La Gran X del Tesoro', en: 'The Big Treasure X' },
+    subtitle: { es: 'Meta Oficial de la Expedición', en: 'Official Expedition Goal' },
+    iconName: 'Trophy',
+    themeColor: '#FBBF24',
+  },
+];
+
+export interface LateralChapterRailProps {
+  items?: ChapterRailItem[];
+  locale?: string;
+  className?: string;
+}
+
 export interface ExpeditionTrailProps {
   waypoints?: TrailWaypoint[];
   locale?: string;
@@ -52,7 +254,7 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'El Bosque Encantado', en: 'The Enchanted Forest' },
     stampCode: 'CAMP-BASE-001',
     coordinatesText: "19°25'N, 99°08'W",
-    badgeIcon: 'Compass',
+    badgeIcon: 'Tent',
     dateStamp: '01 OCT — INICIO',
     note: {
       es: 'Curileta despliega el mapa y enciende la brújula solar en el claro del bosque.',
@@ -67,13 +269,13 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Cartografía Orbital 3D', en: '3D Orbital Cartography' },
     stampCode: 'AERO-CART-002',
     coordinatesText: 'Alt. 3.200m | Sonda Viento',
-    badgeIcon: 'Navigation',
+    badgeIcon: 'Globe2',
     dateStamp: '03 OCT — VUELO',
     note: {
       es: 'El globo asciende sobre las nubes para trazar las rutas de 40 culturas en 3D.',
       en: 'The balloon ascends above clouds to chart 40 world cultures in 3D.',
     },
-    color: '#F59E0B',
+    color: '#0EA5E9',
   },
   {
     id: 'radar-aventuras',
@@ -82,7 +284,7 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Detección de Coordenadas Cercanas', en: 'Nearby Coordinates Detection' },
     stampCode: 'RADAR-GPS-003',
     coordinatesText: 'Sonda Atmosférica • Proximidad',
-    badgeIcon: 'Compass',
+    badgeIcon: 'Radar',
     dateStamp: '05 OCT — RASTREO',
     note: {
       es: 'El radar sintoniza las historias más cercanas a la posición de la familia exploradora.',
@@ -97,7 +299,7 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Cartas, Matasellos & Polaroids', en: 'Letters, Postmarks & Polaroids' },
     stampCode: 'POST-POMP-004',
     coordinatesText: 'Buzón del Bosque • Matasellos',
-    badgeIcon: 'Sparkles',
+    badgeIcon: 'Mail',
     dateStamp: '07 OCT — CORRESPONDENCIA',
     note: {
       es: 'Pompón clasifica cartas selladas con cera y polaroids de amigos de los 5 continentes.',
@@ -112,13 +314,13 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Encuentro con los 19 Personajes', en: 'Meeting with the 19 Characters' },
     stampCode: 'CREW-AMIG-005',
     coordinatesText: 'Valle de la Buena Amistad',
-    badgeIcon: 'Sparkles',
+    badgeIcon: 'Users',
     dateStamp: '10 OCT — ALIANZA',
     note: {
       es: 'Cada compañero aporta un don indispensable: prudencia, vuelo, destreza marina y música.',
       en: 'Each companion brings an essential gift: prudence, flight, marine skill, and song.',
     },
-    color: '#38BDF8',
+    color: '#8B5CF6',
   },
   {
     id: 'biblioteca-relatos',
@@ -142,7 +344,7 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Frecuencia YouTube & Música', en: 'YouTube Frequency & Music' },
     stampCode: 'WAVE-CURI-007',
     coordinatesText: 'Onda Corta 104.7 MHz',
-    badgeIcon: 'Radio',
+    badgeIcon: 'Clapperboard',
     dateStamp: '18 OCT — AL AIRE',
     note: {
       es: 'Canciones y capítulos animados transmitidos para toda la comunidad exploradora.',
@@ -157,13 +359,13 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Fondos de Pantalla para Dispositivos', en: 'Device Wallpapers' },
     stampCode: 'WALL-MEM-008',
     coordinatesText: 'Cumbre de las Postales 2K',
-    badgeIcon: 'Sparkles',
+    badgeIcon: 'Image',
     dateStamp: '22 OCT — GALERÍA',
     note: {
       es: 'Postales panorámicas descargables en alta resolución para llevar la aventura siempre contigo.',
       en: 'Downloadable panoramic high-resolution postcards to carry the adventure anywhere.',
     },
-    color: '#8B5CF6',
+    color: '#A855F7',
   },
   {
     id: 'pasaporte-dorado',
@@ -172,7 +374,7 @@ const DEFAULT_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Pasaporte de Explorador Oficial', en: 'Official Explorer Passport' },
     stampCode: 'EXP-GOLD-999',
     coordinatesText: 'Destino: Horizonte Abierto',
-    badgeIcon: 'Award',
+    badgeIcon: 'Trophy',
     dateStamp: 'EXPEDICIÓN COMPLETA',
     note: {
       es: 'El verdadero tesoro no es el oro, sino la amistad forjada en cada frontera recorrida.',
@@ -472,7 +674,183 @@ export const TreasureDestinationMark: React.FC<TreasureDestinationMarkProps> = (
 
 /**
  * ============================================================================
- * 3. EXPEDITION COMPASS HUD (ROSA DE LOS VIENTOS FLOTANTE & PASAPORTE)
+ * 3. LATERAL CHAPTER RAIL (MARCADORES LATERALES DE LOS CAPÍTULOS DE AVENTURA)
+ * ============================================================================
+ * Carril de navegación flotante en el lateral derecho de la pantalla con iconos
+ * distintivos y temáticos para cada capítulo del viaje.
+ * Permite salto suave a cada hito, seguimiento en tiempo real del scroll y
+ * tooltips cartográficos descriptivos.
+ */
+export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
+  items = HOME_CHAPTER_RAIL_ITEMS,
+  locale = 'es',
+  className = '',
+}) => {
+  const [mountedItems, setMountedItems] = useState<ChapterRailItem[]>(items);
+  const [activeSectionId, setActiveSectionId] = useState<string>('');
+  const isEn = locale === 'en';
+
+  // Solo mostrar hitos que existen en el DOM (ej. evento de Halloween si está activo)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const filterExisting = () => {
+      const activeInDom = items.filter((item) => {
+        const el = document.querySelector(item.targetId) || document.getElementById(item.id);
+        return !!el;
+      });
+      if (activeInDom.length > 0) {
+        setMountedItems(activeInDom);
+      }
+    };
+    filterExisting();
+    const timer = setTimeout(filterExisting, 600);
+    return () => clearTimeout(timer);
+  }, [items]);
+
+  // Rastrear la sección activa al hacer scroll por el documento
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + window.innerHeight * 0.35;
+      let currentId = '';
+
+      for (let i = 0; i < mountedItems.length; i++) {
+        const item = mountedItems[i];
+        const el = document.querySelector(item.targetId) || document.getElementById(item.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const elementTop = rect.top + window.scrollY;
+          if (scrollPos >= elementTop - 120) {
+            currentId = item.id;
+          }
+        }
+      }
+
+      if (currentId) {
+        setActiveSectionId(currentId);
+      } else if (mountedItems.length > 0) {
+        setActiveSectionId(mountedItems[0].id);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [mountedItems]);
+
+  const handleScrollTo = (targetId: string, id: string) => {
+    const el = document.querySelector(targetId) || document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  if (mountedItems.length === 0) return null;
+
+  return (
+    <aside
+      className={`fixed right-3 lg:right-5 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center pointer-events-auto select-none ${className}`}
+      aria-label={isEn ? 'Expedition Chapter Markers' : 'Marcadores laterales de los capítulos'}
+    >
+      <nav
+        className="relative flex flex-col items-center gap-2 p-2 rounded-full bg-slate-950/90 border-2 border-amber-400/40 shadow-[0_12px_40px_rgba(0,0,0,0.75)] backdrop-blur-xl"
+        role="navigation"
+      >
+        {/* Hilo de sendero vertical discontinuo que une los marcadores de los capítulos */}
+        <div
+          className="absolute top-5 bottom-5 left-1/2 -translate-x-1/2 w-0.5 border-l-2 border-dashed border-amber-400/30 pointer-events-none -z-0"
+          aria-hidden="true"
+        />
+
+        {mountedItems.map((item) => {
+          const isActive = activeSectionId === item.id;
+          const title = item.title[locale as 'es' | 'en'] || item.title.es;
+          const subtitle = item.subtitle[locale as 'es' | 'en'] || item.subtitle.es;
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleScrollTo(item.targetId, item.id)}
+              className="group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 z-10 cursor-pointer"
+              style={{
+                backgroundColor: isActive ? item.themeColor : '#0f172a',
+                color: isActive ? '#020617' : '#e2e8f0',
+                border: isActive
+                  ? `2.5px solid #fef08a`
+                  : `1.5px solid ${item.themeColor}55`,
+                boxShadow: isActive
+                  ? `0 0 18px ${item.themeColor}aa, 0 0 30px ${item.themeColor}55`
+                  : '0 2px 8px rgba(0,0,0,0.4)',
+                transform: isActive ? 'scale(1.15)' : 'scale(1)',
+              }}
+              aria-label={`${title} (${subtitle})`}
+              aria-current={isActive ? 'true' : undefined}
+            >
+              {/* Icono temático representativo de cada capítulo */}
+              <div className="transition-transform duration-300 group-hover:scale-115">
+                {getChapterIcon(
+                  item.iconName,
+                  isActive
+                    ? 'w-5 h-5 text-slate-950 stroke-[2.5]'
+                    : 'w-4 h-4 text-slate-200 group-hover:text-amber-300'
+                )}
+              </div>
+
+              {/* Indicador de pulso activo */}
+              {isActive && (
+                <span
+                  className="absolute -inset-1 rounded-full animate-ping opacity-30 pointer-events-none"
+                  style={{ backgroundColor: item.themeColor }}
+                  aria-hidden="true"
+                />
+              )}
+
+              {/* Tooltip interactivo deslizante hacia la izquierda con título e icono temático */}
+              <div
+                className="absolute right-13 sm:right-15 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200 pointer-events-none z-50 flex items-center shadow-2xl"
+                role="tooltip"
+              >
+                <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-slate-950/95 border-2 border-amber-400/60 backdrop-blur-xl text-left whitespace-nowrap shadow-[0_8px_30px_rgba(0,0,0,0.85)]">
+                  {/* Badge con el número de capítulo */}
+                  <div
+                    className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-black shadow-md flex-shrink-0"
+                    style={{ backgroundColor: item.themeColor, color: '#020617' }}
+                  >
+                    {item.stepNumber}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
+                        {isEn ? `CH. ${item.stepNumber}` : `CAP. ${item.stepNumber}`}
+                      </span>
+                      <span className="text-xs font-black text-white">
+                        {title}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 block font-medium">
+                      {subtitle}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Flechita apuntando al marcador */}
+                <div
+                  className="w-2.5 h-2.5 bg-slate-950 border-r-2 border-t-2 border-amber-400/60 rotate-45 -ml-1 flex-shrink-0"
+                  aria-hidden="true"
+                />
+              </div>
+            </button>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+};
+
+/**
+ * ============================================================================
+ * 4. EXPEDITION COMPASS HUD (ROSA DE LOS VIENTOS FLOTANTE & PASAPORTE)
  * ============================================================================
  * Icono de brújula de bronce y oro en la esquina inferior derecha.
  * Permite ver el itinerario completo de la expedición y saltar a cualquier hito.
@@ -485,24 +863,6 @@ export const ExpeditionCompassHUD: React.FC<{
   const [activeWaypoint, setActiveWaypoint] = useState<TrailWaypoint | null>(null);
   const [isCompassMenuOpen, setIsCompassMenuOpen] = useState(false);
   const isEn = locale === 'en';
-
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Compass':
-        return <Compass className="w-4 h-4" />;
-      case 'Navigation':
-        return <Navigation className="w-4 h-4" />;
-      case 'Sparkles':
-        return <Sparkles className="w-4 h-4" />;
-      case 'BookOpen':
-        return <BookOpen className="w-4 h-4" />;
-      case 'Radio':
-        return <Radio className="w-4 h-4" />;
-      case 'Award':
-      default:
-        return <Award className="w-4 h-4" />;
-    }
-  };
 
   return (
     <>
@@ -534,13 +894,13 @@ export const ExpeditionCompassHUD: React.FC<{
                     setActiveWaypoint(wp);
                     setIsCompassMenuOpen(false);
                   }}
-                  className="flex items-center gap-3 p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all hover:scale-102 group"
+                  className="flex items-center gap-3 p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all hover:scale-102 group cursor-pointer"
                 >
                   <div
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shadow-md flex-shrink-0"
                     style={{ backgroundColor: wp.color, color: '#020617' }}
                   >
-                    #{wp.stepNumber}
+                    {getChapterIcon(wp.badgeIcon, 'w-3.5 h-3.5 text-slate-950')}
                   </div>
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-black text-slate-100 group-hover:text-amber-300 block truncate transition-colors">
@@ -560,7 +920,7 @@ export const ExpeditionCompassHUD: React.FC<{
         {/* Botón interactivo de la Brújula de Expedición */}
         <button
           onClick={() => setIsCompassMenuOpen(!isCompassMenuOpen)}
-          className="group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-950/90 hover:bg-slate-900 border-2 border-amber-400/70 hover:border-amber-300 text-white shadow-[0_8px_25px_rgba(245,158,11,0.35)] backdrop-blur-xl transition-all hover:scale-105 active:scale-95"
+          className="group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-950/90 hover:bg-slate-900 border-2 border-amber-400/70 hover:border-amber-300 text-white shadow-[0_8px_25px_rgba(245,158,11,0.35)] backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer"
           title={isEn ? 'View adventure map milestones' : 'Ver hitos del mapa de aventuras'}
           aria-label={isEn ? 'View adventure map milestones' : 'Ver hitos del mapa de aventuras'}
         >
@@ -588,7 +948,7 @@ export const ExpeditionCompassHUD: React.FC<{
           <div className="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-950 to-emerald-950 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-amber-500/20 text-white overflow-hidden">
             <button
               onClick={() => setActiveWaypoint(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
               aria-label="Cerrar ficha de hito"
             >
               <X className="w-5 h-5" />
@@ -599,7 +959,7 @@ export const ExpeditionCompassHUD: React.FC<{
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
                 style={{ backgroundColor: activeWaypoint.color, color: '#020617' }}
               >
-                {getIcon(activeWaypoint.badgeIcon)}
+                {getChapterIcon(activeWaypoint.badgeIcon, 'w-6 h-6 text-slate-950')}
               </div>
               <div>
                 <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-amber-400">
@@ -646,7 +1006,7 @@ export const ExpeditionCompassHUD: React.FC<{
 
 /**
  * ============================================================================
- * 4. ADVENTURE MAP BACKDROP (REGLA DE COORDENADAS CARTOGRÁFICAS EN MÁRGENES)
+ * 5. ADVENTURE MAP BACKDROP (REGLA DE COORDENADAS CARTOGRÁFICAS EN MÁRGENES)
  * ============================================================================
  * Cuadrícula de coordenadas en los laterales exteriores (márgenes),
  * totalmente a nivel z-0 y pointer-events-none.
@@ -684,9 +1044,10 @@ export const AdventureMapBackdrop: React.FC<{ className?: string }> = ({ classNa
 
 /**
  * ============================================================================
- * 5. EXPEDITION TRAIL (COMPONENTE COMPATIBLE CON EL HOME GLOBAL)
+ * 6. EXPEDITION TRAIL (COMPONENTE COMPATIBLE CON EL HOME GLOBAL)
  * ============================================================================
- * Integra la ambientación cartográfica de fondo y el HUD interactivo de brújula.
+ * Integra la ambientación cartográfica de fondo, los marcadores laterales de
+ * los capítulos con iconos temáticos y la Brújula HUD de la expedición.
  */
 export const ExpeditionTrail: React.FC<ExpeditionTrailProps> = ({
   waypoints = DEFAULT_WAYPOINTS,
@@ -696,6 +1057,7 @@ export const ExpeditionTrail: React.FC<ExpeditionTrailProps> = ({
   return (
     <>
       <AdventureMapBackdrop className={className} />
+      <LateralChapterRail locale={locale} />
       <ExpeditionCompassHUD waypoints={waypoints} locale={locale} />
     </>
   );

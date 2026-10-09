@@ -1123,7 +1123,7 @@ export const INITIAL_TRAIL_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'El mundo no cabe en un solo árbol', en: 'The world cannot fit in a single tree' },
     stampCode: 'ESP-DEPART-01',
     coordinatesText: "Bosque Encantado (España)",
-    badgeIcon: 'Compass',
+    badgeIcon: 'Tent',
     dateStamp: 'CAPÍTULO 01',
     note: {
       es: 'Curileta ajusta sus lentes, abraza a Pompón y promete escribirle cartas de cada rincón del mundo.',
@@ -1168,7 +1168,7 @@ export const INITIAL_TRAIL_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Océano Atlántico — Timonel por una noche', en: 'Atlantic Ocean — Helmsman for a night' },
     stampCode: 'ATL-STORM-04',
     coordinatesText: 'Mar Abierto • Tormenta',
-    badgeIcon: 'Navigation',
+    badgeIcon: 'Anchor',
     dateStamp: 'TRAVESÍA MARINA',
     note: {
       es: 'Olas como edificios azotan el barco. Curileta trepa al mástil y amarra el timón para salvar el viaje.',
@@ -1213,7 +1213,7 @@ export const INITIAL_TRAIL_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Japón — Volar en el tiempo', en: 'Japan — Flying through time' },
     stampCode: 'JPN-TOK-07',
     coordinatesText: 'Monte Fuji & Tokio • Lat 35.36°N',
-    badgeIcon: 'Sparkles',
+    badgeIcon: 'Bot',
     dateStamp: 'CARTA 05',
     note: {
       es: 'Curileta ayuda al robot Zipi-Bot a encontrar a su dueño entre sandías cuadradas y cerezos en flor.',
@@ -1228,7 +1228,7 @@ export const INITIAL_TRAIL_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Australia — Saltos de 4 metros en Uluru', en: 'Australia — 4m leaps at Uluru' },
     stampCode: 'AUS-ULU-08',
     coordinatesText: 'Uluru & Hyams • Lat 25.34°S',
-    badgeIcon: 'Award',
+    badgeIcon: 'Footprints',
     dateStamp: 'CARTA 06',
     note: {
       es: 'Curileta rescata el koala de trapo y Mamá Canguro la lleva volando sin alas por la arena más blanca del mundo.',
@@ -1273,7 +1273,7 @@ export const INITIAL_TRAIL_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Italia — Gelato, pasta y góndolas', en: 'Italy — Gelato, pasta & gondolas' },
     stampCode: 'ITA-ROM-11',
     coordinatesText: 'Florencia & Venecia • Lat 41.90°N',
-    badgeIcon: 'Award',
+    badgeIcon: 'UtensilsCrossed',
     dateStamp: 'CARTA 09',
     note: {
       es: 'Gino y Curileta prueban 350 tipos de pasta, sujetan la Torre inclinada y comen gelato de pistacho.',
@@ -1288,7 +1288,7 @@ export const INITIAL_TRAIL_WAYPOINTS: TrailWaypoint[] = [
     subtitle: { es: 'Francia — Baguettes y la Mona Lisa', en: 'France — Baguettes & Mona Lisa' },
     stampCode: 'FRA-PAR-12',
     coordinatesText: 'Torre Eiffel • Lat 48.85°N',
-    badgeIcon: 'Award',
+    badgeIcon: 'Palette',
     dateStamp: 'CARTA 10',
     note: {
       es: 'Curileta escala la Torre Eiffel, prueba un croissant dorado con sabor a nubes y juega al escondite en el Louvre.',
