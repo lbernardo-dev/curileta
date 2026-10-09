@@ -103,18 +103,13 @@ export default function SongsPage({
                 key={song.id}
                 className="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-emerald-500/40 transition-all shadow-xl"
               >
-                {/* Vinyl / Cover simulator */}
+                {/* Vinyl / Cover art */}
                 <div className="flex items-center gap-5 w-full md:w-auto">
                   <div
-                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr ${song.color} p-0.5 shadow-lg shrink-0 flex items-center justify-center cursor-pointer group`}
-                    onClick={() => togglePlay(song.id)}
+                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr ${song.color} p-0.5 shadow-lg shrink-0 flex items-center justify-center`}
                   >
                     <div className="w-full h-full rounded-[14px] bg-slate-950/80 flex items-center justify-center">
-                      {isPlaying ? (
-                        <Pause className="w-8 h-8 text-amber-400 fill-current animate-pulse" />
-                      ) : (
-                        <Play className="w-8 h-8 text-white fill-current ml-1 group-hover:scale-110 transition-transform" />
-                      )}
+                      <Music className="w-7 h-7 text-amber-400" />
                     </div>
                   </div>
 
@@ -125,7 +120,7 @@ export default function SongsPage({
                     <h2 className="text-xl sm:text-2xl font-black text-white mt-0.5">
                       {song.title}
                     </h2>
-                    <p className="text-xs text-slate-400 font-semibold">{song.album} • {song.duration}</p>
+                    <p className="text-xs text-slate-400 font-semibold">{song.album} • En producción</p>
                   </div>
                 </div>
 
@@ -139,13 +134,14 @@ export default function SongsPage({
 
                 {/* Status Indicator */}
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => togglePlay(song.id)}
-                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center gap-2 cursor-pointer shadow-md transition-all"
+                  <a
+                    href="https://www.youtube.com/@curileta?sub_confirmation=1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center gap-2 shadow-md transition-all whitespace-nowrap cursor-pointer hover:scale-105 active:scale-95"
                   >
-                    <Volume2 className="w-4 h-4" />
-                    <span>{isPlaying ? 'Pausar audio' : 'Escuchar muestra'}</span>
-                  </button>
+                    <span>🎵 Estreno en YouTube</span>
+                  </a>
                 </div>
               </div>
             );
