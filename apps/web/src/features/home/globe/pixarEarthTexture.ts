@@ -1,5 +1,6 @@
-// Generator de texturas procedurales para el Globo 3D Estilo Animado Pixar
-// Dibuja los océanos con aguas profundas y costeras turquesas, y los continentes con vegetación, desiertos y montañas.
+// Generador de texturas procedurales para el Globo 3D Estilo Animado Pixar
+// Diseñado con alto contraste, océanos zafiro profundos, plataformas costeras turquesas brillantes,
+// continentes verdes esmeralda vibrantes, playas doradas y regiones desérticas y montañosas perfectamente delimitadas.
 
 export function createPixarEarthCanvas(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
@@ -14,37 +15,42 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
   const toX = (lng: number) => ((lng + 180) / 360) * w;
   const toY = (lat: number) => ((90 - lat) / 180) * h;
 
-  // 1. BASE DE OCÉANOS PROFUNDOS (Gradiente vibrante estilo Pixar)
+  // 1. BASE DE OCÉANOS PROFUNDOS (Gradiente vibrante estilo animación Pixar)
   const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
-  oceanGrad.addColorStop(0, '#0c2461'); // Polo norte azul noche
-  oceanGrad.addColorStop(0.25, '#1e3799'); // Atlántico / Pacífico norte
-  oceanGrad.addColorStop(0.5, '#0984e3'); // Cinturón ecuatorial azul vibrante
-  oceanGrad.addColorStop(0.75, '#1e3799'); // Mares del sur
-  oceanGrad.addColorStop(1, '#0c2461'); // Polo sur antártico
+  oceanGrad.addColorStop(0, '#06193e');    // Polo norte: azul noche ártico
+  oceanGrad.addColorStop(0.2, '#0c2461');  // Atlántico norte profundo
+  oceanGrad.addColorStop(0.5, '#0984e3');  // Cinturón ecuatorial: azul zafiro luminoso
+  oceanGrad.addColorStop(0.8, '#0c2461');  // Mares del sur
+  oceanGrad.addColorStop(1, '#06193e');    // Océano Antártico
   ctx.fillStyle = oceanGrad;
   ctx.fillRect(0, 0, w, h);
 
-  // Efecto de corrientes marinas y textura de agua
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-  ctx.lineWidth = 1.5;
-  for (let lat = -80; lat <= 80; lat += 15) {
+  // Efecto de corrientes marinas y textura de agua animada
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 1.8;
+  for (let lat = -80; lat <= 80; lat += 12) {
     ctx.beginPath();
     const y = toY(lat);
-    for (let x = 0; x <= w; x += 40) {
-      const wave = Math.sin((x / w) * Math.PI * 12 + lat) * 4;
+    for (let x = 0; x <= w; x += 30) {
+      const wave = Math.sin((x / w) * Math.PI * 14 + lat * 0.1) * 5;
       if (x === 0) ctx.moveTo(x, y + wave);
       else ctx.lineTo(x, y + wave);
     }
     ctx.stroke();
   }
+  ctx.restore();
 
   // 2. POLÍGONOS DE LOS CONTINENTES
-  // Definición de masas continentales en coordenadas geográficas [lng, lat]
   const landmasses: Array<{
     name: string;
     points: Array<[number, number]>;
     isDesert?: boolean;
     isSnow?: boolean;
+    hasSahara?: boolean;
+    hasOutback?: boolean;
+    hasGobi?: boolean;
+    hasSonora?: boolean;
   }> = [
     // --- AMÉRICA DEL NORTE ---
     {
@@ -58,6 +64,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [-115, 32], [-117, 32.5], [-122, 37], [-124, 43], [-125, 49], [-130, 54],
         [-136, 58], [-145, 60], [-152, 59], [-160, 56], [-166, 60], [-168, 65],
       ],
+      hasSonora: true,
     },
     // Península de Baja California
     {
@@ -84,13 +91,15 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
       ],
     },
     // --- EUROPA ---
+    // Península Ibérica (España y Portugal)
     {
-      name: 'Iberian Peninsula', // España y Portugal
+      name: 'Iberian Peninsula',
       points: [
         [-9, 43], [-2, 43.5], [3, 42.5], [0, 40], [-0.5, 38], [-2, 36.5],
         [-5.5, 36], [-9, 37], [-9.5, 39], [-9, 42], [-9, 43],
       ],
     },
+    // Europa continental y Francia
     {
       name: 'Europe & Western Asia',
       points: [
@@ -118,7 +127,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [28, 65], [21, 63], [18, 59], [12, 56], [8, 58], [5, 59],
       ],
     },
-    // Gran Bretaña e Irlanda
+    // Gran Bretaña
     {
       name: 'Great Britain',
       points: [
@@ -126,6 +135,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [-5, 55], [-4, 52], [-5, 50],
       ],
     },
+    // Irlanda
     {
       name: 'Ireland',
       points: [
@@ -142,6 +152,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [9, 4], [3, 6], [-5, 5], [-15, 11], [-17, 15], [-16, 21],
         [-12, 28], [-6, 35],
       ],
+      hasSahara: true,
     },
     // Madagascar
     {
@@ -152,7 +163,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     },
     // --- ASIA ---
     {
-      name: 'Asia Mainland (China, Siberia, India, SE Asia)',
+      name: 'Asia Mainland',
       points: [
         [60, 45], [70, 50], [80, 55], [90, 60], [110, 65], [130, 65],
         [150, 60], [165, 60], [170, 65], [180, 65], [180, 50], [160, 50],
@@ -162,6 +173,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [60, 25], [55, 22], [50, 26], [48, 30], [40, 30], [35, 32],
         [35, 36], [40, 38], [50, 40], [60, 45],
       ],
+      hasGobi: true,
     },
     // Península Arábiga
     {
@@ -172,7 +184,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
       ],
       isDesert: true,
     },
-    // Japón (Archipiélago)
+    // Japón
     {
       name: 'Japan',
       points: [
@@ -188,7 +200,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [120, 11], [119, 15], [120, 18],
       ],
     },
-    // Indonesia (Sumatra, Java, Borneo)
+    // Indonesia
     {
       name: 'Indonesia',
       points: [
@@ -196,7 +208,8 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [110, -2], [105, 0], [98, 3], [95, 5],
       ],
     },
-    // --- OCEANÍA (Australia & Nueva Zelanda) ---
+    // --- OCEANÍA ---
+    // Australia
     {
       name: 'Australia',
       points: [
@@ -205,6 +218,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [140, -38], [135, -34], [128, -32], [120, -34], [115, -34],
         [113, -27], [115, -22],
       ],
+      hasOutback: true,
     },
     // Tasmania
     {
@@ -213,7 +227,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
         [145, -41], [148, -41], [148, -44], [145, -44], [145, -41],
       ],
     },
-    // Nueva Zelanda (Isla Norte e Isla Sur)
+    // Nueva Zelanda
     {
       name: 'New Zealand',
       points: [
@@ -238,7 +252,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
       ],
       isSnow: true,
     },
-    // Antártida (Banda costera continua en el sur)
+    // Antártida
     {
       name: 'Antarctica',
       points: [
@@ -263,26 +277,25 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     ctx.closePath();
   };
 
-  // 3. CAPA DE AGUAS COSTERAS POCO PROFUNDAS (Brillo turquesa brillante estilo Pixar)
-  // Se traza un contorno ancho y brillante alrededor de todas las costas
+  // 3. CAPA DE AGUAS COSTERAS TURQUESAS PROFUNDAS (Shelf costero luminoso Pixar)
+  // Primer anillo exterior amplio (resplandor azul turquesa)
   ctx.save();
   ctx.strokeStyle = '#00d2d3';
-  ctx.lineWidth = 14;
+  ctx.lineWidth = 22;
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-  ctx.shadowColor = '#00e5ff';
-  ctx.shadowBlur = 12;
-
+  ctx.shadowColor = '#00f2fe';
+  ctx.shadowBlur = 18;
   landmasses.forEach((land) => {
     drawPolygon(land.points);
     ctx.stroke();
   });
   ctx.restore();
 
-  // Segundo anillo costero más fino (arena clara)
+  // Segundo anillo intermedio turquesa brillante
   ctx.save();
-  ctx.strokeStyle = '#74b9ff';
-  ctx.lineWidth = 6;
+  ctx.strokeStyle = '#48dbfb';
+  ctx.lineWidth = 10;
   ctx.lineJoin = 'round';
   landmasses.forEach((land) => {
     drawPolygon(land.points);
@@ -290,195 +303,136 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
   });
   ctx.restore();
 
-  // 4. RELLENO DE CONTINENTES (Verde exuberante con relieve)
+  // 4. RELLENO DE CONTINENTES CON CLIPPING ESTRICTO (Para que NINGÚN desierto manche el océano)
   landmasses.forEach((land) => {
+    ctx.save();
     drawPolygon(land.points);
+    ctx.clip(); // CLIPPING ESTRICTO: todo lo que se pinte quedará dentro del continente
 
     if (land.isSnow) {
-      // Región polar (blanco nieve brillante)
+      // Región polar (nieve blanca luminosa)
       const snowGrad = ctx.createLinearGradient(0, 0, 0, h);
       snowGrad.addColorStop(0, '#ffffff');
       snowGrad.addColorStop(1, '#dfe6e9');
       ctx.fillStyle = snowGrad;
+      ctx.fillRect(0, 0, w, h);
     } else if (land.isDesert) {
-      // Desierto árabe cálido
-      ctx.fillStyle = '#f39c12';
+      // Arabia / Desierto puro
+      const desertGrad = ctx.createLinearGradient(0, 0, 0, h);
+      desertGrad.addColorStop(0, '#f59e0b');
+      desertGrad.addColorStop(1, '#d97706');
+      ctx.fillStyle = desertGrad;
+      ctx.fillRect(0, 0, w, h);
     } else {
-      // Tierra continental fértil (verde Pixar con relieve)
+      // Tierra continental fértil (Verde esmeralda Pixar rico y saturado)
       const landGrad = ctx.createLinearGradient(0, 0, 0, h);
-      landGrad.addColorStop(0.2, '#1b8a5a');
-      landGrad.addColorStop(0.4, '#2ecc71');
-      landGrad.addColorStop(0.6, '#27ae60');
-      landGrad.addColorStop(0.8, '#16a085');
+      landGrad.addColorStop(0.1, '#10ac84'); // Verde norte
+      landGrad.addColorStop(0.35, '#2ecc71'); // Verde vibrante
+      landGrad.addColorStop(0.65, '#27ae60'); // Verde bosque templado
+      landGrad.addColorStop(0.9, '#16a085'); // Verde austral
       ctx.fillStyle = landGrad;
+      ctx.fillRect(0, 0, w, h);
     }
-    ctx.fill();
 
-    // Borde de playa de arena dorada
-    ctx.strokeStyle = '#f6e58d';
-    ctx.lineWidth = 2;
+    // DESIERTOS INTERNOS (Clipped de forma 100% segura dentro del continente)
+    if (land.hasSahara) {
+      // Sahara en África
+      const saharaGrad = ctx.createRadialGradient(toX(18), toY(24), 20, toX(18), toY(24), 160);
+      saharaGrad.addColorStop(0, '#f59e0b');
+      saharaGrad.addColorStop(0.7, '#d97706');
+      saharaGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = saharaGrad;
+      ctx.beginPath();
+      ctx.ellipse(toX(18), toY(24), 180, 50, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (land.hasOutback) {
+      // Outback de Australia (Tierra roja sagrada)
+      const outbackGrad = ctx.createRadialGradient(toX(133), toY(-25), 15, toX(133), toY(-25), 90);
+      outbackGrad.addColorStop(0, '#dc2626');
+      outbackGrad.addColorStop(0.6, '#ea580c');
+      outbackGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = outbackGrad;
+      ctx.beginPath();
+      ctx.ellipse(toX(133), toY(-25), 95, 45, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (land.hasGobi) {
+      // Desierto de Gobi en Asia
+      const gobiGrad = ctx.createRadialGradient(toX(102), toY(42), 10, toX(102), toY(42), 70);
+      gobiGrad.addColorStop(0, '#fbbf24');
+      gobiGrad.addColorStop(0.8, '#f59e0b');
+      gobiGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = gobiGrad;
+      ctx.beginPath();
+      ctx.ellipse(toX(102), toY(42), 85, 28, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (land.hasSonora) {
+      // Altiplano y desierto de México/Suroeste EE.UU.
+      const sonoraGrad = ctx.createRadialGradient(toX(-103), toY(27), 10, toX(-103), toY(27), 50);
+      sonoraGrad.addColorStop(0, '#ea580c');
+      sonoraGrad.addColorStop(0.8, '#d97706');
+      sonoraGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = sonoraGrad;
+      ctx.beginPath();
+      ctx.ellipse(toX(-103), toY(27), 45, 22, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+
+    // Borde costero de playa de arena dorada
+    ctx.save();
+    drawPolygon(land.points);
+    ctx.strokeStyle = '#ffeaa7';
+    ctx.lineWidth = 3.5;
+    ctx.lineJoin = 'round';
     ctx.stroke();
+    ctx.restore();
   });
 
-  // 5. REGIONES DESÉRTICAS ESPECÍFICAS (Sahara, Gobi, Outback de Australia, México)
-  // Desierto del Sahara (África Norte)
+  // 5. CÓDIGO CARTOGRÁFICO DECORATIVO (Nombres de Océanos y Mares estilo clásico ilustrado)
   ctx.save();
-  ctx.fillStyle = '#f39c12';
-  ctx.beginPath();
-  ctx.ellipse(toX(15), toY(24), 220, 60, 0, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+  ctx.font = 'bold 15px system-ui, sans-serif';
+  ctx.letterSpacing = '6px';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-  // Outback Australiano (Tierra roja sagrada)
-  ctx.fillStyle = '#e67e22';
-  ctx.beginPath();
-  ctx.ellipse(toX(133), toY(-25), 110, 55, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Desierto de Gobi (China / Mongolia)
-  ctx.fillStyle = '#f1c40f';
-  ctx.beginPath();
-  ctx.ellipse(toX(102), toY(42), 120, 35, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Altiplano & Desiertos de México
-  ctx.fillStyle = '#e67e22';
-  ctx.beginPath();
-  ctx.ellipse(toX(-102), toY(24), 50, 30, 0, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillText('OCÉANO  ATLÁNTICO', toX(-32), toY(16));
+  ctx.fillText('OCÉANO  PACÍFICO', toX(-145), toY(10));
+  ctx.fillText('OCÉANO  ÍNDICO', toX(78), toY(-12));
+  ctx.fillText('MAR  MEDITERRÁNEO', toX(18), toY(35));
   ctx.restore();
 
-  // 6. CORDILLERAS MONTAÑOSAS ESTILIZADAS CON PICOS DE NIEVE
-  // Función para dibujar picos montañosos triangulares
-  const drawMountainRidge = (points: Array<[number, number]>, count: number) => {
-    ctx.save();
-    for (let i = 0; i < points.length - 1; i++) {
-      const p1 = points[i];
-      const p2 = points[i + 1];
-      for (let s = 0; s < count; s++) {
-        const t = s / count;
-        const mx = p1[0] + (p2[0] - p1[0]) * t;
-        const my = p1[1] + (p2[1] - p1[1]) * t;
-        const cx = toX(mx);
-        const cy = toY(my);
-        const size = 12 + Math.random() * 8;
-
-        // Base marrón de montaña
-        ctx.fillStyle = '#795548';
-        ctx.beginPath();
-        ctx.moveTo(cx - size, cy + size * 0.5);
-        ctx.lineTo(cx, cy - size);
-        ctx.lineTo(cx + size, cy + size * 0.5);
-        ctx.closePath();
-        ctx.fill();
-
-        // Pico nevado blanco
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.moveTo(cx - size * 0.4, cy - size * 0.2);
-        ctx.lineTo(cx, cy - size);
-        ctx.lineTo(cx + size * 0.4, cy - size * 0.2);
-        ctx.closePath();
-        ctx.fill();
-      }
-    }
-    ctx.restore();
-  };
-
-  // Cordillera de los Andes (Sudamérica)
-  drawMountainRidge([[-77, 5], [-75, -10], [-70, -25], [-72, -45]], 14);
-
-  // Cordillera del Himalaya (Asia)
-  drawMountainRidge([[75, 34], [85, 30], [95, 28]], 10);
-
-  // Alpes Europeos (Francia, Suiza, Italia)
-  drawMountainRidge([[5, 46], [10, 46], [13, 47]], 5);
-
-  // Montañas Rocosas (Norteamérica)
-  drawMountainRidge([[-115, 52], [-110, 44], [-105, 36]], 10);
-
-  // 7. LÍNEAS CARTOGRÁFICAS NAÚTICAS DORADAS (Ecuador y Trópicos)
+  // 6. RED DE COORDENADAS ILUSTRADAS (Líneas de latitud / longitud sutiles)
   ctx.save();
-  ctx.setLineDash([8, 6]);
-  ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
-  ctx.lineWidth = 2;
-
-  // Ecuador (lat 0)
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  // Línea del Ecuador dorada brillante
+  ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([8, 8]);
   ctx.beginPath();
   ctx.moveTo(0, toY(0));
   ctx.lineTo(w, toY(0));
   ctx.stroke();
 
-  // Trópico de Cáncer (lat 23.5)
-  ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+  // Meridiano de Greenwich
   ctx.beginPath();
-  ctx.moveTo(0, toY(23.5));
-  ctx.lineTo(w, toY(23.5));
+  ctx.moveTo(toX(0), 0);
+  ctx.lineTo(toX(0), h);
   ctx.stroke();
-
-  // Trópico de Capricornio (lat -23.5)
-  ctx.beginPath();
-  ctx.moveTo(0, toY(-23.5));
-  ctx.lineTo(w, toY(-23.5));
-  ctx.stroke();
-  ctx.restore();
-
-  // 8. ROSAS DE LOS VIENTOS NAÚTICAS Y ROTULACIÓN DE OCÉANOS
-  const drawCompassRose = (cx: number, cy: number, radius: number) => {
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    // Anillo exterior
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // 4 puntas cardinales
-    const tips = [
-      [0, -radius * 1.3],
-      [radius * 1.3, 0],
-      [0, radius * 1.3],
-      [-radius * 1.3, 0],
-    ];
-
-    tips.forEach(([tx, ty], idx) => {
-      ctx.fillStyle = idx % 2 === 0 ? '#f59e0b' : '#fbbf24';
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(tx, ty);
-      ctx.lineTo(ty * 0.3, -tx * 0.3);
-      ctx.closePath();
-      ctx.fill();
-    });
-
-    ctx.restore();
-  };
-
-  // Rosa de los vientos en el Pacífico Sur
-  drawCompassRose(toX(-130), toY(-25), 35);
-  // Rosa de los vientos en el Atlántico Sur
-  drawCompassRose(toX(-25), toY(-20), 30);
-  // Rosa de los vientos en el Índico
-  drawCompassRose(toX(85), toY(-25), 30);
-
-  // Rótulos de los océanos en tipografía clásica náutica
-  ctx.save();
-  ctx.font = 'bold 22px system-ui, -apple-system, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-  ctx.textAlign = 'center';
-  ctx.letterSpacing = '6px';
-
-  ctx.fillText('OCÉANO PACÍFICO', toX(-140), toY(5));
-  ctx.fillText('OCÉANO ATLÁNTICO', toX(-32), toY(15));
-  ctx.fillText('OCÉANO ÍNDICO', toX(80), toY(-10));
-  ctx.fillText('MAR MEDITERRÁNEO', toX(18), toY(35));
   ctx.restore();
 
   return canvas;
 }
 
-// 9. TEXTURA PROCEDURAL DE NUBES FLOTANTES PIXAR
+// 7. GENERADOR DE NUBES ESTILIZADAS VOLUMÉTRICAS PIXAR
 export function createPixarCloudsCanvas(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
@@ -489,140 +443,123 @@ export function createPixarCloudsCanvas(): HTMLCanvasElement {
   const w = canvas.width;
   const h = canvas.height;
 
-  // Fondo transparente
   ctx.clearRect(0, 0, w, h);
 
-  // Función para dibujar una nube esponjosa compuesta de esferas suaves
-  const drawFluffyCloud = (cx: number, cy: number, scale: number) => {
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    const circles = [
-      { x: -30, y: 0, r: 24 },
-      { x: -15, y: -16, r: 30 },
-      { x: 12, y: -18, r: 34 },
-      { x: 34, y: -4, r: 26 },
-      { x: 0, y: 6, r: 28 },
-    ];
-
-    circles.forEach((c) => {
-      const grad = ctx.createRadialGradient(
-        c.x * scale,
-        c.y * scale,
-        0,
-        c.x * scale,
-        c.y * scale,
-        c.r * scale
-      );
-      grad.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
-      grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.55)');
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(c.x * scale, c.y * scale, c.r * scale, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    ctx.restore();
+  // Nubes esponjosas en bandas ecuatoriales y templadas
+  const drawCloudPuff = (cx: number, cy: number, radius: number) => {
+    const puffGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    puffGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+    puffGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.7)');
+    puffGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = puffGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
   };
 
-  // Esparcir nubes en cúmulos sobre el ecuador y latitudes medias
-  const cloudPositions = [
-    [120, 180, 1.2],
-    [320, 140, 1.4],
-    [540, 220, 1.1],
-    [760, 160, 1.5],
-    [920, 240, 1.3],
-    [210, 340, 1.1],
-    [450, 360, 1.4],
-    [680, 320, 1.2],
-    [870, 350, 1.5],
-    [150, 90, 0.9],
-    [400, 80, 1.0],
-    [620, 95, 0.9],
-    [840, 75, 1.1],
+  const drawCloudCluster = (x: number, y: number, scale: number) => {
+    drawCloudPuff(x, y, 22 * scale);
+    drawCloudPuff(x + 18 * scale, y - 5 * scale, 17 * scale);
+    drawCloudPuff(x - 16 * scale, y + 2 * scale, 15 * scale);
+    drawCloudPuff(x + 32 * scale, y + 4 * scale, 12 * scale);
+    drawCloudPuff(x - 28 * scale, y + 6 * scale, 11 * scale);
+  };
+
+  // Nubes distribuidas estilizadas Pixar (sin cubrir en exceso los continentes)
+  const clouds = [
+    { x: 120, y: 140, s: 1.2 },
+    { x: 280, y: 320, s: 1.5 },
+    { x: 450, y: 160, s: 1.1 },
+    { x: 600, y: 360, s: 1.3 },
+    { x: 740, y: 200, s: 1.4 },
+    { x: 890, y: 310, s: 1.2 },
+    { x: 200, y: 410, s: 1.0 },
+    { x: 520, y: 80, s: 1.2 },
+    { x: 820, y: 100, s: 1.1 },
   ];
 
-  cloudPositions.forEach(([x, y, s]) => {
-    drawFluffyCloud(x, y, s);
-  });
+  clouds.forEach((c) => drawCloudCluster(c.x, c.y, c.s));
 
   return canvas;
 }
 
-// 10. GENERADOR DE EMBLEMAS Y CARTELES FLOTANTES 3D (BILLBOARDS)
+// 8. GENERADOR DE EMBLEMAS Y CARTELES FLOTANTES 3D (BILLBOARDS PIXAR)
 export function createPixarBadgeCanvas(
   title: string,
   emoji: string,
   accentColor: string = '#f59e0b'
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 256;
+  canvas.width = 300;
+  canvas.height = 300;
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
 
-  ctx.clearRect(0, 0, 256, 256);
+  ctx.clearRect(0, 0, 300, 300);
 
-  // Sombra circular exterior
-  const shadowGrad = ctx.createRadialGradient(128, 110, 30, 128, 110, 85);
-  shadowGrad.addColorStop(0, `${accentColor}88`);
-  shadowGrad.addColorStop(0.6, `${accentColor}33`);
-  shadowGrad.addColorStop(1, 'transparent');
-  ctx.fillStyle = shadowGrad;
+  const cx = 150;
+  const cy = 135;
+
+  // Resplandor exterior circular
+  const glowGrad = ctx.createRadialGradient(cx, cy, 25, cx, cy, 100);
+  glowGrad.addColorStop(0, `${accentColor}99`);
+  glowGrad.addColorStop(0.5, `${accentColor}44`);
+  glowGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = glowGrad;
   ctx.beginPath();
-  ctx.arc(128, 110, 85, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 100, 0, Math.PI * 2);
   ctx.fill();
 
-  // Escudo circular 3D
-  const bgGrad = ctx.createLinearGradient(128, 40, 128, 180);
-  bgGrad.addColorStop(0, '#0f172a');
-  bgGrad.addColorStop(1, '#020617');
-  ctx.fillStyle = bgGrad;
+  // Escudo / Burbuja circular de cristal 3D
+  const bubbleGrad = ctx.createLinearGradient(cx, cy - 65, cx, cy + 65);
+  bubbleGrad.addColorStop(0, '#1e293b');
+  bubbleGrad.addColorStop(1, '#090d16');
+  ctx.fillStyle = bubbleGrad;
   ctx.beginPath();
-  ctx.arc(128, 110, 60, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 65, 0, Math.PI * 2);
   ctx.fill();
 
-  // Borde brillante con el color del monumento
+  // Borde luminoso brillante del color temático
   ctx.strokeStyle = accentColor;
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 6;
   ctx.stroke();
 
-  // Anillo de oro interior
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-  ctx.lineWidth = 1.5;
+  // Arco de brillo superior (efecto cristal 3D)
+  ctx.save();
   ctx.beginPath();
-  ctx.arc(128, 110, 54, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 58, Math.PI * 1.1, Math.PI * 1.9);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+  ctx.lineWidth = 3;
   ctx.stroke();
+  ctx.restore();
 
-  // Icono 3D Emoji en el centro
-  ctx.font = '64px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+  // Icono / Emoji 3D en el centro
+  ctx.font = '72px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(emoji, 128, 108);
+  ctx.fillText(emoji, cx, cy + 2);
 
-  // Cartela rectangular inferior con el nombre del monumento
-  const bannerY = 186;
+  // Cartela pill inferior con el nombre del monumento
+  const bannerY = 222;
+  const bannerHeight = 40;
+  const textWidth = Math.min(270, Math.max(140, title.length * 12 + 28));
+  const bannerX = cx - textWidth / 2;
+
+  // Fondo de la cartela
   ctx.fillStyle = '#0f172a';
   ctx.strokeStyle = accentColor;
-  ctx.lineWidth = 2.5;
-
-  const textWidth = Math.min(220, Math.max(120, title.length * 11 + 24));
-  const bannerX = 128 - textWidth / 2;
-
-  // Rectángulo redondeado
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.roundRect(bannerX, bannerY, textWidth, 34, 17);
+  ctx.roundRect(bannerX, bannerY, textWidth, bannerHeight, 20);
   ctx.fill();
   ctx.stroke();
 
-  // Texto del monumento
-  ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+  // Texto del monumento con tipografía nítida
+  ctx.font = 'bold 15px system-ui, -apple-system, sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(title, 128, bannerY + 17);
+  ctx.fillText(title, cx, bannerY + bannerHeight / 2);
 
   return canvas;
 }

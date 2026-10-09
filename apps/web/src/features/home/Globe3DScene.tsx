@@ -41,7 +41,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   milestones = [],
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [selectedId, setSelectedId] = useState<string>('mexico');
+  const [selectedId, setSelectedId] = useState<string>('espana-inicio');
   const [isAutoRotating, setIsAutoRotating] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [webglSupported, setWebglSupported] = useState<boolean>(true);
@@ -402,7 +402,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.12;
 
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
@@ -429,7 +429,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const globeMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
     globeGroup.add(globeMesh);
 
-    // 2. CAPA VOLUMÉTRICA DE NUBES FLOTANTES PIXAR
+    // 2. CAPA VOLUMÉTRICA DE NUBES FLOTANTES PIXAR (Transparencia suave para no tapar los continentes)
     const cloudsCanvas = createPixarCloudsCanvas();
     const cloudsTexture = new THREE.CanvasTexture(cloudsCanvas);
     cloudsTexture.needsUpdate = true;
@@ -438,7 +438,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const cloudsMat = new THREE.MeshStandardMaterial({
       map: cloudsTexture,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.20,
       depthWrite: false,
       roughness: 1.0,
     });
@@ -474,8 +474,8 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       monument.userData = { locationId: loc.id };
       monumentsGroup.add(monument);
 
-      // Cartel / Emblema flotante 3D (Billboard sprite)
-      const badgePos = pos.clone().multiplyScalar(1.14);
+      // Cartel / Emblema flotante 3D (Billboard sprite elevado para no tapar el monumento)
+      const badgePos = pos.clone().multiplyScalar(1.26);
       const badge = createPixarBadgeSprite(loc.id);
       badge.position.copy(badgePos);
       badge.userData = { locationId: loc.id };
@@ -656,10 +656,18 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         (mat as any).dashOffset = ((mat as any).dashOffset || 0) - 0.015;
       });
 
-      // Animación viva de los monumentos y carteles Pixar (idle bobbing + scale active)
+      // Animación viva de los monumentos y carteles Pixar (idle bobbing + scale active + oclusión trasera)
       monumentMeshesRef.current.forEach((item, idx) => {
-        // Flotación suave del cartel con offset vertical
-        const bob = Math.sin(elapsedTime * 2.8 + idx) * 0.015;
+        // Calcular si el monumento está en la cara visible hacia la cámara
+        const worldNormal = item.normal.clone().applyEuler(globeGroup.rotation);
+        const facingCamera = worldNormal.z;
+        const isVisible = facingCamera > 0.12;
+
+        // Ocultar carteles en la cara posterior del globo para evitar solapamientos visuales
+        item.badge.visible = isVisible;
+
+        // Flotación suave del cartel con respiración vertical Pixar
+        const bob = Math.sin(elapsedTime * 2.8 + idx) * 0.018;
         const targetPos = item.basePos.clone().add(item.normal.clone().multiplyScalar(bob));
         item.badge.position.copy(targetPos);
 
@@ -668,7 +676,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         const targetScale = isCurrent ? 1.35 : 1.0;
         item.group.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
         item.badge.scale.lerp(
-          new THREE.Vector3(isCurrent ? 0.42 : 0.32, isCurrent ? 0.42 : 0.32, 1),
+          new THREE.Vector3(isCurrent ? 0.44 : 0.34, isCurrent ? 0.44 : 0.34, 1),
           0.1
         );
       });
