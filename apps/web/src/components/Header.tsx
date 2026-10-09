@@ -17,6 +17,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
     { href: `/${locale}/mundo`, label: t.navigation.world },
     { href: `/${locale}/libros`, label: t.navigation.books },
     { href: `/${locale}/videos`, label: t.navigation.videos },
+    { href: `/${locale}/fondos`, label: locale === 'en' ? 'Wallpapers 2K' : 'Fondos 2K' },
     { href: `/${locale}/novedades`, label: t.navigation.news },
     { href: `/${locale}/contacto`, label: t.navigation.contact },
   ];

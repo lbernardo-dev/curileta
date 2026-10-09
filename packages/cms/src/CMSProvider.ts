@@ -8,6 +8,7 @@ import {
   TrailWaypoint,
   NarrativeMilestone,
   MentionedCuriosity,
+  Wallpaper,
 } from './models';
 
 /**
@@ -26,4 +27,5 @@ export interface CMSProvider {
   getTrailWaypoints(locale?: string): Promise<TrailWaypoint[]>;
   getNarrativeMilestones(locale?: string): Promise<NarrativeMilestone[]>;
   getMentionedCuriosities(locale?: string): Promise<MentionedCuriosity[]>;
+  getWallpapers(locale?: string): Promise<Wallpaper[]>;
 }

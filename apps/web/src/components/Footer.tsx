@@ -76,6 +76,12 @@ export const Footer: React.FC<{ locale: Locale }> = ({ locale }) => {
                   Cancionero & Música
                 </Link>
               </li>
+              <li>
+                <Link href={`/${locale}/fondos`} className="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                  <span>Fondos de Pantalla 2K</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-black">2K</span>
+                </Link>
+              </li>
             </ul>
           </div>
 

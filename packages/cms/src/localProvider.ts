@@ -9,6 +9,7 @@ import {
   TrailWaypoint,
   NarrativeMilestone,
   MentionedCuriosity,
+  Wallpaper,
 } from './models';
 
 export const INITIAL_CHARACTERS: Character[] = [
@@ -2297,6 +2298,345 @@ export const INITIAL_VIDEOS: Video[] = [
   },
 ];
 
+
+export const INITIAL_WALLPAPERS: Wallpaper[] = [
+  // ==========================================
+  // --- FONDOS 2K PARA MÓVILES (VERTICAL 9:16) ---
+  // ==========================================
+  {
+    id: 'wp-mob-01',
+    title: {
+      es: 'Curileta con Mochila y Sombrero Verde',
+      en: 'Curileta with Explorer Hat & Backpack',
+    },
+    slug: 'curileta-exploradora-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/curileta-main.webp',
+    fullImageUrl: '/images/characters/curileta-main.webp',
+    characterId: 'curileta',
+    tags: ['Curileta', 'Móvil', '2K Ultra HD', 'Personajes 3D', 'Bosque Encantado'],
+    country: { es: 'España', en: 'Spain' },
+    fileSizeBytes: '4.2 MB',
+    description: {
+      es: 'Retrato 3D oficial de Curileta con su emblemático sombrero de exploradora y su mochila mágica sobre fondo esmeralda.',
+      en: 'Official 3D portrait of Curileta with her explorer hat and magical backpack.',
+    },
+  },
+  {
+    id: 'wp-mob-02',
+    title: {
+      es: 'Pompón y el Gran Árbol del Bosque',
+      en: 'Pompón & the Tallest Forest Tree',
+    },
+    slug: 'pompon-bosque-encantado-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/pompon-main.webp',
+    fullImageUrl: '/images/characters/pompon-main.webp',
+    characterId: 'pompon',
+    tags: ['Pompón', 'Conejito', 'Móvil', '2K Ultra HD', 'Buzón Secreto'],
+    country: { es: 'España', en: 'Spain' },
+    fileSizeBytes: '3.9 MB',
+    description: {
+      es: 'El tierno conejito blanco guardián del hogar junto al buzón tallado de madera donde recibe las cartas del mundo.',
+      en: 'The sweet white bunny guardian of the forest beside the carved wooden mailbox.',
+    },
+  },
+  {
+    id: 'wp-mob-03',
+    title: {
+      es: 'Quetzal: El Guardián de las Estrellas',
+      en: 'Quetzal: Guardian of the Stars',
+    },
+    slug: 'quetzal-estrellas-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/quetzal-main.webp',
+    fullImageUrl: '/images/characters/quetzal-main.webp',
+    characterId: 'quetzal',
+    tags: ['Quetzal', 'México', 'Teotihuacán', 'Móvil', '2K Ultra HD', 'Plumas Esmeralda'],
+    country: { es: 'México', en: 'Mexico' },
+    fileSizeBytes: '4.5 MB',
+    description: {
+      es: 'Ave sagrada de plumaje esmeralda iridiscente sobre el cielo nocturno y las constelaciones de Teotihuacán.',
+      en: 'Sacred emerald bird soaring beneath the celestial constellations of Teotihuacan.',
+    },
+  },
+  {
+    id: 'wp-mob-04',
+    title: {
+      es: 'Bao el Panda en el Bosque de Bambú',
+      en: 'Bao the Panda in the Bamboo Forest',
+    },
+    slug: 'bao-panda-bambu-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/bao-main.webp',
+    fullImageUrl: '/images/characters/bao-main.webp',
+    characterId: 'bao',
+    tags: ['Bao', 'Oso Panda', 'China', 'Móvil', '2K Ultra HD', 'Bambú'],
+    country: { es: 'China', en: 'China' },
+    fileSizeBytes: '4.1 MB',
+    description: {
+      es: 'El pacífico panda gigante saboreando un tierno brote de bambú junto a las torres de la Gran Muralla China.',
+      en: 'The peaceful giant panda enjoying sweet bamboo shoots near the Great Wall.',
+    },
+  },
+  {
+    id: 'wp-mob-05',
+    title: {
+      es: 'Lulú la Llama entre Nubes Andinas',
+      en: 'Lulú the Llama in Andean Clouds',
+    },
+    slug: 'lulu-llama-machu-picchu-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/lulu-main.webp',
+    fullImageUrl: '/images/characters/lulu-main.webp',
+    characterId: 'lulu',
+    tags: ['Lulú', 'Llama', 'Perú', 'Machu Picchu', 'Móvil', '2K Ultra HD'],
+    country: { es: 'Perú', en: 'Peru' },
+    fileSizeBytes: '3.8 MB',
+    description: {
+      es: 'Lulú con su lana tibia y reconfortante rodeada por la bruma mágica de las alturas de Machu Picchu.',
+      en: 'Warm fleeced llama framed by mystical Andean mists above Machu Picchu.',
+    },
+  },
+  {
+    id: 'wp-mob-06',
+    title: {
+      es: 'Zipi-Bot: El Pequeño Robot de Tokio',
+      en: 'Zipi-Bot: The Little Robot of Tokyo',
+    },
+    slug: 'zipi-bot-tokio-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/zipi-bot-main.webp',
+    fullImageUrl: '/images/characters/zipi-bot-main.webp',
+    characterId: 'zipi-bot',
+    tags: ['Zipi-Bot', 'Robot', 'Japón', 'Tokio', 'Móvil', '2K Ultra HD', 'Shinkansen'],
+    country: { es: 'Japón', en: 'Japan' },
+    fileSizeBytes: '3.7 MB',
+    description: {
+      es: 'El robot cantor iluminado por las luces de neón futuristas y los cerezos en flor de Japón.',
+      en: 'The musical robot surrounded by futuristic neon lights and blooming cherry blossoms.',
+    },
+  },
+  {
+    id: 'wp-mob-07',
+    title: {
+      es: 'Kiki el Kiwi y las Luces Subterráneas',
+      en: 'Kiki the Kiwi & Underground Lights',
+    },
+    slug: 'kiki-kiwi-waitomo-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/kiki-main.webp',
+    fullImageUrl: '/images/characters/kiki-main.webp',
+    characterId: 'kiki',
+    tags: ['Kiki', 'Kiwi', 'Nueva Zelanda', 'Waitomo', 'Móvil', '2K Ultra HD'],
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    fileSizeBytes: '4.4 MB',
+    description: {
+      es: 'Kiki explorando el techo estrellado de las cuevas bioluminiscentes de Waitomo bajo los helechos gigantes.',
+      en: 'Kiki exploring glowworm ceilings under silver fern canopies in New Zealand.',
+    },
+  },
+  {
+    id: 'wp-mob-08',
+    title: {
+      es: 'Familia Canguro & Joey en el Outback',
+      en: 'Kangaroo Family & Joey in the Outback',
+    },
+    slug: 'canguro-joey-outback-movil-2k',
+    deviceType: 'mobile',
+    category: 'personajes',
+    resolution: '1440 × 2560 (2K Vertical)',
+    thumbnail: '/images/characters/canguro-mama-main.webp',
+    fullImageUrl: '/images/characters/canguro-mama-main.webp',
+    characterId: 'canguro-mama',
+    tags: ['Canguro', 'Joey Peluche', 'Australia', 'Uluru', 'Móvil', '2K Ultra HD'],
+    country: { es: 'Australia', en: 'Australia' },
+    fileSizeBytes: '4.3 MB',
+    description: {
+      es: 'Mamá Canguro, el bebé y su inseparable koala de trapo Joey frente al cielo rojizo de Uluru.',
+      en: 'Mama Kangaroo, baby, and plush koala Joey against the red glow of Uluru.',
+    },
+  },
+
+  // ==========================================
+  // --- FONDOS 2K PARA ORDENADORES (PANORÁMICA 16:9) ---
+  // ==========================================
+  {
+    id: 'wp-dsk-01',
+    title: {
+      es: 'La Gran Expedición Mundial de Curileta',
+      en: 'Curileta’s Great World Expedition',
+    },
+    slug: 'expedicion-mundial-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'arte',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Mapamundi', 'Brújula Solar', 'Ordenador', '2K QHD', 'Arte Oficial', 'Aventura'],
+    country: { es: 'Global', en: 'Global' },
+    fileSizeBytes: '5.8 MB',
+    description: {
+      es: 'Ilustración panorámica 2K con el mapa del mundo de Curileta, rutas marinas con líneas discontinuas y la brújula dorada.',
+      en: 'Panoramic 2K world map showing Curileta’s sea voyages and golden compass.',
+    },
+  },
+  {
+    id: 'wp-dsk-02',
+    title: {
+      es: 'Pirámides de Giza y el Ocaso Dorado',
+      en: 'Pyramids of Giza & Golden Sunset',
+    },
+    slug: 'piramides-giza-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'paisajes',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Egipto', 'Pirámides', 'Giza', 'Desierto', 'Ordenador', '2K QHD'],
+    country: { es: 'Egipto', en: 'Egypt' },
+    fileSizeBytes: '5.4 MB',
+    description: {
+      es: 'Las majestuosas pirámides del antiguo Egipto bañadas por la luz del atardecer desértico donde Curileta conoció a Emi.',
+      en: 'The majestic pyramids bathed in warm desert twilight where Curileta met Emi.',
+    },
+  },
+  {
+    id: 'wp-dsk-03',
+    title: {
+      es: 'Auroras Boreales y Nieve en Islandia',
+      en: 'Northern Lights & Snow in Iceland',
+    },
+    slug: 'auroras-islandia-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'paisajes',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Islandia', 'Auroras Boreales', 'Laguna Azul', 'Ordenador', '2K QHD', 'Hielo'],
+    country: { es: 'Islandia', en: 'Iceland' },
+    fileSizeBytes: '6.1 MB',
+    description: {
+      es: 'Cielo ártico iluminado por cintas de luz verde y violeta sobre paisajes volcánicos cubiertos de nieve.',
+      en: 'Arctic skies lit by emerald and violet auroral ribbons above volcanic snowfields.',
+    },
+  },
+  {
+    id: 'wp-dsk-04',
+    title: {
+      es: 'La Gran Muralla China entre Montañas',
+      en: 'The Great Wall of China Among Mist',
+    },
+    slug: 'gran-muralla-china-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'paisajes',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=2560&auto=format&fit=crop&q=90',
+    tags: ['China', 'Gran Muralla', 'Bao Panda', 'Ordenador', '2K QHD', 'Montañas'],
+    country: { es: 'China', en: 'China' },
+    fileSizeBytes: '5.9 MB',
+    description: {
+      es: 'El colosal dragón de piedra serpenteando por las crestas montañosas contemplado desde la torre más alta con Bao.',
+      en: 'The stone dragon winding through misty ridges as viewed from the highest watchtower with Bao.',
+    },
+  },
+  {
+    id: 'wp-dsk-05',
+    title: {
+      es: 'El Galeón de los Sueños en el Océano Atlántico',
+      en: 'The Dream Galleon Across the Atlantic',
+    },
+    slug: 'galeon-atlantico-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'arte',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Galeón', 'Océano Atlántico', 'Travesía', 'Ordenador', '2K QHD', 'Navío'],
+    country: { es: 'Atlántico', en: 'Atlantic' },
+    fileSizeBytes: '5.2 MB',
+    description: {
+      es: 'El legendario barco de madera navegando bajo constelaciones oceánicas durante la travesía entre América y África.',
+      en: 'The legendary wooden ship sailing beneath oceanic star fields between continents.',
+    },
+  },
+  {
+    id: 'wp-dsk-06',
+    title: {
+      es: 'Atardecer en Uluru: La Roca Sagrada',
+      en: 'Sunset at Uluru: The Sacred Monolith',
+    },
+    slug: 'uluru-outback-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'paisajes',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Australia', 'Uluru', 'Outback', 'Tierra Roja', 'Ordenador', '2K QHD'],
+    country: { es: 'Australia', en: 'Australia' },
+    fileSizeBytes: '5.5 MB',
+    description: {
+      es: 'La inmensa formación roja australiana brillando con tonalidades bermellón al caer la tarde.',
+      en: 'The immense Australian red rock glowing in vermilion tones at desert dusk.',
+    },
+  },
+  {
+    id: 'wp-dsk-07',
+    title: {
+      es: 'Hobbiton: El Pueblo de las Puertas Redondas',
+      en: 'Hobbiton: Shire of Round Doors',
+    },
+    slug: 'hobbiton-nueva-zelanda-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'paisajes',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Hobbiton', 'Nueva Zelanda', 'Colinas Verdes', 'Ordenador', '2K QHD'],
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    fileSizeBytes: '5.6 MB',
+    description: {
+      es: 'Colinas de verde esmeralda con casitas de puertas redondas y chimeneas humeantes descubiertas por Curileta.',
+      en: 'Emerald green rolling hills with round-door cottages and smoking chimneys.',
+    },
+  },
+  {
+    id: 'wp-dsk-08',
+    title: {
+      es: 'El Gran Reencuentro en el Bosque Encantado',
+      en: 'The Grand Reunion in the Enchanted Forest',
+    },
+    slug: 'reencuentro-bosque-encantado-ordenador-2k',
+    deviceType: 'desktop',
+    category: 'arte',
+    resolution: '2560 × 1440 (2K QHD)',
+    thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&auto=format&fit=crop&q=80',
+    fullImageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=2560&auto=format&fit=crop&q=90',
+    tags: ['Bosque Encantado', 'Pompón', 'Curileta', 'Amistad', 'Hogar', 'Ordenador', '2K QHD'],
+    country: { es: 'España', en: 'Spain' },
+    fileSizeBytes: '6.3 MB',
+    description: {
+      es: 'Curileta y Pompón abrazándose bajo el árbol más alto, compartiendo recuerdos y la última carta.',
+      en: 'Curileta and Pompón reunited under the tallest tree, sharing letters and everlasting friendship.',
+    },
+  },
+];
+
 export class LocalCMSProvider implements CMSProvider {
   async getCharacters(locale?: string): Promise<Character[]> {
     return INITIAL_CHARACTERS;
@@ -2340,6 +2680,10 @@ async getVideos(locale?: string): Promise<Video[]> {
 
   async getMentionedCuriosities(locale?: string): Promise<MentionedCuriosity[]> {
     return INITIAL_MENTIONED_CURIOSITIES;
+  }
+
+  async getWallpapers(locale?: string): Promise<Wallpaper[]> {
+    return INITIAL_WALLPAPERS;
   }
 }
 

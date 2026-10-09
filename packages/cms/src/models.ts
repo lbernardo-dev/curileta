@@ -159,3 +159,20 @@ export interface Song {
   lyrics?: LocalizedString;
   duration?: string;
 }
+
+export interface Wallpaper {
+  id: string;
+  title: LocalizedString;
+  slug: string;
+  deviceType: 'mobile' | 'desktop';
+  category: 'personajes' | 'paisajes' | 'arte';
+  resolution: string;
+  thumbnail: string;
+  fullImageUrl: string;
+  tags: string[];
+  characterId?: string;
+  country?: LocalizedString;
+  description?: LocalizedString;
+  fileSizeBytes?: string;
+}
+

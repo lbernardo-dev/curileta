@@ -8,6 +8,7 @@ import { LettersScene } from '@/features/home/LettersScene';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
 import { YouTubeScene } from '@/features/home/YouTubeScene';
+import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
@@ -64,12 +65,13 @@ export default async function HomePage({
   }
 
   // Carga de datos dinámicos gestionables desde Backend / CMS
-  const [locations, characters, waypoints, milestones, videos] = await Promise.all([
+  const [locations, characters, waypoints, milestones, videos, wallpapers] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
     cmsProvider.getTrailWaypoints(locale),
     cmsProvider.getNarrativeMilestones(locale),
     cmsProvider.getVideos(locale),
+    cmsProvider.getWallpapers(locale),
   ]);
 
   return (
@@ -94,6 +96,9 @@ export default async function HomePage({
 
       {/* Escena 05 — YouTube y Canciones */}
       <YouTubeScene locale={locale as Locale} videos={videos} />
+
+      {/* Escena 05.5 — Galería de Fondos de Pantalla 2K para Móvil y Ordenador */}
+      <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />
 
       {/* Escena 06 — El Universo sigue creciendo */}
       <GrowingUniverseScene locale={locale as Locale} />
