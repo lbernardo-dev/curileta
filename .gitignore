@@ -3,11 +3,12 @@ node_modules/
 .pnp/
 .pnp.js
 
-# Next.js
+# Next.js & Build Cache
 .next/
 out/
 build/
 dist/
+*.tsbuildinfo
 
 # Sanity Studio
 .sanity/

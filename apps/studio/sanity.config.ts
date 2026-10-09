@@ -1,6 +1,8 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 
+import { schemaTypes } from './schemas';
+
 export default defineConfig({
   name: 'curileta-studio',
   title: 'Las Aventuras de Curileta — Studio',
@@ -11,6 +13,6 @@ export default defineConfig({
   plugins: [structureTool()],
 
   schema: {
-    types: [],
+    types: schemaTypes,
   },
 });
