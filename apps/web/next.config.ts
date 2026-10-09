@@ -19,10 +19,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    // Progressive View Transition API support
-    viewTransition: true,
-  },
 };
 
 export default nextConfig;
