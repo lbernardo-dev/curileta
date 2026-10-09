@@ -142,8 +142,11 @@ export interface Video {
   youtubeId: string;
   thumbnail: string;
   type: 'episode' | 'short' | 'song' | 'trailer';
+  description?: LocalizedString;
   duration?: string;
   publishedAt: string;
+  episodeNumber?: number;
+  highlightTag?: LocalizedString;
 }
 
 export interface Song {

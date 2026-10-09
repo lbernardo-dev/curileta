@@ -64,11 +64,12 @@ export default async function HomePage({
   }
 
   // Carga de datos dinámicos gestionables desde Backend / CMS
-  const [locations, characters, waypoints, milestones] = await Promise.all([
+  const [locations, characters, waypoints, milestones, videos] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
     cmsProvider.getTrailWaypoints(locale),
     cmsProvider.getNarrativeMilestones(locale),
+    cmsProvider.getVideos(locale),
   ]);
 
   return (
@@ -92,7 +93,7 @@ export default async function HomePage({
       <BooksScene locale={locale as Locale} />
 
       {/* Escena 05 — YouTube y Canciones */}
-      <YouTubeScene locale={locale as Locale} />
+      <YouTubeScene locale={locale as Locale} videos={videos} />
 
       {/* Escena 06 — El Universo sigue creciendo */}
       <GrowingUniverseScene locale={locale as Locale} />

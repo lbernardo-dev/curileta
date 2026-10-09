@@ -1921,6 +1921,382 @@ export const INITIAL_NARRATIVE_MILESTONES: NarrativeMilestone[] = [
   },
 ];
 
+export const INITIAL_VIDEOS: Video[] = [
+  // --- CAPÍTULOS DE LA SERIE ANIMADA ---
+  {
+    id: 'capitulo-01',
+    title: {
+      es: 'Capítulo 1: El Secreto del Árbol Más Alto',
+      en: 'Episode 1: The Secret of the Tallest Tree',
+    },
+    slug: 'capitulo-01-arbol-mas-alto',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1511497584788-87676104235f?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 1,
+    duration: '09:24',
+    publishedAt: '2026-09-01',
+    highlightTag: { es: 'Estreno Serie', en: 'Series Premiere' },
+    description: {
+      es: 'Curileta y Pompón descubren un antiguo mapa entre las ramas más altas del Bosque Encantado. La lagartija prepara su mochila y promete escribirle a su amigo en cada destino.',
+      en: 'Curileta and Pompón discover an ancient map atop the highest tree of the Enchanted Forest.',
+    },
+  },
+  {
+    id: 'capitulo-02',
+    title: {
+      es: 'Capítulo 2: Las Estrellas de Teotihuacán',
+      en: 'Episode 2: The Stars of Teotihuacan',
+    },
+    slug: 'capitulo-02-piramide-del-sol',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 2,
+    duration: '10:15',
+    publishedAt: '2026-09-08',
+    highlightTag: { es: 'México Ancestral', en: 'Ancient Mexico' },
+    description: {
+      es: 'Curileta sube los escalones de la Pirámide del Sol y conoce a Quetzal, quien le enseña a escuchar el baile de los planetas y el eco misterioso de Chichén Itzá.',
+      en: 'Curileta climbs the Sun Pyramid and meets Quetzal, who teaches her how the ancient stones converse with the stars.',
+    },
+  },
+  {
+    id: 'capitulo-03',
+    title: {
+      es: 'Capítulo 3: Entre Nubes en Machu Picchu',
+      en: 'Episode 3: Among Clouds in Machu Picchu',
+    },
+    slug: 'capitulo-03-machu-picchu',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 3,
+    duration: '08:50',
+    publishedAt: '2026-09-15',
+    highlightTag: { es: 'Cumbres Andinas', en: 'Andean Peaks' },
+    description: {
+      es: 'En las alturas de los Andes, la llama Lulú cobija a Curileta con su lana tibia y le muestra la impresionante ciudadela inca construida sin argamasa.',
+      en: 'High in the Andes, Lulú the llama shelters Curileta in her warm fleece and reveals the marvelous stone city.',
+    },
+  },
+  {
+    id: 'capitulo-04',
+    title: {
+      es: 'Capítulo 4: La Furia del Galeón de los Sueños',
+      en: 'Episode 4: Fury of the Dream Galleon',
+    },
+    slug: 'capitulo-04-galeon-de-los-suenos',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 4,
+    duration: '11:02',
+    publishedAt: '2026-09-22',
+    highlightTag: { es: 'Travesía Oceánica', en: 'Ocean Crossing' },
+    description: {
+      es: 'Viajando de polizón en un antiguo galeón por el Atlántico, una fuerte tormenta amenaza el timón. Curileta trepa al mástil para amarrar la soga salvadora.',
+      en: 'Stowing away aboard an ancient galleon across the Atlantic, Curileta climbs the mast to save the ship rudder during a storm.',
+    },
+  },
+  {
+    id: 'capitulo-05',
+    title: {
+      es: 'Capítulo 5: El Escarabajo Sabio de Giza',
+      en: 'Episode 5: The Wise Beetle of Giza',
+    },
+    slug: 'capitulo-05-piramides-de-giza',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 5,
+    duration: '09:40',
+    publishedAt: '2026-09-29',
+    highlightTag: { es: 'Egipto y Pirámides', en: 'Egypt & Pyramids' },
+    description: {
+      es: 'Bajo el sol ardiente de Egipto, Emi el escarabajo pelotero enseña a Curileta que la sombra es el mayor tesoro y la guía por los jeroglíficos secretos.',
+      en: 'Under Egypt’s blazing sun, Emi the dung beetle teaches Curileta that shade is the greatest treasure.',
+    },
+  },
+  {
+    id: 'capitulo-06',
+    title: {
+      es: 'Capítulo 6: Fuego y Hielo en la Laguna Azul',
+      en: 'Episode 6: Fire and Ice at the Blue Lagoon',
+    },
+    slug: 'capitulo-06-islandia-laguna-azul',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 6,
+    duration: '10:05',
+    publishedAt: '2026-10-06',
+    highlightTag: { es: 'Aguas Termales & Auroras', en: 'Hot Springs & Auroras' },
+    description: {
+      es: 'Curileta nada en aguas calientes mientras caen copos de nieve con Picu el frailecillo, y contempla maravillada el cielo verde de las auroras boreales.',
+      en: 'Curileta swims in geothermal waters with Picu the puffin under falling snow and dances under northern lights.',
+    },
+  },
+  {
+    id: 'capitulo-07',
+    title: {
+      es: 'Capítulo 7: Luces de Tokio y el Amigo Robot',
+      en: 'Episode 7: Tokyo Lights and the Robot Friend',
+    },
+    slug: 'capitulo-07-tokio-zipi-bot',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 7,
+    duration: '09:35',
+    publishedAt: '2026-10-13',
+    highlightTag: { es: 'Tecnología & Tradición', en: 'Future & Tradition' },
+    description: {
+      es: 'A bordo del tren bala Shinkansen entre cerezos en flor, Curileta rescata al pequeño Zipi-Bot y lo ayuda a reunirse con su dueño en el corazón de Tokio.',
+      en: 'Aboard the bullet train through cherry blossoms, Curileta helps lost Zipi-Bot reunite with his owner.',
+    },
+  },
+  {
+    id: 'capitulo-08',
+    title: {
+      es: 'Capítulo 8: Misión Joey en la Gran Roca Roja',
+      en: 'Episode 8: Mission Joey at the Great Red Rock',
+    },
+    slug: 'capitulo-08-australia-uluru',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&auto=format&fit=crop&q=80',
+    type: 'episode',
+    episodeNumber: 8,
+    duration: '10:48',
+    publishedAt: '2026-10-20',
+    highlightTag: { es: 'Aventura en el Outback', en: 'Outback Expedition' },
+    description: {
+      es: 'Curileta corre por el desierto australiano para devolver el koala de peluche Joey al bebé canguro, y recibe paseos a saltos de 4 metros con Mamá Canguro.',
+      en: 'Curileta sprints across the red sands to reunite baby kangaroo with Joey the plush koala.',
+    },
+  },
+
+  // --- VÍDEOS MUSICALES / CANCIONES OFICIALES ---
+  {
+    id: 'musical-01',
+    title: {
+      es: 'Videoclip Oficial: «El Baile del Mapa»',
+      en: 'Official Music Video: “The Map Dance”',
+    },
+    slug: 'cancion-el-baile-del-mapa',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80',
+    type: 'song',
+    duration: '03:15',
+    publishedAt: '2026-09-05',
+    highlightTag: { es: 'Coreografía Oficial', en: 'Official Coreography' },
+    description: {
+      es: '¡Aprende los puntos cardinales y los preparativos de la mochila con Curileta y Pompón al ritmo más pegadizo del Bosque Encantado!',
+      en: 'Learn the cardinal points and backpack prep with Curileta and Pompón to the catchiest beat!',
+    },
+  },
+  {
+    id: 'musical-02',
+    title: {
+      es: 'Videoclip: «Cartas en el Viento (Canción de la Amistad)»',
+      en: 'Music Video: “Letters in the Wind (Song of Friendship)”',
+    },
+    slug: 'cancion-cartas-en-el-viento',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&auto=format&fit=crop&q=80',
+    type: 'song',
+    duration: '03:42',
+    publishedAt: '2026-09-18',
+    highlightTag: { es: 'Balada Tendedero', en: 'Friendship Ballad' },
+    description: {
+      es: 'Una emotiva balada acústica sobre cómo una carta sellada con cariño acorta miles de kilómetros entre dos mejores amigos.',
+      en: 'An acoustic ballad celebrating how letters connect best friends across thousands of miles.',
+    },
+  },
+  {
+    id: 'musical-03',
+    title: {
+      es: 'Videoclip: «El Vuelo Verde de Quetzal»',
+      en: 'Music Video: “Quetzal’s Emerald Flight”',
+    },
+    slug: 'cancion-vuelo-de-quetzal',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&auto=format&fit=crop&q=80',
+    type: 'song',
+    duration: '02:54',
+    publishedAt: '2026-10-02',
+    highlightTag: { es: 'Flautas & Ritmos del Mundo', en: 'World Winds' },
+    description: {
+      es: 'Melodía con instrumentos prehispánicos de viento y percusiones que celebra la libertad y los secretos de la selva maya.',
+      en: 'Pre-Hispanic wind melodies and drumming honoring freedom and Mayan forests.',
+    },
+  },
+  {
+    id: 'musical-04',
+    title: {
+      es: 'Videoclip: «La Pizza Voladora de Chef Gino»',
+      en: 'Music Video: “Chef Gino’s Flying Pizza”',
+    },
+    slug: 'cancion-la-pizza-de-gino',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80',
+    type: 'song',
+    duration: '02:40',
+    publishedAt: '2026-10-10',
+    highlightTag: { es: 'Música Italiana', en: 'Italian Swing' },
+    description: {
+      es: 'Tarantela alegre y divertida mientras el ratoncito Gino hace girar la masa de pizza y enseña que cocinar es un arte con amor.',
+      en: 'A cheerful tarantella as little mouse chef Gino spins pizza dough through Florence streets.',
+    },
+  },
+  {
+    id: 'musical-05',
+    title: {
+      es: 'Videoclip: «Estrellas Bajo Tierra en Waitomo»',
+      en: 'Music Video: “Underground Stars in Waitomo”',
+    },
+    slug: 'cancion-estrellas-bajo-tierra',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+    type: 'song',
+    duration: '03:10',
+    publishedAt: '2026-10-16',
+    highlightTag: { es: 'Nana Bioluminiscente', en: 'Luminous Lullaby' },
+    description: {
+      es: 'Canción suave y mágica junto a Kiki el kiwi navegando en barca por las cuevas estrelladas de gusanitos de luz.',
+      en: 'A gentle, magical song gliding beneath thousands of underground glowworms with Kiki the kiwi.',
+    },
+  },
+  {
+    id: 'musical-06',
+    title: {
+      es: 'Videoclip: «El Compás de Lola la Tortuga»',
+      en: 'Music Video: “Lola Tortoise’s Flamenco Beat”',
+    },
+    slug: 'cancion-el-compas-de-lola',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1508873696983-2df5703bc20d?w=800&auto=format&fit=crop&q=80',
+    type: 'song',
+    duration: '03:02',
+    publishedAt: '2026-10-22',
+    highlightTag: { es: 'Flamenco & Raíces', en: 'Flamenco Roots' },
+    description: {
+      es: 'Rumba y palmas andaluzas con guitarra española para celebrar que el camino más emocionante siempre conduce de vuelta al hogar.',
+      en: 'Andalusian rumba and clapping celebrating that the greatest journey always leads back home.',
+    },
+  },
+
+  // --- YOUTUBE SHORTS (FORMATO VERTICAL 9:16) ---
+  {
+    id: 'short-01',
+    title: {
+      es: '¡Escalando el volcán más pequeño del planeta en 1 segundo! 🌋⚡️',
+      en: 'Climbing the smallest volcano on Earth in 1 second! 🌋⚡️',
+    },
+    slug: 'short-volcan-cuexcomate',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&auto=format&fit=crop&q=80',
+    type: 'short',
+    duration: '00:38',
+    publishedAt: '2026-09-04',
+    highlightTag: { es: 'Shorts 9:16', en: 'Shorts 9:16' },
+    description: {
+      es: 'Curileta te muestra el Cuexcomate en Puebla, México: ¡un volcán inactivo que puedes subir de un brinco!',
+      en: 'Curileta visits Cuexcomate in Mexico: a tiny inactive volcano you can climb in a single hop!',
+    },
+  },
+  {
+    id: 'short-02',
+    title: {
+      es: 'Pompón reacciona a una carta con copos de nieve dentro 📬❄️🐇',
+      en: 'Pompón reacts to a letter with snowflakes inside 📬❄️🐇',
+    },
+    slug: 'short-pompon-nieve-islandia',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600&auto=format&fit=crop&q=80',
+    type: 'short',
+    duration: '00:45',
+    publishedAt: '2026-09-12',
+    highlightTag: { es: 'Shorts 9:16', en: 'Shorts 9:16' },
+    description: {
+      es: '¡El conejito blanco casi congela su bigote al abrir la carta sellada desde la Laguna Azul de Islandia!',
+      en: 'The white bunny almost freezes his whiskers opening Curileta’s Iceland postcard!',
+    },
+  },
+  {
+    id: 'short-03',
+    title: {
+      es: '¡Un emú gigante intenta comerse mi sombrero de exploradora! 🎩🏃‍♀️',
+      en: 'A giant emu tries to eat my explorer hat! 🎩🏃‍♀️',
+    },
+    slug: 'short-el-emu-y-el-sombrero',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1550935515-fdfd4107662c?w=600&auto=format&fit=crop&q=80',
+    type: 'short',
+    duration: '00:32',
+    publishedAt: '2026-09-20',
+    highlightTag: { es: 'Shorts 9:16', en: 'Shorts 9:16' },
+    description: {
+      es: '¡En el Outback australiano los emús son muy curiosos! Curileta hace piruetas para esquivar el picotazo.',
+      en: 'In the Australian Outback emus are very curious! Curileta dodges pecks with acrobatics.',
+    },
+  },
+  {
+    id: 'short-04',
+    title: {
+      es: 'Curileta intentando bailar la Haka maorí con patitas 🦎🦶🤣',
+      en: 'Curileta trying to dance the Maori Haka with tiny feet 🦎🦶🤣',
+    },
+    slug: 'short-curileta-baila-haka',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=600&auto=format&fit=crop&q=80',
+    type: 'short',
+    duration: '00:52',
+    publishedAt: '2026-10-01',
+    highlightTag: { es: 'Shorts 9:16', en: 'Shorts 9:16' },
+    description: {
+      es: 'Kiki el kiwi no puede parar de reír viendo la pose más feroz (y diminuta) de Curileta en Nueva Zelanda.',
+      en: 'Kiki the kiwi cannot stop laughing at Curileta’s fiercest mini dance moves in New Zealand.',
+    },
+  },
+  {
+    id: 'short-05',
+    title: {
+      es: '¿Cómo hace el panda Bao para comer 12 kg de bambú al día? 🎋🐼',
+      en: 'How does Bao the panda eat 12kg of bamboo daily? 🎋🐼',
+    },
+    slug: 'short-bao-el-panda-bambu',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=600&auto=format&fit=crop&q=80',
+    type: 'short',
+    duration: '00:41',
+    publishedAt: '2026-10-09',
+    highlightTag: { es: 'Shorts 9:16', en: 'Shorts 9:16' },
+    description: {
+      es: '¡Bao demuestra su técnica secreta de pelado de bambú en lo alto de la Gran Muralla China!',
+      en: 'Bao reveals his bamboo peeling secret atop the Great Wall of China!',
+    },
+  },
+  {
+    id: 'short-06',
+    title: {
+      es: '¡Socorro! ¡Atrapada dentro de una baguette en los Alpes! 🥖🐶',
+      en: 'Help! Trapped inside a French baguette in the Alps! 🥖🐶',
+    },
+    slug: 'short-baguette-alpes-barnaby',
+    youtubeId: 'dQw4w9WgXcQ',
+    thumbnail: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80',
+    type: 'short',
+    duration: '00:36',
+    publishedAt: '2026-10-17',
+    highlightTag: { es: 'Shorts 9:16', en: 'Shorts 9:16' },
+    description: {
+      es: 'Barnaby el perro basset olfatea un queso francés y Curileta se esconde en el único lugar crujiente disponible.',
+      en: 'Barnaby sniffs out French cheese and Curileta hides in the crunchiest spot available.',
+    },
+  },
+];
+
 export class LocalCMSProvider implements CMSProvider {
   async getCharacters(locale?: string): Promise<Character[]> {
     return INITIAL_CHARACTERS;
@@ -1942,8 +2318,8 @@ export class LocalCMSProvider implements CMSProvider {
     return [];
   }
 
-  async getVideos(locale?: string): Promise<Video[]> {
-    return [];
+async getVideos(locale?: string): Promise<Video[]> {
+    return INITIAL_VIDEOS;
   }
 
   async getSongs(locale?: string): Promise<Song[]> {

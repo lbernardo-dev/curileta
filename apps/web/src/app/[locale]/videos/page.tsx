@@ -3,11 +3,12 @@ import type { Metadata } from 'next';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { YouTubeScene } from '@/features/home/YouTubeScene';
+import { cmsProvider } from '@curileta/cms';
 import { Youtube, ExternalLink } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Vídeos y Canciones Oficiales — Las Aventuras de Curileta',
-  description: 'Mira los episodios animados oficiales, trailers y canciones del canal de YouTube de Curileta.',
+  title: 'Canal Oficial de YouTube — Las Aventuras de Curileta',
+  description: 'Mira los capítulos de la serie animada, videoclips oficiales y Shorts de Curileta en YouTube.',
 };
 
 export default async function VideosPage({
@@ -22,18 +23,20 @@ export default async function VideosPage({
     notFound();
   }
 
+  const videos = await cmsProvider.getVideos(locale);
+
   return (
     <div className="bg-slate-950 text-white min-h-screen">
       <div className="pt-16 sm:pt-24 text-center max-w-3xl mx-auto px-4">
         <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
-          El Canal Audiovisual
+          El Canal de YouTube Oficial
         </h1>
         <p className="mt-4 text-slate-300 text-base sm:text-lg">
-          Episodios, videoclips y cortos musicales pensados para aprender y reír en familia.
+          Capítulos completos de la serie, vídeos musicales con coreografías y divertidos YouTube Shorts en formato vertical.
         </p>
       </div>
 
-      <YouTubeScene locale={locale as Locale} />
+      <YouTubeScene locale={locale as Locale} videos={videos} />
     </div>
   );
 }
