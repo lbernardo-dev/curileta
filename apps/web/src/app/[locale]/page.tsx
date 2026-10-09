@@ -3,14 +3,15 @@ import type { Metadata } from 'next';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { HeroScene } from '@/features/home/HeroScene';
-import { MapScene } from '@/features/home/MapScene';
-import { FriendsScene } from '@/features/home/FriendsScene';
+import { Globe3DScene } from '@/features/home/Globe3DScene';
+import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
 import { YouTubeScene } from '@/features/home/YouTubeScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
-import { GlowingTrail } from '@curileta/motion';
+import { ExpeditionTrail } from '@curileta/motion';
+import { cmsProvider } from '@curileta/cms';
 
 export async function generateMetadata({
   params,
@@ -61,33 +62,40 @@ export default async function HomePage({
     notFound();
   }
 
+  // Carga de datos dinámicos gestionables desde Backend / CMS
+  const [locations, characters, waypoints] = await Promise.all([
+    cmsProvider.getLocations(locale),
+    cmsProvider.getCharacters(locale),
+    cmsProvider.getTrailWaypoints(locale),
+  ]);
+
   return (
     <article className="flex flex-col w-full relative">
-      {/* Hilo visual conductor: Sendero luminoso continuo animado con GSAP */}
-      <GlowingTrail />
+      {/* Hilo visual conductor: Trazado de avance de expedición con líneas discontinuas y viñetas */}
+      <ExpeditionTrail waypoints={waypoints} locale={locale} />
 
       {/* Escena 01 — Hero: Bosque Encantado y Curileta */}
       <HeroScene locale={locale as Locale} />
 
-      {/* Escena 02 y 03 — El Mapa cobra vida y los Lugares se convierten en aventuras */}
-      <MapScene locale={locale as Locale} />
+      {/* Escena 02 — Globo Terráqueo 3D Interactivo con Three.js */}
+      <Globe3DScene locale={locale as Locale} locations={locations} />
 
-      {/* Escena 04 — Los Amigos: Pompón, Quetzal, Lulú */}
-      <FriendsScene locale={locale as Locale} />
+      {/* Escena 03 — El Espacio de los Personajes con Efecto 3D Tilt y Fichas de Explorador */}
+      <CharacterHubScene locale={locale as Locale} characters={characters} />
 
-      {/* Escena 05 — Los Libros */}
+      {/* Escena 04 — Los Libros */}
       <BooksScene locale={locale as Locale} />
 
-      {/* Escena 06 y 07 — YouTube y Canciones */}
+      {/* Escena 05 — YouTube y Canciones */}
       <YouTubeScene locale={locale as Locale} />
 
-      {/* Escena 08 — El Universo sigue creciendo */}
+      {/* Escena 06 — El Universo sigue creciendo */}
       <GrowingUniverseScene locale={locale as Locale} />
 
-      {/* Escena 09 — Colaboraciones y Licensing B2B */}
+      {/* Escena 07 — Colaboraciones y Licensing B2B */}
       <CollaborationsScene locale={locale as Locale} />
 
-      {/* Escena 10 — Cierre del círculo narrativo */}
+      {/* Escena 08 — Cierre del círculo narrativo */}
       <ClosingScene locale={locale as Locale} />
     </article>
   );

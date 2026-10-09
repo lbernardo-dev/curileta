@@ -13,6 +13,16 @@ export interface Character {
   species?: string;
   personality?: string[];
   values?: string[];
+  passportRole?: LocalizedString;
+  explorerStats?: {
+    curiosity: number;
+    courage: number;
+    agility: number;
+    wisdom: number;
+  };
+  backpackItems?: LocalizedString[];
+  curiosityFacts?: LocalizedString[];
+  voiceQuote?: LocalizedString;
   mainImage: {
     url: string;
     alt: LocalizedString;
@@ -69,9 +79,16 @@ export interface Location {
   name: LocalizedString;
   slug: string;
   country: LocalizedString;
-  coordinates?: {
+  theme?: LocalizedString;
+  climate?: LocalizedString;
+  coordinates: {
     lat: number;
     lng: number;
+  };
+  passportStamp?: {
+    icon: string;
+    code: string;
+    color: string;
   };
   description: LocalizedString;
   heroImage: {
@@ -80,6 +97,19 @@ export interface Location {
   };
   curiosities?: LocalizedString[];
   characters?: string[];
+}
+
+export interface TrailWaypoint {
+  id: string;
+  stepNumber: number;
+  title: LocalizedString;
+  subtitle: LocalizedString;
+  stampCode: string;
+  coordinatesText: string;
+  badgeIcon: string;
+  dateStamp: string;
+  note: LocalizedString;
+  color: string;
 }
 
 export interface Video {
