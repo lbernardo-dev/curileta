@@ -133,3 +133,25 @@ html.dark {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   TEMPORARY SEASONAL THEME: HALLOWEEN
+   Active only during the event window (Oct 1 - Nov 5).
+   Reverts automatically to original theme when event concludes.
+   ============================================================ */
+html[data-seasonal-theme="halloween"] {
+  --color-adventure-gold: #f97316;
+  --color-adventure-gold-light: #fb923c;
+  --seasonal-accent: #f97316;
+  --seasonal-glow: rgba(249, 115, 22, 0.45);
+}
+
+html[data-seasonal-theme="halloween"] ::selection {
+  background-color: #ea580c;
+  color: #ffffff;
+}
+
+html[data-seasonal-theme="halloween"] ::-webkit-scrollbar-thumb {
+  background: #ea580c;
+}
+

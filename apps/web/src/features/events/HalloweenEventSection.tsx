@@ -60,6 +60,13 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
     }
   };
 
+  // Solo se renderiza mientras el evento estacional esté activo y dentro de sus fechas
+  if (!event || !event.active) {
+    return null;
+  }
+
+  const isEn = locale === 'en';
+
   return (
     <section
       id="evento-halloween"
@@ -88,18 +95,34 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-950/90 border border-orange-500/50 text-orange-300 text-xs font-black uppercase tracking-widest mb-4 shadow-xl shadow-orange-950/40 backdrop-blur-md">
             <span>🎃</span>
-            <span>EVENTO TEMPORAL • ESPECIAL DE HALLOWEEN 2026</span>
+            <span>
+              {isEn
+                ? 'LIMITED SEASONAL THEME • ACTIVE UNTIL NOVEMBER 5'
+                : 'EVENTO TEMPORAL • ACTIVO HASTA EL 5 DE NOVIEMBRE'}
+            </span>
           </div>
 
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-            El Huerto de las Calabazas Encantadas.<br />
+            {isEn ? 'The Enchanted Pumpkin Patch.' : 'El Huerto de las Calabazas Encantadas.'}
+            <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-purple-400">
-              Una noche de magia y linternas doradas.
+              {isEn ? 'A night of gentle magic and golden lanterns.' : 'Una noche de magia y linternas doradas.'}
             </span>
           </h2>
 
           <p className="mt-4 text-base sm:text-lg text-purple-200/90 leading-relaxed">
-            Cada festividad transforma el Bosque de Curileta. En Halloween las historias no dan miedo: se llenan de secretos amistosos, calabazas cantarinas y recetas de otoño para disfrutar en familia.
+            {isEn
+              ? 'Each holiday season transforms Curileta’s Forest. During Halloween, stories are not scary: they are filled with friendly secrets, singing pumpkins, and autumn family recipes.'
+              : 'Cada festividad transforma el Bosque de Curileta. En Halloween las historias no dan miedo: se llenan de secretos amistosos, calabazas cantarinas y recetas de otoño para disfrutar en familia.'}
+          </p>
+
+          <p className="mt-2 text-xs sm:text-sm text-amber-300/80 font-semibold inline-flex items-center gap-1.5">
+            <span>✨</span>
+            <span>
+              {isEn
+                ? 'Temporary seasonal theme: when the event concludes on Nov 5, the website automatically reverts to its original forest theme.'
+                : 'Tema estacional temporal: al concluir la festividad el 5 de noviembre, la web vuelve automáticamente a su tema original.'}
+            </span>
           </p>
 
           {/* Contador regresivo hasta el estreno */}

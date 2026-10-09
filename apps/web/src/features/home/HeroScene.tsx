@@ -4,13 +4,24 @@ import React from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { Button } from '@curileta/design-system';
+import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
 import { Sparkles, MapPin, Compass, ArrowDown } from 'lucide-react';
 
 export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
+  const { isSeasonalActive, themeKey } = useSeasonalTheme();
+  const isEn = locale === 'en';
+  const isHalloween = isSeasonalActive && themeKey === 'halloween';
+
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-emerald-100/90 via-emerald-50 to-emerald-100/80 dark:from-emerald-950 dark:via-emerald-900 dark:to-emerald-950 text-slate-900 dark:text-white px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      {/* Dynamic ambient background glow & forest mist */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(52,211,153,0.25),rgba(255,255,255,0))]" />
+      {/* Dynamic ambient background glow & forest mist (warm pumpkin tint when Halloween theme is active) */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${
+          isHalloween
+            ? 'bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(249,115,22,0.18),rgba(255,255,255,0))]'
+            : 'bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(52,211,153,0.25),rgba(255,255,255,0))]'
+        }`}
+      />
       
       {/* Decorative floating fireflies / magical particles */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
@@ -18,13 +29,42 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
         <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-emerald-500 dark:bg-emerald-300 animate-pulse delay-700 blur-[1px]" />
         <div className="absolute top-2/3 left-1/3 w-2.5 h-2.5 rounded-full bg-sky-400 dark:bg-sky-300 animate-pulse delay-1000 blur-[1px]" />
         <div className="absolute bottom-1/4 right-1/6 w-2 h-2 rounded-full bg-amber-300 dark:bg-amber-200 animate-pulse delay-500 blur-[1px]" />
+        {isHalloween && (
+          <>
+            <div className="absolute top-1/5 right-1/6 text-xl animate-bounce delay-300 opacity-60">
+              🎃
+            </div>
+            <div className="absolute bottom-1/3 left-1/8 text-lg animate-pulse delay-700 opacity-50">
+              🍂
+            </div>
+          </>
+        )}
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-200/80 dark:bg-emerald-800/60 border border-emerald-300 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm font-bold tracking-wide uppercase mb-6 backdrop-blur-md shadow-md">
-          <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>El Bosque Encantado — Punto de Partida</span>
+        <div
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-bold tracking-wide uppercase mb-6 backdrop-blur-md shadow-md transition-all duration-500 ${
+            isHalloween
+              ? 'bg-orange-500/20 dark:bg-orange-950/70 border-orange-500/50 text-orange-900 dark:text-orange-200'
+              : 'bg-emerald-200/80 dark:bg-emerald-800/60 border-emerald-300 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-200'
+          }`}
+        >
+          <Sparkles
+            className={`w-4 h-4 animate-spin ${
+              isHalloween ? 'text-orange-500 dark:text-orange-400' : 'text-amber-500 dark:text-amber-400'
+            }`}
+            style={{ animationDuration: '6s' }}
+          />
+          <span>
+            {isHalloween
+              ? isEn
+                ? 'The Enchanted Forest — Halloween Season 🎃'
+                : 'El Bosque Encantado — Especial de Halloween 🎃'
+              : isEn
+              ? 'The Enchanted Forest — Starting Point'
+              : 'El Bosque Encantado — Punto de Partida'}
+          </span>
         </div>
 
         {/* Main Title */}
@@ -85,7 +125,15 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
 
           <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-300 text-emerald-950 text-xs sm:text-sm font-black px-6 py-2 rounded-full shadow-[0_6px_16px_rgba(245,158,11,0.4)] whitespace-nowrap border-2 border-amber-100 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-900" />
-            <span>¡Hola, soy Curileta! 👋</span>
+            <span>
+              {isHalloween
+                ? isEn
+                  ? 'Hi, I’m Curileta! 👋 🎃'
+                  : '¡Hola, soy Curileta! 👋 🎃'
+                : isEn
+                ? 'Hi, I’m Curileta! 👋'
+                : '¡Hola, soy Curileta! 👋'}
+            </span>
           </div>
         </div>
 

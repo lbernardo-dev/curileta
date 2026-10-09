@@ -1,5 +1,5 @@
-import { CMSProvider } from './CMSProvider';
-import {
+import type { CMSProvider } from './CMSProvider.ts';
+import type {
   Character,
   Book,
   Adventure,
@@ -11,7 +11,7 @@ import {
   MentionedCuriosity,
   Wallpaper,
   SeasonalEvent,
-} from './models';
+} from './models.ts';
 
 export const INITIAL_CHARACTERS: Character[] = [
   {
@@ -2609,7 +2609,7 @@ export const INITIAL_SEASONAL_EVENTS: SeasonalEvent[] = [
     },
     themeKey: 'halloween',
     active: true,
-    startDate: '2026-10-15T00:00:00Z',
+    startDate: '2026-10-01T00:00:00Z',
     endDate: '2026-11-05T23:59:59Z',
     bannerImage: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1600&auto=format&fit=crop&q=80',
     ambientDecorations: {
@@ -2718,13 +2718,44 @@ async getVideos(locale?: string): Promise<Video[]> {
     return INITIAL_WALLPAPERS;
   }
 
-  async getActiveEvent(locale?: string): Promise<SeasonalEvent | null> {
-    return INITIAL_SEASONAL_EVENTS.find((e) => e.active) || null;
+  async getActiveEvent(locale?: string, referenceDate: Date = new Date()): Promise<SeasonalEvent | null> {
+    return INITIAL_SEASONAL_EVENTS.find((e) => isSeasonalEventActive(e, referenceDate)) || null;
   }
 
   async getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]> {
     return INITIAL_SEASONAL_EVENTS;
   }
+}
+
+/**
+ * Determina si un evento estacional está activo en una fecha dada.
+ * Comprueba tanto el rango exacto de fechas ISO como la ventana anual (mes y día).
+ * Permite además override por variable de entorno NEXT_PUBLIC_SEASONAL_OVERRIDE.
+ */
+export function isSeasonalEventActive(event: SeasonalEvent, now: Date = new Date()): boolean {
+  if (!event.active) return false;
+
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_SEASONAL_OVERRIDE === 'none') {
+    return false;
+  }
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_SEASONAL_OVERRIDE === event.themeKey) {
+    return true;
+  }
+
+  const start = new Date(event.startDate);
+  const end = new Date(event.endDate);
+
+  // Comprobación de rango exacto
+  if (now >= start && now <= end) {
+    return true;
+  }
+
+  // Comprobación de ventana estacional por mes y día para soporte anual
+  const currentYear = now.getFullYear();
+  const windowStart = new Date(Date.UTC(currentYear, start.getUTCMonth(), start.getUTCDate(), 0, 0, 0));
+  const windowEnd = new Date(Date.UTC(currentYear, end.getUTCMonth(), end.getUTCDate(), 23, 59, 59));
+
+  return now >= windowStart && now <= windowEnd;
 }
 
 export const cmsProvider = new LocalCMSProvider();

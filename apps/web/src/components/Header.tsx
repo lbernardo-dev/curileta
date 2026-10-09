@@ -6,6 +6,7 @@ import { Locale, getMessages } from '@curileta/i18n';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 import { SkipLink, Button } from '@curileta/design-system';
+import { SeasonalBanner } from './SeasonalBanner';
 import { Menu, X, Compass, Sparkles, Youtube } from 'lucide-react';
 
 export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
@@ -26,6 +27,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
   return (
     <>
       <SkipLink targetId="main-content" label={t.accessibility.skipToContent} />
+      <SeasonalBanner locale={locale} />
       <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/85 dark:bg-slate-950/85 border-b border-emerald-100 dark:border-emerald-950/70 shadow-sm dark:shadow-none transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Logo Brand */}
