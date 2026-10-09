@@ -1,0 +1,42 @@
+name: CI Pipeline — Las Aventuras de Curileta
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Typecheck, Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Typecheck Workspaces
+        run: |
+          npm run typecheck --workspace=apps/web
+          npm run typecheck --workspace=apps/studio
+
+      - name: Run Automated Unit Tests
+        run: npm test
+
+      - name: Build Next.js Web App
+        run: npm run build --workspace=apps/web
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
