@@ -11,6 +11,10 @@ import type {
   MentionedCuriosity,
   Wallpaper,
   SeasonalEvent,
+  LetterItem,
+  UniverseRoadmapItem,
+  CollaborationOpportunity,
+  SiteSettings,
 } from './models.ts';
 
 export const INITIAL_CHARACTERS: Character[] = [
@@ -1330,8 +1334,8 @@ export const INITIAL_BOOKS: Book[] = [
       alt: { es: 'Portada oficial de Las Aventuras de Curileta', en: 'Official cover of The Adventures of Curileta' },
     },
     description: {
-      es: 'La historia de una pequeña y muy curiosa lagartija que viaja por México, Perú, Egipto, Islandia, Japón, Australia, Nueva Zelanda, China, Italia y Francia, escribiendo cartas a su amigo el conejito Pompón, hasta descubrir que el mayor tesoro del mundo siempre es el hogar.',
-      en: 'The story of a curious little lizard who travels the globe writing letters to her bunny friend Pompón, discovering that the greatest treasure is home.',
+      es: 'La historia oficial de una curiosa lagartija que viaja por México, Perú, Egipto, Islandia, Japón, Australia, Nueva Zelanda, China, Italia y Francia, enviando cartas y sellos a su amigo Pompón, hasta descubrir que el mayor tesoro es el hogar.',
+      en: 'The official story of a curious little lizard who travels through Mexico, Peru, Egypt, Iceland, Japan, Australia, New Zealand, China, Italy, and France, sending letters and stamps to her friend Pompón, until discovering that the greatest treasure is home.',
     },
     publicationDate: '2026-05-01',
     isbn: ['978-84-123456-0-1'],
@@ -1339,6 +1343,12 @@ export const INITIAL_BOOKS: Book[] = [
     ageRange: '4–10 años',
     pageCount: 64,
     publisher: 'Curileta Publishing',
+    badge: {
+      es: 'Libro Oficial • Novedad 2026',
+      en: 'Official Book • 2026 Novelty',
+    },
+    colorTheme: 'from-emerald-600 via-amber-600 to-teal-700',
+    destinations: ['México', 'Perú', 'Egipto', 'Islandia', 'Japón', 'Australia', 'Nueva Zelanda', 'China', 'Italia', 'Francia', 'España'],
     purchaseLinks: [
       { storeName: 'Preventa Exclusiva', url: 'https://curileta.com' },
       { storeName: 'Casa del Libro', url: 'https://www.casadellibro.com' },
@@ -1346,6 +1356,43 @@ export const INITIAL_BOOKS: Book[] = [
     ],
     characters: ['curileta', 'pompon', 'quetzal', 'lulu', 'emi', 'picu', 'zipi-bot', 'canguro-mama', 'canguro-bebe', 'joey', 'kiki', 'bao', 'gino', 'lola', 'pez-volador', 'ornitorrinco', 'emu', 'basset', 'cobaya'],
     locations: ['espana-inicio', 'mexico', 'peru', 'egipto', 'islandia', 'japon', 'australia', 'nueva-zelanda', 'china', 'italia', 'francia', 'espana-regreso'],
+  },
+  {
+    id: 'curileta-y-el-misterio-marino',
+    title: {
+      es: 'Curileta y el Misterio Marino',
+      en: 'Curileta and the Marine Mystery',
+    },
+    slug: 'curileta-y-el-misterio-marino',
+    subtitle: {
+      es: 'Volumen 2 — El Mar de Filipinas y las Marianas',
+      en: 'Volume 2 — The Philippine Sea & the Marianas',
+    },
+    coverImage: {
+      url: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&auto=format&fit=crop&q=80',
+      alt: { es: 'Portada de Curileta y el Misterio Marino', en: 'Cover of Curileta and the Marine Mystery' },
+    },
+    description: {
+      es: 'Inspirado en la travesía en velero con el pez volador Glub y las aguas bioluminiscentes, una expedición a las profundidades más secretas de la Tierra.',
+      en: 'Inspired by the sailboat crossing with flying fish Glub and bioluminescent waters, an expedition to the deepest secrets on Earth.',
+    },
+    publicationDate: '2026-11-01',
+    isbn: ['978-84-123456-0-2'],
+    languages: ['Español', 'English'],
+    ageRange: '5–11 años',
+    pageCount: 56,
+    publisher: 'Curileta Publishing',
+    badge: {
+      es: 'Próxima Expedición',
+      en: 'Next Expedition',
+    },
+    colorTheme: 'from-cyan-600 via-blue-600 to-indigo-800',
+    destinations: ['Mar de Filipinas', 'Fosa de las Marianas', 'Arrecifes'],
+    purchaseLinks: [
+      { storeName: 'Preventa Próxima', url: 'https://curileta.com' },
+    ],
+    characters: ['curileta', 'pez-volador'],
+    locations: ['mar-filipinas', 'marianas'],
   },
 ];
 
@@ -2290,6 +2337,661 @@ export const INITIAL_SEASONAL_EVENTS: SeasonalEvent[] = [
   },
 ];
 
+export const INITIAL_LETTERS: LetterItem[] = [
+  {
+    id: 'mexico',
+    order: 1,
+    country: { es: 'México', en: 'Mexico' },
+    city: { es: 'Teotihuacán & CDMX', en: 'Teotihuacan & CDMX' },
+    postmark: 'TEOTIHUACÁN • 19.69°N • CARTA 01',
+    postageColor: '#f59e0b',
+    envelopeColor: 'from-amber-950/90 to-yellow-950/80',
+    greeting: {
+      es: 'Querido Pompón:',
+      en: 'Dear Pompón:',
+    },
+    body: {
+      es: [
+        '¡México es increíble! He probado algo llamado “chocolate”, que aquí inventaron hace mucho tiempo, ¡pero el de antes era picante!',
+        'He subido a una pirámide tan alta que casi toco las nubes. Por cierto, aquí las lagartijas tenemos parientes que parecen dragones y se llaman Iguanas.',
+        'Además, he aprendido cosas asombrosas: en Chichén Itzá, si aplaudes frente a la pirámide de Kukulcán, ¡el eco suena exactamente como el canto del Quetzal!',
+        'Y en Puebla está el volcán Cuexcomate: ¡mide solo 13 metros y lo escalé en un segundo!',
+      ],
+      en: [
+        'Mexico is incredible! I tasted something called “chocolate,” invented here long ago, but back then it was spicy!',
+        'I climbed a pyramid so tall I nearly touched the clouds. Also, we lizards have dragon-like relatives here called Iguanas.',
+        'Plus, at Chichén Itzá, clapping in front of Kukulcán pyramid echoes exactly like the sacred Quetzal song!',
+        'And in Puebla lies the Cuexcomate volcano: only 13 meters tall, I climbed it in a flash!',
+      ],
+    },
+    signOff: {
+      es: 'P.D. Te envío algunas fotos que me he tomado para ti. ¡Te echo de menos! Con amor, Curileta.',
+      en: 'P.S. Sending you photos I took for you. Miss you! With love, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Resina de Chicozapote', en: 'Chicozapote Tree Resin' },
+        fact: { es: 'Los mayas y aztecas obtenían la resina para mascarla. ¡Así nació el chicle que conocemos!', en: 'Mayans and Aztecs chewed tree resin, giving birth to modern chewing gum!' },
+        tag: 'ORIGEN DEL CHICLE',
+      },
+      {
+        title: { es: 'mmm... Chocolate Picante', en: 'mmm... Spicy Chocolate' },
+        fact: { es: 'El “alimento de los dioses” (Theobroma cacao) funcionaba como moneda de intercambio.', en: 'The “food of the gods” served as sacred currency among ancient Aztecs.' },
+        tag: 'MONEDA ANCESTRAL',
+      },
+      {
+        title: { es: 'Volcán Cuexcomate (13m)', en: 'Cuexcomate Volcano (13m)' },
+        fact: { es: 'El volcán más diminuto del planeta, en medio de la ciudad con una escalera de caracol.', en: 'World’s tiniest volcano, right in the city with a spiral staircase to its crater.' },
+        tag: 'VOLCÁN ENANO',
+      },
+    ],
+  },
+  {
+    id: 'peru',
+    order: 2,
+    country: { es: 'Perú', en: 'Peru' },
+    city: { es: 'Machu Picchu & Cusco', en: 'Machu Picchu & Cusco' },
+    postmark: 'MACHU PICCHU • 2.430m • CARTA 02',
+    postageColor: '#10b981',
+    envelopeColor: 'from-emerald-950/90 to-teal-950/80',
+    greeting: {
+      es: '¡Hola de nuevo, Pompón!',
+      en: 'Hello again, Pompón!',
+    },
+    body: {
+      es: [
+        'He llegado a un lugar tan alto que las nubes te pasan por las rodillas. Se llama Machu Picchu. He hecho una nueva amiga muy peluda que me ha prestado su lana para no tener frío: ¡la llama Lulú!',
+        '¡Aquí las montañas tienen caras y las piedras cuentan historias! He descubierto que existen más de 3.000 tipos de patatas diferentes. ¡Imagínate una cena con tantas opciones!',
+        'Las piedras incas encajan con tanta precisión que no cabe ni una tarjeta. Y cuando hay terremotos, ¡bailan y vuelven a su lugar exacto!',
+        'Por cierto, ¡he visto a tus parientes! Los Cuyes (conejillos de indias) son famosísimos aquí en los Andes.',
+      ],
+      en: [
+        'I reached a sanctuary so high clouds drift past your knees. It’s Machu Picchu! I made a woolly friend named Lulú the Llama.',
+        'Mountains have faces and stones tell stories! Did you know there are over 3,000 potato varieties here?',
+        'Inca masonry is so precise not even a card fits through. In earthquakes, the stones dance and settle right back!',
+        'And I found your fluffy relatives! Cuyes (guinea pigs) are celebrated throughout the Andes.',
+      ],
+    },
+    signOff: {
+      es: 'Un abrazo saltarín, Curileta.',
+      en: 'A bouncy leap of love, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: '3.000 Tipos de Patatas', en: '3,000 Potato Varieties' },
+        fact: { es: 'Moradas, amarillas, rayadas y doradas cultivadas en terrazas agrícolas verticales.', en: 'Purple, yellow, striped, and golden spuds grown across vertical mountain terraces.' },
+        tag: 'BIODIVERSIDAD',
+      },
+      {
+        title: { es: 'Líneas de Nazca', en: 'Mysterious Nazca Lines' },
+        fact: { es: 'Dibujos gigantes de animales en el desierto conservados por la falta de viento.', en: 'Giant animal geoglyphs preserved for millennia in the rainless desert sand.' },
+        tag: 'MISTERIO ANDINO',
+      },
+      {
+        title: { es: 'Conejillos de Indias (Cuy)', en: 'Andean Guinea Pigs (Cuy)' },
+        fact: { es: 'No vienen de la India, sino de los Andes. ¡Aparecen en cuadros y leyendas antiguas!', en: 'Native to the Andes, revered and painted across centuries of folklore.' },
+        tag: 'PARIENTES DE POMPÓN',
+      },
+    ],
+  },
+  {
+    id: 'egipto',
+    order: 3,
+    country: { es: 'Egipto', en: 'Egypt' },
+    city: { es: 'Guiza & Río Nilo', en: 'Giza & Nile River' },
+    postmark: 'GIZA • VALLE DEL NILO • CARTA 03',
+    postageColor: '#eab308',
+    envelopeColor: 'from-amber-950/90 to-orange-950/80',
+    greeting: {
+      es: '¡Mi querido Pompón!',
+      en: 'My dearest Pompón!',
+    },
+    body: {
+      es: [
+        '¡No vas a creer lo que me pasó! Cruzando el océano en el viejo galeón, una tormenta gigante sacudió el barco. Con mis patitas pegajosas trepé al mástil y amarré una cuerda suelta. ¡Salvé el timón y el viaje!',
+        'Ahora te escribo desde Egipto, donde el sol brilla como oro fundido. Estoy frente a la Gran Pirámide: ¡hecha con más de 2 millones de bloques que pesan más que un elefante!',
+        'He conocido a un Escarabajo Pelotero llamado “Emi”. Me enseñó que el verdadero tesoro del desierto es la sombra, y me guió por pasadizos secretos llenos de jeroglíficos.',
+        '¿Y sabes qué? ¡Los antiguos egipcios dormían con almohadas de madera o piedra para no estropear sus peinados!',
+      ],
+      en: [
+        'You won’t believe what happened! Crossing the ocean, a monster tempest struck. With my sticky paws I climbed the mast and secured the helm!',
+        'Now writing from Egypt, where the sun shines like molten gold. The Great Pyramid has over 2 million stone blocks heavier than elephants!',
+        'Emi the Dung Beetle taught me that the true treasure of the sands is shade, guiding me through hieroglyphic corridors.',
+        'And ancient Egyptians slept on wooden or stone headrests to preserve elaborate hairstyles!',
+      ],
+    },
+    signOff: {
+      es: '¡Te extraño mucho, Pompón! Muchos besitos de arena, Curileta.',
+      en: 'Miss you dearly, Pompón! Sand kisses, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Río Nilo que Fluye al Revés', en: 'The South-to-North Nile' },
+        fact: { es: 'Fluye de sur a norte regando todo el desierto. ¡Sin su limo negro no habría flores!', en: 'Flows south to north, giving life and black silt to bloom in the desert.' },
+        tag: 'AGUA SAGRADA',
+      },
+      {
+        title: { es: 'Almohadas de Piedra', en: 'Stone Headrest Pillows' },
+        fact: { es: 'Talladas para dejar circular el aire fresco por el cuello bajo el sol de 80°C.', en: 'Carved to circulate cool air around the neck beneath blazing 80°C heat.' },
+        tag: 'INVENTO EGIPCIO',
+      },
+      {
+        title: { es: 'Escarabajo Pelotero Emi', en: 'Emi the Dung Beetle' },
+        fact: { es: 'Símbolo del sol naciente Ra, empujando su esfera de vida con infinita paciencia.', en: 'Symbol of the rising sun Ra, rolling his sphere with tireless patience.' },
+        tag: 'GUÍA DEL DESIERTO',
+      },
+    ],
+  },
+  {
+    id: 'islandia',
+    order: 4,
+    country: { es: 'Islandia', en: 'Iceland' },
+    city: { es: 'Laguna Azul & Géiseres', en: 'Blue Lagoon & Geysers' },
+    postmark: 'REYKJAVÍK • 64.96°N • CARTA 04',
+    postageColor: '#38bdf8',
+    envelopeColor: 'from-sky-950/90 to-blue-950/80',
+    greeting: {
+      es: '¡Querido Pompón!',
+      en: 'Dear Pompón!',
+    },
+    body: {
+      es: [
+        '¡Brrr! Te escribo esta carta con una patita mientras me caliento la otra. ¡He llegado a Islandia! Es como si un volcán y un cubito de hielo se hubieran hecho mejores amigos.',
+        'Caminando por lava negra, ¡BOOM! Un géiser disparó agua hirviendo hacia el cielo. Menos mal que conocí a Picu el Frailecillo, que me invitó a un baño caliente en la Laguna Azul mientras caían copos de nieve.',
+        'Por la noche, el cielo se llena de luces verdes y moradas que bailan solas: ¡las Auroras Boreales! Y aquí hornean el pan enterrándolo bajo la tierra cerca de las zonas volcánicas.',
+        '¿Lo mejor? ¡No hay ni un solo mosquito en toda la isla! Aunque para mí hay menos snacks, ¡para explorar es genial!',
+      ],
+      en: [
+        'Brrr! Writing with one paw while warming the other. Iceland is like a volcano and an ice cube becoming best friends!',
+        'Suddenly BOOM! A geyser shot boiling water into the clouds. Picu the Puffin showed me the warm Blue Lagoon as snowflakes fell.',
+        'At night, green and purple lights dance across the sky: Northern Lights! They even bake bread underground with volcano heat for 24h.',
+        'And there isn’t a single mosquito on the entire island! Fewer snacks for a lizard, but wonderful for exploring!',
+      ],
+    },
+    signOff: {
+      es: 'Te mando un abrazo muy apretado para no perder el calor. Tu exploradora valiente, Curileta.',
+      en: 'A tight warm hug against the frost. Your brave explorer, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Pan Volcánico Bajo Tierra', en: 'Underground Volcano Bread' },
+        fact: { es: 'Masa horneada durante 24 horas con el calor natural de manantiales hirvientes.', en: 'Sweet rye bread baked slowly for 24 hours in boiling geothermal ground.' },
+        tag: 'MAGIA VOLCÁNICA',
+      },
+      {
+        title: { es: 'Auroras Boreales Danzantes', en: 'Dancing Auroras' },
+        fact: { es: 'Partículas solares chocando contra la atmósfera terrestre en cortinas de seda verde.', en: 'Solar wind colliding with Earth’s atmosphere in glowing emerald curtains.' },
+        tag: 'CIELO MÁGICO',
+      },
+      {
+        title: { es: 'Géiseres con Hipo', en: 'Geysers of the Earth' },
+        fact: { es: 'Ollas a presión naturales que disparan chorros de agua pura a más de 20 metros.', en: 'Natural subterranean pressure pots erupting 20-meter steaming geysers.' },
+        tag: 'FUERZA PURA',
+      },
+    ],
+  },
+  {
+    id: 'japon',
+    order: 5,
+    country: { es: 'Japón', en: 'Japan' },
+    city: { es: 'Tokio & Monte Fuji', en: 'Tokyo & Mount Fuji' },
+    postmark: 'TOKIO • SHINKANSEN • CARTA 05',
+    postageColor: '#f43f5e',
+    envelopeColor: 'from-rose-950/90 to-red-950/80',
+    greeting: {
+      es: '¡Hola, mi querido Pompón!',
+      en: 'Hello, my dear Pompón!',
+    },
+    body: {
+      es: [
+        '¡Kon’nichiwa! ¡Japón es el lugar más loco y divertido que he visitado! Me subí al Shinkansen (tren bala) que vuela tan rápido que mi reflejo en el cristal se quedó atrás.',
+        'Allí conocí a Zipi-Bot, un pequeño robot de juguete perdido al que ayudé a encontrar a su dueño. ¡Incluso canta canciones alegres!',
+        'He visto sandías con forma de cubo para que quepan en la nevera, zapatillas exclusivas para entrar al baño, y cafeterías donde la gente va solo para acariciar búhos y gatos.',
+        'Y he contemplado el Monte Fuji: un volcán sagrado tan perfecto que parece dibujado con un lápiz y coronado con un sombrero blanco de nieve.',
+      ],
+      en: [
+        'Kon’nichiwa! Japan is thrilling! I rode the Shinkansen bullet train which flies so fast my reflection lagged behind.',
+        'I helped Zipi-Bot, a lost toy robot, reunite with his owner. He even sings cheerful melodies!',
+        'I saw cube-shaped watermelons, special bathroom-only slippers, and cafes dedicated to petting friendly owls and cats.',
+        'And I gazed upon Mount Fuji: a sacred volcano so symmetrical it looks hand-drawn, topped with a crisp snowy hat.',
+      ],
+    },
+    signOff: {
+      es: 'Sayonara, de tu amiga Curileta.',
+      en: 'Sayonara, from your friend Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Sandías Cuadradas', en: 'Square Watermelons' },
+        fact: { es: 'Cultivadas dentro de cajas de cristal para que no rueden y encajen en las baldas.', en: 'Grown inside glass molds so they don’t roll away in compact refrigerators.' },
+        tag: 'INVENTO CURIOSO',
+      },
+      {
+        title: { es: 'Monte Fuji Sagrado', en: 'Sacred Mount Fuji' },
+        fact: { es: 'Son en realidad tres volcanes superpuestos, venerados como símbolo del amanecer.', en: 'Three volcanoes layered in one, revered as the spiritual symbol of sunrise.' },
+        tag: 'VOLCÁN SAGRADO',
+      },
+      {
+        title: { es: 'Zipi-Bot & Robots', en: 'Zipi-Bot & Companions' },
+        fact: { es: 'En Japón la tecnología convive en perfecta armonía con los templos milenarios.', en: 'Ultra-modern robots live side by side with peaceful ancient wooden shrines.' },
+        tag: 'FUTURO Y TRADICIÓN',
+      },
+    ],
+  },
+  {
+    id: 'australia',
+    order: 6,
+    country: { es: 'Australia', en: 'Australia' },
+    city: { es: 'Uluru & Hyams Beach', en: 'Uluru & Hyams Beach' },
+    postmark: 'OUTBACK • ULURU • CARTA 06',
+    postageColor: '#ea580c',
+    envelopeColor: 'from-orange-950/90 to-amber-950/80',
+    greeting: {
+      es: '¡Mi queridísimo Pompón! G’day mate!',
+      en: 'My dearest Pompón! G’day mate!',
+    },
+    body: {
+      es: [
+        '¡Aquí todo está al revés! He rescatado el peluche de un bebé canguro llamado Joey en pleno desierto rojo del Outback.',
+        'En agradecimiento, ¡Mamá Canguro me llevó en su marsupio y dimos saltos de 4 metros en el aire! Sentí lo que es volar sin tener alas.',
+        'He conocido al ornitorrinco: ¡tiene pico de pato, cola de castor, patas de nutria y pone huevos! Es el chiste más divertido de la naturaleza.',
+        'Y en Hyams Beach caminé sobre la arena más blanca del planeta: es tan pura que chirría como azúcar bajo las patitas.',
+      ],
+      en: [
+        'Everything is upside-down here! I rescued baby kangaroo Joey’s toy koala in the vast red Outback.',
+        'In thanks, Mama Kangaroo gave me a ride in her pouch with 4-meter leaps! I felt what it’s like to fly without wings.',
+        'I met the platypus: duck bill, beaver tail, otter feet, and lays eggs! Nature’s most charming puzzle.',
+        'At Hyams Beach, I walked upon the whitest sand on Earth: so pure it squeaks like sugar beneath your paws.',
+      ],
+    },
+    signOff: {
+      es: 'Un salto gigante de amor, tu amiga Curileta.',
+      en: 'A giant kangaroo leap of love, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Ornitorrinco Confuso', en: 'The Curious Platypus' },
+        fact: { es: 'Mamífero que detecta la electricidad de otros seres acuáticos bajo el agua.', en: 'Egg-laying mammal that senses electrical impulses underwater with its bill.' },
+        tag: 'PUZZLE VIVIENTE',
+      },
+      {
+        title: { es: 'Roca Roja de Uluru', en: 'Uluru Sacred Rock' },
+        fact: { es: 'Cambia de color del naranja amanecer al rojo escarlata ardiente en el ocaso.', en: 'Shifts shades from sunrise amber to fiery sunset crimson across the desert.' },
+        tag: 'CORAZÓN ROJO',
+      },
+      {
+        title: { es: 'Huevo de Emú Verde Oscuro', en: 'Dark Green Emu Egg' },
+        fact: { es: 'Pesa como 12 huevos de gallina y parece una esmeralda tallada para camuflaje.', en: 'Weighs as much as 12 hen eggs, looking like carved emerald stone for ground camouflage.' },
+        tag: 'COLOR MÁGICO',
+      },
+    ],
+  },
+  {
+    id: 'nueva-zelanda',
+    order: 7,
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    city: { es: 'Waitomo & Hobbiton', en: 'Waitomo & Hobbiton' },
+    postmark: 'WAITOMO • HOBBITON • CARTA 07',
+    postageColor: '#059669',
+    envelopeColor: 'from-emerald-950/90 to-green-950/80',
+    greeting: {
+      es: '¡Hola, mi querido Pompón!',
+      en: 'Hello, my dear Pompón!',
+    },
+    body: {
+      es: [
+        '¡He llegado a Nueva Zelanda y me sentí en un cuento de hadas! Los bosques de helechos plateados brillan bajo la luz de la luna.',
+        'Kiki el Kiwi me llevó a la cueva de Waitomo: bajo tierra, el techo estaba cubierto por miles de gusanitos luminosos que brillaban como constelaciones de zafiro.',
+        'Luego descubrí Hobbiton: colinas de terciopelo con casitas diminutas de puertas redondas y chimeneas que huelen a pastel de moras. ¡Eran perfectas para mi tamaño!',
+        'Y aprendí a bailar la Haka maorí sacando la lengua y golpeando el suelo con mis patitas.',
+      ],
+      en: [
+        'New Zealand feels like a fairy tale! Silver fern forests gleam in the moonlight.',
+        'Kiki the Kiwi showed me Waitomo cave: underground ceilings dotted with thousands of blue glowworms sparkling like sapphire galaxies.',
+        'Then I discovered Hobbiton: velvet hills with tiny round-door houses smelling of blackberry pie. Perfectly sized for me!',
+        'I even practiced the Maori Haka, stamping my lizard feet with strength.',
+      ],
+    },
+    signOff: {
+      es: 'Con mucho cariño y un “Kia ora” (¡hola!), tu amiga Curileta.',
+      en: 'With warm hugs and a “Kia ora”, your friend Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Cielos Bajo Tierra en Waitomo', en: 'Waitomo Glowworm Skies' },
+        fact: { es: 'Gusanitos de luz que iluminan cuevas calizas como un cielo nocturno estrellado.', en: 'Bioluminescent glowworms turning limestone cave ceilings into starfields.' },
+        tag: 'CONSTELACIÓN SUBTERRÁNEA',
+      },
+      {
+        title: { es: 'Casitas con Puertas Redondas', en: 'Hobbit Round Doors' },
+        fact: { es: 'Construidas dentro de las colinas verdes con huertos y chimeneas activas.', en: 'Dug right into lush green hills with working hearths and tiny flower gardens.' },
+        tag: 'REINO DIMINUTO',
+      },
+      {
+        title: { es: 'Helechos Plateados', en: 'Silver Ferns (Cyathea)' },
+        fact: { es: 'El envés de sus hojas refleja la luz lunar y guiaba a los guerreros en la noche.', en: 'Silver leaf undersides reflect moonlight to guide travelers in deep forests.' },
+        tag: 'GUÍA NATURAL',
+      },
+    ],
+  },
+  {
+    id: 'china',
+    order: 8,
+    country: { es: 'China', en: 'China' },
+    city: { es: 'Gran Muralla & Pekín', en: 'Great Wall & Beijing' },
+    postmark: 'GRAN MURALLA • 21.000km • CARTA 08',
+    postageColor: '#dc2626',
+    envelopeColor: 'from-red-950/90 to-rose-950/80',
+    greeting: {
+      es: '¡Ni Hao, mi querido Pompón!',
+      en: 'Ni Hao, my dear Pompón!',
+    },
+    body: {
+      es: [
+        '¡Estoy caminando sobre la espalda de un dragón de piedra! La Gran Muralla tiene más de 21.000 kilómetros subiendo y bajando montañas.',
+        'En un bosquecillo de bambú conocí al panda Bao. ¡Come hasta 12 kilos de bambú al día! Me llevó sobre su cabeza hasta la torre más alta para contemplar la puesta de sol.',
+        'Aquí no escriben con letras como las nuestras, sino con caracteres mágicos. ¡Bao me enseñó a dibujar el que significa Amistad!',
+        'Y descubrí que aquí se inventaron los fuegos artificiales para espantar a los malos espíritus y llenar la noche de estrellas de colores.',
+      ],
+      en: [
+        'I am strolling atop the spine of a stone dragon! The Great Wall spans over 21,000 kilometers across mountain ridges.',
+        'In a bamboo grove I met panda Bao. He chomps up to 12 kg of bamboo daily! He carried me on his head to watch the sunset from the highest tower.',
+        'Writing here uses meaningful characters instead of letters. Bao taught me to paint the symbol for Friendship!',
+        'And fireworks were invented here to scatter bad spirits and light up festivals with color.',
+      ],
+    },
+    signOff: {
+      es: 'Con mucho amor y un abrazo de oso panda, tu amiga Curileta.',
+      en: 'With lots of love and a warm panda hug, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'El Dragón de Piedra', en: 'The Stone Dragon' },
+        fact: { es: 'La Gran Muralla recorre desiertos, valles y cumbres como un dragón guardián.', en: 'Stretches across deserts and peaks, appearing from above like a resting dragon.' },
+        tag: 'MURALLA INFINITA',
+      },
+      {
+        title: { es: 'Carácter de la Amistad (友)', en: 'Character of Friendship' },
+        fact: { es: 'Representa dos manos unidas ayudándose en el camino del explorador.', en: 'Signifies two hands clasped together walking the explorer’s road.' },
+        tag: 'TRAZOS SAGRADOS',
+      },
+      {
+        title: { es: 'Bebiendo Té con Bao', en: 'Sharing Tea with Bao' },
+        fact: { es: 'Golpear dos dedos suavemente en la mesa es el código de gratitud silenciosa.', en: 'Tapping two fingers gently on the table says “thank you” without breaking tea silence.' },
+        tag: 'ARTE DEL TÉ',
+      },
+    ],
+  },
+  {
+    id: 'italia',
+    order: 9,
+    country: { es: 'Italia', en: 'Italy' },
+    city: { es: 'Florencia, Pisa & Venecia', en: 'Florence, Pisa & Venice' },
+    postmark: 'FLORENCIA • PISA • CARTA 09',
+    postageColor: '#16a34a',
+    envelopeColor: 'from-green-950/90 to-emerald-950/80',
+    greeting: {
+      es: '¡Ciao, mi querido Pompón!',
+      en: 'Ciao, my dear Pompón!',
+    },
+    body: {
+      es: [
+        '¡He llegado al país con forma de bota! La comida aquí huele tan deliciosa que mi nariz no para de moverse.',
+        'En Florencia conocí al ratoncito chef Gino. ¡Me enseñó que existen más de 350 formas de pasta diferentes!',
+        'He probado el Gelato artesanal: el de pistacho era tan verde como yo y me sirvió de camuflaje. ¡Es mucho más cremoso que el helado común!',
+        'Y me tomé una foto intentando sujetar la Torre de Pisa con mis patitas: lleva cientos de años inclinada 4 metros sobre suelo blando sin caerse.',
+      ],
+      en: [
+        'I arrived in the boot-shaped country! The aroma of basil and warm crust fills every cobblestone street.',
+        'In Florence I met mouse chef Gino, who showed me over 350 pasta shapes!',
+        'I tasted pistachio gelato: as green as my lizard skin, perfect camouflage and silky smooth!',
+        'I posed holding up the Leaning Tower of Pisa with my paws: tilted 4 meters for centuries on soft soil!',
+      ],
+    },
+    signOff: {
+      es: 'Con mucho “amore” y sabor a pizza, tu amiga Curileta.',
+      en: 'With lots of “amore” and pizza smiles, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'Gelato de Pistacho', en: 'Pistachio Gelato' },
+        fact: { es: 'Servido con espátula plana y con menos aire para que su sabor sea seda pura.', en: 'Served with a flat paddle and denser texture for velvet richness.' },
+        tag: 'EL MEJOR HELADO',
+      },
+      {
+        title: { es: 'Torre Inclinada de Pisa', en: 'Leaning Tower of Pisa' },
+        fact: { es: 'Inclinada por arcilla arenosa; la ingeniería moderna la aseguró para siempre.', en: 'Tilted on sandy silt; secured by modern engineers so it never falls.' },
+        tag: 'EQUILIBRIO MÁGICO',
+      },
+      {
+        title: { es: 'Canales de Venecia', en: 'Venice Floating City' },
+        fact: { es: 'Una ciudad sin coches construida sobre miles de troncos de madera en el agua.', en: 'No cars, only singing gondoliers atop thousands of petrified wooden piles in water.' },
+        tag: 'CIUDAD SOBRE AGUA',
+      },
+    ],
+  },
+  {
+    id: 'francia',
+    order: 10,
+    country: { es: 'Francia', en: 'France' },
+    city: { es: 'París & Versalles', en: 'Paris & Versailles' },
+    postmark: 'PARÍS • TORRE EIFFEL • CARTA 10',
+    postageColor: '#2563eb',
+    envelopeColor: 'from-blue-950/90 to-indigo-950/80',
+    greeting: {
+      es: '¡Bonjour, mi querido Pompón!',
+      en: 'Bonjour, my dear Pompón!',
+    },
+    body: {
+      es: [
+        '¡Casi llego a Francia convertida en sándwich! Me escondí dentro de una baguette para huir de un perrito curioso en los Alpes, ¡y la niña de la familia me regaló una fresa creyendo que era una lagartija de la suerte!',
+        'En París escalé la Torre Eiffel por sus vigas de hierro. Cuando hace calor, el metal se expande y ¡la torre crece varios centímetros!',
+        'Allí arriba probé mi primer croissant: crujiente como hojas secas y dorado como una luna creciente. ¡Sabe a nubes y alegría!',
+        'En el Museo del Louvre jugué al escondite con la Mona Lisa: no importa a qué lado me mueva con mis patitas, ¡sus ojos siempre me siguen!',
+      ],
+      en: [
+        'I nearly reached France as a sandwich! I hid inside a hollow baguette to escape a dog, and a girl gifted me a strawberry thinking I was a good-luck lizard!',
+        'In Paris I climbed the Eiffel Tower. When summer warms the iron, thermal expansion makes it grow several centimeters taller!',
+        'At the first tier I tasted a fresh croissant: flaky like autumn leaves and curved like a golden crescent moon.',
+        'At the Louvre I played peekaboo with the Mona Lisa: no matter where I scurry, her mysterious eyes follow me!',
+      ],
+    },
+    signOff: {
+      es: 'Con muchos besitos con aroma a mantequilla, tu amiga Curileta.',
+      en: 'With warm buttery kisses, your friend Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'La Dama de Hierro Creciente', en: 'The Growing Iron Lady' },
+        fact: { es: 'Los estiramientos térmicos de sus vigas de hierro hacen variar su altura en verano.', en: 'Thermal expansion of its iron lattice makes the tower stretch taller in heat.' },
+        tag: 'ESTIRAMIENTO MATINAL',
+      },
+      {
+        title: { es: 'Croissant Luna Creciente', en: 'Golden Crescent Croissant' },
+        fact: { es: 'Capas de masa hojaldrada con mantequilla que crujen al morder.', en: 'Laminated golden dough with butter that crackles crisply with each bite.' },
+        tag: 'SABOR A NUBES',
+      },
+      {
+        title: { es: 'Galería de los Espejos (Versalles)', en: 'Hall of Mirrors (Versailles)' },
+        fact: { es: '357 espejos que multiplican la luz del sol en un salón de oro.', en: '357 mirrors reflecting gardens and chandeliers in a hall of pure gold.' },
+        tag: 'PALACIO REAL',
+      },
+    ],
+  },
+  {
+    id: 'espana-regreso',
+    order: 11,
+    country: { es: 'España', en: 'Spain' },
+    city: { es: 'Bosque Encantado (Regreso)', en: 'Enchanted Forest (Home)' },
+    postmark: 'BOSQUE ENCANTADO • CORAZÓN • CARTA 11',
+    postageColor: '#f59e0b',
+    envelopeColor: 'from-amber-950/90 to-emerald-950/80',
+    greeting: {
+      es: '¡Mi queridísimo Pompón!',
+      en: 'My dearest Pompón!',
+    },
+    body: {
+      es: [
+        '¡He vuelto! Esta carta no la envié por correo: la llevé apretada en mi bolsillo para leértela yo misma bajo nuestro árbol.',
+        'He cruzado tormentas, escalado pirámides y abrazado pandas, pero ningún tesoro del mundo se compara con tu amistad.',
+        'La sabia tortuga Lola me enseñó que el Bosque Encantado no se busca con los pies, sino con el corazón: es invisible para quienes no tienen curiosidad, ¡por eso solo nosotros y nuestros amigos podemos vivir aquí!',
+        'He traído un poquito de azafrán dorado para cocinar una paella de hormigas deliciosa y miles de recuerdos en mi mochila para ti.',
+      ],
+      en: [
+        'I am back! This letter wasn’t mailed: I kept it safe in my pocket to read aloud to you under our tallest tree.',
+        'I weathered storms, climbed pyramids, and hugged pandas, but no treasure in the world equals our friendship.',
+        'Wise tortoise Lola showed me the Enchanted Forest is found not with paws, but with the heart: invisible to those without curiosity!',
+        'I brought golden saffron for an ant paella feast and a backpack brimming with treasures for you.',
+      ],
+    },
+    signOff: {
+      es: 'Y así comprendí que el mayor tesoro siempre te espera al final del camino: el lugar al que llamas “hogar”. Con todo mi amor, Curileta.',
+      en: 'And thus I discovered the greatest treasure of all awaits at the end of the road: the place you call “home”. With all my love, Curileta.',
+    },
+    photos: [
+      {
+        title: { es: 'La Entrada Invisible', en: 'The Invisible Portal' },
+        fact: { es: 'La piedra con forma de tortuga donde el azahar del sur se funde con los pinos del norte.', en: 'The tortoise-shaped rock where southern orange blossoms blend with northern pines.' },
+        tag: 'MAPA DEL CORAZÓN',
+      },
+      {
+        title: { es: 'Castillos de Segovia', en: 'Castles of Segovia' },
+        fact: { es: 'Fortalezas de cuento de hadas que inspiraron los relatos de caballería.', en: 'Fairy-tale cliffside stone fortresses inspiring legends of adventure.' },
+        tag: 'TIERRA DE HISTORIAS',
+      },
+      {
+        title: { es: 'El Reencuentro Bajo el Árbol', en: 'Reunion Beneath the Tree' },
+        fact: { es: 'El abrazo más cálido tras recorrer los cinco continentes.', en: 'The warmest hug after voyaging across five continents of wonders.' },
+        tag: 'EL MAYOR TESORO',
+      },
+    ],
+  },
+];
+
+export const INITIAL_ROADMAP: UniverseRoadmapItem[] = [
+  {
+    id: 'libros',
+    title: { es: 'Nuevos Libros', en: 'New Books' },
+    desc: {
+      es: 'Nuevas expediciones en imprenta para todas las edades.',
+      en: 'New print expeditions for all age ranges.',
+    },
+    iconName: 'Book',
+    badge: { es: 'Editorial', en: 'Publishing' },
+    orderIndex: 1,
+  },
+  {
+    id: 'musica',
+    title: { es: 'Música & Canciones', en: 'Music & Songs' },
+    desc: {
+      es: 'Banda sonora original para bailar y cantar el mapa.',
+      en: 'Original soundtrack to dance and sing along the world map.',
+    },
+    iconName: 'Music',
+    badge: { es: 'Audio', en: 'Audio' },
+    orderIndex: 2,
+  },
+  {
+    id: 'eventos',
+    title: { es: 'Eventos & Lecturas', en: 'Events & Readings' },
+    desc: {
+      es: 'Encuentros en colegios, ferias del libro y festivales.',
+      en: 'School visits, book fairs, and cultural family festivals.',
+    },
+    iconName: 'Calendar',
+    badge: { es: 'Comunidad', en: 'Community' },
+    orderIndex: 3,
+  },
+  {
+    id: 'merchandising',
+    title: { es: 'Merchandising Oficial', en: 'Official Merch' },
+    desc: {
+      es: 'Mochilas, peluches y cuadernos de explorador.',
+      en: 'Backpacks, plush companions, and explorer journals.',
+    },
+    iconName: 'ShoppingBag',
+    badge: { es: 'Próximamente', en: 'Coming Soon' },
+    orderIndex: 4,
+  },
+];
+
+export const INITIAL_COLLABORATIONS: CollaborationOpportunity[] = [
+  {
+    id: 'publishing',
+    title: { es: 'Editoriales & Distribución', en: 'Publishing & Distribution' },
+    desc: {
+      es: 'Derechos internacionales de publicación, coedición y traducción en nuevos mercados.',
+      en: 'International publishing rights, co-editions, and translations in global markets.',
+    },
+    category: 'publishing',
+    iconName: 'Building2',
+    orderIndex: 1,
+  },
+  {
+    id: 'licensing',
+    title: { es: 'Licensing & Merchandising', en: 'Licensing & Merchandising' },
+    desc: {
+      es: 'Líneas oficiales de juguetes, papelería, moda y experiencias inmersivas de marca.',
+      en: 'Official lines of toys, stationery, fashion, and immersive brand experiences.',
+    },
+    category: 'licensing',
+    iconName: 'Award',
+    orderIndex: 2,
+  },
+  {
+    id: 'media',
+    title: { es: 'Medios, Prensa & Festivales', en: 'Media, Press & Festivals' },
+    desc: {
+      es: 'Dossier de prensa oficial, kit de imagen de alta resolución y entrevistas.',
+      en: 'Official press kit, high-resolution media assets, and interview bookings.',
+    },
+    category: 'press',
+    iconName: 'Newspaper',
+    orderIndex: 3,
+  },
+];
+
+export const INITIAL_SETTINGS: SiteSettings = {
+  siteName: 'Las Aventuras de Curileta',
+  heroTagline: {
+    es: 'Un viaje continuo de empatía y curiosidad por el mundo',
+    en: 'A continuous journey of empathy and curiosity across the world',
+  },
+  heroSubtitle: {
+    es: 'Libros ilustrados, canciones y episodios animados para pequeños grandes exploradores.',
+    en: 'Illustrated books, songs, and animated episodes for young great explorers.',
+  },
+  totalCountriesCount: 11,
+  totalCharactersCount: 19,
+  totalBooksCount: 2,
+  featuredQuote: {
+    es: '«El mayor tesoro siempre es el camino recorrido y los amigos que encuentras en él.»',
+    en: '«The greatest treasure is always the journey made and the friends you meet along the way.»',
+  },
+  statsBadges: [
+    {
+      icon: 'Globe2',
+      label: { es: 'Países Explorados', en: 'Countries Explored' },
+      value: '11',
+    },
+    {
+      icon: 'Users',
+      label: { es: 'Amigos & Personajes', en: 'Friends & Characters' },
+      value: '19',
+    },
+    {
+      icon: 'BookOpen',
+      label: { es: 'Volúmenes Publicados', en: 'Published Volumes' },
+      value: '2',
+    },
+    {
+      icon: 'Mail',
+      label: { es: 'Cartas a Pompón', en: 'Letters to Pompón' },
+      value: '11',
+    },
+  ],
+};
+
 export class LocalCMSProvider implements CMSProvider {
   async getCharacters(locale?: string): Promise<Character[]> {
     return INITIAL_CHARACTERS;
@@ -2349,6 +3051,26 @@ async getVideos(locale?: string): Promise<Video[]> {
   async getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]> {
     return INITIAL_SEASONAL_EVENTS;
   }
+
+  async getLetters(locale?: string): Promise<LetterItem[]> {
+    return INITIAL_LETTERS;
+  }
+
+  async getLetterById(id: string, locale?: string): Promise<LetterItem | null> {
+    return INITIAL_LETTERS.find((l) => l.id === id) || null;
+  }
+
+  async getUniverseRoadmap(locale?: string): Promise<UniverseRoadmapItem[]> {
+    return INITIAL_ROADMAP;
+  }
+
+  async getCollaborations(locale?: string): Promise<CollaborationOpportunity[]> {
+    return INITIAL_COLLABORATIONS;
+  }
+
+  async getSiteSettings(locale?: string): Promise<SiteSettings> {
+    return INITIAL_SETTINGS;
+  }
 }
 
 /**
@@ -2382,5 +3104,6 @@ export function isSeasonalEventActive(event: SeasonalEvent, now: Date = new Date
   return now >= windowStart && now <= windowEnd;
 }
 
-export const cmsProvider = new LocalCMSProvider();
+export const localCmsProvider = new LocalCMSProvider();
+export const cmsProvider = localCmsProvider;
 

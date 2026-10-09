@@ -1,4 +1,4 @@
-import {
+import type {
   Character,
   Book,
   Adventure,
@@ -10,7 +10,11 @@ import {
   MentionedCuriosity,
   Wallpaper,
   SeasonalEvent,
-} from './models';
+  LetterItem,
+  UniverseRoadmapItem,
+  CollaborationOpportunity,
+  SiteSettings,
+} from './models.ts';
 
 /**
  * CMSProvider: Interfaz del adaptador de contenido.
@@ -31,4 +35,9 @@ export interface CMSProvider {
   getWallpapers(locale?: string): Promise<Wallpaper[]>;
   getActiveEvent(locale?: string, referenceDate?: Date): Promise<SeasonalEvent | null>;
   getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]>;
+  getLetters(locale?: string): Promise<LetterItem[]>;
+  getLetterById(id: string, locale?: string): Promise<LetterItem | null>;
+  getUniverseRoadmap(locale?: string): Promise<UniverseRoadmapItem[]>;
+  getCollaborations(locale?: string): Promise<CollaborationOpportunity[]>;
+  getSiteSettings(locale?: string): Promise<SiteSettings>;
 }

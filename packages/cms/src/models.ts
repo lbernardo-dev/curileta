@@ -50,6 +50,9 @@ export interface Book {
   ageRange: string;
   pageCount?: number;
   publisher?: string;
+  badge?: LocalizedString;
+  colorTheme?: string;
+  destinations?: string[];
   purchaseLinks?: Array<{
     storeName: string;
     url: string;
@@ -207,5 +210,62 @@ export interface SeasonalEvent {
     description: LocalizedString;
     icon: string;
     status: 'coming_soon' | 'published';
+  }>;
+}
+
+export interface LetterPhoto {
+  title: LocalizedString;
+  fact: LocalizedString;
+  tag: string;
+  imageUrl?: string;
+}
+
+export interface LetterItem {
+  id: string;
+  order: number;
+  country: LocalizedString;
+  city: LocalizedString;
+  postmark: string;
+  postageColor: string;
+  envelopeColor: string;
+  greeting: LocalizedString;
+  body: {
+    es: string[];
+    en: string[];
+  };
+  signOff: LocalizedString;
+  photos: LetterPhoto[];
+}
+
+export interface UniverseRoadmapItem {
+  id: string;
+  title: LocalizedString;
+  desc: LocalizedString;
+  iconName: 'Book' | 'Music' | 'Calendar' | 'ShoppingBag' | 'Users' | 'Sparkles' | 'Radio';
+  badge: LocalizedString;
+  orderIndex: number;
+}
+
+export interface CollaborationOpportunity {
+  id: string;
+  title: LocalizedString;
+  desc: LocalizedString;
+  category: 'publishing' | 'licensing' | 'press' | 'education';
+  iconName: 'Building2' | 'Award' | 'Newspaper' | 'Briefcase';
+  orderIndex: number;
+}
+
+export interface SiteSettings {
+  siteName: string;
+  heroTagline: LocalizedString;
+  heroSubtitle: LocalizedString;
+  totalCountriesCount: number;
+  totalCharactersCount: number;
+  totalBooksCount: number;
+  featuredQuote: LocalizedString;
+  statsBadges: Array<{
+    icon: string;
+    label: LocalizedString;
+    value: string;
   }>;
 }

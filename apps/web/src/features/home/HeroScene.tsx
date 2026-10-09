@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
+import type { SiteSettings } from '@curileta/cms';
 import {
   Compass,
   Sparkles,
@@ -24,10 +25,11 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
-export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
+export const HeroScene: React.FC<{ locale: Locale; settings?: SiteSettings }> = ({ locale, settings }) => {
   const { isSeasonalActive, themeKey } = useSeasonalTheme();
   const isEn = locale === 'en';
   const isHalloween = isSeasonalActive && themeKey === 'halloween';
+  const charCount = settings?.totalCharactersCount || 19;
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [activeCharacter, setActiveCharacter] = useState<'curileta' | 'pompon' | 'quetzal'>('curileta');
@@ -255,7 +257,7 @@ export const HeroScene: React.FC<{ locale: Locale }> = ({ locale }) => {
               className="w-full sm:w-auto px-7 py-4 rounded-2xl font-black text-base sm:text-lg uppercase tracking-wider bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-emerald-600/50 hover:bg-emerald-50 dark:hover:bg-slate-800 border-b-6 border-slate-400 dark:border-b-6 dark:border-emerald-900 hover:border-b-4 hover:translate-y-[2px] active:border-b-0 active:translate-y-[6px] shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2.5 text-center"
             >
               <Backpack className="w-5 h-5 text-emerald-500" />
-              <span>{isEn ? 'View 19 Characters' : 'Ver 19 Personajes'}</span>
+              <span>{isEn ? `View ${charCount} Characters` : `Ver ${charCount} Personajes`}</span>
             </a>
           </div>
 

@@ -70,15 +70,33 @@ export default async function HomePage({
     notFound();
   }
 
-  // Carga de datos dinámicos gestionables desde Backend / CMS
-  const [locations, characters, waypoints, milestones, videos, wallpapers, activeEvent] = await Promise.all([
+  // Carga de datos dinámicos gestionables desde Backend / CMS (Base de datos SQLite persistente)
+  const [
+    locations,
+    characters,
+    books,
+    letters,
+    waypoints,
+    milestones,
+    videos,
+    wallpapers,
+    activeEvent,
+    universeRoadmap,
+    collaborations,
+    siteSettings,
+  ] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
+    cmsProvider.getBooks(locale),
+    cmsProvider.getLetters(locale),
     cmsProvider.getTrailWaypoints(locale),
     cmsProvider.getNarrativeMilestones(locale),
     cmsProvider.getVideos(locale),
     cmsProvider.getWallpapers(locale),
     cmsProvider.getActiveEvent(locale),
+    cmsProvider.getUniverseRoadmap(locale),
+    cmsProvider.getCollaborations(locale),
+    cmsProvider.getSiteSettings(locale),
   ]);
 
   return (
@@ -87,7 +105,7 @@ export default async function HomePage({
       <ExpeditionTrail waypoints={waypoints} locale={locale} />
 
       {/* Escena 01 — Hero: Bosque Encantado y Curileta */}
-      <HeroScene locale={locale as Locale} />
+      <HeroScene locale={locale as Locale} settings={siteSettings} />
 
       {/* Evento Estacional Activo: Especial de Halloween (Con conector dedicado si está activo) */}
       {activeEvent && (
@@ -158,7 +176,7 @@ export default async function HomePage({
       />
 
       {/* Escena 02.5 — El Baúl Postal: Cartas a Pompón con Matasellos y Polaroids */}
-      <LettersScene locale={locale as Locale} />
+      <LettersScene locale={locale as Locale} letters={letters} />
 
       {/* Conector Cartográfico 05: Rumbo al Campamento de los 19 Personajes */}
       <AdventureTrailConnector
@@ -192,7 +210,7 @@ export default async function HomePage({
       />
 
       {/* Escena 04 — Los Libros */}
-      <BooksScene locale={locale as Locale} />
+      <BooksScene locale={locale as Locale} books={books} />
 
       {/* Conector Cartográfico 07: Rumbo a YouTube y Canciones */}
       <AdventureTrailConnector
@@ -229,10 +247,10 @@ export default async function HomePage({
       <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />
 
       {/* Escena 06 — El Universo sigue creciendo */}
-      <GrowingUniverseScene locale={locale as Locale} />
+      <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />
 
       {/* Escena 07 — Colaboraciones y Licensing B2B */}
-      <CollaborationsScene locale={locale as Locale} />
+      <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />
 
       {/* LA GRAN X DEL TESORO: Meta oficial de la expedición («X Marks the Spot») */}
       <TreasureDestinationMark locale={locale} targetId="#cierre-expedicion" />

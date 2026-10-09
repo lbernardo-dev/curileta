@@ -13,7 +13,7 @@
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "node --test tooling/tests/core.test.mjs",
+    "test": "node --test 'tooling/tests/**/*.test.mjs'",
     "clean": "find . -type f -name '._*' -delete && find . -type f -name '*.log' -delete && dot_clean -m ."
   },
   "devDependencies": {
