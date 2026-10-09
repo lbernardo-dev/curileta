@@ -246,23 +246,42 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(239,68,68,0.12),transparent)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Cabecera de la sección */}
+        {/* Cabecera de la sección con Zipi-Bot 3D */}
         {!hideHeader && (
-          <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/40 text-red-800 dark:text-red-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-              <Youtube className="w-4 h-4 text-red-600 dark:text-red-500" />
-              <span>Escena 05 — El Canal Oficial de YouTube</span>
+          <div className="relative max-w-4xl mx-auto mb-16 text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
+              <div className="relative group shrink-0">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-fuchsia-500 via-red-500 to-amber-400 p-1 shadow-2xl shadow-red-500/30 group-hover:rotate-3 transition-transform duration-300">
+                  <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center overflow-hidden relative">
+                    <img
+                      src="/images/characters/zipi-bot-main.webp"
+                      alt="Zipi-Bot Operador de Cine"
+                      className="w-24 h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)] group-hover:scale-115 transition-transform duration-500"
+                    />
+                  </div>
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-red-400 animate-pulse">
+                  ▶ CINE 3D
+                </div>
+              </div>
+
+              <div className="text-center sm:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/50 text-red-800 dark:text-red-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
+                  <Youtube className="w-4 h-4 text-red-600 dark:text-red-500" />
+                  <span>Escena 05 — El Canal Oficial de YouTube</span>
+                </div>
+
+                <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                  La página se mueve.<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-500 to-rose-500 dark:from-red-400 dark:via-amber-300 dark:to-rose-400">
+                    Las historias cantan y cobran vida.
+                  </span>
+                </h2>
+              </div>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              La página se mueve.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-600 to-rose-600 dark:from-red-400 dark:via-amber-300 dark:to-rose-400">
-                Las historias cantan y cobran vida.
-              </span>
-            </h2>
-
-            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-              Descubre nuestro universo audiovisual en tres formatos pensados para disfrutar en familia: capítulos completos de la serie animada, canciones y videoclips oficiales, y divertidos micro-momentos en YouTube Shorts.
+            <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Descubre nuestro universo audiovisual en tres formatos pensados para disfrutar en familia: capítulos de la serie animada, canciones con coreografías oficiales y micro-momentos en Shorts.
             </p>
           </div>
         )}

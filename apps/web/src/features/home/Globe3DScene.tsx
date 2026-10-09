@@ -729,19 +729,39 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-amber-400 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.8)]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
-            <Globe className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-spin" style={{ animationDuration: '15s' }} />
-            <span>Escena 02 — Cartografía 3D Animada Estilo Pixar</span>
+        {/* Encabezado con Quetzal 3D */}
+        <div className="relative max-w-4xl mx-auto mb-14 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
+            <div className="relative group shrink-0">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-teal-400 via-emerald-400 to-amber-300 p-1 shadow-2xl shadow-emerald-500/30 group-hover:rotate-3 transition-transform duration-300">
+                <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center overflow-hidden relative">
+                  <img
+                    src="/images/characters/quetzal-main.webp"
+                    alt="Quetzal el Guardián Alado"
+                    className="w-24 h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-115 transition-transform duration-500"
+                  />
+                </div>
+              </div>
+              <div className="absolute -bottom-2 -right-2 bg-emerald-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-emerald-200">
+                🌍 ORBITAL
+              </div>
+            </div>
+
+            <div className="text-center sm:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
+                <Globe className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-spin" style={{ animationDuration: '15s' }} />
+                <span>Escena 02 — Cartografía 3D Animada Estilo Pixar</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                El Globo se Ilumina.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-emerald-500 to-sky-500 dark:from-amber-300 dark:via-emerald-300 dark:to-sky-300">
+                  Océanos, Continentes & Monumentos 3D.
+                </span>
+              </h2>
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            El Globo se Ilumina.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-emerald-600 to-sky-600 dark:from-amber-400 dark:via-emerald-300 dark:to-sky-300">
-              Océanos, Continentes & Monumentos 3D.
-            </span>
-          </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+
+          <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
             Descubre los continentes ilustrados, las aguas turquesas y los monumentos 3D del libro. Pulsa o arrastra el planeta para explorar las pirámides, templos, montañas y el gran árbol de Curileta.
           </p>
         </div>
@@ -910,11 +930,11 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               </div>
             )}
 
-            {/* Personajes de la expedición en este punto */}
+            {/* Personajes de la expedición en este punto con Avatar 3D */}
             {activeDestination.characters && activeDestination.characters.length > 0 && (
               <div className="mt-5">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-2">
-                  Exploradores presentes:
+                  Exploradores presentes en este hito:
                 </span>
                 <div className="flex flex-wrap items-center gap-2">
                   {activeDestination.characters.map((charSlug) => {
@@ -948,13 +968,26 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                         : charSlug === 'lola'
                         ? 'Lola la Tortuga'
                         : charSlug;
+                    const charImg = `/images/characters/${charSlug}-main.webp`;
                     return (
-                      <span
+                      <div
                         key={charSlug}
-                        className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/50 shadow-sm"
+                        className="inline-flex items-center gap-2 pr-3 pl-1 py-1 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-sm"
                       >
-                        {label}
-                      </span>
+                        <div className="w-7 h-7 rounded-xl bg-slate-950 p-0.5 overflow-hidden shrink-0 border border-amber-400/40">
+                          <img
+                            src={charImg}
+                            alt={label}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs font-black text-slate-800 dark:text-slate-200">
+                          {label}
+                        </span>
+                      </div>
                     );
                   })}
                 </div>

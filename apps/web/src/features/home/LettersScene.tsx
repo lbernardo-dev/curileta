@@ -781,20 +781,42 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
               )}
             </div>
 
-            {/* Cuadro de Amistad y Hogar */}
-            <div className="bg-gradient-to-br from-amber-50 via-emerald-50/40 to-teal-50 dark:from-amber-950/80 dark:via-slate-900 dark:to-emerald-950/80 border border-emerald-300 dark:border-emerald-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-2xl relative overflow-hidden">
-              <div className="flex items-center gap-3 mb-3">
-                <Heart className="w-5 h-5 text-rose-500 dark:text-rose-400 fill-rose-500 dark:fill-rose-400" />
-                <h4 className="text-lg font-black text-slate-900 dark:text-white">
-                  El Buzón de Pompón
-                </h4>
+            {/* Cuadro de Amistad y Hogar con Pompón 3D integrado */}
+            <div className="bg-gradient-to-br from-amber-50 via-sky-50/40 to-teal-50 dark:from-sky-950/70 dark:via-slate-900 dark:to-emerald-950/70 border-2 border-sky-300 dark:border-sky-500/40 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-2xl relative overflow-hidden group">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-sky-400 via-amber-300 to-indigo-400 p-1 shadow-xl shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-full h-full rounded-[14px] bg-slate-950 flex items-center justify-center overflow-hidden">
+                    <img
+                      src="/images/characters/pompon-main.webp"
+                      alt="Pompón el Conejito"
+                      className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-115 transition-transform duration-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-sky-200 dark:bg-sky-950 text-sky-800 dark:text-sky-300 mb-1 border border-sky-400/40">
+                    <Heart className="w-3 h-3 fill-current text-rose-500" />
+                    <span>EL BUZÓN POSTAL DEL BOSQUE</span>
+                  </div>
+                  <h4 className="text-xl font-black text-slate-900 dark:text-white leading-tight">
+                    El Tesoro de Pompón
+                  </h4>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
+                    «Cada carta es un trocito de mundo en mis patitas»
+                  </p>
+                </div>
               </div>
+
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                Pompón guarda cada sobre en un buzón de madera tallada bajo el árbol más alto. Cada sello es una promesa cumplida: explorar el mundo entero para regresar y abrazar a quien más quieres.
+                Pompón custodia cada sobre en su buzón de roble tallado bajo el gran árbol. Cada sello es una promesa cumplida: explorar los cinco continentes para volver y abrazar a quien más quieres en el hogar.
               </p>
-              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-amber-700 dark:text-amber-300 font-bold">
+
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-amber-700 dark:text-amber-300">
                 <span>Colección Postal Completa</span>
-                <span className="font-mono">11 Sobres Sellados</span>
+                <span className="font-mono bg-amber-100 dark:bg-slate-950 px-2.5 py-1 rounded-full border border-amber-300 dark:border-slate-700">
+                  11 Sobres Sellados
+                </span>
               </div>
             </div>
           </div>

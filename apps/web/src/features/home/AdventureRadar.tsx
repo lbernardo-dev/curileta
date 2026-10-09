@@ -171,30 +171,49 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Cabecera */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/80 border border-emerald-400/50 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Compass className="w-4 h-4 text-amber-400 animate-spin duration-3000" />
-            <span>Radar de Expedición Geográfico</span>
+        {/* Cabecera con Emi el Escarabajo 3D */}
+        <div className="relative max-w-4xl mx-auto mb-14 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
+            <div className="relative group shrink-0">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-500 to-emerald-400 p-1 shadow-2xl shadow-yellow-500/30 group-hover:rotate-3 transition-transform duration-300">
+                <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center overflow-hidden relative">
+                  <img
+                    src="/images/characters/emi-main.webp"
+                    alt="Emi el Escarabajo Navegante"
+                    className="w-24 h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-115 transition-transform duration-500"
+                  />
+                </div>
+              </div>
+              <div className="absolute -bottom-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-amber-200">
+                🧭 GPS 3D
+              </div>
+            </div>
+
+            <div className="text-center sm:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/80 border border-emerald-400/50 text-emerald-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
+                <Compass className="w-4 h-4 text-amber-400 animate-spin duration-3000" />
+                <span>Radar Geográfico de Expedición</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+                ¿Ha estado Curileta cerca de ti?<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300">
+                  Descubre qué aventura vivió cerca de tu ciudad.
+                </span>
+              </h2>
+            </div>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-            ¿Ha estado Curileta cerca de ti?<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300">
-              Descubre qué aventura vivió cerca de tu ciudad.
-            </span>
-          </h2>
-
-          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-            Activa tu radar para calcular en tiempo real los kilómetros exactos que separan tu ubicación de los 11 destinos del libro. Te recomendaremos el capítulo, los personajes y la carta postal correspondiente.
+          <p className="mt-3 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Activa el radar para calcular en tiempo real los kilómetros exactos que separan tu ubicación de los 11 destinos del libro. Te recomendaremos el capítulo, los personajes y la carta postal correspondiente.
           </p>
 
-          {/* Botón de Detección GPS */}
+          {/* Botón de Detección GPS con Bisel Táctil 3D */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={handleDetectLocation}
               disabled={isLocating}
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full font-black text-sm bg-gradient-to-r from-amber-400 via-amber-300 to-emerald-400 text-slate-950 shadow-xl shadow-amber-400/20 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 border-b-4 border-amber-600 hover:border-b-2 hover:translate-y-[2px] active:border-b-0 active:translate-y-[4px] shadow-[0_6px_20px_rgba(245,158,11,0.4)] transition-all cursor-pointer disabled:opacity-50"
             >
               {isLocating ? (
                 <>
@@ -216,8 +235,8 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
             </p>
           )}
 
-          {/* Selector de Ciudades Preset */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-1.5 text-xs">
+          {/* Selector de Ciudades Preset con botones táctiles */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs">
             <span className="text-slate-400 font-bold mr-1">O prueba una ciudad:</span>
             {PRESET_CITIES.map((city) => {
               const isSelected = activeCoords.cityName === city.name;
@@ -228,10 +247,10 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
                     setUserCoords({ lat: city.lat, lng: city.lng, cityName: city.name });
                     setSelectedDestinationIndex(0);
                   }}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     isSelected
-                      ? 'bg-emerald-400 text-slate-950 border-emerald-300 font-black shadow-md'
-                      : 'bg-slate-900/80 text-slate-300 border-slate-800 hover:border-emerald-400/50 hover:text-white'
+                      ? 'bg-gradient-to-b from-amber-300 to-amber-400 text-slate-950 border-b-2 border-amber-600 font-black shadow-md'
+                      : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-emerald-400/50 hover:text-white shadow-xs'
                   }`}
                 >
                   {city.name.split(',')[0]}

@@ -351,15 +351,18 @@ const TiltCharacterCard: React.FC<{
         transition: 'transform 0.15s ease-out, border-color 0.2s ease, box-shadow 0.2s ease',
         transformStyle: 'preserve-3d',
       }}
-      className={`group relative rounded-3xl p-5 cursor-pointer border transition-all duration-300 backdrop-blur-xl flex flex-col justify-between ${
+      className={`group relative rounded-[2rem] p-5 cursor-pointer border-2 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between ${
         isSelected
-          ? 'bg-gradient-to-b from-amber-50 to-white dark:from-slate-900/95 dark:via-slate-900 dark:to-slate-950 border-amber-400 shadow-2xl ring-2 ring-amber-400/40 text-slate-900 dark:text-white'
-          : 'bg-white/95 dark:bg-slate-900/75 border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:bg-slate-50 dark:hover:bg-slate-900/90 shadow-md dark:shadow-xl text-slate-800 dark:text-white'
+          ? 'bg-gradient-to-b from-amber-50 via-white to-amber-50/40 dark:from-slate-900/95 dark:via-slate-900 dark:to-slate-950 border-amber-400 shadow-[0_16px_40px_rgba(245,158,11,0.25)] ring-2 ring-amber-400/50 text-slate-900 dark:text-white -translate-y-1'
+          : 'bg-white/95 dark:bg-slate-900/80 border-slate-200/90 dark:border-slate-800 hover:border-emerald-400/60 hover:bg-slate-50 dark:hover:bg-slate-900/95 shadow-lg dark:shadow-[0_12px_32px_rgba(0,0,0,0.4)] text-slate-800 dark:text-white hover:-translate-y-1'
       }`}
     >
-      {/* Glare 3D interactivo */}
+      {/* Orificio superior estilo blíster de juguete coleccionable */}
+      <div className="w-10 h-2 rounded-full bg-slate-300/60 dark:bg-slate-800/80 border border-slate-400/30 dark:border-slate-700/60 mx-auto -mt-1 mb-2.5 shadow-inner" />
+
+      {/* Glare 3D interactivo acrílico */}
       <div
-        className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-200"
+        className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-200"
         style={{
           background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255,255,255,${glarePosition.opacity}), transparent 60%)`,
         }}
@@ -367,26 +370,30 @@ const TiltCharacterCard: React.FC<{
 
       <div>
         {/* Cabecera de la tarjeta: País / Región + ID */}
-        <div className="flex items-center justify-between gap-1.5 mb-3">
+        <div className="flex items-center justify-between gap-1.5 mb-2">
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${theme.badgeBg} ${theme.badgeText} shadow-sm`}
+            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black border shadow-xs ${theme.badgeBg} ${theme.badgeText}`}
           >
             <span>{theme.flag}</span>
             <span className="truncate max-w-[120px]">{theme.region}</span>
           </span>
-          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-bold shrink-0">
+          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-black shrink-0 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
             #{character.id.toUpperCase().slice(0, 8)}
           </span>
         </div>
 
-        {/* Retrato 3D con halo cromático */}
-        <div className="relative w-32 h-32 mx-auto my-2 group-hover:scale-105 transition-transform duration-500">
-          <div className={`w-full h-full rounded-2xl bg-gradient-to-tr ${theme.gradient} p-1 shadow-lg`}>
-            <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-950 relative">
+        {/* Retrato 3D estilo Blíster con Avatar que sobresale en relieve */}
+        <div className="relative w-36 h-36 mx-auto my-3 group-hover:scale-105 transition-transform duration-500">
+          {/* Cúpula acrílica con resplandor */}
+          <div className={`w-full h-full rounded-3xl bg-gradient-to-tr ${theme.gradient} p-1.5 shadow-[0_10px_25px_rgba(0,0,0,0.25)] relative overflow-hidden`}>
+            {/* Brillo diagonal de cristal */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent rounded-3xl pointer-events-none z-10" />
+
+            <div className="w-full h-full rounded-[20px] overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 relative flex items-center justify-center">
               <CharacterAvatar
                 character={character}
                 locale={locale}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                className="w-full h-full object-contain p-1.5 drop-shadow-[0_12px_20px_rgba(0,0,0,0.9)] group-hover:scale-115 group-hover:-translate-y-1 transition-all duration-500"
               />
               {/* Botón de lupa rápida */}
               <button
@@ -396,7 +403,7 @@ const TiltCharacterCard: React.FC<{
                   onOpenZoom(character);
                 }}
                 title="Ampliar Render 3D"
-                className="absolute bottom-1 right-1 p-1 rounded-lg bg-slate-950/80 hover:bg-amber-400 hover:text-slate-950 text-white border border-white/20 transition-all opacity-0 group-hover:opacity-100 shadow-md cursor-pointer"
+                className="absolute bottom-1.5 right-1.5 p-1.5 rounded-xl bg-slate-950/85 hover:bg-amber-400 hover:text-slate-950 text-white border border-white/20 transition-all opacity-0 group-hover:opacity-100 shadow-lg cursor-pointer z-20"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
@@ -405,49 +412,49 @@ const TiltCharacterCard: React.FC<{
         </div>
 
         {/* Nombre y Rol */}
-        <div className="text-center mt-2.5">
+        <div className="text-center mt-3">
           <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-amber-500 dark:group-hover:text-amber-300 transition-colors">
             {character.name}
           </h3>
-          <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wide line-clamp-2 min-h-[2.2rem] flex items-center justify-center">
+          <p className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wider line-clamp-2 min-h-[2.2rem] flex items-center justify-center">
             {roleText}
           </p>
         </div>
 
         {/* Cita célebre de expedición */}
         {character.voiceQuote && (
-          <p className="text-[11px] text-slate-600 dark:text-slate-300/85 text-center italic mt-2.5 px-1 line-clamp-2 leading-relaxed">
-            {character.voiceQuote[locale] || character.voiceQuote.es}
+          <p className="text-[11px] text-slate-600 dark:text-slate-300/90 text-center italic mt-2 px-1 line-clamp-2 leading-relaxed bg-slate-50/80 dark:bg-slate-950/50 py-1 rounded-xl">
+            «{character.voiceQuote[locale] || character.voiceQuote.es}»
           </p>
         )}
       </div>
 
-      {/* Sección inferior: Atributos y Botón Pasaporte */}
-      <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
+      {/* Sección inferior: Atributos 3D y Botón Pasaporte con bisel táctil */}
+      <div className="mt-4 pt-3 border-t-2 border-slate-100 dark:border-slate-800/80">
         {character.explorerStats && (
-          <div className="space-y-1.5 mb-3">
-            <div className="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
+          <div className="space-y-2 mb-3">
+            <div className="flex items-center justify-between text-[10px] font-black text-slate-700 dark:text-slate-300">
               <span className="flex items-center gap-1 text-amber-600 dark:text-amber-300">
-                <Compass className="w-3 3" /> Curiosidad
+                <Compass className="w-3.5 h-3.5" /> Curiosidad
               </span>
-              <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">{character.explorerStats.curiosity}%</span>
+              <span className="font-mono text-amber-600 dark:text-amber-400 font-black">{character.explorerStats.curiosity}%</span>
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner p-0.5">
               <div
-                className="bg-gradient-to-r from-amber-500 to-amber-300 h-full rounded-full"
+                className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 h-full rounded-full shadow-xs"
                 style={{ width: `${character.explorerStats.curiosity}%` }}
               />
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300 pt-0.5">
+            <div className="flex items-center justify-between text-[10px] font-black text-slate-700 dark:text-slate-300 pt-0.5">
               <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-300">
-                <Shield className="w-3 h-3" /> Valentía
+                <Shield className="w-3.5 h-3.5" /> Valentía
               </span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{character.explorerStats.courage}%</span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-black">{character.explorerStats.courage}%</span>
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner p-0.5">
               <div
-                className="bg-gradient-to-r from-emerald-500 to-emerald-300 h-full rounded-full"
+                className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 h-full rounded-full shadow-xs"
                 style={{ width: `${character.explorerStats.courage}%` }}
               />
             </div>
@@ -456,14 +463,14 @@ const TiltCharacterCard: React.FC<{
 
         <div className="text-center pt-1">
           <span
-            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-full transition-colors w-full justify-center ${
+            className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider py-2.5 px-4 rounded-2xl transition-all w-full justify-center ${
               isSelected
-                ? 'bg-amber-400 text-slate-950 font-black shadow-md'
-                : 'bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 group-hover:bg-amber-400 group-hover:text-slate-950'
+                ? 'bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 font-black border-b-4 border-amber-600 shadow-[0_4px_12px_rgba(245,158,11,0.4)]'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b-4 border-slate-300 dark:border-slate-700 group-hover:bg-gradient-to-b group-hover:from-amber-300 group-hover:via-amber-400 group-hover:to-amber-500 group-hover:text-slate-950 group-hover:border-amber-600 shadow-sm'
             }`}
           >
-            <span>{isSelected ? '★ Pasaporte Activo' : 'Abrir Pasaporte'}</span>
-            <ChevronRight className="w-3 h-3" />
+            <span>{isSelected ? '★ Pasaporte Abierto' : 'Abrir Pasaporte'}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
           </span>
         </div>
       </div>
