@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Locale, getMessages } from '@curileta/i18n';
 import { LocaleSwitcher } from './LocaleSwitcher';
+import { ThemeToggle } from './ThemeToggle';
 import { SkipLink, Button } from '@curileta/design-system';
 import { Menu, X, Compass, Sparkles, Youtube } from 'lucide-react';
 
@@ -25,7 +26,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
   return (
     <>
       <SkipLink targetId="main-content" label={t.accessibility.skipToContent} />
-      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-slate-950/85 border-b border-emerald-950/70 transition-all duration-300">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/85 dark:bg-slate-950/85 border-b border-emerald-100 dark:border-emerald-950/70 shadow-sm dark:shadow-none transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Logo Brand */}
           <Link
@@ -38,36 +39,37 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-2xl tracking-tight text-white leading-none group-hover:text-emerald-400 transition-colors">
-                Curileta<span className="text-amber-400">.</span>
+              <span className="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-white leading-none group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                Curileta<span className="text-amber-500">.</span>
               </span>
-              <span className="text-[10px] tracking-wider uppercase font-bold text-emerald-400">
+              <span className="text-[10px] tracking-wider uppercase font-bold text-emerald-600 dark:text-emerald-400">
                 Las Aventuras
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1.5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3.5 py-2 rounded-full text-sm font-bold text-slate-200 hover:text-emerald-300 hover:bg-emerald-950/60 transition-all"
+                className="px-3 py-2 rounded-full text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-all"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          {/* Right Actions (Locale & CTA) */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Right Actions (Theme, Locale & CTA) */}
+          <div className="hidden md:flex items-center gap-2.5">
+            <ThemeToggle locale={locale} />
             <LocaleSwitcher currentLocale={locale} />
             <a
               href="https://www.youtube.com/@curileta"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-full shadow-sm hover:shadow transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-full shadow-sm hover:shadow transition-all"
             >
               <Youtube className="w-4 h-4 text-red-600" />
               <span>YouTube</span>
@@ -76,10 +78,11 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle locale={locale} />
             <LocaleSwitcher currentLocale={locale} />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-200 hover:bg-slate-800"
+              className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
               aria-label="Abrir menú de navegación"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -89,13 +92,20 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-emerald-900 bg-slate-950/95 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top duration-200">
+          <div className="md:hidden border-t border-emerald-100 dark:border-emerald-900 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top duration-200 shadow-xl">
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 dark:border-slate-800">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                {locale === 'en' ? 'Appearance Theme:' : 'Tema visual:'}
+              </span>
+              <ThemeToggle locale={locale} variant="segmented" />
+            </div>
+
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2.5 rounded-xl font-bold text-slate-100 hover:bg-emerald-950/60"
+                className="block px-4 py-2.5 rounded-xl font-bold text-slate-800 dark:text-slate-100 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors"
               >
                 {link.label}
               </Link>

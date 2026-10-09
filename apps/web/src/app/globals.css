@@ -57,6 +57,23 @@
   --distance-large: 64px;
 }
 
+html.dark {
+  /* Semantic Tokens - Dark Theme */
+  --background-primary: #020617;
+  --background-secondary: #0F172A;
+  --background-elevated: #1E293B;
+  --background-canvas: #020617;
+  --background-accent: #064E3B;
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-inverted: #0F172A;
+
+  --border-subtle: #1E293B;
+  --border-strong: #334155;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -66,9 +83,15 @@
   }
 
   body {
+    background-color: var(--background-canvas);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  html.dark body {
     background-color: #020617;
     color: #F8FAFC;
-    overflow-x: hidden;
   }
 
   /* Custom scrollbar for brand personality */
@@ -77,12 +100,20 @@
   }
 
   ::-webkit-scrollbar-track {
+    background: #e2e8f0;
+  }
+
+  html.dark ::-webkit-scrollbar-track {
     background: #0f172a;
   }
 
   ::-webkit-scrollbar-thumb {
     background: var(--color-curileta-green);
     border-radius: 9999px;
+    border: 2px solid #e2e8f0;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb {
     border: 2px solid #0f172a;
   }
 

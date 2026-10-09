@@ -48,17 +48,17 @@ export default async function BooksPage({
   }
 
   return (
-    <div className="py-16 sm:py-24 bg-slate-950 text-white min-h-screen">
+    <div className="py-16 sm:py-24 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-950 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
-            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-500/40 text-amber-900 dark:text-amber-300 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
+            <BookOpen className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Colección Oficial de Libros</span>
           </div>
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
+          <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight">
             Historias que despiertan la imaginación
           </h1>
-          <p className="mt-4 text-slate-300 text-base sm:text-lg">
+          <p className="mt-4 text-slate-600 dark:text-slate-300 text-base sm:text-lg">
             Libros de gran formato, encuadernación cuidada e ilustraciones que transportan a pequeños y mayores al corazón de cada país.
           </p>
         </div>
@@ -67,25 +67,25 @@ export default async function BooksPage({
           {BOOKS.map((book) => (
             <div
               key={book.id}
-              className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-10 flex flex-col justify-between hover:border-amber-400/40 transition-all shadow-2xl"
+              className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-10 flex flex-col justify-between hover:border-amber-400/60 transition-all shadow-lg dark:shadow-2xl"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-4">
-                  <span className="text-xs font-black uppercase tracking-wider text-amber-400">
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
                     {book.volume} • 📍 {book.destinations}
                   </span>
-                  <span className="text-xs font-bold bg-slate-800 text-slate-300 px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full border border-slate-200 dark:border-transparent">
                     {book.ageRange}
                   </span>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">{book.title}</h2>
-                <p className="text-xs text-slate-400 font-semibold mb-4">{book.pages}</p>
-                <p className="text-sm text-slate-300 leading-relaxed mb-6">{book.description}</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2">{book.title}</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-4">{book.pages}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">{book.description}</p>
               </div>
 
-              <div className="pt-6 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+              <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" />
                   {book.status}
                 </span>

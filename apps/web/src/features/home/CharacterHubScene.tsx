@@ -352,8 +352,8 @@ const TiltCharacterCard: React.FC<{
       }}
       className={`group relative rounded-3xl p-5 cursor-pointer border transition-all duration-300 backdrop-blur-xl flex flex-col justify-between ${
         isSelected
-          ? 'bg-gradient-to-b from-slate-900/95 via-slate-900 to-slate-950 border-amber-400 shadow-2xl ring-2 ring-amber-400/40'
-          : 'bg-slate-900/75 border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 shadow-xl'
+          ? 'bg-gradient-to-b from-amber-50 to-white dark:from-slate-900/95 dark:via-slate-900 dark:to-slate-950 border-amber-400 shadow-2xl ring-2 ring-amber-400/40 text-slate-900 dark:text-white'
+          : 'bg-white/95 dark:bg-slate-900/75 border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:bg-slate-50 dark:hover:bg-slate-900/90 shadow-md dark:shadow-xl text-slate-800 dark:text-white'
       }`}
     >
       {/* Glare 3D interactivo */}
@@ -373,7 +373,7 @@ const TiltCharacterCard: React.FC<{
             <span>{theme.flag}</span>
             <span className="truncate max-w-[120px]">{theme.region}</span>
           </span>
-          <span className="text-[10px] font-mono text-slate-400 font-bold shrink-0">
+          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-bold shrink-0">
             #{character.id.toUpperCase().slice(0, 8)}
           </span>
         </div>
@@ -405,46 +405,46 @@ const TiltCharacterCard: React.FC<{
 
         {/* Nombre y Rol */}
         <div className="text-center mt-2.5">
-          <h3 className="text-xl font-black text-white tracking-tight leading-tight group-hover:text-amber-300 transition-colors">
+          <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-amber-500 dark:group-hover:text-amber-300 transition-colors">
             {character.name}
           </h3>
-          <p className="text-[11px] font-bold text-emerald-400 mt-1 uppercase tracking-wide line-clamp-1">
+          <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wide line-clamp-1">
             {roleText}
           </p>
         </div>
 
         {/* Cita célebre de expedición */}
         {character.voiceQuote && (
-          <p className="text-[11px] text-slate-300/85 text-center italic mt-2.5 px-1 line-clamp-2 leading-relaxed">
+          <p className="text-[11px] text-slate-600 dark:text-slate-300/85 text-center italic mt-2.5 px-1 line-clamp-2 leading-relaxed">
             {character.voiceQuote[locale] || character.voiceQuote.es}
           </p>
         )}
       </div>
 
       {/* Sección inferior: Atributos y Botón Pasaporte */}
-      <div className="mt-4 pt-3 border-t border-slate-800/80">
+      <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
         {character.explorerStats && (
           <div className="space-y-1.5 mb-3">
-            <div className="flex items-center justify-between text-[10px] font-bold text-slate-300">
-              <span className="flex items-center gap-1 text-amber-300">
-                <Compass className="w-3 h-3" /> Curiosidad
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
+              <span className="flex items-center gap-1 text-amber-600 dark:text-amber-300">
+                <Compass className="w-3 3" /> Curiosidad
               </span>
-              <span className="font-mono text-amber-400">{character.explorerStats.curiosity}%</span>
+              <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">{character.explorerStats.curiosity}%</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-gradient-to-r from-amber-500 to-amber-300 h-full rounded-full"
                 style={{ width: `${character.explorerStats.curiosity}%` }}
               />
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-bold text-slate-300 pt-0.5">
-              <span className="flex items-center gap-1 text-emerald-300">
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300 pt-0.5">
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-300">
                 <Shield className="w-3 h-3" /> Valentía
               </span>
-              <span className="font-mono text-emerald-400">{character.explorerStats.courage}%</span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{character.explorerStats.courage}%</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-gradient-to-r from-emerald-500 to-emerald-300 h-full rounded-full"
                 style={{ width: `${character.explorerStats.courage}%` }}
@@ -458,7 +458,7 @@ const TiltCharacterCard: React.FC<{
             className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-full transition-colors w-full justify-center ${
               isSelected
                 ? 'bg-amber-400 text-slate-950 font-black shadow-md'
-                : 'bg-slate-800/90 text-slate-300 group-hover:bg-emerald-950 group-hover:text-emerald-300 group-hover:border group-hover:border-emerald-500/40'
+                : 'bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 group-hover:bg-amber-400 group-hover:text-slate-950'
             }`}
           >
             <span>{isSelected ? '★ Pasaporte Activo' : 'Abrir Pasaporte'}</span>
@@ -525,27 +525,27 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   const selectedTheme = getCharacterTheme(selectedCharacter.id);
 
   return (
-    <section id="escena-personajes" className="relative py-28 bg-slate-950 text-white overflow-hidden">
+    <section id="escena-personajes" className="relative py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Línea divisoria superior */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-emerald-500 to-sky-400 shadow-[0_0_20px_rgba(16,185,129,0.8)]" />
 
       {/* Partículas de ambiente */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.15),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.08),transparent)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
+            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             <span>Escena 03 — El Espacio de los Personajes</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
             La Alianza de los<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-amber-300 to-emerald-200">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
               19 Grandes Exploradores.
             </span>
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Mueve el cursor sobre las fichas 3D para sentir el relieve de su pasaporte oficial. Cada personaje posee habilidades únicas indispensables para descifrar los enigmas del mundo. Haz clic en la lupa para ampliar su diseño 3D en alta definición.
           </p>
         </div>
@@ -566,8 +566,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 onClick={() => setFilterCategory(cat.id as any)}
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                   isCatActive
-                    ? 'bg-emerald-400 text-slate-950 border-emerald-300 shadow-lg shadow-emerald-400/20 scale-105 font-black'
-                    : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-emerald-500/50 hover:text-white'
+                    ? 'bg-emerald-500 text-white dark:bg-emerald-400 dark:text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/20 scale-105 font-black'
+                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:text-slate-900 dark:hover:text-white shadow-sm'
                 }`}
               >
                 {cat.label}
@@ -591,9 +591,9 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         </div>
 
         {/* Panel Detallado: Ficha de Expedicionario / Pasaporte Oficial */}
-        <div className="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+        <div className="bg-white/95 dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border-2 border-emerald-500/30 dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
           {/* Sello de agua del Pasaporte */}
-          <div className="absolute right-6 -bottom-10 opacity-5 pointer-events-none font-black text-9xl text-amber-400 select-none">
+          <div className="absolute right-6 -bottom-10 opacity-5 pointer-events-none font-black text-9xl text-amber-500 select-none">
             PASAPORTE
           </div>
 
@@ -618,7 +618,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               </div>
 
               <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start mb-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider shadow-sm">
                   ★ PASAPORTE: {selectedCharacter.id.toUpperCase()}
                 </span>
                 <span
@@ -629,8 +629,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 </span>
               </div>
 
-              <h3 className="text-3xl font-black text-white">{selectedCharacter.name}</h3>
-              <p className="text-sm font-bold text-emerald-400 mt-1">
+              <h3 className="text-3xl font-black text-slate-900 dark:text-white">{selectedCharacter.name}</h3>
+              <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                 {selectedCharacter.passportRole
                   ? selectedCharacter.passportRole[locale] || selectedCharacter.passportRole.es
                   : selectedCharacter.species}
@@ -638,13 +638,13 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
 
               {/* Nota Canónica especial si es Pompón o la familia Canguro */}
               {selectedCharacter.id === 'pompon' && (
-                <div className="mt-3 p-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs leading-relaxed text-left">
+                <div className="mt-3 p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs leading-relaxed text-left">
                   <strong>Nota Canónica:</strong> Pompón permanece en el Bosque Encantado custodiando el árbol más alto y el buzón postal. No viaja físicamente por el mundo, pero vive cada aventura en las cartas de Curileta.
                 </div>
               )}
 
               {selectedCharacter.id === 'joey' && (
-                <div className="mt-3 p-3 rounded-2xl bg-teal-950/40 border border-teal-500/30 text-teal-200 text-xs leading-relaxed text-left">
+                <div className="mt-3 p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-500/30 text-teal-900 dark:text-teal-200 text-xs leading-relaxed text-left">
                   <strong>Amigo Inseparable:</strong> Joey es el koala de peluche del bebé canguro que Curileta rescató en Uluru para devolverle la sonrisa a la familia del Outback.
                 </div>
               )}
@@ -654,7 +654,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 {selectedCharacter.personality?.map((trait) => (
                   <span
                     key={trait}
-                    className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700"
+                    className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm"
                   >
                     ✨ {trait}
                   </span>
@@ -665,9 +665,9 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               <button
                 type="button"
                 onClick={() => setLightboxCharacter(selectedCharacter)}
-                className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-amber-300 transition-colors cursor-pointer"
+                className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-300 transition-colors cursor-pointer"
               >
-                <Eye className="w-3.5 h-3.5 text-amber-400" />
+                <Eye className="w-3.5 h-3.5 text-amber-500" />
                 <span>Examinar modelo 3D en alta definición</span>
               </button>
             </div>
@@ -675,13 +675,13 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
             {/* Pestañas Interactivas de Contenido */}
             <div className="lg:col-span-8">
               {/* Selector de pestañas */}
-              <div className="flex items-center gap-2 pb-4 border-b border-slate-800 mb-6">
+              <div className="flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
                 <button
                   onClick={() => setActiveTab('biografia')}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                     activeTab === 'biografia'
                       ? 'bg-emerald-600 text-white shadow-md'
-                      : 'bg-slate-800/80 text-slate-300 hover:text-white'
+                      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   📖 Historia & Biografía
@@ -691,7 +691,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                     activeTab === 'mochila'
                       ? 'bg-emerald-600 text-white shadow-md'
-                      : 'bg-slate-800/80 text-slate-300 hover:text-white'
+                      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   🎒 Mochila de Expedición
@@ -701,7 +701,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                     activeTab === 'curiosidades'
                       ? 'bg-emerald-600 text-white shadow-md'
-                      : 'bg-slate-800/80 text-slate-300 hover:text-white'
+                      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   🔍 Secretos & Curiosidades
@@ -711,8 +711,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               {/* Contenido de la pestaña Biografía */}
               {activeTab === 'biografia' && (
                 <div className="space-y-4 animate-in fade-in duration-200">
-                  <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800">
-                    <p className="text-base text-slate-200 leading-relaxed">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+                    <p className="text-base text-slate-800 dark:text-slate-200 leading-relaxed">
                       {selectedCharacter.biography
                         ? selectedCharacter.biography[locale] || selectedCharacter.biography.es
                         : selectedCharacter.shortDescription[locale] || selectedCharacter.shortDescription.es}
@@ -720,8 +720,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   </div>
 
                   {selectedCharacter.voiceQuote && (
-                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200">
-                      <Volume2 className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200">
+                      <Volume2 className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                       <p className="text-sm font-semibold italic">
                         {selectedCharacter.voiceQuote[locale] || selectedCharacter.voiceQuote.es}
                       </p>
@@ -731,27 +731,27 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   {/* Estadísticas de Explorador en 4 Dimensiones */}
                   {selectedCharacter.explorerStats && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Curiosidad</span>
-                        <span className="text-lg font-mono font-black text-amber-400">
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Curiosidad</span>
+                        <span className="text-lg font-mono font-black text-amber-600 dark:text-amber-400">
                           {selectedCharacter.explorerStats.curiosity}%
                         </span>
                       </div>
-                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Valentía</span>
-                        <span className="text-lg font-mono font-black text-emerald-400">
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Valentía</span>
+                        <span className="text-lg font-mono font-black text-emerald-600 dark:text-emerald-400">
                           {selectedCharacter.explorerStats.courage}%
                         </span>
                       </div>
-                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Agilidad</span>
-                        <span className="text-lg font-mono font-black text-sky-400">
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Agilidad</span>
+                        <span className="text-lg font-mono font-black text-sky-600 dark:text-sky-400">
                           {selectedCharacter.explorerStats.agility}%
                         </span>
                       </div>
-                      <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Sabiduría</span>
-                        <span className="text-lg font-mono font-black text-purple-400">
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Sabiduría</span>
+                        <span className="text-lg font-mono font-black text-purple-600 dark:text-purple-400">
                           {selectedCharacter.explorerStats.wisdom}%
                         </span>
                       </div>
@@ -763,22 +763,22 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               {/* Contenido de la pestaña Mochila */}
               {activeTab === 'mochila' && (
                 <div className="space-y-4 animate-in fade-in duration-200">
-                  <p className="text-xs text-slate-400">Objetos mágicos y herramientas que lleva en su bolsa de viaje:</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Objetos mágicos y herramientas que lleva en su bolsa de viaje:</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedCharacter.backpackItems && selectedCharacter.backpackItems.length > 0 ? (
                       selectedCharacter.backpackItems.map((item, idx) => (
                         <div
                           key={idx}
-                          className="p-4 rounded-2xl bg-slate-950/80 border border-amber-400/30 flex items-start gap-3 shadow-lg"
+                          className="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-950/80 border border-amber-200 dark:border-amber-400/30 flex items-start gap-3 shadow-md"
                         >
-                          <Briefcase className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-xs font-bold text-slate-200">
+                          <Briefcase className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                             {item[locale] || item.es}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <p className="text-xs text-slate-400">Equipo en preparación para la próxima misión.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Equipo en preparación para la próxima misión.</p>
                     )}
                   </div>
                 </div>
@@ -791,22 +791,22 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                     selectedCharacter.curiosityFacts.map((fact, idx) => (
                       <div
                         key={idx}
-                        className="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-start gap-3"
+                        className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-slate-950/80 border border-emerald-200 dark:border-emerald-500/30 flex items-start gap-3"
                       >
-                        <Sparkles className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm font-medium text-slate-200">
+                        <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                           {fact[locale] || fact.es}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-slate-400">Descubre sus secretos en las páginas del libro.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Descubre sus secretos en las páginas del libro.</p>
                   )}
                 </div>
               )}
 
               {/* Enlace al perfil completo del personaje */}
-              <div className="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
                 <Link
                   href={`/${locale}/personajes/${selectedCharacter.slug}`}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg shadow-amber-400/20 transition-all cursor-pointer"
@@ -818,21 +818,21 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   <button
                     type="button"
                     onClick={() => setLightboxCharacter(selectedCharacter)}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 rounded-full transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-full transition-colors cursor-pointer"
                   >
-                    <ZoomIn className="w-3.5 h-3.5 text-amber-400" />
+                    <ZoomIn className="w-3.5 h-3.5 text-amber-500" />
                     <span>Ampliar 3D</span>
                   </button>
                   <Link
                     href={`/${locale}/fondos`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-4 py-2.5 rounded-full hover:bg-emerald-900 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 px-4 py-2.5 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-900 transition-colors shadow-sm"
                   >
-                    <Download className="w-3.5 h-3.5 text-amber-400" />
+                    <Download className="w-3.5 h-3.5 text-amber-500" />
                     <span>Fondos 2K</span>
                   </Link>
                   <Link
                     href={`/${locale}/personajes`}
-                    className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+                    className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
                     Ver los 19 →
                   </Link>
@@ -846,18 +846,18 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
       {/* Modal / Lightbox 3D a pantalla completa */}
       {lightboxCharacter && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-200"
           onClick={() => setLightboxCharacter(null)}
         >
           <div
-            className="relative max-w-2xl w-full bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-950 border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
+            className="relative max-w-2xl w-full bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Botón cerrar */}
             <button
               type="button"
               onClick={() => setLightboxCharacter(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer z-20"
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer z-20"
               aria-label="Cerrar vista 3D"
             >
               <X className="w-5 h-5" />
@@ -887,28 +887,28 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400">
                     ★ RENDER OFICIAL 3D
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                     {getCharacterTheme(lightboxCharacter.id).flag} {getCharacterTheme(lightboxCharacter.id).region}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white">
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
                     {lightboxCharacter.name}
                   </h3>
-                  <p className="text-xs font-extrabold text-emerald-400 uppercase tracking-wide mt-0.5">
+                  <p className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mt-0.5">
                     {lightboxCharacter.passportRole
                       ? lightboxCharacter.passportRole[locale] || lightboxCharacter.passportRole.es
                       : lightboxCharacter.species}
                   </p>
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                   {lightboxCharacter.shortDescription[locale] || lightboxCharacter.shortDescription.es}
                 </p>
 
                 {lightboxCharacter.voiceQuote && (
-                  <p className="text-xs text-amber-300/90 italic border-l-2 border-amber-400 pl-3">
+                  <p className="text-xs text-amber-700 dark:text-amber-300/90 italic border-l-2 border-amber-400 pl-3">
                     {lightboxCharacter.voiceQuote[locale] || lightboxCharacter.voiceQuote.es}
                   </p>
                 )}

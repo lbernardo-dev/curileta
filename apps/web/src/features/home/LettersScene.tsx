@@ -588,30 +588,30 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   };
 
   return (
-    <section id="escena-cartas" className="relative py-28 bg-slate-950 text-white overflow-hidden">
+    <section id="escena-cartas" className="relative py-28 bg-amber-50/40 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
       {/* Trazado estético superior */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-rose-500 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Encabezado */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/50 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Mail className="w-4 h-4 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-500/50 text-amber-900 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
+            <Mail className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             <span>El Baúl Postal de la Expedición</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
             Cartas a Pompón.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-sky-300">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-sky-500 dark:from-amber-300 dark:via-rose-300 dark:to-sky-300">
               Palabras que cruzaron océanos.
             </span>
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             «No estés triste, Pompón: te enviaré una carta siempre que llegue a un nuevo sitio». Lee las 10 cartas auténticas escritas por Curileta desde cada rincón del planeta.
           </p>
         </div>
 
         {/* Carrusel de Sobres / Selector de Cartas */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-thin scrollbar-thumb-amber-400/30 scrollbar-track-slate-900 justify-start md:justify-center">
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-thin scrollbar-thumb-amber-400/40 scrollbar-track-slate-200 dark:scrollbar-track-slate-900 justify-start md:justify-center">
           {LETTERS_DATA.map((item, idx) => {
             const isSelected = item.id === selectedLetterId;
             return (
@@ -624,7 +624,7 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
                 className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 border cursor-pointer ${
                   isSelected
                     ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-400/25 scale-105 font-black'
-                    : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-amber-400/50 hover:text-white'
+                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-amber-400/60 hover:text-slate-950 dark:hover:text-white shadow-sm'
                 }`}
                 aria-pressed={isSelected}
               >
@@ -705,7 +705,7 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
             <div className="flex items-center justify-between pt-4 border-t-2 border-dashed border-[#e6dbc7]">
               <button
                 onClick={handlePrev}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-slate-200/80 dark:hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Carta anterior</span>
@@ -717,7 +717,7 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
 
               <button
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-slate-200/80 dark:hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all cursor-pointer"
               >
                 <span>Siguiente carta</span>
                 <ChevronRight className="w-4 h-4" />
@@ -728,13 +728,13 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
           {/* Columna Derecha: Cuaderno de Fotos de Curileta & Tesoros Adjuntos */}
           <div className="lg:col-span-5 space-y-6">
             {/* Tarjeta de Polaroids / Curiosidades Adjuntas */}
-            <div className="bg-slate-900/90 border border-amber-400/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl relative">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-amber-400">
+            <div className="bg-white/90 dark:bg-slate-900/90 border border-amber-300/50 dark:border-amber-400/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-2xl relative">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
                   <Camera className="w-4 h-4" />
                   <span>POLAROIDS ADJUNTAS ({letter.photos.length})</span>
                 </div>
-                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/20">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-400/10 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/20">
                   {letter.country[locale] || letter.country.es}
                 </span>
               </div>
@@ -748,7 +748,7 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
                     className={`flex-1 py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
                       activePhotoIndex === pIdx
                         ? 'bg-amber-400 text-slate-950 font-black'
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
                     Foto #{pIdx + 1}
@@ -758,7 +758,7 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
 
               {/* Polaroid Activa */}
               {letter.photos[activePhotoIndex] && (
-                <div className="mt-6 p-4 bg-white text-slate-900 rounded-2xl shadow-xl transform rotate-[1deg] transition-all duration-300">
+                <div className="mt-6 p-4 bg-white text-slate-900 rounded-2xl shadow-xl transform rotate-[1deg] transition-all duration-300 border border-slate-200/80 dark:border-transparent">
                   <div className="w-full aspect-[4/3] rounded-xl bg-gradient-to-tr from-slate-950 via-slate-900 to-amber-950/80 p-4 flex flex-col justify-between text-white relative overflow-hidden border border-slate-800">
                     <span className="self-start text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-amber-400 text-slate-950">
                       {letter.photos[activePhotoIndex].tag}
@@ -782,17 +782,17 @@ export const LettersScene: React.FC<{ locale: Locale }> = ({ locale }) => {
             </div>
 
             {/* Cuadro de Amistad y Hogar */}
-            <div className="bg-gradient-to-br from-amber-950/80 via-slate-900 to-emerald-950/80 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-amber-50 via-emerald-50/40 to-teal-50 dark:from-amber-950/80 dark:via-slate-900 dark:to-emerald-950/80 border border-emerald-300 dark:border-emerald-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-2xl relative overflow-hidden">
               <div className="flex items-center gap-3 mb-3">
-                <Heart className="w-5 h-5 text-rose-400 fill-rose-400" />
-                <h4 className="text-lg font-black text-white">
+                <Heart className="w-5 h-5 text-rose-500 dark:text-rose-400 fill-rose-500 dark:fill-rose-400" />
+                <h4 className="text-lg font-black text-slate-900 dark:text-white">
                   El Buzón de Pompón
                 </h4>
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 Pompón guarda cada sobre en un buzón de madera tallada bajo el árbol más alto. Cada sello es una promesa cumplida: explorar el mundo entero para regresar y abrazar a quien más quieres.
               </p>
-              <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-amber-300 font-bold">
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-amber-700 dark:text-amber-300 font-bold">
                 <span>Colección Postal Completa</span>
                 <span className="font-mono">11 Sobres Sellados</span>
               </div>

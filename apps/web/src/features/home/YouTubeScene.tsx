@@ -236,26 +236,26 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
   }, [allVideos, selectedCategory]);
 
   return (
-    <section id="escena-youtube" className="py-28 bg-slate-950 text-white overflow-hidden relative">
+    <section id="escena-youtube" className="py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative">
       {/* Resplandor ambiental de fondo */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(239,68,68,0.12),transparent)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera de la sección */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Youtube className="w-4 h-4 text-red-500" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/40 text-red-800 dark:text-red-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
+            <Youtube className="w-4 h-4 text-red-600 dark:text-red-500" />
             <span>Escena 05 — El Canal Oficial de YouTube</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
             La página se mueve.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-rose-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-600 to-rose-600 dark:from-red-400 dark:via-amber-300 dark:to-rose-400">
               Las historias cantan y cobran vida.
             </span>
           </h2>
 
-          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Descubre nuestro universo audiovisual en tres formatos pensados para disfrutar en familia: capítulos completos de la serie animada, canciones y videoclips oficiales, y divertidos micro-momentos en YouTube Shorts.
           </p>
         </div>
@@ -267,10 +267,10 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
               selectedCategory === 'todos'
                 ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/30 scale-105 font-black'
-                : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-red-500/50 hover:text-white'
+                : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
             <span>Todos los Vídeos ({counts.todos})</span>
           </button>
 
@@ -279,10 +279,10 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
               selectedCategory === 'episode'
                 ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/30 scale-105 font-black'
-                : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-red-500/50 hover:text-white'
+                : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
             }`}
           >
-            <Film className="w-3.5 h-3.5 text-sky-400" />
+            <Film className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
             <span>Capítulos de la Serie ({counts.episode})</span>
           </button>
 
@@ -291,10 +291,10 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
               selectedCategory === 'song'
                 ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/30 scale-105 font-black'
-                : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-red-500/50 hover:text-white'
+                : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
             }`}
           >
-            <Music className="w-3.5 h-3.5 text-emerald-400" />
+            <Music className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
             <span>Vídeos Musicales ({counts.song})</span>
           </button>
 
@@ -303,10 +303,10 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
               selectedCategory === 'short'
                 ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white border-rose-500 shadow-lg shadow-rose-600/40 scale-105 font-black'
-                : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-rose-500/50 hover:text-white'
+                : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-rose-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
             }`}
           >
-            <Smartphone className="w-3.5 h-3.5 text-rose-400" />
+            <Smartphone className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
             <span>YouTube Shorts ({counts.short})</span>
           </button>
         </div>
@@ -316,12 +316,12 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
           <div className="mb-14">
             {selectedCategory === 'todos' && (
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-xl bg-red-950/80 border border-red-500/30 text-red-400">
+                <div className="p-2 rounded-xl bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/30 text-red-600 dark:text-red-400">
                   <Film className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white">Capítulos de la Serie & Vídeos Musicales</h3>
-                  <p className="text-xs text-slate-400">Episodios animados de 8 a 12 minutos y videoclips de la banda sonora oficial.</p>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white">Capítulos de la Serie & Vídeos Musicales</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Episodios animados de 8 a 12 minutos y videoclips de la banda sonora oficial.</p>
                 </div>
               </div>
             )}
@@ -337,14 +337,14 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
                   return (
                     <div
                       key={video.id}
-                      className="group rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-red-500/50 overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-red-950/40 transition-all duration-300 flex flex-col justify-between"
+                      className="group rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-red-500/50 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
                     >
                       {/* Portada 16:9 */}
                       <div className="relative aspect-video w-full bg-slate-950 overflow-hidden">
                         <img
                           src={video.thumbnail}
                           alt={title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 dark:opacity-85"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
@@ -392,20 +392,20 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
                       {/* Contenido textual */}
                       <div className="p-5 flex-1 flex flex-col justify-between">
                         <div>
-                          <h4 className="text-base sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors leading-snug">
+                          <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-amber-300 transition-colors leading-snug">
                             {title}
                           </h4>
                           {description && (
-                            <p className="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+                            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">
                               {description}
                             </p>
                           )}
                         </div>
 
-                        <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
                           <button
                             onClick={() => setActiveModalVideo(video)}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors cursor-pointer"
                           >
                             <Play className="w-3 h-3 fill-current" />
                             <span>Reproducir ahora</span>
@@ -415,7 +415,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
                             href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 rounded-full bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white transition-colors"
+                            className="p-2 rounded-full bg-slate-100 hover:bg-red-600 text-slate-500 hover:text-white dark:bg-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors"
                             aria-label="Abrir en YouTube"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
@@ -438,12 +438,12 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-black text-white">YouTube Shorts de Curileta</h3>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white">YouTube Shorts de Curileta</h3>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-600 text-white">
                     Formato Vertical 9:16
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">Micro-aventuras, curiosidades geográficas express y momentos divertidos en 30-60 segundos.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Micro-aventuras, curiosidades geográficas express y momentos divertidos en 30-60 segundos.</p>
               </div>
             </div>
 
@@ -457,14 +457,14 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
                     <div
                       key={video.id}
                       onClick={() => setActiveModalVideo(video)}
-                      className="group cursor-pointer rounded-2xl bg-slate-900 border border-slate-800 hover:border-red-500 overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-red-600/20 transition-all duration-300 flex flex-col relative"
+                      className="group cursor-pointer rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-500 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col relative"
                     >
                       {/* Marco Vertical Aspecto 9:16 */}
                       <div className="relative aspect-[9/16] w-full bg-slate-950 overflow-hidden">
                         <img
                           src={video.thumbnail}
                           alt={title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 dark:opacity-80"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40" />
@@ -502,17 +502,17 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
         {/* Modal Emergente de Reproducción de Vídeo */}
         {activeModalVideo && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
-            <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+            <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
               {/* Barra superior modal */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/80">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80">
                 <div className="flex items-center gap-2">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
                       activeModalVideo.type === 'episode'
-                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                        ? 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/40'
                         : activeModalVideo.type === 'song'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                        ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40'
+                        : 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40'
                     }`}
                   >
                     {activeModalVideo.type === 'episode'
@@ -521,14 +521,14 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
                       ? 'Vídeo Musical'
                       : 'YouTube Short'}
                   </span>
-                  <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
                     {activeModalVideo.duration}
                   </span>
                 </div>
 
                 <button
                   onClick={() => setActiveModalVideo(null)}
-                  className="p-2 rounded-full bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  className="p-2 rounded-full bg-slate-200 hover:bg-red-600 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
                   aria-label="Cerrar reproductor"
                 >
                   <X className="w-5 h-5" />
@@ -551,22 +551,22 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
               </div>
 
               {/* Pie con detalles del vídeo */}
-              <div className="p-6 bg-slate-950">
-                <h3 className="text-xl font-black text-white">
+              <div className="p-6 bg-slate-50 dark:bg-slate-950">
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">
                   {activeModalVideo.title[locale] || activeModalVideo.title.es}
                 </h3>
                 {activeModalVideo.description && (
-                  <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
                     {activeModalVideo.description[locale] || activeModalVideo.description.es}
                   </p>
                 )}
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800 text-xs">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
                   <a
                     href={`https://www.youtube.com/watch?v=${activeModalVideo.youtubeId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-red-400 hover:text-red-300 font-bold"
+                    className="inline-flex items-center gap-1.5 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold"
                   >
                     <ExternalLink className="w-4 h-4" />
                     <span>Ver en el canal de YouTube de Curileta</span>
@@ -588,27 +588,27 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({ locale, videos: prop
         )}
 
         {/* Banner Oficial de Suscripción al Canal de YouTube */}
-        <div className="mt-12 rounded-3xl bg-gradient-to-r from-red-950/80 via-slate-900 to-amber-950/80 border-2 border-red-900/50 p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="mt-12 rounded-3xl bg-gradient-to-r from-red-50 via-amber-50/50 to-rose-50 dark:from-red-950/80 dark:via-slate-900 dark:to-amber-950/80 border-2 border-red-200 dark:border-red-900/50 p-8 sm:p-10 shadow-xl dark:shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-red-600 flex items-center justify-center flex-shrink-0 shadow-xl shadow-red-600/40">
               <Youtube className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="text-2xl font-black text-white tracking-tight">Canal Oficial: @curileta</h4>
-                <CheckCircle2 className="w-5 h-5 text-sky-400" />
+                <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Canal Oficial: @curileta</h4>
+                <CheckCircle2 className="w-5 h-5 text-sky-500 dark:text-sky-400" />
               </div>
-              <p className="text-sm text-slate-300 mt-1 max-w-xl">
+              <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-xl">
                 Capítulos nuevos de la serie, videoclips para cantar en casa y Shorts educativos todas las semanas. ¡Acompáñanos en cada travesía!
               </p>
               <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-amber-300 font-bold">
+                <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">
                   🎬 Serie Animada
                 </span>
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-emerald-300 font-bold">
+                <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">
                   🎵 Canciones & Coreografías
                 </span>
-                <span className="px-3 py-1 rounded-full bg-slate-800 text-rose-300 font-bold">
+                <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-rose-700 dark:text-rose-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">
                   📱 Shorts Verticales 9:16
                 </span>
               </div>

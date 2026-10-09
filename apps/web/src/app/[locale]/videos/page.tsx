@@ -26,12 +26,12 @@ export default async function VideosPage({
   const videos = await cmsProvider.getVideos(locale);
 
   return (
-    <div className="bg-slate-950 text-white min-h-screen">
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen transition-colors duration-300">
       <div className="pt-16 sm:pt-24 text-center max-w-3xl mx-auto px-4">
-        <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
+        <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight">
           El Canal de YouTube Oficial
         </h1>
-        <p className="mt-4 text-slate-300 text-base sm:text-lg">
+        <p className="mt-4 text-slate-600 dark:text-slate-300 text-base sm:text-lg">
           Capítulos completos de la serie, vídeos musicales con coreografías y divertidos YouTube Shorts en formato vertical.
         </p>
       </div>

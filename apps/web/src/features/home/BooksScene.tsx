@@ -43,17 +43,17 @@ const FEATURED_BOOKS: BookItem[] = [
 
 export const BooksScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   return (
-    <section className="py-28 bg-slate-900 text-white overflow-hidden relative">
+    <section className="py-28 bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-950 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4">
-            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-500/40 text-amber-900 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-4">
+            <BookOpen className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Escena 05 — Los Libros</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
             La aventura cobra forma entre páginas
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-300">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300">
             Ilustraciones vibrantes, valores de empatía y curiosidad geográfica encuadernados para leer juntos en familia antes de dormir.
           </p>
         </div>
@@ -63,10 +63,10 @@ export const BooksScene: React.FC<{ locale: Locale }> = ({ locale }) => {
           {FEATURED_BOOKS.map((book) => (
             <div
               key={book.id}
-              className="relative rounded-3xl bg-slate-950/80 border border-slate-800 p-8 sm:p-10 flex flex-col md:flex-row gap-8 items-center shadow-2xl hover:border-amber-500/50 transition-all duration-300 group"
+              className="relative rounded-3xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 p-8 sm:p-10 flex flex-col md:flex-row gap-8 items-center shadow-xl dark:shadow-2xl hover:border-amber-400 dark:hover:border-amber-500/50 transition-all duration-300 group"
             >
               {/* 3D Book Cover Simulator */}
-              <div className="relative w-48 sm:w-52 aspect-[3/4] shrink-0 rounded-2xl bg-gradient-to-tr shadow-2xl shadow-black/80 flex flex-col justify-between p-6 border-r-4 border-b-4 border-slate-950 group-hover:-rotate-2 group-hover:scale-105 transition-all duration-500 overflow-hidden">
+              <div className="relative w-48 sm:w-52 aspect-[3/4] shrink-0 rounded-2xl bg-gradient-to-tr shadow-2xl shadow-black/40 dark:shadow-black/80 flex flex-col justify-between p-6 border-r-4 border-b-4 border-slate-950 group-hover:-rotate-2 group-hover:scale-105 transition-all duration-500 overflow-hidden">
                 <div className={`absolute inset-0 bg-gradient-to-br ${book.color} opacity-90`} />
                 <div className="absolute top-0 left-0 bottom-0 w-4 bg-white/20 backdrop-blur-sm shadow-inner" />
 
@@ -86,16 +86,16 @@ export const BooksScene: React.FC<{ locale: Locale }> = ({ locale }) => {
 
               {/* Book Info */}
               <div className="space-y-4 flex-1">
-                <div className="inline-flex items-center gap-1.5 text-xs font-black text-amber-400 bg-amber-950/60 border border-amber-800/40 px-3 py-1 rounded-full">
+                <div className="inline-flex items-center gap-1.5 text-xs font-black text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800/40 px-3 py-1 rounded-full">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>{book.badge}</span>
                 </div>
 
-                <h3 className="text-2xl font-black text-white">{book.title}</h3>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white">{book.title}</h3>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                   {book.subtitle}
                 </p>
-                <p className="text-sm text-slate-300 leading-relaxed">
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                   {book.description}
                 </p>
 
@@ -103,7 +103,7 @@ export const BooksScene: React.FC<{ locale: Locale }> = ({ locale }) => {
                   {book.destinations.map((dest) => (
                     <span
                       key={dest}
-                      className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-300"
+                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 shadow-sm"
                     >
                       📍 {dest}
                     </span>
@@ -127,7 +127,7 @@ export const BooksScene: React.FC<{ locale: Locale }> = ({ locale }) => {
         <div className="mt-14 text-center">
           <Link
             href={`/${locale}/libros`}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-base bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-base bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/20 transition-all shadow-sm"
           >
             <span>Ver catálogo editorial completo</span>
             <ExternalLink className="w-4 h-4" />

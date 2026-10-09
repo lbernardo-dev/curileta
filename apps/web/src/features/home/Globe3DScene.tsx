@@ -716,35 +716,35 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   }, [locationsList, isAutoRotating, isHovered, selectedId]);
 
   return (
-    <section id="escena-mapa" className="relative py-28 bg-slate-950 text-white overflow-hidden">
+    <section id="escena-mapa" className="relative py-28 bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Trazado estético superior */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-amber-400 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.8)]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Encabezado */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Globe className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '15s' }} />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
+            <Globe className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-spin" style={{ animationDuration: '15s' }} />
             <span>Escena 02 — Cartografía 3D Animada Estilo Pixar</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
             El Globo se Ilumina.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-300 to-sky-300">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-emerald-600 to-sky-600 dark:from-amber-400 dark:via-emerald-300 dark:to-sky-300">
               Océanos, Continentes & Monumentos 3D.
             </span>
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Descubre los continentes ilustrados, las aguas turquesas y los monumentos 3D del libro. Pulsa o arrastra el planeta para explorar las pirámides, templos, montañas y el gran árbol de Curileta.
           </p>
         </div>
 
         {/* Panel Cartográfico 3D y Tarjeta de Destino */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-900/80 border border-emerald-500/30 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white/95 dark:bg-slate-900/80 border border-slate-200 dark:border-emerald-500/30 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
           {/* Fondo estético de rejilla */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_40%,rgba(16,185,129,0.1),transparent)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_40%,rgba(16,185,129,0.08),transparent)] pointer-events-none" />
 
           {/* Selector rápido de destinos con iconos de monumentos */}
-          <div className="lg:col-span-12 flex flex-wrap items-center justify-center gap-2 pb-4 border-b border-slate-800">
+          <div className="lg:col-span-12 flex flex-wrap items-center justify-center gap-2 pb-4 border-b border-slate-200 dark:border-slate-800">
             {locationsList.map((loc) => {
               const isSelected = selectedId === loc.id;
               const monument = getMonumentConfig(loc.id);
@@ -754,8 +754,8 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                   onClick={() => focusLocation(loc)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/20 scale-105 font-black'
-                      : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80 border border-slate-700'
+                      ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/20 scale-105 font-black ring-2 ring-amber-400/50'
+                      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700'
                   }`}
                   aria-pressed={isSelected}
                 >
@@ -777,18 +777,18 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               aria-label="Globo terráqueo animado en 3D con monumentos estilo Pixar"
             >
               {!webglSupported && (
-                <div className="w-full h-full min-h-[380px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-slate-950 to-emerald-950/80 rounded-2xl border border-amber-400/40 relative overflow-hidden">
+                <div className="w-full h-full min-h-[380px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-slate-100 to-emerald-50 dark:from-slate-950 dark:to-emerald-950/80 rounded-2xl border border-amber-400/40 relative overflow-hidden">
                   <div className="relative w-64 h-64 flex items-center justify-center my-4">
                     <div className="absolute inset-0 rounded-full border-2 border-emerald-400/40 animate-[spin_20s_linear_infinite]" />
                     <div className="absolute inset-4 rounded-full border-2 border-dashed border-amber-400/50 animate-[spin_15s_linear_infinite_reverse]" />
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-emerald-950 via-slate-900 to-emerald-900 border-2 border-amber-400/70 shadow-2xl flex flex-col items-center justify-center text-center p-3">
-                      <Compass className="w-9 h-9 text-amber-400 animate-pulse" />
-                      <span className="text-[10px] font-black uppercase text-amber-300 mt-1">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-white via-slate-100 to-emerald-100 dark:from-emerald-950 dark:via-slate-900 dark:to-emerald-900 border-2 border-amber-400/70 shadow-2xl flex flex-col items-center justify-center text-center p-3">
+                      <Compass className="w-9 h-9 text-amber-500 animate-pulse" />
+                      <span className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-300 mt-1">
                         {activeDestination.country[locale] || activeDestination.country.es}
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs font-bold text-slate-300 text-center">
+                  <p className="text-xs font-bold text-slate-600 dark:text-slate-300 text-center">
                     Carta Esférica de Expedición • Selecciona un país arriba para enfocar
                   </p>
                 </div>
@@ -800,33 +800,33 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               {/* Botón Parada Anterior */}
               <button
                 onClick={handlePrevLocation}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800/90 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold text-slate-200 border border-slate-700 transition-all cursor-pointer shadow-md group"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/90 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-all cursor-pointer shadow-md group"
               >
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                 <span>Parada anterior</span>
               </button>
 
               {/* Indicador de Etapa y Controles de Cámara */}
-              <div className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 px-3.5 py-1.5 rounded-full shadow-lg">
-                <span className="text-[11px] font-mono font-black text-amber-400 tracking-wider">
+              <div className="flex items-center gap-2 bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 px-3.5 py-1.5 rounded-full shadow-lg">
+                <span className="text-[11px] font-mono font-black text-amber-600 dark:text-amber-400 tracking-wider">
                   ETAPA {activeIndex + 1}/{locationsList.length}
                 </span>
-                <div className="w-px h-3.5 bg-slate-800" />
+                <div className="w-px h-3.5 bg-slate-200 dark:bg-slate-800" />
                 <button
                   onClick={() => setIsAutoRotating(!isAutoRotating)}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-amber-400 transition-colors"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-400 transition-colors cursor-pointer"
                   title={isAutoRotating ? 'Pausar giro automático' : 'Reanudar giro automático'}
                 >
-                  {isAutoRotating ? <Pause className="w-3 h-3 text-amber-400" /> : <Play className="w-3 h-3 text-emerald-400" />}
+                  {isAutoRotating ? <Pause className="w-3 h-3 text-amber-500" /> : <Play className="w-3 h-3 text-emerald-500" />}
                   <span className="hidden sm:inline">{isAutoRotating ? 'Pausar' : 'Girar'}</span>
                 </button>
-                <div className="w-px h-3.5 bg-slate-800" />
+                <div className="w-px h-3.5 bg-slate-200 dark:bg-slate-800" />
                 <button
                   onClick={() => focusLocation(activeDestination)}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:text-sky-400 transition-colors"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 transition-colors cursor-pointer"
                   title="Recentrar vista en destino actual"
                 >
-                  <RotateCcw className="w-3 h-3 text-sky-400" />
+                  <RotateCcw className="w-3 h-3 text-sky-500" />
                   <span className="hidden sm:inline">Recentrar</span>
                 </button>
               </div>
@@ -834,7 +834,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               {/* Botón Siguiente Parada */}
               <button
                 onClick={handleNextLocation}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800/90 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold text-slate-200 border border-slate-700 transition-all cursor-pointer shadow-md group"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/90 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-all cursor-pointer shadow-md group"
               >
                 <span>Siguiente parada</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -843,60 +843,60 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
           </div>
 
           {/* Ficha de Expedición del Destino Seleccionado */}
-          <div className="lg:col-span-5 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-amber-400/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+          <div className="lg:col-span-5 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border border-amber-400/40 dark:border-amber-400/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
             {/* Distintivo de Pasaporte y Monumento 3D Oficial */}
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 font-mono text-[11px] font-black shadow-md flex items-center gap-1">
                   <span>{activeMonumentConfig.emoji}</span>
                   <span>{activeMonumentConfig.name}</span>
                 </span>
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-amber-300 text-xs font-mono font-bold border border-slate-700">
-                  <Sparkles className="w-3 h-3 text-amber-400" />
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold border border-slate-300 dark:border-slate-700">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
                   <span>SELLO: {activeDestination.passportStamp?.code || 'EXP-00'}</span>
                 </div>
               </div>
-              <div className="text-xs font-mono text-emerald-400 font-bold">
+              <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
                 {activeDestination.coordinates.lat > 0 ? `${activeDestination.coordinates.lat}°N` : `${Math.abs(activeDestination.coordinates.lat)}°S`},{' '}
                 {activeDestination.coordinates.lng > 0 ? `${activeDestination.coordinates.lng}°E` : `${Math.abs(activeDestination.coordinates.lng)}°W`}
               </div>
             </div>
 
             {/* Título del Destino */}
-            <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
               {activeDestination.name[locale] || activeDestination.name.es}
             </h3>
-            <span className="inline-block text-sm font-bold text-amber-400 mt-1">
+            <span className="inline-block text-sm font-bold text-amber-600 dark:text-amber-400 mt-1">
               {activeDestination.country[locale] || activeDestination.country.es}
             </span>
 
             {/* Tema y Clima */}
             <div className="mt-4 flex flex-wrap gap-2">
               {activeDestination.climate && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
                   🌤️ {activeDestination.climate[locale] || activeDestination.climate.es}
                 </span>
               )}
               {activeDestination.theme && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-emerald-300">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300">
                   🗺️ {activeDestination.theme[locale] || activeDestination.theme.es}
                 </span>
               )}
             </div>
 
             {/* Descripción Narrativa */}
-            <p className="mt-4 text-sm text-slate-300 leading-relaxed">
+            <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               {activeDestination.description[locale] || activeDestination.description.es}
             </p>
 
             {/* Curiosidades del Destino */}
             {activeDestination.curiosities && activeDestination.curiosities.length > 0 && (
-              <div className="mt-5 p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80">
-                <h4 className="text-xs font-black uppercase tracking-wider text-amber-400 mb-2 flex items-center gap-1.5">
-                  <Compass className="w-3.5 h-3.5" />
+              <div className="mt-5 p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-900/90 border border-amber-200 dark:border-slate-800/80">
+                <h4 className="text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-2 flex items-center gap-1.5">
+                  <Compass className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   <span>Dato Curioso de Curileta</span>
                 </h4>
-                <p className="text-xs text-slate-300 leading-relaxed italic">
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
                   «{activeDestination.curiosities[0][locale] || activeDestination.curiosities[0].es}»
                 </p>
               </div>
@@ -905,7 +905,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
             {/* Personajes de la expedición en este punto */}
             {activeDestination.characters && activeDestination.characters.length > 0 && (
               <div className="mt-5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-2">
                   Exploradores presentes:
                 </span>
                 <div className="flex flex-wrap items-center gap-2">
@@ -943,7 +943,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                     return (
                       <span
                         key={charSlug}
-                        className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-900/60 text-emerald-200 border border-emerald-700/50"
+                        className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/50 shadow-sm"
                       >
                         {label}
                       </span>
@@ -952,7 +952,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 </div>
                 {/* Nota canónica sobre Pompón */}
                 {!activeDestination.characters.includes('pompon') && (
-                  <p className="text-[11px] text-amber-300/80 italic mt-2.5">
+                  <p className="text-[11px] text-amber-700 dark:text-amber-300/80 italic mt-2.5">
                     * Pompón permanece en el Bosque Encantado custodiando el hogar y esperando las cartas de Curileta.
                   </p>
                 )}
@@ -960,7 +960,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
             )}
 
             {/* Botones de acción: Bitácora de 41 Hitos & Cuaderno */}
-            <div className="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
               <button
                 onClick={() => setIsMilestonesModalOpen(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-300 text-xs font-black transition-all cursor-pointer shadow-lg shadow-amber-400/20"
@@ -971,7 +971,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
               <a
                 href={`/${locale}/mundo`}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white group"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white group"
               >
                 <span>Cuaderno completo</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -983,25 +983,25 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
       {/* Modal Interactivo: Los 41 Hitos Narrativos del Libro */}
       {isMilestonesModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-4xl max-h-[85vh] bg-slate-900 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 flex flex-col shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-4xl max-h-[85vh] bg-white dark:bg-slate-900 border-2 border-amber-400 rounded-3xl p-6 sm:p-8 flex flex-col shadow-2xl overflow-hidden">
             {/* Cabecera del Modal */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800 shrink-0">
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-400/10 border border-amber-300 dark:border-amber-400/30 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-2">
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>Itinerario Canónico Oficial</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-white">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Lista de 41 Lugares y Escenarios — Las Aventuras de Curileta
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Recorrido narrativo cronológico exacto según el libro oficial.
                 </p>
               </div>
               <button
                 onClick={() => setIsMilestonesModalOpen(false)}
-                className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 title="Cerrar bitácora"
               >
                 <X className="w-5 h-5" />
@@ -1009,9 +1009,9 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
             </div>
 
             {/* Aclaraciones Canónicas destacadas */}
-            <div className="my-3 p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 flex items-start gap-3 shrink-0">
-              <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <div className="text-[11px] text-amber-200/90 leading-relaxed space-y-1">
+            <div className="my-3 p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/40 flex items-start gap-3 shrink-0">
+              <Info className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-[11px] text-amber-900 dark:text-amber-200/90 leading-relaxed space-y-1">
                 <p>
                   <strong>• Pompón permanece en el Bosque Encantado:</strong> Recibe las cartas de Curileta pero no viaja físicamente por el mundo.
                 </p>
@@ -1032,7 +1032,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 placeholder="Buscar por lugar, país o acontecimiento..."
                 value={milestoneSearch}
                 onChange={(e) => setMilestoneSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-400"
               />
             </div>
 
@@ -1050,23 +1050,23 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 .map((m) => (
                   <div
                     key={m.order}
-                    className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 hover:border-amber-400/40 transition-colors"
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80 hover:border-amber-400/40 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-2">
                         <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-mono font-black text-xs flex items-center justify-center shrink-0">
                           {m.order}
                         </span>
-                        <h4 className="text-sm font-bold text-white">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                           {m.place[locale] || m.place.es}
                         </h4>
                       </div>
-                      <span className="text-[11px] font-mono font-bold text-emerald-400 shrink-0">
+                      <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
                         {m.country[locale] || m.country.es}
                       </span>
                     </div>
 
-                    <p className="text-xs text-slate-300 leading-relaxed pl-8">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-8">
                       {m.whatHappens[locale] || m.whatHappens.es}
                     </p>
 
@@ -1077,13 +1077,13 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                       {m.charactersPresent.map((c) => (
                         <span
                           key={c}
-                          className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 capitalize"
+                          className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 capitalize"
                         >
                           {c === 'joey-canguro' ? 'Mamá Canguro & Bebé (con Joey)' : c}
                         </span>
                       ))}
                       {m.isTravesia && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-950 text-sky-300 border border-sky-700">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-300 dark:border-sky-700">
                           Travesía en barco
                         </span>
                       )}
