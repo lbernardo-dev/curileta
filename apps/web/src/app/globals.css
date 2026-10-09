@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 :root {
+  --font-outfit: 'Outfit', sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+
   /* Brand Primitive Colors */
   --color-curileta-green: #1B8A44;
   --color-curileta-green-light: #34D399;

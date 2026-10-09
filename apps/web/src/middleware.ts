@@ -25,7 +25,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Redirigir hacia el locale por defecto (ES) manteniendo la ruta
-  const newUrl = new URL(`/${defaultLocale}${pathname}`, request.url);
+  const redirectPath = pathname === '/' ? '' : pathname;
+  const newUrl = new URL(`/${defaultLocale}${redirectPath}`, request.url);
   return NextResponse.redirect(newUrl);
 }
 

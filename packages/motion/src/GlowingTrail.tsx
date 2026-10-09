@@ -48,12 +48,25 @@ export const GlowingTrail: React.FC<{ className?: string }> = ({ className = '' 
   return (
     <div
       ref={containerRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 20,
+        overflow: 'hidden',
+      }}
       className={`pointer-events-none fixed inset-0 z-20 w-full h-full overflow-hidden opacity-60 sm:opacity-75 ${className}`}
       aria-hidden="true"
     >
       <svg
         viewBox="0 0 100 1000"
         preserveAspectRatio="none"
+        style={{ width: '100%', height: '100%', display: 'block' }}
         className="w-full h-full"
       >
         <path

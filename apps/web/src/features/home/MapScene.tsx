@@ -92,13 +92,13 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
           {/* Map Surface View */}
           <div className="relative w-full aspect-[16/9] min-h-[340px] max-h-[520px] rounded-2xl bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
             {/* SVG Glowing Path connecting points */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               <path
-                d="M 25% 48% Q 35% 30%, 45% 22% T 55% 45% T 82% 42%"
+                d="M 25 48 Q 35 30, 45 22 T 55 45 T 82 42"
                 fill="none"
                 stroke="url(#pathGradient)"
-                strokeWidth="3"
-                strokeDasharray="6 6"
+                strokeWidth="2"
+                strokeDasharray="4 4"
                 className="animate-[dash_30s_linear_infinite]"
               />
               <defs>
