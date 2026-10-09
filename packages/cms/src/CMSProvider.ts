@@ -1,4 +1,14 @@
-import { Character, Book, Adventure, Video, Song, Location, TrailWaypoint } from './models';
+import {
+  Character,
+  Book,
+  Adventure,
+  Video,
+  Song,
+  Location,
+  TrailWaypoint,
+  NarrativeMilestone,
+  MentionedCuriosity,
+} from './models';
 
 /**
  * CMSProvider: Interfaz del adaptador de contenido.
@@ -14,4 +24,6 @@ export interface CMSProvider {
   getSongs(locale?: string): Promise<Song[]>;
   getLocations(locale?: string): Promise<Location[]>;
   getTrailWaypoints(locale?: string): Promise<TrailWaypoint[]>;
+  getNarrativeMilestones(locale?: string): Promise<NarrativeMilestone[]>;
+  getMentionedCuriosities(locale?: string): Promise<MentionedCuriosity[]>;
 }

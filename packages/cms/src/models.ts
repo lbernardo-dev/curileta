@@ -97,6 +97,29 @@ export interface Location {
   };
   curiosities?: LocalizedString[];
   characters?: string[];
+  milestones?: NarrativeMilestone[];
+  mentionedPlaces?: MentionedCuriosity[];
+}
+
+export interface NarrativeMilestone {
+  order: number;
+  place: LocalizedString;
+  country: LocalizedString;
+  whatHappens: LocalizedString;
+  charactersPresent: string[];
+  isTravesia?: boolean;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export interface MentionedCuriosity {
+  id: string;
+  name: LocalizedString;
+  country: LocalizedString;
+  curiosityFact: LocalizedString;
+  isMentionOnly: true;
 }
 
 export interface TrailWaypoint {

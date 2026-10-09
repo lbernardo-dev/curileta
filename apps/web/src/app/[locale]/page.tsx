@@ -64,10 +64,11 @@ export default async function HomePage({
   }
 
   // Carga de datos dinámicos gestionables desde Backend / CMS
-  const [locations, characters, waypoints] = await Promise.all([
+  const [locations, characters, waypoints, milestones] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
     cmsProvider.getTrailWaypoints(locale),
+    cmsProvider.getNarrativeMilestones(locale),
   ]);
 
   return (
@@ -79,7 +80,7 @@ export default async function HomePage({
       <HeroScene locale={locale as Locale} />
 
       {/* Escena 02 — Globo Terráqueo 3D Interactivo con Three.js */}
-      <Globe3DScene locale={locale as Locale} locations={locations} />
+      <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />
 
       {/* Escena 02.5 — El Baúl Postal: Cartas a Pompón con Matasellos y Polaroids */}
       <LettersScene locale={locale as Locale} />

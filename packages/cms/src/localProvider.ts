@@ -1,5 +1,15 @@
 import { CMSProvider } from './CMSProvider';
-import { Character, Book, Adventure, Video, Song, Location, TrailWaypoint } from './models';
+import {
+  Character,
+  Book,
+  Adventure,
+  Video,
+  Song,
+  Location,
+  TrailWaypoint,
+  NarrativeMilestone,
+  MentionedCuriosity,
+} from './models';
 
 export const INITIAL_CHARACTERS: Character[] = [
   {
@@ -58,12 +68,12 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: 'Faithful Forest Guardian & Keeper of Letters',
     },
     shortDescription: {
-      es: 'Conejito blanco de corazón tierno. Espera cada carta de Curileta bajo el árbol más alto del Bosque Encantado.',
-      en: 'White rabbit with a tender heart. Awaits each letter under the tallest tree of the Enchanted Forest.',
+      es: 'Conejito blanco de corazón tierno. Permanece en el Bosque Encantado custodiando el hogar y esperando cada carta de Curileta bajo el árbol más alto. No viaja físicamente por el mundo.',
+      en: 'White rabbit with a tender heart. Stays in the Enchanted Forest guarding the home and receiving Curileta’s letters under the tallest tree.',
     },
     biography: {
-      es: 'Pompón es el mejor amigo de Curileta. Aunque le asusta el bullicio de los viajes lejanos, su amor y fidelidad lo mantienen conectado a Curileta a través de cada carta, cada sello y cada regalo que ella le envía.',
-      en: 'Pompón is Curileta’s best friend who stays connected to her through every letter sent across the seas.',
+      es: 'Pompón es el mejor amigo de Curileta. Permanece en el Bosque Encantado custodiando las raíces del hogar mientras Curileta recorre el mundo. Aunque no viaja físicamente con ella, su amor y fidelidad lo mantienen conectado a Curileta a través de cada carta, cada sello y cada regalo que ella le envía.',
+      en: 'Pompón is Curileta’s best friend who stays in the Enchanted Forest keeping their roots safe while receiving letters from every continent.',
     },
     species: 'Conejito Blanco del Bosque Encantado',
     personality: ['Tierno', 'Fiel', 'Hogareño', 'Alegre', 'Saltarín'],
@@ -308,21 +318,21 @@ export const INITIAL_CHARACTERS: Character[] = [
   },
   {
     id: 'joey-canguro',
-    name: 'Mamá Canguro & Joey',
+    name: 'Mamá Canguro & Bebé Canguro',
     slug: 'joey-canguro',
     passportRole: {
-      es: 'Saltarines del Outback Australiano',
-      en: 'Hoppers of the Australian Outback',
+      es: 'Familia Saltarina del Outback & Custodios de Joey',
+      en: 'Outback Hoppers & Keepers of Joey the plush toy',
     },
     shortDescription: {
-      es: 'Curileta rescata el koala de peluche de Joey y recibe a cambio saltos de 4 metros por el desierto rojo.',
-      en: 'Curileta rescues baby Joey’s toy koala and is rewarded with 4-meter leaps across the red desert.',
+      es: 'Mamá Canguro y su cría. Curileta rescata a Joey (el querido koala de peluche del bebé canguro) y recibe a cambio saltos de 4 metros.',
+      en: 'Mama Kangaroo and her joey. Curileta rescues Joey (the baby’s beloved plush koala) and earns 4-meter leaps across the red earth.',
     },
     biography: {
-      es: 'En las tierras rojas de Uluru y las arenas blancas de Hyams Beach, la familia Canguro enseña a Curileta que no importa lo alto del salto, sino disfrutar del vuelo.',
-      en: 'Across red Uluru and Hyams Beach, the Kangaroo family teaches Curileta to enjoy the flight.',
+      es: 'En las tierras rojas del Outback, de la bolsa de Mamá Canguro se cayó el peluche favorito de su bebé canguro: un koala de trapo llamado Joey que el pequeño necesitaba para dormir. Curileta corrió veloz para devolverlo hasta Uluru. En agradecimiento, Mamá Canguro le regaló un emocionante paseo a grandes saltos hasta Hyams Beach.',
+      en: 'Across red Uluru, Curileta rescued the baby kangaroo’s favorite plush koala Joey, earning thrilling 4-meter leap rides to Hyams Beach.',
     },
-    species: 'Canguros Rojos de Australia',
+    species: 'Familia Canguro del Outback',
     personality: ['Saltarines', 'Generosos', 'Protectores', 'Veloces'],
     values: ['Agradecimiento', 'Familia'],
     explorerStats: {
@@ -332,7 +342,7 @@ export const INITIAL_CHARACTERS: Character[] = [
       wisdom: 86,
     },
     backpackItems: [
-      { es: 'El koala de peluche favorito del pequeño Joey', en: 'Baby Joey’s favorite plush koala' },
+      { es: 'Joey, el koala de peluche favorito del bebé canguro', en: 'Joey, the baby kangaroo’s favorite plush koala' },
       { es: 'Arena hiperblanca de Hyams Beach en un frasco', en: 'Ultra-white Hyams Beach sand' },
     ],
     curiosityFacts: [
@@ -514,11 +524,348 @@ export const INITIAL_CHARACTERS: Character[] = [
       en: '“The forest you seek is not found with feet, but with the heart.”',
     },
     mainImage: {
-      url: 'https://images.unsplash.com/photo-1508873696983-2df5703bc20d?w=800&auto=format&fit=crop&q=80',
+      url: '/images/characters/lola.webp',
       alt: { es: 'Lola la tortuga mora en España', en: 'Lola the tortoise in Spain' },
     },
     relatedBooks: ['las-aventuras-de-curileta'],
     relatedLocations: ['espana-regreso'],
+  },
+  {
+    id: 'canguro-mama',
+    name: 'Mamá Canguro',
+    slug: 'canguro-mama',
+    passportRole: {
+      es: 'Gran Saltarina del Outback & Guardiana Maternal',
+      en: 'Great Outback Hopper & Maternal Guardian',
+    },
+    shortDescription: {
+      es: 'Guardián del desierto rojo australiano. Lleva a su cría en la bolsa y regala a Curileta saltos de 4 metros.',
+      en: 'Guardian of the Australian red desert. Carries her baby in her pouch and gifts Curileta 4-meter leaps.',
+    },
+    biography: {
+      es: 'En las tierras rojas del Outback y frente a la majestuosidad de Uluru, Mamá Canguro cuida incansablemente de su pequeño. Cuando Curileta recupera el peluche perdido Joey, en agradecimiento la lleva a grandes saltos hasta las blancas arenas de Hyams Beach.',
+      en: 'Across the red Outback and Uluru, Mama Kangaroo watches over her little one. Grateful for Curileta recovering Joey the plush, she leaps to Hyams Beach.',
+    },
+    species: 'Canguro Rojo Australiano',
+    personality: ['Protectora', 'Veloz', 'Cariñosa', 'Ágil'],
+    values: ['Protección familiar', 'Gratitud', 'Libertad'],
+    explorerStats: {
+      curiosity: 85,
+      courage: 96,
+      agility: 100,
+      wisdom: 88,
+    },
+    backpackItems: [
+      { es: 'Bolsa marsupial espaciosa y mullida', en: 'Spacious and soft marsupial pouch' },
+      { es: 'Arena hiperblanca de Hyams Beach', en: 'Ultra-white Hyams Beach sand' },
+    ],
+    curiosityFacts: [
+      { es: 'Alcanza hasta 9 metros de longitud en un único salto sobre la tierra roja.', en: 'Reaches up to 9 meters length in a single bound across red earth.' },
+    ],
+    voiceQuote: {
+      es: '«¡Sujétate fuerte a mi pelaje: el Outback se recorre volando sobre el suelo!»',
+      en: '“Hold tight to my fur: the Outback is traversed flying over the ground!”',
+    },
+    mainImage: {
+      url: '/images/characters/mama-canguro.webp',
+      alt: { es: 'Mamá Canguro en el desierto australiano', en: 'Mama Kangaroo in the Outback' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['australia'],
+  },
+  {
+    id: 'canguro-bebe',
+    name: 'Bebé Canguro',
+    slug: 'canguro-bebe',
+    passportRole: {
+      es: 'Pequeño Explorador de Bolsa Marsupial',
+      en: 'Little Marsupial Pouch Explorer',
+    },
+    shortDescription: {
+      es: 'La tierna cría de canguro que asoma sus orejitas curiosas y no puede dormir sin su koala Joey.',
+      en: 'The adorable baby kangaroo who pokes curious ears out and cannot sleep without Joey the koala.',
+    },
+    biography: {
+      es: 'Pasa la mayor parte del tiempo asomando su hociquito desde la bolsa de mamá. Cuando pierde a Joey, su peluche de koala, la tristeza lo invade hasta que la intrépida Curileta recorre el desierto para devolvérselo.',
+      en: 'Spends his days peeking from mom’s pouch. When Joey the koala plush goes missing, Curileta darts across the desert to return it.',
+    },
+    species: 'Cría de Canguro Rojo',
+    personality: ['Tierno', 'Curioso', 'Divertido', 'Juguetón'],
+    values: ['Afecto', 'Ilusión infantil', 'Compañerismo'],
+    explorerStats: {
+      curiosity: 95,
+      courage: 72,
+      agility: 88,
+      wisdom: 70,
+    },
+    backpackItems: [
+      { es: 'Joey, su koala de trapo favorito e inseparable', en: 'Joey, his inseparable favorite plush koala' },
+    ],
+    curiosityFacts: [
+      { es: 'Al nacer mide apenas el tamaño de una pequeña cereza antes de resguardarse en la bolsa.', en: 'At birth measures barely the size of a cherry before growing safely in the pouch.' },
+    ],
+    voiceQuote: {
+      es: '«¡Joey ha vuelto! ¡Gracias, pequeña amiga de sombrero verde!»',
+      en: '“Joey is back! Thank you, little green-hat friend!”',
+    },
+    mainImage: {
+      url: '/images/characters/bebe-canguro.webp',
+      alt: { es: 'Bebé Canguro asomando de la bolsa', en: 'Baby Kangaroo peeking from the pouch' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['australia'],
+  },
+  {
+    id: 'joey',
+    name: 'Joey (El Koala de Trapo)',
+    slug: 'joey',
+    passportRole: {
+      es: 'El Peluche Más Viajero del Mundo',
+      en: 'The World’s Most Traveled Plush Toy',
+    },
+    shortDescription: {
+      es: 'El inseparable koala de peluche del bebé canguro. Su extravío desata la gran búsqueda de Curileta en Uluru.',
+      en: 'The baby kangaroo’s inseparable plush koala. His loss sparks Curileta’s thrilling search at Uluru.',
+    },
+    biography: {
+      es: 'Joey es un muñeco de trapo suave con forma de koala y orejas esponjosas. Se cayó accidentalmente en el Outback mientras la familia canguro saltaba cerca de Uluru. Curileta lo rescató intacto entre la tierra roja, devolviendo la sonrisa al bebé canguro.',
+      en: 'Joey is a soft plush koala with fluffy ears. Dropped in the Outback during kangaroo leaps, Curileta rescued him intact to reunite him with baby kangaroo.',
+    },
+    species: 'Peluche de Koala de Trapo',
+    personality: ['Silencioso', 'Reconfortante', 'Suave', 'Incondicional'],
+    values: ['Consuelo', 'Amor a la infancia', 'Ternura'],
+    explorerStats: {
+      curiosity: 70,
+      courage: 80,
+      agility: 60,
+      wisdom: 90,
+    },
+    backpackItems: [
+      { es: 'Costuras de hilo reforzado y relleno de algodón ultra suave', en: 'Reinforced thread stitching and ultra-soft cotton' },
+    ],
+    curiosityFacts: [
+      { es: 'En el libro original, Joey es el peluche de koala del bebé canguro y no el nombre del bebé.', en: 'In the original book, Joey is explicitly the baby kangaroo’s plush koala toy.' },
+    ],
+    voiceQuote: {
+      es: '«(Un abrazo suave y esponjoso que calma cualquier tempestad)»',
+      en: '“(A gentle and fluffy hug that calms any storm)”',
+    },
+    mainImage: {
+      url: '/images/characters/joey.webp',
+      alt: { es: 'Joey el koala de trapo', en: 'Joey the plush koala' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['australia'],
+  },
+  {
+    id: 'pez-volador',
+    name: 'Glub el Pez Volador',
+    slug: 'pez-volador',
+    passportRole: {
+      es: 'Acróbata de las Olas & Navegante Bioluminiscente',
+      en: 'Wave Acrobat & Bioluminescent Navigator',
+    },
+    shortDescription: {
+      es: 'Pez volador del Mar de Filipinas. Salta junto a la cubierta del barco y revela los secretos del océano nocturno.',
+      en: 'Flying fish of the Philippine Sea. Leaps alongside the ship deck revealing night ocean secrets.',
+    },
+    biography: {
+      es: 'Durante la travesía marina de Curileta por el Pacífico occidental, Glub y sus compañeros despliegan sus aletas translúcidas planeando sobre el agua iluminada por plancton fosforescente, maravillando a la pequeña exploradora.',
+      en: 'During Curileta’s Pacific voyage, Glub glides across glowing waves, sharing the marvels of nocturnal marine life.',
+    },
+    species: 'Pez Volador del Pacífico',
+    personality: ['Acróbata', 'Divertido', 'Luminoso', 'Vivaz'],
+    values: ['Libertad marina', 'Curiosidad sin fronteras'],
+    explorerStats: {
+      curiosity: 94,
+      courage: 91,
+      agility: 99,
+      wisdom: 84,
+    },
+    backpackItems: [
+      { es: 'Gotas de agua marina fosforescente en miniatura', en: 'Miniature drops of phosphorescent sea water' },
+    ],
+    curiosityFacts: [
+      { es: 'Puede planear más de 200 metros sobre la superficie del agua desplegando sus aletas pectorales.', en: 'Can glide over 200 meters above water surface using its pectoral fins.' },
+    ],
+    voiceQuote: {
+      es: '«¡El mar no termina en la superficie: a veces volamos para tocar las estrellas reflejadas!»',
+      en: '“The sea does not end at the surface: sometimes we take flight to touch reflected stars!”',
+    },
+    mainImage: {
+      url: '/images/characters/pez-volador.webp',
+      alt: { es: 'Glub el pez volador planeando sobre el mar', en: 'Glub the flying fish gliding over water' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['mar-filipinas'],
+  },
+  {
+    id: 'ornitorrinco',
+    name: 'El Ornitorrinco Sabio',
+    slug: 'ornitorrinco',
+    passportRole: {
+      es: 'Guardián de los Riachuelos Secretos',
+      en: 'Guardian of the Secret Creeks',
+    },
+    shortDescription: {
+      es: 'Habitante único del riachuelo australiano. Curileta casi lo pisa mientras busca el peluche en el Outback.',
+      en: 'Unique dweller of the Australian creek. Curileta almost steps on him while searching for the plush in the Outback.',
+    },
+    biography: {
+      es: 'Con su pico de pato, cola de castor y patas palmeadas, el ornitorrinco sorprende a Curileta por ser uno de los seres más insólitos y fascinantes del reino animal, demostrando que la naturaleza adora la originalidad.',
+      en: 'With duck bill, beaver tail, and webbed feet, platypus delights Curileta as one of nature’s most fascinating marvels.',
+    },
+    species: 'Ornitorrinco Australiano',
+    personality: ['Tranquilo', 'Enigmático', 'Observador', 'Pacífico'],
+    values: ['Autenticidad', 'Armonía fluvial'],
+    explorerStats: {
+      curiosity: 90,
+      courage: 82,
+      agility: 92,
+      wisdom: 96,
+    },
+    backpackItems: [
+      { es: 'Piedrecita pulida del fondo del arroyo cristalino', en: 'Polished pebble from clear creek bed' },
+    ],
+    curiosityFacts: [
+      { es: 'Detecta los movimientos de presas en el agua mediante impulsos electromagnéticos en su pico.', en: 'Detects prey movements in water using electromagnetic sensors in its bill.' },
+    ],
+    voiceQuote: {
+      es: '«Ser diferente es el mejor regalo que la naturaleza nos puede conceder.»',
+      en: '“Being uniquely different is the greatest gift nature can bestow.”',
+    },
+    mainImage: {
+      url: '/images/characters/ornitorrinco.webp',
+      alt: { es: 'Ornitorrinco nadando en el arroyo', en: 'Platypus swimming in the creek' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['australia'],
+  },
+  {
+    id: 'emu',
+    name: 'El Emú Curioso',
+    slug: 'emu',
+    passportRole: {
+      es: 'Veloz Corredor del Outback & Catador de Sombreros',
+      en: 'Swift Outback Runner & Hat Inspector',
+    },
+    shortDescription: {
+      es: 'Pájaro gigante no volador de Australia. Intenta picotear con curiosidad el sombrero de aventurera de Curileta.',
+      en: 'Giant flightless Australian bird. Curiously tries to peck Curileta’s explorer hat.',
+    },
+    biography: {
+      es: 'Curileta debe esquivar ágilmente sus picotazos cuando el emú se interesa por el llamativo color de su sombrero. Más tarde, en Hyams Beach, descubre un impresionante huevo de emú de color verde esmeralda oscuro.',
+      en: 'Curileta dodges playful pecks as the emu examines her hat. Later at Hyams Beach, she spots a dark emerald emu egg.',
+    },
+    species: 'Emú Australiano',
+    personality: ['Curioso', 'Acelerado', 'Simpático', 'Incansable'],
+    values: ['Persistencia', 'Espíritu aventurero'],
+    explorerStats: {
+      curiosity: 98,
+      courage: 86,
+      agility: 97,
+      wisdom: 78,
+    },
+    backpackItems: [
+      { es: 'Cáscara vacía de huevo verde esmeralda oscuro', en: 'Dark emerald green emu eggshell' },
+    ],
+    curiosityFacts: [
+      { es: 'Sus patas son tan potentes que puede correr a más de 50 km/h por el desierto.', en: 'Can sprint at over 50 km/h across the desert with powerful legs.' },
+    ],
+    voiceQuote: {
+      es: '«¡Qué sombrero tan fascinante! ¿Se come o es para coleccionar estrellas?»',
+      en: '“What a fascinating hat! Can it be eaten or is it for collecting stars?”',
+    },
+    mainImage: {
+      url: '/images/characters/emu.webp',
+      alt: { es: 'Emú curioso en la llanura australiana', en: 'Curious emu on Australian plains' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['australia'],
+  },
+  {
+    id: 'basset',
+    name: 'Barnaby el Basset Hound',
+    slug: 'basset',
+    passportRole: {
+      es: 'Sabueso de las Autocaravanas Alpinas',
+      en: 'Hound of Alpine Camper Vans',
+    },
+    shortDescription: {
+      es: 'Perro bonachón y despistado de orejas largas. Viaja en autocaravana por los Alpes franceses persiguiendo el olor a queso.',
+      en: 'Good-natured floppy-eared hound. Travels in a camper van across the French Alps chasing cheese aromas.',
+    },
+    biography: {
+      es: 'Curileta viaja de polizón en la autocaravana familiar mientras cruzan los puertos de montaña alpinos. El fino olfato de Barnaby detecta un queso francés y desata un divertido revuelo que acaba con Curileta escondida dentro de una baguette.',
+      en: 'Curileta hitches a ride in the family camper across Alpine passes. Barnaby’s keen nose sparks a funny scramble ending with Curileta inside a baguette.',
+    },
+    species: 'Perro Basset Hound',
+    personality: ['Divertido', 'Glotón', 'Bonachón', 'Despistado'],
+    values: ['Lealtad', 'Sentido del humor', 'Amistad perruna'],
+    explorerStats: {
+      curiosity: 88,
+      courage: 80,
+      agility: 72,
+      wisdom: 85,
+    },
+    backpackItems: [
+      { es: 'Miga de baguette crujiente y cascabel de collar', en: 'Crispy baguette crumb and collar bell' },
+    ],
+    curiosityFacts: [
+      { es: 'Sus orejas largas barren el suelo ayudando a canalizar los olores directamente a su trufa.', en: 'Long ears sweep the ground helping funnel scents straight to his nose.' },
+    ],
+    voiceQuote: {
+      es: '«¡Guau! ¿Ese aroma a queso viene de la nevera o de esa misteriosa baguette parlante?»',
+      en: '“Woof! Is that cheese scent from the fridge or that mysterious talking baguette?”',
+    },
+    mainImage: {
+      url: '/images/characters/basset.webp',
+      alt: { es: 'Barnaby el perro basset hound con orejas largas', en: 'Barnaby the basset hound with long ears' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['francia'],
+  },
+  {
+    id: 'cobaya',
+    name: 'Cuy Andino / Cobaya',
+    slug: 'cobaya',
+    passportRole: {
+      es: 'Primos Andinos de Pompón en Perú',
+      en: 'Pompón’s Andean Cousins in Peru',
+    },
+    shortDescription: {
+      es: 'Pobladores andinos del Valle Sagrado. Curileta les escribe a Pompón para contarle sobre sus entrañables parientes sudamericanos.',
+      en: 'Andean dwellers of the Sacred Valley. Curileta writes Pompón about his adorable South American relatives.',
+    },
+    biography: {
+      es: 'En las faldas de los Andes peruanos, Curileta descubre que Pompón tiene primos peludos y rechonchos que habitan los pueblos de montaña. Les envía dibujos a Pompón prometiéndole que algún día los conocerá.',
+      en: 'In the Peruvian Andes, Curileta finds Pompón’s cuddly relatives and sketches them for his mailbox back home.',
+    },
+    species: 'Cuy Andino / Cobaya de Montaña',
+    personality: ['Cariñosa', 'Sociable', 'Vivaz', 'Tierna'],
+    values: ['Lazamiento familiar', 'Cuidado de la manada'],
+    explorerStats: {
+      curiosity: 84,
+      courage: 76,
+      agility: 88,
+      wisdom: 82,
+    },
+    backpackItems: [
+      { es: 'Tallito de maíz morado andino', en: 'Purple Andean corn stalk' },
+    ],
+    curiosityFacts: [
+      { es: 'Emiten suaves silbidos ("cui-cui") de alegría cuando saludan a los recién llegados.', en: 'Chirp soft whistle sounds of joy when greeting friendly travelers.' },
+    ],
+    voiceQuote: {
+      es: '«¡Dile a Pompón que en los Andes tiene una familia entera que lo espera con choclo tierno!»',
+      en: '“Tell Pompón that in the Andes a whole family awaits him with sweet corn!”',
+    },
+    mainImage: {
+      url: '/images/characters/cobaya.webp',
+      alt: { es: 'Cobaya andina en las montañas de Perú', en: 'Andean guinea pig in the mountains of Peru' },
+    },
+    relatedBooks: ['las-aventuras-de-curileta'],
+    relatedLocations: ['peru'],
   },
 ];
 
@@ -1043,6 +1390,537 @@ export const INITIAL_BOOKS: Book[] = [
   },
 ];
 
+export const INITIAL_MENTIONED_CURIOSITIES: MentionedCuriosity[] = [
+  {
+    id: 'chichen-itza',
+    name: { es: 'Chichén Itzá', en: 'Chichen Itza' },
+    country: { es: 'México', en: 'Mexico' },
+    curiosityFact: {
+      es: 'Si aplaudes frente a la pirámide de Kukulcán, el eco suena exactamente como el canto del Quetzal.',
+      en: 'Clapping in front of Kukulcan pyramid echoes precisely like the sacred Quetzal bird call.',
+    },
+    isMentionOnly: true,
+  },
+  {
+    id: 'cusco',
+    name: { es: 'Cusco (Qosqo)', en: 'Cusco (Qosqo)' },
+    country: { es: 'Perú', en: 'Peru' },
+    curiosityFact: {
+      es: 'Llamada por los incas el “Qosqo” (el ombligo del mundo), porque creían que era el centro del universo.',
+      en: 'Called “Qosqo” (the navel of the world) by the Incas, believed to be the center of the universe.',
+    },
+    isMentionOnly: true,
+  },
+  {
+    id: 'lineas-nazca',
+    name: { es: 'Líneas de Nazca', en: 'Nazca Lines' },
+    country: { es: 'Perú', en: 'Peru' },
+    curiosityFact: {
+      es: 'Dibujos de animales tan gigantescos en el desierto que solo se pueden ver completos desde el aire.',
+      en: 'Giant desert animal geoglyphs preserved for millennia, fully seen only from the sky.',
+    },
+    isMentionOnly: true,
+  },
+  {
+    id: 'rio-nilo',
+    name: { es: 'Río Nilo', en: 'Nile River' },
+    country: { es: 'Egipto', en: 'Egypt' },
+    curiosityFact: {
+      es: 'El río fluye de sur a norte regando todo el país; sin su limo negro no crecería ni una flor en Egipto.',
+      en: 'Flows South to North across the sands; without its black silt, not a single flower could bloom.',
+    },
+    isMentionOnly: true,
+  },
+  {
+    id: 'fosa-marianas',
+    name: { es: 'Fosa de las Marianas', en: 'Mariana Trench' },
+    country: { es: 'Océano Pacífico Occidental', en: 'Western Pacific Ocean' },
+    curiosityFact: {
+      es: 'El lugar más profundo de todo el planeta, contado a Curileta por el pez volador Glub.',
+      en: 'The deepest abyss on Earth, described to Curileta by Glub the flying fish.',
+    },
+    isMentionOnly: true,
+  },
+  {
+    id: 'rotorua',
+    name: { es: 'Rotorua', en: 'Rotorua' },
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    curiosityFact: {
+      es: 'Pozas de lodo caliente y lagunas de azufre que burbujean como ollas gigantes de sopa mágica.',
+      en: 'Boiling mud pools and sulfur springs that bubble like giant geothermal cauldrons.',
+    },
+    isMentionOnly: true,
+  },
+  {
+    id: 'segovia',
+    name: { es: 'Castillos de Segovia', en: 'Castles of Segovia' },
+    country: { es: 'España', en: 'Spain' },
+    curiosityFact: {
+      es: 'Fortalezas de piedra que parecen sacadas de los libros de cuentos de hadas y caballería.',
+      en: 'Stone cliff fortresses resembling the fairy-tale castles of storybooks.',
+    },
+    isMentionOnly: true,
+  },
+];
+
+export const INITIAL_NARRATIVE_MILESTONES: NarrativeMilestone[] = [
+  {
+    order: 1,
+    place: { es: 'Bosque Encantado — Hogar de Curileta', en: 'Enchanted Forest — Curileta’s Home' },
+    country: { es: 'España', en: 'Spain' },
+    whatHappens: {
+      es: 'Curileta y Pompón juegan explorando los árboles del bosque. Curileta siente el deseo de conocer el mundo, prepara su mochila, se despide de su mejor amigo y comienza su gran aventura.',
+      en: 'Curileta and Pompón explore the forest trees. Curileta yearns to see the world, packs her gear, says goodbye, and embarks on her journey.',
+    },
+    charactersPresent: ['curileta', 'pompon'],
+    coordinates: { lat: 40.4168, lng: -3.7038 },
+  },
+  {
+    order: 2,
+    place: { es: 'Teotihuacán — Pirámide del Sol', en: 'Teotihuacan — Pyramid of the Sun' },
+    country: { es: 'México', en: 'Mexico' },
+    whatHappens: {
+      es: 'Curileta contempla la inmensa pirámide y comienza a subir sus escalones. En la cima conoce a Quetzal, quien le habla sobre los antiguos conocimientos de astronomía y la relación entre las pirámides y las estrellas.',
+      en: 'Curileta climbs the sun pyramid and meets Quetzal, who reveals ancient astronomical knowledge and constellation alignments.',
+    },
+    charactersPresent: ['curileta', 'quetzal'],
+    coordinates: { lat: 19.6925, lng: -98.8437 },
+  },
+  {
+    order: 3,
+    place: { es: 'Cuexcomate — Puebla', en: 'Cuexcomate — Puebla' },
+    country: { es: 'México', en: 'Mexico' },
+    whatHappens: {
+      es: 'Curileta cuenta en su carta que ha escalado este pequeño volcán en un segundo. Es uno de los descubrimientos sorprendentes que comparte con Pompón.',
+      en: 'Curileta scales this 13-meter volcano in a flash, sharing this wonder in her letter to Pompón.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 19.0414, lng: -98.2063 },
+  },
+  {
+    order: 4,
+    place: { es: 'Machu Picchu', en: 'Machu Picchu' },
+    country: { es: 'Perú', en: 'Peru' },
+    whatHappens: {
+      es: 'Curileta llega a la ciudad inca entre montañas y nubes. Conoce a Lulú, una llama que la protege del frío con su lana y le permite contemplar desde su lomo la extraordinaria construcción de piedra.',
+      en: 'Curileta reaches the Inca citadel in the clouds, sheltered by Lulú the llama while marveling at seamless stone architecture.',
+    },
+    charactersPresent: ['curileta', 'lulu'],
+    coordinates: { lat: -13.1631, lng: -72.545 },
+  },
+  {
+    order: 5,
+    place: { es: 'Océano Atlántico — El Galeón de los Sueños', en: 'Atlantic Ocean — The Galleon of Dreams' },
+    country: { es: 'Travesía marítima entre América y África', en: 'Ocean voyage between Americas and Africa' },
+    whatHappens: {
+      es: 'Curileta viaja escondida a bordo de un antiguo galeón. Una terrible tormenta amenaza el barco y la pequeña lagartija trepa por el mástil para sujetar una cuerda que golpea el timón, ayudando a salvar la embarcación.',
+      en: 'Stowed away on an old wooden galleon, Curileta climbs the mast during a tempest to secure a loose helm rope, saving the ship.',
+    },
+    charactersPresent: ['curileta'],
+    isTravesia: true,
+    coordinates: { lat: 15.0, lng: -35.0 },
+  },
+  {
+    order: 6,
+    place: { es: 'Puerto de Alejandría', en: 'Port of Alexandria' },
+    country: { es: 'Egipto', en: 'Egypt' },
+    whatHappens: {
+      es: 'Curileta desembarca después de su gran travesía oceánica y comienza su recorrido por Egipto, dirigiéndose hacia las famosas pirámides.',
+      en: 'Curileta disembarks in Alexandria after the ocean crossing, setting off across Egypt toward the pyramids.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 31.2001, lng: 29.9187 },
+  },
+  {
+    order: 7,
+    place: { es: 'Pirámides de Giza', en: 'Pyramids of Giza' },
+    country: { es: 'Egipto', en: 'Egypt' },
+    whatHappens: {
+      es: 'Curileta descubre las enormes construcciones del antiguo Egipto, soporta el intenso calor del desierto y conoce a Emi, un escarabajo pelotero que le enseña que la sombra es el verdadero tesoro.',
+      en: 'Curileta explores the desert pyramids under blazing heat, learning from dung beetle Emi that shade is a true treasure.',
+    },
+    charactersPresent: ['curileta', 'emi'],
+    coordinates: { lat: 29.9792, lng: 31.1342 },
+  },
+  {
+    order: 8,
+    place: { es: 'Interior de la Gran Pirámide de Giza', en: 'Inside the Great Pyramid of Giza' },
+    country: { es: 'Egipto', en: 'Egypt' },
+    whatHappens: {
+      es: 'Emi guía a Curileta por misteriosos pasadizos. La pequeña exploradora descubre jeroglíficos y aprende que las construcciones antiguas guardan historias de faraones y dioses egipcios.',
+      en: 'Emi leads Curileta through hidden passages, deciphering wall hieroglyphs of pharaohs and sacred deities.',
+    },
+    charactersPresent: ['curileta', 'emi'],
+    coordinates: { lat: 29.9792, lng: 31.1342 },
+  },
+  {
+    order: 9,
+    place: { es: 'Campos de lava negra y géiseres', en: 'Black Lava Fields and Geysers' },
+    country: { es: 'Islandia', en: 'Iceland' },
+    whatHappens: {
+      es: 'Curileta camina entre paisajes volcánicos helados cuando un géiser lanza inesperadamente una enorme columna de agua caliente. El contraste entre hielo y calor volcánico la deja fascinada.',
+      en: 'Curileta walks black volcanic plains when a geyser suddenly erupts steaming water, mesmerizing her with fire-and-ice contrast.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 64.3104, lng: -20.3024 },
+  },
+  {
+    order: 10,
+    place: { es: 'Laguna Azul', en: 'Blue Lagoon' },
+    country: { es: 'Islandia', en: 'Iceland' },
+    whatHappens: {
+      es: 'Curileta conoce a Picu, un simpático frailecillo. Hablan sobre sus aventuras y el calor que esconde la tierra islandesa. Curileta disfruta de un baño en el agua templada mientras caen copos de nieve sobre su sombrero.',
+      en: 'Curileta meets puffin Picu, enjoying warm turquoise waters as snowflakes settle gently on her explorer hat.',
+    },
+    charactersPresent: ['curileta', 'picu'],
+    coordinates: { lat: 63.8804, lng: -22.4495 },
+  },
+  {
+    order: 11,
+    place: { es: 'Cielo nocturno de Islandia — Auroras boreales', en: 'Icelandic Night Sky — Northern Lights' },
+    country: { es: 'Islandia', en: 'Iceland' },
+    whatHappens: {
+      es: 'Curileta descubre las luces verdes y violetas que iluminan el cielo nocturno y comparte con Pompón la maravilla de las auroras boreales.',
+      en: 'Curileta gazes upon dancing green and violet aurora curtains, recording the celestial magic for Pompón.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 64.9631, lng: -19.0208 },
+  },
+  {
+    order: 12,
+    place: { es: 'Tokio', en: 'Tokyo' },
+    country: { es: 'Japón', en: 'Japan' },
+    whatHappens: {
+      es: 'Curileta llega a una inmensa ciudad llena de luces, pantallas y movimiento. Se sorprende al descubrir un lugar donde la tecnología y las tradiciones conviven de forma extraordinaria.',
+      en: 'Curileta arrives in neon-lit Tokyo, amazed by the harmony between cutting-edge technology and ancient traditions.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 35.6762, lng: 139.6503 },
+  },
+  {
+    order: 13,
+    place: { es: 'Tren bala Shinkansen y campos de cerezos', en: 'Shinkansen Bullet Train and Sakura Groves' },
+    country: { es: 'Japón', en: 'Japan' },
+    whatHappens: {
+      es: 'Curileta viaja en un tren de alta velocidad y contempla los paisajes de cerezos en flor. Conoce a Zipi-Bot, un pequeño robot perdido, y lo ayuda a reencontrarse con su dueño.',
+      en: 'Riding the ultra-fast bullet train through blooming sakura, Curileta helps lost toy robot Zipi-Bot reunite with his owner.',
+    },
+    charactersPresent: ['curileta', 'zipi-bot'],
+    coordinates: { lat: 35.0116, lng: 135.7681 },
+  },
+  {
+    order: 14,
+    place: { es: 'Monte Fuji — Vista de la montaña', en: 'Mount Fuji — Mountain Vista' },
+    country: { es: 'Japón', en: 'Japan' },
+    whatHappens: {
+      es: 'Curileta contempla el famoso volcán japonés, cuya forma de cono perfecto le parece dibujada con un lápiz. Lo describe posteriormente en su carta a Pompón sin ascender a la cumbre.',
+      en: 'Curileta gazes upon sacred Mount Fuji’s symmetrical snowcap from afar, admiring its hand-drawn appearance.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 35.3606, lng: 138.7274 },
+  },
+  {
+    order: 15,
+    place: { es: 'Mar de Filipinas', en: 'Philippine Sea' },
+    country: { es: 'Travesía marítima por el Pacífico occidental', en: 'Pacific Ocean Sea Voyage' },
+    whatHappens: {
+      es: 'Curileta navega en un velero y descubre la bioluminiscencia nocturna. Un grupo de peces voladores salta cerca de la cubierta y conoce a Glub, quien le cuenta curiosidades de las profundidades oceánicas.',
+      en: 'Sailing through glowing bioluminescent waters, flying fish leap aboard and Glub shares oceanic abyss tales.',
+    },
+    charactersPresent: ['curileta'],
+    isTravesia: true,
+    coordinates: { lat: 18.0, lng: 130.0 },
+  },
+  {
+    order: 16,
+    place: { es: 'Outback australiano', en: 'Australian Outback' },
+    country: { es: 'Australia', en: 'Australia' },
+    whatHappens: {
+      es: 'Curileta llega a un paisaje de tierra roja, grandes rocas y horizontes infinitos. Conoce a una familia de canguros e inicia una pequeña misión para devolver el peluche perdido de una cría.',
+      en: 'Stepping into red desert earth, Curileta sets out on a quest to return the baby kangaroo’s lost stuffed toy.',
+    },
+    charactersPresent: ['curileta', 'joey-canguro'],
+    coordinates: { lat: -25.0, lng: 133.0 },
+  },
+  {
+    order: 17,
+    place: { es: 'Riachuelo del Outback', en: 'Outback Creek' },
+    country: { es: 'Australia', en: 'Australia' },
+    whatHappens: {
+      es: 'Durante su búsqueda, Curileta cruza un riachuelo y casi pisa a un ornitorrinco. Poco después debe esquivar a un emú que intenta picotear su sombrero.',
+      en: 'Crossing a bush creek, Curileta almost steps on a platypus and dodges a curious emu pecking at her hat.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: -25.2, lng: 132.8 },
+  },
+  {
+    order: 18,
+    place: { es: 'Uluru', en: 'Uluru' },
+    country: { es: 'Australia', en: 'Australia' },
+    whatHappens: {
+      es: 'Curileta llega hasta la enorme formación rocosa roja y encuentra a la familia canguro. Devuelve el peluche llamado Joey al bebé y recibe como agradecimiento un emocionante paseo a grandes saltos.',
+      en: 'Curileta reaches the giant monolith, returns the stuffed koala Joey, and is gifted a joyful 4-meter leaping ride.',
+    },
+    charactersPresent: ['curileta', 'joey-canguro'],
+    coordinates: { lat: -25.3444, lng: 131.0369 },
+  },
+  {
+    order: 19,
+    place: { es: 'Hyams Beach', en: 'Hyams Beach' },
+    country: { es: 'Australia', en: 'Australia' },
+    whatHappens: {
+      es: 'La mamá canguro lleva a Curileta hasta una playa de arena extraordinariamente blanca. La exploradora disfruta del paisaje, se despide de sus nuevos amigos, descubre un huevo de emú y prepara su siguiente travesía.',
+      en: 'Mama Kangaroo carries Curileta to the whitest sands on Earth, discovering a dark emu egg before setting sail.',
+    },
+    charactersPresent: ['curileta', 'joey-canguro'],
+    coordinates: { lat: -35.1423, lng: 150.6936 },
+  },
+  {
+    order: 20,
+    place: { es: 'Mar de Tasmania', en: 'Tasman Sea' },
+    country: { es: 'Entre Australia y Nueva Zelanda', en: 'Between Australia and New Zealand' },
+    whatHappens: {
+      es: 'Curileta contempla el mar desde la costa australiana y utiliza un pequeño tronco como balsa para iniciar su recorrido hacia Nueva Zelanda.',
+      en: 'Curileta uses a small eucalyptus log as a raft to cross the ocean towards New Zealand.',
+    },
+    charactersPresent: ['curileta'],
+    isTravesia: true,
+    coordinates: { lat: -37.0, lng: 160.0 },
+  },
+  {
+    order: 21,
+    place: { es: 'Bosques de la Isla Norte', en: 'North Island Forests' },
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    whatHappens: {
+      es: 'Curileta explora un bosque de árboles gigantes y helechos plateados. Durante la noche conoce a Kiki, un kiwi que le explica por qué estos pájaros no vuelan y cómo viven.',
+      en: 'Walking among giant silver ferns, Curileta meets nocturnal kiwi Kiki and learns about his unique life.',
+    },
+    charactersPresent: ['curileta', 'kiki'],
+    coordinates: { lat: -38.0, lng: 175.5 },
+  },
+  {
+    order: 22,
+    place: { es: 'Cuevas de Waitomo', en: 'Waitomo Caves' },
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    whatHappens: {
+      es: 'Kiki lleva a Curileta a una cueva misteriosa cuyo techo está iluminado por miles de pequeños organismos bioluminiscentes. Curileta siente que está contemplando un cielo lleno de estrellas bajo tierra.',
+      en: 'Kiki guides Curileta into underground caverns illuminated by thousands of sapphire glowworms like night skies.',
+    },
+    charactersPresent: ['curileta', 'kiki'],
+    coordinates: { lat: -38.261, lng: 175.103 },
+  },
+  {
+    order: 23,
+    place: { es: 'Aldea maorí', en: 'Maori Village' },
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    whatHappens: {
+      es: 'Curileta conoce parte de la cultura maorí y presencia una haka. Intenta imitar los movimientos de los bailarines con sus pequeñas patitas, provocando las carcajadas de Kiki.',
+      en: 'Curileta observes the powerful Maori Haka dance and tries imitating the moves with her little paws, making Kiki laugh.',
+    },
+    charactersPresent: ['curileta', 'kiki'],
+    coordinates: { lat: -38.138, lng: 176.249 },
+  },
+  {
+    order: 24,
+    place: { es: 'Hobbiton — El pueblo de las puertas redondas', en: 'Hobbiton — Town of Round Doors' },
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    whatHappens: {
+      es: 'Curileta descubre un pueblo de fantasía escondido entre colinas verdes, con casitas de puertas redondas, chimeneas, jardines y huertos. Explora sus rincones y encuentra una pequeña pluma dorada que decide regalar a Pompón.',
+      en: 'Curileta wanders tiny hill-homes with colorful round doors, finding a golden feather souvenir for Pompón.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: -37.872, lng: 175.683 },
+  },
+  {
+    order: 25,
+    place: { es: 'Gran Muralla China', en: 'Great Wall of China' },
+    country: { es: 'China', en: 'China' },
+    whatHappens: {
+      es: 'Curileta descubre una construcción que serpentea entre las montañas como un enorme dragón de piedra. Comienza a trepar sus interminables escalones y admira la grandeza del monumento.',
+      en: 'Curileta climbs the winding Great Wall resembling a resting stone dragon spanning mountain ridges.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 40.4319, lng: 116.5704 },
+  },
+  {
+    order: 26,
+    place: { es: 'Bosque de bambú junto a la Gran Muralla', en: 'Bamboo Forest by the Great Wall' },
+    country: { es: 'China', en: 'China' },
+    whatHappens: {
+      es: 'Curileta conoce a Bao, un panda gigante que está comiendo bambú. Ambos entablan amistad, hablan de la suerte y los dragones de la cultura china y buscan juntos un brote especialmente tierno.',
+      en: 'Curileta meets hungry panda Bao among bamboo shoots, sharing lore on dragons, luck, and friendship.',
+    },
+    charactersPresent: ['curileta', 'bao'],
+    coordinates: { lat: 40.435, lng: 116.565 },
+  },
+  {
+    order: 27,
+    place: { es: 'Torre de vigilancia de la Gran Muralla', en: 'Great Wall Watchtower' },
+    country: { es: 'China', en: 'China' },
+    whatHappens: {
+      es: 'Bao lleva a Curileta sobre su cabeza hasta una de las torres más altas de la muralla. Juntos contemplan un maravilloso atardecer sobre las montañas.',
+      en: 'Bao carries Curileta atop his head to the highest watchtower to watch the sunset paint the distant peaks.',
+    },
+    charactersPresent: ['curileta', 'bao'],
+    coordinates: { lat: 40.438, lng: 116.572 },
+  },
+  {
+    order: 28,
+    place: { es: 'Roma', en: 'Rome' },
+    country: { es: 'Italia', en: 'Italy' },
+    whatHappens: {
+      es: 'Curileta llega a la capital italiana y descubre sus estatuas, fuentes, columnas y monumentos históricos en el museo al aire libre más grande del mundo.',
+      en: 'Curileta explores fountains, ancient columns, and historic statues across Rome.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 41.9028, lng: 12.4964 },
+  },
+  {
+    order: 29,
+    place: { es: 'Florencia — Restaurante y calles artísticas', en: 'Florence — Art Streets and Kitchen' },
+    country: { es: 'Italia', en: 'Italy' },
+    whatHappens: {
+      es: 'Curileta conoce a Gino, un ratoncito cocinero con un pequeño gorro de chef. Juntos descubren la gastronomía italiana, observan cómo se prepara una pizza y Curileta intenta pintar utilizando su cola como pincel.',
+      en: 'Curileta meets mouse chef Gino, watches flying pizza dough, and paints using her tail as an art brush.',
+    },
+    charactersPresent: ['curileta', 'gino'],
+    coordinates: { lat: 43.7696, lng: 11.2558 },
+  },
+  {
+    order: 30,
+    place: { es: 'Torre de Pisa', en: 'Leaning Tower of Pisa' },
+    country: { es: 'Italia', en: 'Italy' },
+    whatHappens: {
+      es: 'Curileta descubre la famosa torre inclinada y se fotografía intentando sujetarla con sus pequeñas patitas para evitar que parezca caerse.',
+      en: 'Curileta poses playfully holding up the famous 4-meter tilted tower with her paws.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 43.7229, lng: 10.3966 },
+  },
+  {
+    order: 31,
+    place: { es: 'Venecia', en: 'Venice' },
+    country: { es: 'Italia', en: 'Italy' },
+    whatHappens: {
+      es: 'Curileta descubre una ciudad donde los canales sustituyen a muchas calles y las góndolas recorren el agua sobre miles de postes de madera.',
+      en: 'Curileta marvels at Venice’s water streets, wooden piles, and singing gondoliers.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 45.4408, lng: 12.3155 },
+  },
+  {
+    order: 32,
+    place: { es: 'Alpes franceses — Travesía en autocaravana', en: 'French Alps — Camper Van Ride' },
+    country: { es: 'Francia', en: 'France' },
+    whatHappens: {
+      es: 'Curileta viaja escondida en una autocaravana con turistas y el perro Barnaby. El olor a queso Roquefort provoca un alboroto y Curileta se esconde dentro de una baguette hasta que una niña la descubre.',
+      en: 'Stowed away in a camper van, cheese odor excites dog Barnaby and Curileta hides safely inside a baguette.',
+    },
+    charactersPresent: ['curileta'],
+    isTravesia: true,
+    coordinates: { lat: 45.8326, lng: 6.8652 },
+  },
+  {
+    order: 33,
+    place: { es: 'Torre Eiffel — París', en: 'Eiffel Tower — Paris' },
+    country: { es: 'Francia', en: 'France' },
+    whatHappens: {
+      es: 'Curileta escala las estructuras metálicas de la famosa torre. Descubre que el hierro se dilata con el calor y contempla la impresionante vista de París.',
+      en: 'Curileta scales the iron girders of Paris, discovering that warm summer heat causes the metal to expand.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 48.8584, lng: 2.2945 },
+  },
+  {
+    order: 34,
+    place: { es: 'Cafetería de la Torre Eiffel', en: 'Eiffel Tower Cafe' },
+    country: { es: 'Francia', en: 'France' },
+    whatHappens: {
+      es: 'Curileta encuentra un delicioso croissant y lo prueba por primera vez. Después dibuja en una servilleta, disfrutando de las vistas de París y de su nueva experiencia gastronómica.',
+      en: 'Curileta tastes her first buttery crescent croissant and sketches her thoughts on a cafe napkin.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 48.8584, lng: 2.2945 },
+  },
+  {
+    order: 35,
+    place: { es: 'Museo del Louvre — París', en: 'Louvre Museum — Paris' },
+    country: { es: 'Francia', en: 'France' },
+    whatHappens: {
+      es: 'Curileta visita el museo, descubre su entrada con forma de pirámide de cristal y contempla la Mona Lisa, cuya misteriosa mirada parece seguirla mientras se mueve.',
+      en: 'Curileta visits the glass pyramid and plays peekaboo with the enigmatic eyes of the Mona Lisa.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 48.8606, lng: 2.3376 },
+  },
+  {
+    order: 36,
+    place: { es: 'Palacio de Versalles', en: 'Palace of Versailles' },
+    country: { es: 'Francia', en: 'France' },
+    whatHappens: {
+      es: 'Curileta conoce el extraordinario palacio y su famosa Galería de los Espejos. Imagina lo divertido que sería compartir ese lugar con muchos reflejos de Pompón.',
+      en: 'Curileta explores the Hall of Mirrors with 357 gold reflections, imagining hundreds of jumping Pompons.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 48.8049, lng: 2.1204 },
+  },
+  {
+    order: 37,
+    place: { es: 'Pirineos', en: 'Pyrenees Mountains' },
+    country: { es: 'España', en: 'Spain' },
+    whatHappens: {
+      es: 'Curileta comienza su viaje de regreso al Bosque Encantado, atravesando las montañas que separan Francia de España. Los aromas y paisajes familiares le anuncian que está cerca de casa.',
+      en: 'Curileta crosses the misty Pyrenees mountain passes, greeted by the scent of rosemary and Iberian stone.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 42.6667, lng: 0.5 },
+  },
+  {
+    order: 38,
+    place: { es: 'Tierras de Castilla', en: 'Castilian Plains' },
+    country: { es: 'España', en: 'Spain' },
+    whatHappens: {
+      es: 'Curileta atraviesa paisajes de tierra rojiza en su recorrido hacia el hogar, descubriendo nuevos rincones del país donde comenzó su aventura.',
+      en: 'Curileta walks across red clay plains toward home, marveling at the land where her journey began.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 41.5, lng: -4.5 },
+  },
+  {
+    order: 39,
+    place: { es: 'Andalucía', en: 'Andalusia' },
+    country: { es: 'España', en: 'Spain' },
+    whatHappens: {
+      es: 'Curileta escucha música flamenca, baila y conoce a Lola, una tortuga mora muy sabia que le da pistas para encontrar la entrada invisible de su Bosque Encantado.',
+      en: 'Listening to flamenco rhythms, Curileta meets wise tortoise Lola, who reveals the secret portal key.',
+    },
+    charactersPresent: ['curileta', 'lola'],
+    coordinates: { lat: 37.3891, lng: -5.9845 },
+  },
+  {
+    order: 40,
+    place: { es: 'Entrada invisible del Bosque Encantado', en: 'Invisible Forest Portal' },
+    country: { es: 'España', en: 'Spain' },
+    whatHappens: {
+      es: 'Siguiendo las indicaciones de Lola, Curileta encuentra una piedra con forma de tortuga que reconoce de su infancia. Sigue un camino de flores especiales y cruza un arroyo cristalino hasta localizar la entrada de su hogar.',
+      en: 'Following Lola’s clues, Curileta spots the familiar tortoise-shaped stone, crossing crystal brooks into her forest.',
+    },
+    charactersPresent: ['curileta'],
+    coordinates: { lat: 40.5, lng: -3.8 },
+  },
+  {
+    order: 41,
+    place: { es: 'Bosque Encantado — El gran reencuentro', en: 'Enchanted Forest — The Grand Reunion' },
+    country: { es: 'España', en: 'Spain' },
+    whatHappens: {
+      es: 'Curileta regresa al árbol donde comenzó su aventura y vuelve a encontrarse con Pompón. Le trae recuerdos, regalos y una última carta que decide leerle personalmente. Comprende que el mayor tesoro es la amistad y el hogar.',
+      en: 'Curileta reunites under the tallest tree with Pompón, reading her final letter aloud: true treasure is home and friendship.',
+    },
+    charactersPresent: ['curileta', 'pompon'],
+    coordinates: { lat: 40.4168, lng: -3.7038 },
+  },
+];
+
 export class LocalCMSProvider implements CMSProvider {
   async getCharacters(locale?: string): Promise<Character[]> {
     return INITIAL_CHARACTERS;
@@ -1079,6 +1957,15 @@ export class LocalCMSProvider implements CMSProvider {
   async getTrailWaypoints(locale?: string): Promise<TrailWaypoint[]> {
     return INITIAL_TRAIL_WAYPOINTS;
   }
+
+  async getNarrativeMilestones(locale?: string): Promise<NarrativeMilestone[]> {
+    return INITIAL_NARRATIVE_MILESTONES;
+  }
+
+  async getMentionedCuriosities(locale?: string): Promise<MentionedCuriosity[]> {
+    return INITIAL_MENTIONED_CURIOSITIES;
+  }
 }
 
 export const cmsProvider = new LocalCMSProvider();
+

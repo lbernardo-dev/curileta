@@ -207,16 +207,74 @@ const DEFAULT_CHARACTERS: Character[] = [
   },
 ];
 
+// Mapa de imágenes 3D locales renderizadas por el usuario
+const getCharacterImagePath = (slug: string): string => {
+  switch (slug) {
+    case 'curileta':
+      return '/images/characters/curileta-main.webp';
+    case 'pompon':
+      return '/images/characters/pompon-main.webp';
+    case 'quetzal':
+      return '/images/characters/quetzal-main.webp';
+    case 'lulu':
+      return '/images/characters/lulu-main.webp';
+    case 'emi':
+      return '/images/characters/emi-main.webp';
+    case 'picu':
+      return '/images/characters/picu-main.webp';
+    case 'zipi-bot':
+      return '/images/characters/zipi-bot-main.webp';
+    case 'canguro-mama':
+    case 'mama-canguro':
+      return '/images/characters/canguro-mama-main.webp';
+    case 'canguro-bebe':
+    case 'bebe-canguro':
+      return '/images/characters/canguro-bebe-main.webp';
+    case 'joey':
+    case 'joey-peluche':
+      return '/images/characters/joey-main.webp';
+    case 'joey-canguro':
+      return '/images/characters/canguro-mama-main.webp';
+    case 'kiki':
+      return '/images/characters/kiki-main.webp';
+    case 'bao':
+      return '/images/characters/bao-main.webp';
+    case 'gino':
+      return '/images/characters/gino-main.webp';
+    case 'lola':
+      return '/images/characters/lola-main.webp';
+    case 'ornitorrinco':
+      return '/images/characters/ornitorrinco-main.webp';
+    case 'emu':
+      return '/images/characters/emu-main.webp';
+    case 'pez-volador':
+    case 'glub':
+      return '/images/characters/pez-volador-main.webp';
+    case 'cobaya':
+    case 'cuy':
+      return '/images/characters/cobaya-main.webp';
+    case 'basset':
+    case 'barnaby':
+      return '/images/characters/basset-main.webp';
+    default:
+      return `/images/characters/${slug}-main.webp`;
+  }
+};
+
 // Componente para cargar imagen 3D local con fallback a arte CMS
 const CharacterAvatar: React.FC<{
   character: Character;
   locale: Locale;
   className?: string;
 }> = ({ character, locale, className = 'w-full h-full object-cover' }) => {
-  const [imgSrc, setImgSrc] = useState<string>(`/images/characters/${character.slug}.png`);
+  const [imgSrc, setImgSrc] = useState<string>(() => getCharacterImagePath(character.slug));
+
+  React.useEffect(() => {
+    setImgSrc(getCharacterImagePath(character.slug));
+  }, [character.slug]);
 
   const handleError = () => {
-    if (imgSrc !== character.mainImage.url) {
+    if (character.mainImage?.url && imgSrc !== character.mainImage.url) {
       setImgSrc(character.mainImage.url);
     }
   };
@@ -224,7 +282,7 @@ const CharacterAvatar: React.FC<{
   return (
     <img
       src={imgSrc}
-      alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
+      alt={character.mainImage?.alt?.[locale] || character.mainImage?.alt?.es || character.name}
       className={className}
       onError={handleError}
     />
@@ -407,13 +465,26 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
       return charactersList.filter((c) => ['curileta', 'pompon'].includes(c.id));
     }
     if (filterCategory === 'america-africa') {
-      return charactersList.filter((c) => ['quetzal', 'lulu', 'emi'].includes(c.id));
+      return charactersList.filter((c) => ['quetzal', 'lulu', 'cobaya', 'emi'].includes(c.id));
     }
     if (filterCategory === 'europa') {
-      return charactersList.filter((c) => ['picu', 'gino', 'lola'].includes(c.id));
+      return charactersList.filter((c) => ['picu', 'gino', 'basset', 'lola'].includes(c.id));
     }
     if (filterCategory === 'asia-oceania') {
-      return charactersList.filter((c) => ['zipi-bot', 'joey-canguro', 'kiki', 'bao'].includes(c.id));
+      return charactersList.filter((c) =>
+        [
+          'zipi-bot',
+          'pez-volador',
+          'joey-canguro',
+          'canguro-mama',
+          'canguro-bebe',
+          'joey',
+          'ornitorrinco',
+          'emu',
+          'kiki',
+          'bao',
+        ].includes(c.id)
+      );
     }
     return charactersList;
   }, [charactersList, filterCategory]);
@@ -495,6 +566,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
             <div className="lg:col-span-4 text-center lg:text-left flex flex-col items-center lg:items-start">
               <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl mb-4">
                 <CharacterAvatar
+                  key={selectedCharacter.id}
                   character={selectedCharacter}
                   locale={locale}
                   className="w-full h-full object-cover rounded-[22px]"
@@ -511,6 +583,15 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   ? selectedCharacter.passportRole[locale] || selectedCharacter.passportRole.es
                   : selectedCharacter.species}
               </p>
+
+              {selectedCharacter.id === 'joey-canguro' && (
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5 justify-center lg:justify-start">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase mr-1">Familia & Tesoro:</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700 font-bold">Mamá Canguro</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700 font-bold">Bebé Canguro</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/40 font-bold">★ Joey (Koala de trapo)</span>
+                </div>
+              )}
 
               {/* Valores del personaje */}
               <div className="flex flex-wrap gap-1.5 mt-3 justify-center lg:justify-start">

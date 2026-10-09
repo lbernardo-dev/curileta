@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { Locale } from '@curileta/i18n';
-import { Location } from '@curileta/cms';
 import {
   Globe,
   Compass,
@@ -19,22 +18,31 @@ import {
   Sun,
   Snowflake,
   Award,
+  BookOpen,
+  X,
+  Search,
+  Info,
 } from 'lucide-react';
+import { Location, NarrativeMilestone } from '@curileta/cms';
 
 interface Globe3DSceneProps {
   locale: Locale;
   locations?: Location[];
+  milestones?: NarrativeMilestone[];
 }
 
 export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   locale,
   locations: initialLocations = [],
+  milestones = [],
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<string>('mexico');
   const [isAutoRotating, setIsAutoRotating] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [webglSupported, setWebglSupported] = useState<boolean>(true);
+  const [isMilestonesModalOpen, setIsMilestonesModalOpen] = useState<boolean>(false);
+  const [milestoneSearch, setMilestoneSearch] = useState<string>('');
 
   // Destinos por defecto si no vienen pasados
   const locationsList: Location[] = useMemo(() => {
@@ -61,7 +69,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
           { es: 'La Pirámide del Sol está alineada con el movimiento solar exacto.', en: 'The Pyramid of the Sun aligns precisely with solar motion.' },
           { es: 'El sonido de una palmada frente a la pirámide imita el eco del Quetzal.', en: 'A clap in front of the pyramid mimics a Quetzal call.' },
         ],
-        characters: ['curileta', 'pompon', 'quetzal'],
+        characters: ['curileta', 'quetzal'],
       },
       {
         id: 'peru',
@@ -84,7 +92,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
           { es: 'Las piedras encajan con tanta precisión que no cabe ni una hoja de papel.', en: 'Stones fit together so tightly not even paper fits through.' },
           { es: 'Los incas domesticaron más de 3.000 variedades de patatas aquí.', en: 'The Incas cultivated over 3,000 potato varieties here.' },
         ],
-        characters: ['curileta', 'pompon'],
+        characters: ['curileta', 'lulu'],
       },
       {
         id: 'egipto',
@@ -106,7 +114,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         curiosities: [
           { es: 'El Nilo fluye de sur a norte a lo largo de más de 6.600 kilómetros.', en: 'The Nile flows South to North across more than 6,600 km.' },
         ],
-        characters: ['curileta'],
+        characters: ['curileta', 'emi'],
       },
       {
         id: 'islandia',
@@ -128,7 +136,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         curiosities: [
           { es: 'Islandia obtiene casi el 100% de su energía de la fuerza de la tierra (geotermia).', en: 'Iceland gets nearly 100% of its energy from geothermal power.' },
         ],
-        characters: ['curileta', 'lulu'],
+        characters: ['curileta', 'picu'],
       },
       {
         id: 'japon',
@@ -150,7 +158,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         curiosities: [
           { es: 'El Monte Fuji es en realidad tres volcanes superpuestos uno sobre otro.', en: 'Mount Fuji is actually three volcanoes stacked atop one another.' },
         ],
-        characters: ['curileta', 'pompon', 'quetzal'],
+        characters: ['curileta', 'zipi-bot'],
       },
     ];
   }, [initialLocations]);
@@ -662,32 +670,203 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
                   Exploradores presentes:
                 </span>
-                <div className="flex items-center gap-2">
-                  {activeDestination.characters.map((charSlug) => (
-                    <span
-                      key={charSlug}
-                      className="px-3 py-1 rounded-full text-xs font-extrabold capitalize bg-emerald-900/60 text-emerald-200 border border-emerald-700/50"
-                    >
-                      {charSlug}
-                    </span>
-                  ))}
+                <div className="flex flex-wrap items-center gap-2">
+                  {activeDestination.characters.map((charSlug) => {
+                    const label =
+                      charSlug === 'curileta'
+                        ? 'Curileta'
+                        : charSlug === 'pompon'
+                        ? 'Pompón'
+                        : charSlug === 'quetzal'
+                        ? 'Quetzal'
+                        : charSlug === 'lulu'
+                        ? 'Lulú la Llama'
+                        : charSlug === 'emi'
+                        ? 'Emi el Escarabajo'
+                        : charSlug === 'picu'
+                        ? 'Picu el Frailecillo'
+                        : charSlug === 'zipi-bot'
+                        ? 'Zipi-Bot'
+                        : charSlug === 'joey-canguro'
+                        ? 'Mamá Canguro & Bebé (con Joey)'
+                        : charSlug === 'kiki'
+                        ? 'Kiki el Kiwi'
+                        : charSlug === 'bao'
+                        ? 'Bao el Panda'
+                        : charSlug === 'gino'
+                        ? 'Gino el Ratoncito'
+                        : charSlug === 'lola'
+                        ? 'Lola la Tortuga'
+                        : charSlug;
+                    return (
+                      <span
+                        key={charSlug}
+                        className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-900/60 text-emerald-200 border border-emerald-700/50"
+                      >
+                        {label}
+                      </span>
+                    );
+                  })}
                 </div>
+                {/* Nota canónica sobre Pompón */}
+                {!activeDestination.characters.includes('pompon') && (
+                  <p className="text-[11px] text-amber-300/80 italic mt-2.5">
+                    * Pompón permanece en el Bosque Encantado custodiando el hogar y esperando las cartas de Curileta.
+                  </p>
+                )}
               </div>
             )}
 
-            {/* Botón CTA al libro o capítulo correspondiente */}
-            <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+            {/* Lugares mencionados como curiosidad (sin visita presencial) */}
+            {activeDestination.mentionedPlaces && activeDestination.mentionedPlaces.length > 0 && (
+              <div className="mt-4 p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30">
+                <span className="text-[10px] font-mono font-black uppercase tracking-wider text-amber-400 block mb-1">
+                  Mencionado en el libro como Curiosidad (sin visita presencial):
+                </span>
+                {activeDestination.mentionedPlaces.map((m) => (
+                  <p key={m.id} className="text-xs text-slate-300">
+                    <strong className="text-white">{m.name[locale] || m.name.es}:</strong>{' '}
+                    {m.curiosityFact[locale] || m.curiosityFact.es}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {/* Botones de acción: Bitácora de 41 Hitos & Cuaderno */}
+            <div className="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <button
+                onClick={() => setIsMilestonesModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-300 text-xs font-black transition-all cursor-pointer shadow-lg shadow-amber-400/20"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Bitácora de 41 Hitos Narrativos</span>
+              </button>
+
               <a
                 href={`/${locale}/mundo`}
-                className="inline-flex items-center gap-2 text-sm font-bold text-amber-400 hover:text-amber-300 group"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white group"
               >
-                <span>Ver cuaderno de viaje completo</span>
+                <span>Cuaderno completo</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal Interactivo: Los 41 Hitos Narrativos del Libro */}
+      {isMilestonesModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-4xl max-h-[85vh] bg-slate-900 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 flex flex-col shadow-2xl overflow-hidden">
+            {/* Cabecera del Modal */}
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800 shrink-0">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-2">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Itinerario Canónico Oficial</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white">
+                  Lista de 41 Lugares y Escenarios — Las Aventuras de Curileta
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Recorrido narrativo cronológico exacto según el libro oficial.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsMilestonesModalOpen(false)}
+                className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                title="Cerrar bitácora"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Aclaraciones Canónicas destacadas */}
+            <div className="my-3 p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 flex items-start gap-3 shrink-0">
+              <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-[11px] text-amber-200/90 leading-relaxed space-y-1">
+                <p>
+                  <strong>• Pompón permanece en el Bosque Encantado:</strong> Recibe las cartas de Curileta pero no viaja físicamente por el mundo.
+                </p>
+                <p>
+                  <strong>• Joey es el koala de peluche:</strong> El juguete del bebé canguro que Curileta rescata en Uluru.
+                </p>
+                <p>
+                  <strong>• Lugares mencionados como curiosidad:</strong> Chichén Itzá, Cusco, Nazca, Río Nilo, Fosa de las Marianas, Rotorua y Segovia aparecen como datos compartidos sin visita presencial confirmada.
+                </p>
+              </div>
+            </div>
+
+            {/* Buscador de hitos */}
+            <div className="relative mb-3 shrink-0">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Buscar por lugar, país o acontecimiento..."
+                value={milestoneSearch}
+                onChange={(e) => setMilestoneSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              />
+            </div>
+
+            {/* Lista con scroll de los 41 hitos */}
+            <div className="overflow-y-auto space-y-2.5 pr-1 scrollbar-thin scrollbar-thumb-amber-400/30">
+              {milestones
+                .filter((m) => {
+                  if (!milestoneSearch.trim()) return true;
+                  const q = milestoneSearch.toLowerCase();
+                  const place = (m.place[locale] || m.place.es).toLowerCase();
+                  const country = (m.country[locale] || m.country.es).toLowerCase();
+                  const text = (m.whatHappens[locale] || m.whatHappens.es).toLowerCase();
+                  return place.includes(q) || country.includes(q) || text.includes(q);
+                })
+                .map((m) => (
+                  <div
+                    key={m.order}
+                    className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 hover:border-amber-400/40 transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-mono font-black text-xs flex items-center justify-center shrink-0">
+                          {m.order}
+                        </span>
+                        <h4 className="text-sm font-bold text-white">
+                          {m.place[locale] || m.place.es}
+                        </h4>
+                      </div>
+                      <span className="text-[11px] font-mono font-bold text-emerald-400 shrink-0">
+                        {m.country[locale] || m.country.es}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed pl-8">
+                      {m.whatHappens[locale] || m.whatHappens.es}
+                    </p>
+
+                    <div className="mt-2 pl-8 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase mr-1">
+                        Presentes:
+                      </span>
+                      {m.charactersPresent.map((c) => (
+                        <span
+                          key={c}
+                          className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 capitalize"
+                        >
+                          {c === 'joey-canguro' ? 'Mamá Canguro & Bebé (con Joey)' : c}
+                        </span>
+                      ))}
+                      {m.isTravesia && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-950 text-sky-300 border border-sky-700">
+                          Travesía en barco
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
