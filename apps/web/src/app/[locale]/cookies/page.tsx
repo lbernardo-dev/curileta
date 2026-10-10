@@ -30,8 +30,8 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
         <h2 className="font-display text-2xl font-semibold">{isEn ? 'What this website stores' : 'Qué guarda esta web'}</h2>
         <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
-            ? 'The site code uses local storage, rather than cookies, to remember your light/dark theme, whether you dismissed the seasonal banner, the Amazon marketplace you selected, favorite videos and a local marker after a video vote. These values stay in this browser until you clear its site data.'
-            : 'El código del sitio utiliza el almacenamiento local del navegador, no cookies, para recordar el tema claro u oscuro, si has cerrado el aviso de temporada, la tienda de Amazon que elegiste, tus vídeos favoritos y una marca local después de votar. Estos valores permanecen en este navegador hasta que borres los datos del sitio.'}
+            ? 'The site uses local storage, not cookies, for your light or dark theme, whether you dismissed the seasonal banner, the Amazon marketplace you selected, favorite videos and a local marker after a video vote. Separately, Supabase Auth uses session cookies when a team member signs in to the admin area. Those cookies maintain the authenticated session. Local storage remains until you clear this site’s data; authentication cookies follow their session expiry.'
+            : 'La web utiliza el almacenamiento local del navegador, no cookies, para recordar el tema claro u oscuro, si cerraste el aviso de temporada, el mercado de Amazon que elegiste, tus vídeos favoritos y una marca local después de votar. Por separado, Supabase Auth utiliza cookies de sesión cuando un miembro del equipo inicia sesión en el área de administración. Esas cookies mantienen la sesión autenticada. El almacenamiento local permanece hasta que borres los datos del sitio; las cookies de autenticación siguen el vencimiento de la sesión.'}
         </p>
         <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
