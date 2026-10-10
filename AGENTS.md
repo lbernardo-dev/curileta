@@ -401,3 +401,12 @@ Then build section by section per A6.
 - [ ] Hover, active, focus, loading, empty, and error states all present
 - [ ] No dead links, current nav item indicated
 - [ ] 404, legal links, form validation, favicon, meta tags, alt text
+
+## Mantenimiento obligatorio de la documentación técnica
+
+- Mantén `Docs/BACKEND_TECHNICAL_REFERENCE.md` como referencia técnica viva del sistema y su estado comprobado.
+- En el mismo cambio que añada, corrija o modifique comportamiento, interfaz administrativa, API, esquema o migración de datos, autenticación, permisos, seguridad, integración externa, variables de configuración, despliegue, retención o tratamiento de datos, actualiza esa referencia. No esperes a que el usuario lo solicite.
+- Documenta qué hace la pieza, para qué existe, su flujo, archivos y tablas afectados, permisos, configuración por nombre de variable, pasos operativos, dependencias, verificaciones y limitaciones relevantes.
+- Distingue expresamente entre código presente localmente, cambios pendientes de aplicar, configuración solo declarada y servicios o despliegues verificados. No describas como activo en producción algo que no se haya comprobado allí.
+- No incluyas valores de secretos, tokens, contraseñas, claves privadas ni datos personales de clientes. Las variables se documentan solo por nombre; los datos personales del titular se mantienen únicamente donde sean necesarios para el aviso público aprobado.
+- Actualiza los enlaces de `README.md` si cambia la ubicación de la referencia. No añadas archivos temporales, basura del sistema ni ficheros `._*` a la documentación o al control de versiones.

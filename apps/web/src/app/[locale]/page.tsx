@@ -17,6 +17,7 @@ import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
 import { detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { cmsProvider } from '@/lib/cms';
+import { getVideoVoteCounts } from '@/lib/video-votes';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
@@ -74,6 +75,7 @@ export default async function HomePage({
     universeRoadmap,
     collaborations,
     settings,
+    videoVoteCounts,
     requestHeaders,
   ] = await Promise.all([
     cmsProvider.getLocations(locale),
@@ -87,6 +89,7 @@ export default async function HomePage({
     cmsProvider.getUniverseRoadmap(locale),
     cmsProvider.getCollaborations(locale),
     cmsProvider.getSiteSettings(locale),
+    getVideoVoteCounts(),
     headers(),
   ]);
 
@@ -119,7 +122,7 @@ export default async function HomePage({
     letters: <LettersScene locale={locale as Locale} letters={letters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
     books: <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} />,
-    videos: <YouTubeScene locale={locale as Locale} videos={videos} />,
+    videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={settings} voteCounts={videoVoteCounts} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,
     collaborations: <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />,

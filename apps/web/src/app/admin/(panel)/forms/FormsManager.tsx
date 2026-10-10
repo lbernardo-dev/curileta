@@ -257,7 +257,7 @@ export function FormsManager() {
       )) : (
         <section className="rounded-xl border border-slate-200 bg-white p-8 text-center dark:border-[#313131] dark:bg-[#1f1f1f]">
           <h2 className="text-xl font-bold">Todavía no hay formularios</h2>
-          <p className="text-pretty mx-auto mt-2 max-w-md text-sm leading-5 text-slate-600 dark:text-slate-300">Aplica la migración inicial de Supabase para crear el formulario de contacto.</p>
+          <p className="text-pretty mx-auto mt-2 max-w-md text-sm leading-5 text-slate-600 dark:text-slate-300">Comprueba en Supabase que el formulario de contacto está creado y activo.</p>
         </section>
       )}
     </div>

@@ -62,7 +62,11 @@ const cachedList = (contentType: ContentType) => unstable_cache(
 
 const cachedSettings = unstable_cache(
   async () => client.fetch<SanityDocument | null>(
-    '*[_type == "siteSettings"][0]',
+    `*[_type == "siteSettings"][0] {
+      ...,
+      "youtubeChannelAvatarUrl": youtubeChannelAvatar.asset->url,
+      "youtubeChannelHeaderUrl": youtubeChannelHeader.asset->url
+    }`,
   ),
   ['sanity-site-settings', projectId || 'unconfigured', dataset],
   { revalidate: 300, tags: ['sanity:siteSettings'] },

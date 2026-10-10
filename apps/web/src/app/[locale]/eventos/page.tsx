@@ -5,6 +5,7 @@ import { cmsProvider } from '@/lib/cms';
 import { isValidLocale, type Locale } from '@curileta/i18n';
 import { ArrowRight, CalendarDays, Clock3, Mail, Sparkles } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
+import { ShareActions } from '@/components/ShareActions';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -42,6 +43,13 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
                 </p>
                 <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-4xl">{event.name[locale] || event.name.es}</h2>
                 <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">{event.tagline[locale] || event.tagline.es}</p>
+                <ShareActions
+                  contentType="seasonalEvent"
+                  contentSlug={event.slug}
+                  title={event.name[locale] || event.name.es}
+                  description={event.tagline[locale] || event.tagline.es}
+                  locale={locale}
+                />
                 <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-secondary)]">
                   <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{formatDate(event.startDate)} – {formatDate(event.endDate)}</span>
                   <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{event.specialChapter.status === 'published' ? (isEn ? 'Available now' : 'Disponible') : (isEn ? 'Coming soon' : 'Próximamente')}</span>

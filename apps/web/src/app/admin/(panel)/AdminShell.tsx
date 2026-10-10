@@ -7,8 +7,10 @@ import type { AdminIdentity } from '@/lib/supabase/admin';
 
 const navigation = [
   { href: '/admin', label: 'Resumen', roles: ['owner', 'admin', 'editor', 'analyst'] },
+  { href: '/admin/contenidos', label: 'Contenidos', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/forms', label: 'Formularios', roles: ['owner', 'admin'] },
   { href: '/admin/consultas', label: 'Consultas', roles: ['owner', 'admin'] },
+  { href: '/admin/leads', label: 'Oportunidades', roles: ['owner', 'admin'] },
   { href: '/admin/estadisticas', label: 'Estadísticas', roles: ['owner', 'admin', 'analyst'] },
 ];
 

@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/supabase/admin';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 const allowedStatuses = ['new', 'in_progress', 'resolved', 'archived'];
+const allowedLeadStages = ['new', 'contacted', 'qualified', 'won', 'lost'];
 
 export async function PATCH(
   request: NextRequest,
@@ -10,24 +11,44 @@ export async function PATCH(
 ) {
   await requireAdmin(['owner', 'admin']);
   const { id } = await params;
-  let body: { status?: unknown };
+  let body: { status?: unknown; leadStage?: unknown; leadNotes?: unknown };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ success: false, error: 'La solicitud no tiene un formato válido.' }, { status: 400 });
   }
 
-  if (typeof body.status !== 'string' || !allowedStatuses.includes(body.status)) {
-    return NextResponse.json({ success: false, error: 'El estado elegido no es válido.' }, { status: 400 });
+  const update: Record<string, string | null> = {};
+  if (body.status !== undefined) {
+    if (typeof body.status !== 'string' || !allowedStatuses.includes(body.status)) {
+      return NextResponse.json({ success: false, error: 'El estado elegido no es válido.' }, { status: 400 });
+    }
+    update.status = body.status;
   }
+  if (body.leadStage !== undefined) {
+    if (body.leadStage !== null && (typeof body.leadStage !== 'string' || !allowedLeadStages.includes(body.leadStage))) {
+      return NextResponse.json({ success: false, error: 'La fase del lead no es válida.' }, { status: 400 });
+    }
+    update.lead_stage = body.leadStage as string | null;
+  }
+  if (body.leadNotes !== undefined) {
+    if (typeof body.leadNotes !== 'string' || body.leadNotes.length > 4000) {
+      return NextResponse.json({ success: false, error: 'Las notas deben tener como máximo 4.000 caracteres.' }, { status: 400 });
+    }
+    update.lead_notes = body.leadNotes;
+  }
+  if (!Object.keys(update).length) {
+    return NextResponse.json({ success: false, error: 'No hay cambios para guardar.' }, { status: 400 });
+  }
+  update.updated_at = new Date().toISOString();
 
   try {
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from('contact_submissions')
-      .update({ status: body.status, updated_at: new Date().toISOString() })
+      .update(update)
       .eq('id', id)
-      .select('id, status')
+      .select('id, status, lead_stage, lead_notes, resolved_at')
       .single();
     if (error) throw error;
     return NextResponse.json({ success: true, data });

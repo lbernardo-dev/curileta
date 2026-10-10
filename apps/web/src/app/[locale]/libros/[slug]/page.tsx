@@ -8,6 +8,7 @@ import { cmsProvider } from '@/lib/cms';
 import { generateBookSchema } from '@curileta/seo';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
+import { ShareActions } from '@/components/ShareActions';
 import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 
 export async function generateStaticParams() {
@@ -137,6 +138,7 @@ export default async function BookDetailPage({
             )}
 
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed pt-2">{desc}</p>
+            <ShareActions contentType="book" contentSlug={book.slug} title={title} description={desc} locale={locale} />
             {book.author && (
               <p className="text-xs text-slate-400">
                 {locale === 'en' ? 'Author:' : 'Autoría:'} <span className="font-semibold text-slate-200">{book.author}</span>

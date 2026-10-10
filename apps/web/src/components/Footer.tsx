@@ -6,8 +6,9 @@ import type { Locale } from '@curileta/i18n';
 import { ThemeToggle } from './ThemeToggle';
 import { Compass, Youtube, ArrowUpRight, ShieldCheck } from 'lucide-react';
 
-export const Footer: React.FC<{ locale: Locale }> = ({ locale }) => {
+export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = ({ locale, youtubeChannelUrl }) => {
   const isEn = locale === 'en';
+  const channelUrl = youtubeChannelUrl?.startsWith('https://') ? youtubeChannelUrl : 'https://www.youtube.com/@curileta';
   const linkClass = 'text-sm text-slate-600 transition hover:text-emerald-800 dark:text-slate-300 dark:hover:text-emerald-300';
 
   return (
@@ -25,7 +26,7 @@ export const Footer: React.FC<{ locale: Locale }> = ({ locale }) => {
                 : 'Libros, lugares y amistades para despertar un poco más de curiosidad por el mundo.'}
             </p>
             <div className="mt-5 flex items-center gap-3">
-              <a href="https://www.youtube.com/@curileta" target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eff2ec] text-slate-700 transition hover:bg-red-600 hover:text-white dark:bg-slate-800 dark:text-slate-200" aria-label={isEn ? 'Curileta on YouTube' : 'Curileta en YouTube'}>
+              <a href={channelUrl} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eff2ec] text-slate-700 transition hover:bg-red-600 hover:text-white dark:bg-slate-800 dark:text-slate-200" aria-label={isEn ? 'Curileta on YouTube' : 'Curileta en YouTube'}>
                 <Youtube className="h-5 w-5" />
               </a>
               <ThemeToggle locale={locale} variant="segmented" />

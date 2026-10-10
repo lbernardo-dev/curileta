@@ -40,7 +40,10 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const activeEvent = await cmsProvider.getActiveEvent(locale);
+  const [activeEvent, settings] = await Promise.all([
+    cmsProvider.getActiveEvent(locale),
+    cmsProvider.getSiteSettings(locale),
+  ]);
 
   return (
     <SeasonalThemeProvider activeEvent={activeEvent}>
@@ -48,7 +51,7 @@ export default async function LocaleLayout({
       <main id="main-content" className="flex-grow">
         {children}
       </main>
-      <Footer locale={locale as Locale} />
+      <Footer locale={locale as Locale} youtubeChannelUrl={settings.youtubeChannelUrl} />
     </SeasonalThemeProvider>
   );
 }

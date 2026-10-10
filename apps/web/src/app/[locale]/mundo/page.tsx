@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Globe3DScene } from '@/features/home/Globe3DScene';
 import { AdventureRadar } from '@/features/home/AdventureRadar';
 import { cmsProvider } from '@/lib/cms';
+import { ShareActions } from '@/components/ShareActions';
 import { CheckCircle2, Sparkles } from 'lucide-react';
 
 export async function generateMetadata({
@@ -85,6 +86,7 @@ export default async function WorldExplorerPage({
             {orderedLocations.map((loc, idx) => (
               <div
                 key={loc.id}
+                id={`lugar-${loc.slug}`}
                 className="rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group flex flex-col justify-between"
               >
                 <div>
@@ -107,6 +109,15 @@ export default async function WorldExplorerPage({
                   <p className="text-sm text-slate-300 mt-3 line-clamp-3 leading-relaxed">
                     {loc.description[locale as Locale] || loc.description.es}
                   </p>
+
+                  <ShareActions
+                    contentType="location"
+                    contentSlug={loc.slug}
+                    title={loc.name[locale as Locale] || loc.name.es}
+                    description={loc.description[locale as Locale] || loc.description.es}
+                    url={`/${locale}/mundo#lugar-${loc.slug}`}
+                    locale={locale}
+                  />
 
                   {loc.curiosities && loc.curiosities.length > 0 && (
                     <div className="mt-4 pt-3 border-t border-slate-800/80">

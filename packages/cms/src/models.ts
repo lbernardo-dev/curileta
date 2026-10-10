@@ -152,6 +152,11 @@ export interface Video {
   publishedAt: string;
   episodeNumber?: number;
   highlightTag?: LocalizedString;
+  tags?: string[];
+  playlistName?: LocalizedString;
+  playlistId?: string;
+  votingEnabled?: boolean;
+  votePrompt?: LocalizedString;
 }
 
 export interface Song {
@@ -259,6 +264,12 @@ export interface CollaborationOpportunity {
 
 export interface SiteSettings {
   siteName: string;
+  youtubeChannelUrl?: string;
+  youtubeChannelTitle?: LocalizedString;
+  youtubeChannelDescription?: LocalizedString;
+  youtubeChannelTags?: string[];
+  youtubeChannelAvatarUrl?: string;
+  youtubeChannelHeaderUrl?: string;
   heroTagline: LocalizedString;
   heroSubtitle: LocalizedString;
   totalCountriesCount: number;

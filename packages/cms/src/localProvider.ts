@@ -2611,6 +2611,13 @@ export const INITIAL_COLLABORATIONS: CollaborationOpportunity[] = [
 
 export const INITIAL_SETTINGS: SiteSettings = {
   siteName: 'Las Aventuras de Curileta',
+  youtubeChannelUrl: 'https://www.youtube.com/@curileta',
+  youtubeChannelTitle: { es: 'Canal oficial de Curileta', en: 'Curileta official channel' },
+  youtubeChannelDescription: {
+    es: 'Aventuras, canciones y vídeos cortos para descubrir el mundo en familia.',
+    en: 'Adventures, songs and short videos to explore the world as a family.',
+  },
+  youtubeChannelTags: ['Aventuras', 'Familia', 'Música'],
   heroTagline: {
     es: 'Un viaje continuo de empatía y curiosidad por el mundo',
     en: 'A continuous journey of empathy and curiosity across the world',

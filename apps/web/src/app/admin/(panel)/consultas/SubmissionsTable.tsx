@@ -15,6 +15,7 @@ interface Submission {
   status: 'new' | 'in_progress' | 'resolved' | 'archived';
   email_status: 'pending' | 'sent' | 'failed';
   created_at: string;
+  lead_stage: 'new' | 'contacted' | 'qualified' | 'won' | 'lost' | null;
 }
 
 const statusLabels: Record<Submission['status'], string> = {
@@ -67,6 +68,25 @@ export function SubmissionsTable() {
       setSubmissions((current) => current.map((item) => item.id === id ? { ...item, status: nextStatus } : item));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo actualizar el estado.');
+    } finally {
+      setUpdatingId('');
+    }
+  }
+
+  async function saveAsLead(id: string) {
+    setUpdatingId(id);
+    setError('');
+    try {
+      const response = await fetch(`/api/admin/submissions/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadStage: 'new' }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo guardar la oportunidad.');
+      setSubmissions((current) => current.map((item) => item.id === id ? { ...item, lead_stage: 'new' } : item));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo guardar la oportunidad.');
     } finally {
       setUpdatingId('');
     }
@@ -159,9 +179,14 @@ export function SubmissionsTable() {
                 </details>
               )}
               <div className="flex flex-wrap items-center justify-end gap-3">
+                {item.lead_stage ? (
+                  <a href="/admin/leads" className="rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">En seguimiento como oportunidad</a>
+                ) : (
+                  <button type="button" disabled={updatingId === item.id} onClick={() => saveAsLead(item.id)} className="rounded-lg bg-emerald-900 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">{updatingId === item.id ? 'Guardando…' : 'Guardar como oportunidad'}</button>
+                )}
                 {confirmingDeleteId === item.id ? (
                   <div className="flex flex-wrap items-center gap-3 rounded-lg bg-red-50 p-4 text-sm dark:bg-[#272727]">
-                    <span>Se eliminarán el mensaje y sus respuestas guardadas.</span>
+                    <span>{item.lead_stage ? 'Se eliminarán el mensaje y las notas de seguimiento de la oportunidad.' : 'Se eliminarán el mensaje y sus respuestas guardadas.'}</span>
                     <button type="button" onClick={() => setConfirmingDeleteId('')} className="rounded-lg px-3 py-2 font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#313131]">Cancelar</button>
                     <button type="button" onClick={() => deleteSubmission(item.id)} disabled={deletingId === item.id} className="rounded-lg bg-red-800 px-3 py-2 font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700">{deletingId === item.id ? 'Eliminando…' : 'Confirmar eliminación'}</button>
                   </div>

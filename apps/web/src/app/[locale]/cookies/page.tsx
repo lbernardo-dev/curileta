@@ -30,13 +30,13 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
         <h2 className="font-display text-2xl font-semibold">{isEn ? 'What this website stores' : 'Qué guarda esta web'}</h2>
         <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
-            ? 'The site code uses local storage, rather than cookies, to remember your light/dark theme, whether you dismissed the seasonal banner, and the Amazon marketplace you selected. These values stay in this browser until you clear its site data.'
-            : 'El código del sitio utiliza el almacenamiento local del navegador, no cookies, para recordar el tema claro u oscuro, si has cerrado el aviso de temporada y la tienda de Amazon que elegiste. Estos valores permanecen en este navegador hasta que borres los datos del sitio.'}
+            ? 'The site code uses local storage, rather than cookies, to remember your light/dark theme, whether you dismissed the seasonal banner, the Amazon marketplace you selected, favorite videos and a local marker after a video vote. These values stay in this browser until you clear its site data.'
+            : 'El código del sitio utiliza el almacenamiento local del navegador, no cookies, para recordar el tema claro u oscuro, si has cerrado el aviso de temporada, la tienda de Amazon que elegiste, tus vídeos favoritos y una marca local después de votar. Estos valores permanecen en este navegador hasta que borres los datos del sitio.'}
         </p>
         <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
-            ? 'When aggregate analytics are enabled, page events are sent to the website backend without a cookie or persistent visitor identifier. Page tracking respects the browser’s Do Not Track signal.'
-            : 'Cuando se activen las estadísticas agregadas, los eventos de página se enviarán al backend sin utilizar cookies ni un identificador persistente de visitante. El seguimiento respeta la señal Do Not Track del navegador.'}
+            ? 'When aggregate analytics are enabled, page and content sharing actions are sent to the website backend without a cookie or persistent visitor identifier. Sharing counts record clicks on sharing options, not confirmed app launches or sends. Analytics events respect the browser’s Do Not Track signal.'
+            : 'Cuando estén activas las estadísticas agregadas, las visitas y las acciones para compartir contenido se enviarán al backend sin cookies ni identificadores persistentes de visitante. Los recuentos registran clics en opciones para compartir, no aperturas ni envíos confirmados. Los eventos estadísticos respetan la señal Do Not Track del navegador.'}
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {[

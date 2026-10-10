@@ -6,6 +6,7 @@ import { locales, Locale, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
 import { getCharacterImageAspectRatio } from '@/lib/character-image';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
+import { ShareActions } from '@/components/ShareActions';
 import {
   Sparkles,
   ArrowLeft,
@@ -150,6 +151,7 @@ export default async function CharacterDetailPage({
               <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-medium">
                 {shortDesc}
               </p>
+              <ShareActions contentType="character" contentSlug={character.slug} title={character.name} description={shortDesc} locale={locale} />
 
               {/* Nota canónica si es Pompón o Joey */}
               {character.id === 'pompon' && (

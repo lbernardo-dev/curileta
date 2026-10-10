@@ -71,3 +71,4 @@ La aplicación web estará disponible en [http://localhost:3000](http://localhos
 - [Documento Maestro de Producto](./Docs/Proyecto_Web_Oficial_Las_Aventuras_de_Curileta.md)
 - [Plan de Implementación Operativo](./Docs/PLAN_IMPLEMENTACION.md)
 - [Configuración del backend y conexión de servicios](./Docs/BACKEND_SETUP.md)
+- [Referencia técnica viva del backend](./Docs/BACKEND_TECHNICAL_REFERENCE.md)

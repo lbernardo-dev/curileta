@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { Wallpaper } from '@curileta/cms';
+import { ShareActions } from '@/components/ShareActions';
 import {
   Download,
   Smartphone,
@@ -14,7 +14,6 @@ import {
   Eye,
   CheckCircle2,
   X,
-  Share2,
   Layers,
   Image as ImageIcon,
   Compass,
@@ -563,6 +562,14 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                       </span>
                     ))}
                   </div>
+                  <ShareActions
+                    contentType="wallpaper"
+                    contentSlug={selectedWallpaper.slug}
+                    title={selectedWallpaper.title[locale] || selectedWallpaper.title.es}
+                    description={selectedWallpaper.description?.[locale] || selectedWallpaper.description?.es}
+                    url={selectedWallpaper.fullImageUrl}
+                    locale={locale}
+                  />
                 </div>
 
                 {/* Botón de Descarga Principal */}

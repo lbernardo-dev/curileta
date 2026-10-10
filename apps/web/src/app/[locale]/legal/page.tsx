@@ -30,10 +30,11 @@ export default async function LegalNoticePage({ params }: { params: Promise<{ lo
       <SitePageCard className="border-l-4 border-l-amber-500">
         <h2 className="font-display text-xl font-semibold">{isEn ? 'Website owner' : 'Titular del sitio web'}</h2>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-          <div><dt className="font-semibold">{isEn ? 'Name or legal entity' : 'Nombre o razón social'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'To be confirmed' : 'Pendiente de confirmar'}</dd></div>
-          <div><dt className="font-semibold">{isEn ? 'Tax ID' : 'NIF o identificador fiscal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'To be confirmed' : 'Pendiente de confirmar'}</dd></div>
-          <div className="sm:col-span-2"><dt className="font-semibold">{isEn ? 'Registered address' : 'Domicilio legal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'To be confirmed' : 'Pendiente de confirmar'}</dd></div>
-          <div><dt className="font-semibold">{isEn ? 'Contact' : 'Contacto'}</dt><dd className="mt-1"><Link href={`/${locale}/contacto`} className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">{isEn ? 'Contact form' : 'Formulario de contacto'}</Link></dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Name' : 'Nombre'}</dt><dd className="mt-1 text-[var(--text-secondary)]">Lester Romero Bernardo</dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Tax ID' : 'NIF o identificador fiscal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'Pending' : 'Pendiente'}</dd></div>
+          <div className="sm:col-span-2"><dt className="font-semibold">{isEn ? 'Postal address' : 'Dirección postal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">Calle Juana María Condesa Lluch 6, Valencia, España</dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Email' : 'Correo electrónico'}</dt><dd className="mt-1"><a href="mailto:lasaventurasdecurileta@gmail.com" className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">lasaventurasdecurileta@gmail.com</a></dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Contact form' : 'Formulario de contacto'}</dt><dd className="mt-1"><Link href={`/${locale}/contacto`} className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">{isEn ? 'Open the form' : 'Abrir el formulario'}</Link></dd></div>
         </dl>
       </SitePageCard>
 

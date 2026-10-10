@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Locale } from '@curileta/i18n';
-import { Video } from '@curileta/cms';
+import type { SiteSettings, Video } from '@curileta/cms';
+import { analytics } from '@curileta/analytics';
+import { ShareActions } from '@/components/ShareActions';
+import { VideoVote } from '@/components/VideoVote';
 import {
   Youtube,
   Play,
@@ -20,6 +23,8 @@ import {
 interface YouTubeSceneProps {
   locale: Locale;
   videos?: Video[];
+  settings?: SiteSettings;
+  voteCounts?: Record<string, number>;
   hideHeader?: boolean;
 }
 
@@ -28,6 +33,8 @@ const DEFAULT_VIDEOS: Video[] = [];
 export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   locale,
   videos: propVideos = [],
+  settings,
+  voteCounts = {},
   hideHeader = false,
 }) => {
   // Filtramos estrictamente solo vídeos reales que tengan un youtubeId auténtico (no Rickroll ni dummy)
@@ -37,9 +44,36 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
     );
   }, [propVideos]);
 
-  const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'song' | 'short'>('todos');
+  const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'song' | 'short' | 'favoritos'>('todos');
   const [activeModalVideo, setActiveModalVideo] = useState<Video | null>(null);
+  const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
+  const [favoritesReady, setFavoritesReady] = useState(false);
   const isEn = locale === 'en';
+  const configuredChannelUrl = settings?.youtubeChannelUrl;
+  const channelUrl = configuredChannelUrl?.startsWith('https://') ? configuredChannelUrl : 'https://www.youtube.com/@curileta';
+  const subscribeUrl = `${channelUrl}${channelUrl.includes('?') ? '&' : '?'}sub_confirmation=1`;
+  const favoriteSet = useMemo(() => new Set(favoriteSlugs), [favoriteSlugs]);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem('curileta:favorite-videos') || '[]');
+      if (Array.isArray(saved)) setFavoriteSlugs(saved.filter((value): value is string => typeof value === 'string'));
+    } catch {
+      setFavoriteSlugs([]);
+    }
+    setFavoritesReady(true);
+  }, []);
+
+  function toggleFavorite(slug: string) {
+    const next = favoriteSet.has(slug) ? favoriteSlugs.filter((item) => item !== slug) : [...favoriteSlugs, slug];
+    setFavoriteSlugs(next);
+    window.localStorage.setItem('curileta:favorite-videos', JSON.stringify(next));
+  }
+
+  function openVideo(video: Video) {
+    analytics.track({ name: 'video_play', properties: { videoId: video.id, title: video.title[locale] || video.title.es } });
+    setActiveModalVideo(video);
+  }
 
   const counts = useMemo(() => {
     return {
@@ -47,13 +81,15 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
       episode: realVideos.filter((v) => v.type === 'episode').length,
       song: realVideos.filter((v) => v.type === 'song').length,
       short: realVideos.filter((v) => v.type === 'short').length,
+      favoritos: realVideos.filter((v) => favoriteSet.has(v.slug)).length,
     };
-  }, [realVideos]);
+  }, [realVideos, favoriteSet]);
 
   const filteredVideos = useMemo(() => {
     if (selectedCategory === 'todos') return realVideos;
+    if (selectedCategory === 'favoritos') return realVideos.filter((v) => favoriteSet.has(v.slug));
     return realVideos.filter((v) => v.type === selectedCategory);
-  }, [realVideos, selectedCategory]);
+  }, [realVideos, selectedCategory, favoriteSet]);
 
   const hasRealVideos = realVideos.length > 0;
 
@@ -209,6 +245,15 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 <span>{isEn ? `All Videos (${counts.todos})` : `Todos los Vídeos (${counts.todos})`}</span>
               </button>
 
+              <button
+                onClick={() => setSelectedCategory('favoritos')}
+                disabled={!favoritesReady}
+                aria-pressed={selectedCategory === 'favoritos'}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'favoritos' ? 'border-emerald-700 bg-emerald-800 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
+              >
+                {isEn ? `Favorites on this device (${counts.favoritos})` : `Favoritos en este dispositivo (${counts.favoritos})`}
+              </button>
+
               {counts.episode > 0 && (
                 <button
                   onClick={() => setSelectedCategory('episode')}
@@ -299,7 +344,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                             </div>
 
                             <button
-                              onClick={() => setActiveModalVideo(video)}
+                              onClick={() => openVideo(video)}
                               className="absolute inset-0 m-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-2xl shadow-red-600/60 group-hover:scale-110 active:scale-95 transition-all cursor-pointer"
                               aria-label={`Ver vídeo: ${title}`}
                             >
@@ -328,7 +373,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
                             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
                               <button
-                                onClick={() => setActiveModalVideo(video)}
+                                onClick={() => openVideo(video)}
                                 className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors cursor-pointer"
                               >
                                 <Play className="w-3 h-3 fill-current" />
@@ -381,7 +426,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                       return (
                         <div
                           key={video.id}
-                          onClick={() => setActiveModalVideo(video)}
+                          onClick={() => openVideo(video)}
                           className="group cursor-pointer rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-500 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col relative"
                         >
                           <div className="relative aspect-[9/16] w-full bg-slate-950 overflow-hidden">
@@ -418,6 +463,13 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                     })}
                 </div>
               </div>
+            )}
+
+            {selectedCategory === 'favoritos' && favoritesReady && filteredVideos.length === 0 && (
+              <section className="mx-auto max-w-2xl rounded-xl border border-slate-200 bg-white px-6 py-10 text-center dark:border-[#313131] dark:bg-[#1f1f1f]">
+                <h3 className="text-xl font-bold">{isEn ? 'No saved videos yet' : 'Aún no has guardado vídeos'}</h3>
+                <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">{isEn ? 'Open a video and save it to your favorites on this device.' : 'Abre un vídeo y guárdalo en favoritos en este dispositivo.'}</p>
+              </section>
             )}
           </>
         )}
@@ -481,6 +533,51 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </p>
                 )}
 
+                {activeModalVideo.playlistName && (
+                  <p className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    {isEn ? 'Playlist:' : 'Lista:'} {activeModalVideo.playlistName[locale] || activeModalVideo.playlistName.es}
+                  </p>
+                )}
+                {activeModalVideo.tags?.length ? (
+                  <ul className="mt-3 flex flex-wrap gap-2" aria-label={isEn ? 'Video tags' : 'Etiquetas del vídeo'}>
+                    {activeModalVideo.tags.map((tag) => <li key={tag} className="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-[#272727] dark:text-slate-200">{tag}</li>)}
+                  </ul>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={() => toggleFavorite(activeModalVideo.slug)}
+                  aria-pressed={favoriteSet.has(activeModalVideo.slug)}
+                  className="mt-4 min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]"
+                >
+                  {favoriteSet.has(activeModalVideo.slug)
+                    ? (isEn ? 'Remove from favorites on this device' : 'Quitar de favoritos en este dispositivo')
+                    : (isEn ? 'Save to favorites on this device' : 'Guardar en favoritos en este dispositivo')}
+                </button>
+
+                <ShareActions
+                  contentType="video"
+                  contentSlug={activeModalVideo.slug}
+                  title={activeModalVideo.title[locale] || activeModalVideo.title.es}
+                  description={activeModalVideo.description?.[locale] || activeModalVideo.description?.es}
+                  url={`https://www.youtube.com/watch?v=${activeModalVideo.youtubeId}`}
+                  locale={locale}
+                />
+
+                {activeModalVideo.votingEnabled === true ? (
+                  <VideoVote
+                    slug={activeModalVideo.slug}
+                    title={activeModalVideo.title[locale] || activeModalVideo.title.es}
+                    prompt={activeModalVideo.votePrompt?.[locale] || activeModalVideo.votePrompt?.es}
+                    initialVotes={voteCounts[activeModalVideo.slug] || 0}
+                    locale={locale}
+                  />
+                ) : (
+                  <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 dark:bg-[#181818] dark:text-slate-300">
+                    {isEn ? 'Voting is coming soon for this video.' : 'La votación estará disponible próximamente para este vídeo.'}
+                  </p>
+                )}
+
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
                   <a
                     href={`https://www.youtube.com/watch?v=${activeModalVideo.youtubeId}`}
@@ -493,7 +590,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </a>
 
                   <a
-                    href="https://www.youtube.com/@curileta?sub_confirmation=1"
+                    href={subscribeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-black"
@@ -508,38 +605,32 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
         )}
 
         {/* Banner Oficial de Suscripción al Canal de YouTube */}
-        <div className="mt-12 rounded-3xl bg-gradient-to-r from-red-50 via-amber-50/50 to-rose-50 dark:from-red-950/80 dark:via-slate-900 dark:to-amber-950/80 border-2 border-red-200 dark:border-red-900/50 p-8 sm:p-10 shadow-xl dark:shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="mt-12 flex flex-col items-center justify-between gap-8 rounded-2xl border border-red-200 bg-red-50 p-8 dark:border-[#313131] dark:bg-[#181818] sm:p-10 md:flex-row">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-red-600 flex items-center justify-center flex-shrink-0 shadow-xl shadow-red-600/40">
-              <Youtube className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
-            </div>
+            {settings?.youtubeChannelAvatarUrl
+              ? <img src={settings.youtubeChannelAvatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20" />
+              : <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-red-600 sm:h-20 sm:w-20"><Youtube className="h-10 w-10 text-white" /></div>}
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {isEn ? 'Official Channel: @curileta' : 'Canal Oficial: @curileta'}
+                  {settings?.youtubeChannelTitle?.[locale] || settings?.youtubeChannelTitle?.es || (isEn ? 'Curileta official channel' : 'Canal oficial de Curileta')}
                 </h4>
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-xl">
-                {isEn
-                  ? 'When the first episodes are released, we will gather Curileta’s adventures, songs and Shorts here. Follow the channel for release news.'
-                  : 'Cuando publiquemos los primeros episodios, reuniremos aquí las aventuras, canciones y Shorts de Curileta. Sigue el canal para conocer los estrenos.'}
+                {settings?.youtubeChannelDescription?.[locale] || settings?.youtubeChannelDescription?.es || (isEn
+                  ? 'Follow Curileta’s adventures, songs and short videos.'
+                  : 'Sigue las aventuras, canciones y vídeos cortos de Curileta.')}
               </p>
-              <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
-                <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">
-                  🎬 {isEn ? 'Animated Series' : 'Serie Animada'}
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">
-                  🎵 {isEn ? 'Songs & Dances' : 'Canciones & Coreografías'}
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-rose-700 dark:text-rose-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">
-                  📱 {isEn ? 'Vertical Shorts' : 'Shorts 9:16'}
-                </span>
-              </div>
+              {settings?.youtubeChannelTags?.length ? (
+                <ul className="mt-3 flex flex-wrap gap-2 text-xs" aria-label={isEn ? 'Channel tags' : 'Etiquetas del canal'}>
+                  {settings.youtubeChannelTags.map((tag) => <li key={tag} className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200">{tag}</li>)}
+                </ul>
+              ) : null}
             </div>
           </div>
 
           <a
-            href="https://www.youtube.com/@curileta?sub_confirmation=1"
+            href={subscribeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="px-8 py-4 rounded-2xl font-black text-base bg-red-600 hover:bg-red-500 text-white shadow-xl shadow-red-600/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 whitespace-nowrap cursor-pointer"

@@ -5,6 +5,7 @@ import { cmsProvider } from '@/lib/cms';
 import { isValidLocale, type Locale } from '@curileta/i18n';
 import { ArrowRight, Disc3, Music2, Youtube } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
+import { ShareActions } from '@/components/ShareActions';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -43,6 +44,14 @@ export default async function SongsPage({ params }: { params: Promise<{ locale: 
                   {song.audioUrl && <a href={song.audioUrl} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]">{isEn ? 'Listen' : 'Escuchar'}<ArrowRight className="h-4 w-4" /></a>}
                   {song.youtubeId && <a href={'https://www.youtube.com/watch?v=' + song.youtubeId} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]"><Youtube className="h-4 w-4" />YouTube</a>}
                 </div>
+                <ShareActions
+                  contentType="song"
+                  contentSlug={song.slug}
+                  title={song.title[locale] || song.title.es}
+                  description={song.lyrics?.[locale] || song.lyrics?.es}
+                  url={song.youtubeId ? `https://www.youtube.com/watch?v=${song.youtubeId}` : song.audioUrl}
+                  locale={locale}
+                />
               </div>
             </SitePageCard>
           ))}

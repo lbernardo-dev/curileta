@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseAdminClient();
     let query = supabase
       .from('contact_submissions')
-      .select('id, form_slug, locale, name, email, company, category, message, answers, status, email_status, created_at')
+      .select('id, form_slug, locale, name, email, company, category, message, answers, status, email_status, created_at, lead_stage')
       .order('created_at', { ascending: false })
       .limit(100);
     if (status && allowedStatuses.includes(status)) query = query.eq('status', status);
