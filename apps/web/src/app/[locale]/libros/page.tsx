@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
@@ -11,6 +10,9 @@ import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon
 import { getBookCoverImage } from '@/lib/book-art';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { getImageFrame } from '@/lib/image-frames';
+import { BookCoverPanel } from '@/components/BookCoverPanel';
+import { getBookCatalogSettings } from '@/lib/book-catalog.server';
+import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -22,11 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BooksPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
-  const [books, requestHeaders, imageFrames] = await Promise.all([
+  const [baseBooks, requestHeaders, imageFrames, catalogSettings] = await Promise.all([
     cmsProvider.getBooks(locale),
     headers(),
     getImageFrameSettings(),
+    getBookCatalogSettings(),
   ]);
+  const books = mergeBookCatalog(baseBooks, catalogSettings);
   const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
   const isEn = locale === 'en';
   const now = Date.now();
@@ -51,7 +55,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
 
         <div className="grid gap-6 lg:grid-cols-2">
           {books.map((book) => {
-            const isPublished = Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= now;
+            const isPublished = isBookPublished(book, now);
             const title = book.title[locale] || book.title.es;
             const subtitle = book.subtitle?.[locale] || book.subtitle?.es;
             const description = book.description[locale] || book.description.es;
@@ -59,31 +63,28 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
             const coverImage = getBookCoverImage(book);
             const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
             const coverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'catalog-book-cover') : null;
-            const formattedDate = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(`${book.publicationDate}T12:00:00Z`));
+            const formattedDate = book.publicationDate
+              ? new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(`${book.publicationDate}T12:00:00Z`))
+              : (isEn ? 'To be announced' : 'Fecha por anunciar');
 
             return (
               <article key={book.id} className="overflow-hidden rounded-3xl bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
-                <div className="relative aspect-[4/5] overflow-hidden bg-[#1c493b]">
-                  <Image
+                <div className="relative">
+                  <BookCoverPanel
                     src={coverImage.url}
                     alt={coverImage.alt[locale] || coverImage.alt.es}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className={coverFrame ? 'object-cover' : 'object-contain'}
-                    style={coverFrame ? {
-                      objectPosition: `${coverFrame.positionX}% ${coverFrame.positionY}%`,
-                      transform: `scale(${coverFrame.zoom})`,
-                      transformOrigin: `${coverFrame.positionX}% ${coverFrame.positionY}%`,
-                    } : undefined}
+                    locale={locale as Locale}
+                    upcoming={!isPublished}
+                    frame={coverFrame}
                   />
-                  <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/50 bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#254537] shadow-sm">
+                  <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/60 bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#254537] shadow-sm">
                     {isPublished ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" /> : <Clock3 className="h-3.5 w-3.5 text-amber-700" />}
                     {isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Coming soon' : 'Próximamente')}
                   </div>
                 </div>
                 <div className="p-6 sm:p-8">
                   <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-[#647268]">
-                    <span className="inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />{isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Expected' : 'Previsto')}: {formattedDate}</span>
+                    {(isPublished || book.publicationDate) && <span className="inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />{isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Expected' : 'Previsto')}: {formattedDate}</span>}
                     {book.ageRange && <span className="rounded-full bg-[#f1f3eb] px-2.5 py-1">{book.ageRange}</span>}
                     {book.pageCount && <span>{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
                     {format && <span>{format}</span>}

@@ -46,6 +46,7 @@ export interface Book {
   };
   description: LocalizedString;
   publicationDate: string;
+  publicationStatus?: 'published' | 'coming-soon';
   isbn?: string[];
   languages: string[];
   ageRange: string;

@@ -4,7 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import type { Locale } from '@curileta/i18n';
 import { ThemeToggle } from './ThemeToggle';
-import { Compass, Youtube, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Youtube, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { NauticalCompassMark } from './NauticalCompassMark';
 
 export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = ({ locale, youtubeChannelUrl }) => {
   const isEn = locale === 'en';
@@ -17,7 +18,7 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
         <div className="grid gap-10 border-b border-[#e2e7dd] pb-10 dark:border-slate-800 md:grid-cols-[1.25fr_0.75fr_0.8fr]">
           <div>
             <Link href={`/${locale}`} className="inline-flex items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1c493b] text-amber-300"><Compass className="h-5 w-5" /></span>
+              <NauticalCompassMark />
               <span className="font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Curileta<span className="text-amber-500">.</span></span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-600 dark:text-slate-400">

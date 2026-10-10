@@ -11,6 +11,7 @@ import {
   Mail,
   ChevronRight,
 } from 'lucide-react';
+import { SectionEmblem } from '@/components/SectionEmblem';
 
 interface AdventureRadarProps {
   locale: Locale;
@@ -114,21 +115,21 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
   return (
     <section
       id="radar-curileta"
-      className="relative z-10 py-24 bg-gradient-to-b from-[#123a2f] via-[#0e2b22] to-[#0b211a] text-white overflow-hidden transition-colors duration-300"
+      className="relative z-10 overflow-hidden bg-[#0b241c] py-24 text-white transition-colors duration-300"
     >
       {/* Resplandor y círculos de radar de fondo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
         <div className="w-[500px] h-[500px] sm:w-[800px] sm:h-[800px] rounded-full border border-emerald-300/70 animate-radar-breathe" />
-        <div className="w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] rounded-full border border-amber-400" />
+        <div className="h-[300px] w-[300px] rounded-full border border-amber-300/45 sm:h-[500px] sm:w-[500px]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* El atlas se presenta como una herramienta de exploración, sin atribuirlo a otro personaje. */}
         <div className="relative max-w-4xl mx-auto mb-14 text-center">
+          <SectionEmblem icon={Compass} tone="emerald" label={locale === 'en' ? 'Interactive expedition atlas' : 'Atlas interactivo de la expedición'} />
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
             <div className="text-center sm:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/80 border border-emerald-400/50 text-emerald-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
-                <Compass className="w-4 h-4 text-amber-400" />
                 <span>{locale === 'en' ? 'Interactive expedition atlas' : 'Atlas interactivo de la expedición'}</span>
               </div>
 
@@ -149,7 +150,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
 
           {/* Sample city selector. The browser location is never requested. */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs">
-            <span className="mr-1 font-bold text-slate-400">{locale === 'en' ? 'Choose a sample city:' : 'Elige una ciudad de ejemplo:'}</span>
+            <span className="mr-1 font-bold text-slate-300">{locale === 'en' ? 'Choose a sample city:' : 'Elige una ciudad de ejemplo:'}</span>
             {PRESET_CITIES.map((city) => {
               const cityName = locale === 'en' ? city.en : city.name;
               const isSelected = activeCoords.cityName === cityName;
@@ -163,8 +164,8 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
                   aria-pressed={isSelected}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     isSelected
-                      ? 'bg-gradient-to-b from-amber-300 to-amber-400 text-slate-950 border-b-2 border-amber-600 font-black shadow-md'
-                      : 'bg-[#0b211a]/85 text-slate-200 border-emerald-950/70 hover:border-emerald-300/50 hover:text-white shadow-xs'
+                      ? 'border-amber-300 bg-amber-300 text-slate-950 font-bold shadow-md'
+                      : 'border-emerald-900 bg-[#071b17] text-slate-200 hover:border-emerald-300/50 hover:text-white'
                   }`}
                 >
                   {cityName.split(',')[0]}
@@ -176,11 +177,11 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
 
         {/* Tarjeta de Resultado del Radar */}
         {currentDestination && (
-          <div className="max-w-4xl mx-auto rounded-3xl bg-[#12382e]/90 border border-emerald-200/25 p-6 sm:p-10 shadow-[0_24px_70px_rgba(2,18,13,0.38)] backdrop-blur-2xl relative overflow-hidden">
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-emerald-200/25 bg-[#12382e] p-6 shadow-[0_24px_70px_rgba(2,18,13,0.38)] sm:p-10">
             {/* Cabecera del hallazgo */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30 shrink-0">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-400 text-[#07231b] shadow-lg shadow-emerald-950/40">
                   <MapPin className="w-7 h-7 text-slate-950" />
                 </div>
                 <div>
@@ -206,7 +207,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
                   {locale === 'en' ? 'APPROXIMATE DISTANCE' : 'DISTANCIA APROXIMADA'}
                 </span>
-                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-300 font-mono">
+                <span className="font-mono text-3xl font-bold text-emerald-300 sm:text-4xl">
                   {currentDestination.distanceKm.toLocaleString()} km
                 </span>
               </div>

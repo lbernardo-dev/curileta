@@ -177,7 +177,7 @@ export default function ContactPage({ params }: ContactPageProps) {
           />
           <span>
             {label}{requiredMark}
-            {field.system === 'privacyConsent' && (
+            {(field.system === 'privacyAcknowledgement' || field.system === 'privacyConsent') && (
               <Link href={`/${locale}/privacidad`} className="ml-2 inline-block font-semibold text-emerald-800 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-300">
                 {isEn ? 'Read the privacy policy' : 'Leer la política de privacidad'}
               </Link>
@@ -256,6 +256,17 @@ export default function ContactPage({ params }: ContactPageProps) {
           {isEn
             ? 'This form is for adults. Do not send personal information about a child.'
             : 'Este formulario está reservado a personas adultas. No envíes datos personales de menores.'}
+        </section>
+
+        <section className="mb-8 rounded-xl border border-slate-200 bg-white p-5 text-sm leading-6 text-slate-700 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200" aria-labelledby="contact-privacy-summary">
+          <h2 id="contact-privacy-summary" className="font-semibold text-slate-900 dark:text-white">{isEn ? 'Privacy information' : 'Información básica de privacidad'}</h2>
+          <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div><dt className="font-semibold">{isEn ? 'Controller' : 'Responsable'}</dt><dd>Lester Romero Bernardo · <a className="underline underline-offset-2" href="mailto:lasaventurasdecurileta@gmail.com">lasaventurasdecurileta@gmail.com</a></dd></div>
+            <div><dt className="font-semibold">{isEn ? 'Purpose and legal basis' : 'Finalidad y base jurídica'}</dt><dd>{isEn ? 'Answer your enquiry and handle any offer you request. General enquiries are answered on the basis of legitimate interest; requested offers use pre-contractual steps.' : 'Responder a tu consulta y tramitar las propuestas que solicites. Las consultas generales se atienden por interés legítimo; las propuestas solicitadas, mediante medidas precontractuales.'}</dd></div>
+            <div><dt className="font-semibold">{isEn ? 'Recipients' : 'Destinatarios'}</dt><dd>{isEn ? 'Vercel, Supabase and Cloudflare provide hosting, database and spam protection. Resend sends an alert without message content. Some providers may process data outside the EEA under applicable safeguards.' : 'Vercel, Supabase y Cloudflare prestan alojamiento, base de datos y protección antispam. Resend envía un aviso sin el contenido del mensaje. Algunos proveedores pueden tratar datos fuera del EEE con las garantías aplicables.'}</dd></div>
+            <div><dt className="font-semibold">{isEn ? 'Retention and rights' : 'Conservación y derechos'}</dt><dd>{isEn ? 'Closed enquiries are deleted after 30 days. Leads are reviewed after 12 months of inactivity and deleted 30 days after notice unless followed up. You can exercise your rights by email.' : 'Las consultas cerradas se eliminan a los 30 días. Las oportunidades se revisan tras 12 meses sin actividad y se eliminan 30 días después del aviso, salvo que se reanude su seguimiento. Puedes ejercer tus derechos por correo.'}</dd></div>
+          </dl>
+          <Link href={`/${locale}/privacidad`} className="mt-3 inline-block font-semibold text-emerald-800 underline underline-offset-4 dark:text-emerald-300">{isEn ? 'Full privacy policy' : 'Política de privacidad completa'}</Link>
         </section>
 
         {submitted ? (

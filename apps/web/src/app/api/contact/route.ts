@@ -139,7 +139,8 @@ export async function POST(request: NextRequest) {
   const category = systemValue(normalizedAnswers, form.fields, 'category');
   const message = systemValue(normalizedAnswers, form.fields, 'message');
   const adultConsent = normalizedAnswers[form.fields.find((field) => field.system === 'adultConsent')?.key || ''] === true;
-  const privacyConsent = normalizedAnswers[form.fields.find((field) => field.system === 'privacyConsent')?.key || ''] === true;
+  const privacyField = form.fields.find((field) => field.system === 'privacyAcknowledgement' || field.system === 'privacyConsent');
+  const privacyAcknowledgement = normalizedAnswers[privacyField?.key || ''] === true;
 
   if (!name || !email || !message) {
     return NextResponse.json({ success: false, error: 'El formulario necesita nombre, correo y mensaje.' }, { status: 400 });
@@ -147,8 +148,8 @@ export async function POST(request: NextRequest) {
   if (form.fields.some((field) => field.system === 'adultConsent') && !adultConsent) {
     return NextResponse.json({ success: false, error: 'Este formulario está reservado a personas adultas.' }, { status: 403 });
   }
-  if (form.fields.some((field) => field.system === 'privacyConsent') && !privacyConsent) {
-    return NextResponse.json({ success: false, error: 'Debes aceptar la política de privacidad para continuar.' }, { status: 400 });
+  if (privacyField && !privacyAcknowledgement) {
+    return NextResponse.json({ success: false, error: 'Confirma que has leído la información de privacidad para continuar.' }, { status: 400 });
   }
 
   const { data: submission, error: insertError } = await supabase
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
       message,
       answers: normalizedAnswers,
       adult_consent: adultConsent,
-      privacy_consent: privacyConsent,
+      privacy_notice_acknowledged: privacyAcknowledgement,
       privacy_notice_version: process.env.PRIVACY_NOTICE_VERSION || null,
     })
     .select('id')
@@ -191,38 +192,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, notificationPending: true }, { status: 202 });
   }
 
-  const safeName = escapeHtml(name);
-  const safeEmail = escapeHtml(email);
-  const safeCompany = escapeHtml(company || '—');
-  const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
-  const additionalAnswers = form.fields
-    .filter((field) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent'].includes(field.system || ''))
-    .map((field) => {
-      const answer = normalizedAnswers[field.key];
-      const answerText = typeof answer === 'boolean'
-        ? (locale === 'en' ? (answer ? 'Yes' : 'No') : (answer ? 'Sí' : 'No'))
-        : answer || '—';
-      const label = localized(field.label, locale);
-      return { label, value: answerText };
-    });
-  const additionalText = additionalAnswers.map(({ label, value }) => `${label}: ${value}`).join('\n');
-  const additionalHtml = additionalAnswers
-    .map(({ label, value }) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`)
-    .join('');
-  const categoryLabel = form.fields.find((field) => field.system === 'category')?.options?.find((option) => option.value === category)?.label;
-  const localizedCategory = locale === 'en' ? categoryLabel?.en || categoryLabel?.es : categoryLabel?.es || categoryLabel?.en;
-
   try {
+    const adminUrl = new URL('/admin/consultas', request.nextUrl.origin).toString();
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from,
         to: [to],
-        reply_to: email,
-        subject: `[Curileta · ${localizedCategory || 'Consulta'}] ${name}`,
-        text: `Nombre: ${name}\nCorreo: ${email}\nOrganización: ${company || '—'}\nCategoría: ${localizedCategory || category || '—'}${additionalText ? `\n${additionalText}` : ''}\n\n${message}`,
-        html: `<h2>Nueva consulta de Curileta</h2><p><strong>Nombre:</strong> ${safeName}</p><p><strong>Correo:</strong> ${safeEmail}</p><p><strong>Organización:</strong> ${safeCompany}</p><p><strong>Categoría:</strong> ${escapeHtml(localizedCategory || category || '—')}</p>${additionalHtml}<hr><p>${safeMessage}</p>`,
+        subject: 'Curileta: nueva consulta recibida',
+        text: `Se ha guardado una nueva consulta en el panel privado de Curileta. Revísala en ${adminUrl}. El aviso no incluye datos personales ni el contenido del mensaje.`,
+        html: `<p>Se ha guardado una nueva consulta en el panel privado de Curileta.</p><p><a href="${escapeHtml(adminUrl)}">Abrir consultas</a></p><p>Este aviso no incluye datos personales ni el contenido del mensaje.</p>`,
       }),
       cache: 'no-store',
     });

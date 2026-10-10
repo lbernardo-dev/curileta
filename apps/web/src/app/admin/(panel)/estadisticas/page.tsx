@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { CharacterFavoriteStats } from './CharacterFavoriteStats';
 
 interface AnalyticsRow {
   day: string;
@@ -114,6 +115,8 @@ export default function AdminAnalyticsPage() {
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Recuento agregado en el periodo</p>
             </article>
           </section>
+
+          <CharacterFavoriteStats days={days} />
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
             <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]">

@@ -1,5 +1,5 @@
 export type ContactFieldType = 'text' | 'email' | 'textarea' | 'select' | 'checkbox';
-export type ContactSystemField = 'name' | 'email' | 'company' | 'country' | 'category' | 'message' | 'adultConsent' | 'privacyConsent';
+export type ContactSystemField = 'name' | 'email' | 'company' | 'country' | 'category' | 'message' | 'adultConsent' | 'privacyConsent' | 'privacyAcknowledgement';
 
 export interface LocalizedValue {
   es: string;

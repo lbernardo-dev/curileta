@@ -7,6 +7,9 @@ import { cmsProvider } from '@/lib/cms';
 import { getCharacterImageAspectRatio } from '@/lib/character-image';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import { ShareActions } from '@/components/ShareActions';
+import { CharacterFavoriteButton, CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
+import { CharacterPassportSpread } from '@/components/CharacterPassportSpread';
+import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
 import {
   Sparkles,
   ArrowLeft,
@@ -17,10 +20,6 @@ import {
   Shield,
   Zap,
   MapPin,
-  Share2,
-  ChevronRight,
-  Award,
-  Download,
 } from 'lucide-react';
 
 export async function generateStaticParams() {
@@ -69,7 +68,14 @@ export default async function CharacterDetailPage({
     notFound();
   }
 
-  const character = await cmsProvider.getCharacterBySlug(slug, locale);
+  const [character, locations, books, videos, milestones, rankings] = await Promise.all([
+    cmsProvider.getCharacterBySlug(slug, locale),
+    cmsProvider.getLocations(locale),
+    cmsProvider.getBooks(locale),
+    cmsProvider.getVideos(locale),
+    cmsProvider.getNarrativeMilestones(locale),
+    getCharacterFavoriteRankings(locale),
+  ]);
 
   if (!character) {
     notFound();
@@ -80,8 +86,28 @@ export default async function CharacterDetailPage({
   const roleText = character.passportRole
     ? character.passportRole[locale] || character.passportRole.es
     : character.species;
+  const relatedBooks = books.filter((book) => character.relatedBooks?.includes(book.slug) || character.relatedBooks?.includes(book.id) || book.characters?.includes(character.slug));
+  const relatedEpisodes = videos.filter((video) => video.type === 'episode'
+    && (character.relatedEpisodes?.includes(video.slug) || character.relatedEpisodes?.includes(video.id)
+      || video.tags?.includes(character.slug) || video.tags?.includes(character.id)));
+  const storyMoments = milestones.filter((milestone) => milestone.charactersPresent.includes(character.slug) || milestone.charactersPresent.includes(character.id));
+  const relationToCurileta = character.slug === 'curileta'
+    ? (locale === 'en' ? 'The main explorer and storyteller of the journey.' : 'La exploradora protagonista y narradora del viaje.')
+    : character.slug === 'pompon'
+      ? (locale === 'en' ? 'Curileta’s best friend. Their letters keep them close across every ocean.' : 'El mejor amigo de Curileta. Sus cartas los mantienen cerca a través de cada océano.')
+      : character.slug === 'joey' || character.slug === 'joey-peluche'
+        ? (locale === 'en' ? 'A close companion Curileta helped reunite with family in Australia.' : 'Un compañero al que Curileta ayudó a reencontrarse con su familia en Australia.')
+        : (locale === 'en' ? `${character.name} becomes one of Curileta’s friends during the journey.` : `${character.name} se convierte en amistad de Curileta durante la travesía.`);
+  const stats = character.explorerStats ? [
+    { key: 'curiosity', label: locale === 'en' ? 'Curiosity' : 'Curiosidad', value: character.explorerStats.curiosity },
+    { key: 'courage', label: locale === 'en' ? 'Courage' : 'Valentía', value: character.explorerStats.courage },
+    { key: 'agility', label: locale === 'en' ? 'Agility' : 'Agilidad', value: character.explorerStats.agility },
+    { key: 'wisdom', label: locale === 'en' ? 'Wisdom' : 'Sabiduría', value: character.explorerStats.wisdom },
+  ] : [];
+  const growthArea = [...stats].sort((left, right) => left.value - right.value)[0];
 
   return (
+    <CharacterFavoritesProvider locale={locale as Locale} initialRankings={rankings}>
     <div className="py-16 sm:py-24 bg-slate-950 text-white min-h-screen relative overflow-hidden">
       {/* Resplandor ambiental */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent)] pointer-events-none" />
@@ -94,7 +120,7 @@ export default async function CharacterDetailPage({
             className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Volver a la Galería de Personajes</span>
+          <span>{locale === 'en' ? 'Back to all characters' : 'Volver a todos los personajes'}</span>
           </Link>
 
         </div>
@@ -109,23 +135,13 @@ export default async function CharacterDetailPage({
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8 sm:gap-12">
             {/* Retrato 3D con halo */}
             <div className="flex flex-col items-center shrink-0">
-              <div className="w-56 sm:w-64 rounded-3xl overflow-hidden shadow-2xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 relative group" style={{ aspectRatio: getCharacterImageAspectRatio(character.mainImage.url, character.mainImage.aspectRatio) }}>
-                <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-950">
+              <div className="w-56 sm:w-64 overflow-hidden relative group" style={{ aspectRatio: getCharacterImageAspectRatio(character.mainImage.url, character.mainImage.aspectRatio) }}>
                   <img
                     src={character.mainImage.url}
                     alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="h-full w-full object-cover object-[50%_100%] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.025]"
                   />
-                </div>
               </div>
-              <a
-                href={character.mainImage.url}
-                download={`Curileta_Personaje_${character.slug}_3D.webp`}
-                className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 border border-emerald-500/30 text-emerald-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 text-amber-400" />
-                <span>Descargar Render 3D</span>
-              </a>
             </div>
 
             {/* Datos del Pasaporte */}
@@ -152,6 +168,7 @@ export default async function CharacterDetailPage({
                 {shortDesc}
               </p>
               <ShareActions contentType="character" contentSlug={character.slug} title={character.name} description={shortDesc} locale={locale} />
+              <CharacterFavoriteButton slug={character.slug} locale={locale as Locale} />
 
               {/* Nota canónica si es Pompón o Joey */}
               {character.id === 'pompon' && (
@@ -183,6 +200,28 @@ export default async function CharacterDetailPage({
           </div>
         </div>
 
+        <CharacterPassportSpread
+          character={character}
+          locale={locale as Locale}
+          locations={locations}
+          milestones={storyMoments}
+          relationship={relationToCurileta}
+        />
+
+        <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8" aria-labelledby="character-appearances">
+          <h2 id="character-appearances" className="flex items-center gap-2 text-xl font-bold text-white">
+            <BookOpen className="h-5 w-5 text-amber-300" />
+            {locale === 'en' ? 'Stories and chapters' : 'Historias y capítulos'}
+          </h2>
+          {(relatedBooks.length || relatedEpisodes.length || storyMoments.length) ? (
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {relatedBooks.map((book) => <Link key={book.slug} href={`/${locale}/libros/${book.slug}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Book' : 'Libro'}</span><span className="mt-1 block font-semibold text-white">{book.title[locale] || book.title.es}</span>{book.subtitle && <span className="mt-1 block text-sm text-slate-300">{book.subtitle[locale] || book.subtitle.es}</span>}</Link>)}
+              {relatedEpisodes.map((episode) => <a key={episode.slug} href={episode.youtubeId ? `https://www.youtube.com/watch?v=${episode.youtubeId}` : `/${locale}/videos`} target={episode.youtubeId ? '_blank' : undefined} rel={episode.youtubeId ? 'noopener noreferrer' : undefined} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Episode' : 'Episodio'}{episode.episodeNumber ? ` ${episode.episodeNumber}` : ''}</span><span className="mt-1 block font-semibold text-white">{episode.title[locale] || episode.title.es}</span></a>)}
+              {storyMoments.slice(0, 6).map((moment) => <article key={`${moment.order}-${moment.place.es}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4"><span className="text-xs font-semibold uppercase tracking-wide text-emerald-300">{locale === 'en' ? `Story moment ${moment.order}` : `Momento ${moment.order} del relato`}</span><h3 className="mt-1 font-semibold text-white">{moment.place[locale] || moment.place.es}</h3><p className="mt-2 text-sm leading-6 text-slate-300">{moment.whatHappens[locale] || moment.whatHappens.es}</p></article>)}
+            </div>
+          ) : <p className="mt-4 text-sm text-slate-300">{locale === 'en' ? 'Story appearances will appear when this character is linked to a published book or episode.' : 'Las apariciones aparecerán cuando el personaje se vincule a un libro o episodio publicado.'}</p>}
+        </section>
+
         {/* Cita Célebre de Expedición */}
         {character.voiceQuote && (
           <div className="mt-8 rounded-3xl bg-amber-500/10 border border-amber-500/30 p-6 sm:p-8 flex items-start gap-4 text-amber-200">
@@ -211,11 +250,11 @@ export default async function CharacterDetailPage({
               <span>Habilidades de Expedición</span>
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {/* Curiosidad */}
               <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold">
-                  <span className="text-amber-400 uppercase">Curiosidad</span>
+                  <span className="text-amber-400 uppercase">{locale === 'en' ? 'Curiosity' : 'Curiosidad'}</span>
                   <span className="text-white font-mono">{character.explorerStats.curiosity}%</span>
                 </div>
                 <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -229,7 +268,7 @@ export default async function CharacterDetailPage({
               {/* Valentía */}
               <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold">
-                  <span className="text-emerald-400 uppercase">Valentía</span>
+                  <span className="text-emerald-400 uppercase">{locale === 'en' ? 'Courage' : 'Valentía'}</span>
                   <span className="text-white font-mono">{character.explorerStats.courage}%</span>
                 </div>
                 <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -243,7 +282,7 @@ export default async function CharacterDetailPage({
               {/* Agilidad */}
               <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold">
-                  <span className="text-sky-400 uppercase">Agilidad</span>
+                  <span className="text-sky-400 uppercase">{locale === 'en' ? 'Agility' : 'Agilidad'}</span>
                   <span className="text-white font-mono">{character.explorerStats.agility}%</span>
                 </div>
                 <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -257,7 +296,7 @@ export default async function CharacterDetailPage({
               {/* Sabiduría */}
               <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold">
-                  <span className="text-purple-400 uppercase">Sabiduría</span>
+                  <span className="text-purple-400 uppercase">{locale === 'en' ? 'Wisdom' : 'Sabiduría'}</span>
                   <span className="text-white font-mono">{character.explorerStats.wisdom}%</span>
                 </div>
                 <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -268,6 +307,15 @@ export default async function CharacterDetailPage({
                 </div>
               </div>
             </div>
+            {growthArea && (
+              <div className="mt-6 flex items-start gap-3 rounded-2xl border border-emerald-800 bg-emerald-950/50 p-4 text-sm text-emerald-100">
+                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
+                <p>
+                  <span className="font-semibold text-amber-200">{locale === 'en' ? 'A skill in progress: ' : 'Una habilidad que sigue creciendo: '}</span>
+                  {growthArea.label}. {locale === 'en' ? 'Every new adventure gives this explorer another chance to practise it.' : 'Cada nueva aventura le da otra oportunidad para ponerla en práctica.'}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -351,5 +399,6 @@ export default async function CharacterDetailPage({
         </div>
       </div>
     </div>
+    </CharacterFavoritesProvider>
   );
 }

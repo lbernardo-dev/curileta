@@ -112,7 +112,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900/90 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+        className="flex h-9 items-center gap-1.5 px-2.5 sm:px-3 rounded-full bg-slate-100 dark:bg-slate-900/90 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 cursor-pointer"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label={locale === 'en' ? `Switch theme. Current theme: ${theme}` : `Cambiar tema. Tema actual: ${theme}`}

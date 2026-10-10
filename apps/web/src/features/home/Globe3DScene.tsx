@@ -109,6 +109,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   const mountRef = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<string>('espana-inicio');
   const [isAutoRotating, setIsAutoRotating] = useState<boolean>(false);
+  const [isRoutePlaying, setIsRoutePlaying] = useState(false);
   const selectedIdRef = useRef(selectedId);
   const isAutoRotatingRef = useRef(isAutoRotating);
   const isHoveredRef = useRef(false);
@@ -413,6 +414,27 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     focusLocation(locationsList[nextIndex]);
   };
 
+  const startStoryRoute = () => {
+    if (!locationsList.length) return;
+    setIsRoutePlaying(true);
+    focusLocation(locationsList[0], true);
+  };
+
+  useEffect(() => {
+    if (!isRoutePlaying) return;
+    const timer = window.setInterval(() => {
+      const index = locationsList.findIndex((location) => location.id === selectedIdRef.current);
+      if (index < 0) {
+        focusLocation(locationsList[0], true);
+      } else if (index >= locationsList.length - 1) {
+        setIsRoutePlaying(false);
+      } else {
+        focusLocation(locationsList[index + 1], true);
+      }
+    }, 15_500);
+    return () => window.clearInterval(timer);
+  }, [isRoutePlaying, locationsList]);
+
   // Referencias para controlar Three.js
   const targetRotationRef = useRef<GlobeRotation>(initialRotation);
   const currentRotationRef = useRef<GlobeRotation>(initialRotation);
@@ -445,7 +467,8 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   };
 
   // Centrar el globo en el destino seleccionado
-  const focusLocation = (loc: Location) => {
+  const focusLocation = (loc: Location, keepRoutePlaying = false) => {
+    if (!keepRoutePlaying) setIsRoutePlaying(false);
     selectedIdRef.current = loc.id;
     isAutoRotatingRef.current = false;
     setIsAutoRotating(false);
@@ -778,7 +801,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       }
       const routeProgress = prefersReducedMotion
         ? 1
-        : Math.min(1, Math.max(0, (elapsedTime - routeStartedAt) / 11));
+        : Math.min(1, Math.max(0, (elapsedTime - routeStartedAt) / 13.5));
       routeSegments.forEach(({ line, step, pointCount }) => {
         const visiblePoints = step < routeIndex
           ? pointCount
@@ -922,6 +945,16 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               'Turn the globe and choose a stop. Its chapter landmark appears in 3D at its coordinates and lights up while the book’s route is drawn.'
             )}
           </p>
+          <button
+            type="button"
+            onClick={() => isRoutePlaying ? setIsRoutePlaying(false) : startStoryRoute()}
+            aria-pressed={isRoutePlaying}
+            className={`mt-6 inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_12px_28px_rgba(26,69,51,0.18)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${isRoutePlaying ? 'bg-amber-300 text-[#17372c] hover:bg-amber-200' : 'bg-[#1c493b] text-white hover:bg-[#27634e]'}`}
+          >
+            {isRoutePlaying ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
+            <span>{isRoutePlaying ? copy('Pausar el recorrido', 'Pause the journey') : copy('Recorrer la ruta del libro', 'Follow the book route')}</span>
+            <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium">{activeIndex + 1}/{locationsList.length}</span>
+          </button>
         </div>
 
         {/* Panel Cartográfico 3D y Tarjeta de Destino */}

@@ -19,6 +19,9 @@ interface Lead {
   resolved_at: string | null;
   lead_stage: LeadStage;
   lead_notes: string;
+  lead_last_activity_at: string;
+  lead_deletion_scheduled_at: string | null;
+  lead_retention_notified_at: string | null;
 }
 
 const stageLabels: Record<LeadStage, string> = {
@@ -57,7 +60,7 @@ export function LeadsManager() {
     return () => controller.abort();
   }, []);
 
-  async function updateLead(id: string, patch: { leadStage?: LeadStage | null; leadNotes?: string }) {
+  async function updateLead(id: string, patch: { leadStage?: LeadStage | null; leadNotes?: string; reviewLead?: boolean }) {
     setUpdatingId(id);
     setError('');
     try {
@@ -72,11 +75,7 @@ export function LeadsManager() {
         setLeads((current) => current.filter((lead) => lead.id !== id));
         return;
       }
-      setLeads((current) => current.map((lead) => lead.id === id ? {
-        ...lead,
-        ...(patch.leadStage ? { lead_stage: patch.leadStage } : {}),
-        ...(patch.leadNotes !== undefined ? { lead_notes: patch.leadNotes } : {}),
-      } : lead));
+      setLeads((current) => current.map((lead) => lead.id === id ? { ...lead, ...result.data } : lead));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo guardar la oportunidad.');
     } finally {
@@ -99,7 +98,7 @@ export function LeadsManager() {
 
       <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-sm leading-5 text-emerald-950 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-emerald-100">
         <h2 className="font-semibold">Conservación de datos</h2>
-        <p className="mt-2">Las consultas marcadas como oportunidad quedan fuera de la limpieza automática. Al quitarlas de esta lista, una consulta cerrada podrá eliminarse cuando cumpla 30 días desde su cierre.</p>
+        <p className="mt-2">Las oportunidades se revisan tras 12 meses sin actividad. Se avisa al equipo y se eliminan 30 días después si no reanuda o confirma su seguimiento. Las consultas cerradas que no son oportunidades se eliminan a los 30 días del cierre.</p>
       </section>
 
       <label className="block max-w-xl space-y-2 text-sm font-semibold">
@@ -132,11 +131,20 @@ export function LeadsManager() {
                 <span>Notas internas</span>
                 <textarea value={notes[lead.id] || ''} maxLength={4000} rows={3} onChange={(event) => setNotes((current) => ({ ...current, [lead.id]: event.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
               </label>
-              {Object.keys(lead.answers || {}).some((key) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent'].includes(key)) && (
+              {lead.lead_deletion_scheduled_at && (
+                <section role="status" className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm leading-5 text-amber-950 dark:border-amber-900 dark:bg-[#272727] dark:text-amber-100">
+                  <div>
+                    <h3 className="font-semibold">Revisión de conservación pendiente</h3>
+                    <p className="mt-1">Esta oportunidad se eliminará el {new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium' }).format(new Date(lead.lead_deletion_scheduled_at))} si no se reanuda el seguimiento. {lead.lead_retention_notified_at ? 'El aviso se envió al equipo.' : 'El aviso por correo está pendiente de configuración o entrega.'}</p>
+                  </div>
+                  <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { reviewLead: true })} className="rounded-lg bg-amber-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700">{updatingId === lead.id ? 'Guardando…' : 'Mantener 12 meses más'}</button>
+                </section>
+              )}
+              {Object.keys(lead.answers || {}).some((key) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)) && (
                 <details className="rounded-lg bg-slate-50 p-4 dark:bg-[#181818]">
                   <summary className="cursor-pointer rounded-sm text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Más respuestas</summary>
                   <dl className="mt-3 space-y-2 text-sm">
-                    {Object.entries(lead.answers).filter(([key]) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent'].includes(key)).map(([key, value]) => (
+                    {Object.entries(lead.answers).filter(([key]) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)).map(([key, value]) => (
                       <div key={key} className="grid grid-cols-1 gap-1 sm:grid-cols-[12rem_minmax(0,1fr)]">
                         <dt className="font-semibold">{key}</dt>
                         <dd className="break-words text-slate-700 dark:text-slate-200">{String(value)}</dd>
@@ -146,7 +154,7 @@ export function LeadsManager() {
                 </details>
               )}
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 text-sm text-slate-600 dark:border-[#313131] dark:text-slate-300">
-                <time dateTime={lead.created_at}>{new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(lead.created_at))}</time>
+                <span>Última actividad: <time dateTime={lead.lead_last_activity_at}>{new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(lead.lead_last_activity_at))}</time></span>
                 <span>{lead.status === 'resolved' || lead.status === 'archived' ? 'Consulta cerrada' : 'Consulta abierta'}</span>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-3">

@@ -9,6 +9,8 @@ const navigation = [
   { href: '/admin', label: 'Resumen', roles: ['owner', 'admin', 'editor', 'analyst'] },
   { href: '/admin/contenidos', label: 'Contenidos', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/encuadres', label: 'Encuadres', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/libros', label: 'Catálogo de libros', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/youtube', label: 'Canal de YouTube', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/forms', label: 'Formularios', roles: ['owner', 'admin'] },
   { href: '/admin/consultas', label: 'Consultas', roles: ['owner', 'admin'] },
   { href: '/admin/leads', label: 'Oportunidades', roles: ['owner', 'admin'] },

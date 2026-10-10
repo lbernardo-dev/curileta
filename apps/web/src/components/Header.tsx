@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Locale, getMessages } from '@curileta/i18n';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 import { SkipLink, Button } from '@curileta/design-system';
 import { SeasonalBanner } from './SeasonalBanner';
+import { NauticalCompassMark } from './NauticalCompassMark';
 import { Menu, X, BookOpen, ArrowRight } from 'lucide-react';
 
 export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
@@ -36,14 +36,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
             href={`/${locale}`}
             className="group flex items-center gap-2.5 rounded-xl p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
           >
-            <Image
-              src="/favicon.svg"
-              alt=""
-              width={40}
-              height={40}
-              unoptimized
-              className="h-10 w-10 shrink-0 rounded-2xl shadow-sm transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
-            />
+            <NauticalCompassMark />
             <div className="flex flex-col">
               <span className="font-display text-xl font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
                 Curileta<span className="text-amber-500">.</span>
@@ -74,7 +67,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
             <LocaleSwitcher currentLocale={locale} />
             <Link
               href={`/${locale}/libros/las-aventuras-de-curileta`}
-              className="inline-flex items-center gap-2 rounded-full bg-[#1c493b] px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[#27634e]"
+              className="inline-flex h-9 items-center gap-2 rounded-full bg-[#1c493b] px-4 text-xs font-semibold text-white shadow-sm transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e]"
             >
               <BookOpen className="h-4 w-4 text-amber-300" />
               <span>{isEn ? 'The book' : 'El libro'}</span>

@@ -7,11 +7,14 @@ import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
 import { getBookCoverImage } from '@/lib/book-art';
 import { getImageFrame, type ImageFrameMap } from '@/lib/image-frames';
+import { FavoriteLeaderboard, FavoriteRankBadge } from '@/components/CharacterFavoritesProvider';
+import { SectionEmblem } from '@/components/SectionEmblem';
 
 interface StoryLandingProps {
   locale: Locale;
   locations: Location[];
   characters: Character[];
+  featuredCrew: Character[];
   books: Book[];
   amazonCountry: string | null;
   imageFrames: ImageFrameMap;
@@ -26,11 +29,9 @@ const crewName = (slug: string, name: string, locale: Locale) => {
   return name;
 };
 
-export function StoryLanding({ locale, locations, characters, books, amazonCountry, imageFrames }: StoryLandingProps) {
+export function StoryLanding({ locale, locations, characters, books, featuredCrew, amazonCountry, imageFrames }: StoryLandingProps) {
   const isEn = locale === 'en';
-  const crew = ['curileta', 'pompon', 'quetzal']
-    .map((slug) => characters.find((character) => character.slug === slug))
-    .filter((character): character is Character => Boolean(character));
+  const crew = featuredCrew;
   const today = Date.now();
   const publishedBooks = books.filter((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= today);
   const featuredBook = publishedBooks[0] || books[0];
@@ -50,10 +51,10 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
     <>
       <section id="ruta" className="bg-[#faf9f4] px-5 py-20 text-[#20352c] sm:px-8 sm:py-28 lg:px-12">
         <div className="mx-auto max-w-7xl">
+          <SectionEmblem icon={Compass} tone="emerald" label={isEn ? 'The expedition route' : 'La ruta de la expedición'} />
           <div className="grid items-end gap-8 md:grid-cols-[1fr_0.72fr]">
             <div>
               <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
-                <Compass className="h-4 w-4" />
                 {isEn ? 'The route begins' : 'La ruta comienza'}
               </p>
               <h2 className="max-w-2xl font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
@@ -111,9 +112,9 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
 
       <section className="bg-[#e9efe4] px-5 py-20 text-[#20352c] sm:px-8 sm:py-28 lg:px-12">
         <div className="mx-auto max-w-7xl">
+          <SectionEmblem icon={Heart} tone="rose" label={isEn ? 'Friends on the journey' : 'Amistades del viaje'} />
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
-              <Heart className="h-4 w-4" />
               {isEn ? 'A good journey is shared' : 'Los buenos viajes se comparten'}
             </p>
             <h2 className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-5xl">
@@ -126,23 +127,37 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
             </p>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-5xl gap-5 sm:grid-cols-3">
-            {crew.map((character, index) => (
-              <Link key={character.id} href={`/${locale}/personajes/${character.slug}`} className="group overflow-hidden rounded-[1.6rem] bg-[#fbfcf8] p-5 text-center shadow-sm ring-1 ring-[#20352c]/[0.07] transition hover:-translate-y-1 hover:shadow-xl">
-                <div className="relative mx-auto flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-[1.15rem] bg-[#f3ead8]">
-                  <img
-                    src={character.mainImage.url}
-                    alt={localized(character.mainImage.alt, locale) || character.name}
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-                  />
-                  <span className="absolute left-3 top-3 rounded-full border border-white/80 bg-white/95 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-emerald-950 shadow-sm">0{index + 1}</span>
-                </div>
-                <h3 className="mt-5 font-display text-xl font-semibold">{crewName(character.slug, character.name, locale)}</h3>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5c6b61]">{localized(character.shortDescription, locale)}</p>
-              </Link>
-            ))}
-          </div>
+          <FavoriteLeaderboard
+            locale={locale}
+            characters={characters.map((character) => ({ slug: character.slug, name: crewName(character.slug, character.name, locale), image: character.mainImage.url }))}
+          />
+
+          {crew.length > 0 ? (
+            <div className="mx-auto mt-8 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {crew.map((character, index) => (
+                <Link key={character.id} href={`/${locale}/personajes/${character.slug}`} className="group overflow-hidden rounded-[1.6rem] bg-[#fbfcf8] p-5 text-center shadow-sm ring-1 ring-[#20352c]/[0.07] transition hover:-translate-y-1 hover:shadow-xl">
+                  <div className="relative mx-auto flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-[1.15rem] bg-[#f3ead8]">
+                    <img
+                      src={character.mainImage.url}
+                      alt={localized(character.mainImage.alt, locale) || character.name}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                    />
+                    <span className="absolute left-3 top-3 rounded-full border border-white/80 bg-white/95 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-emerald-950 shadow-sm">0{index + 1}</span>
+                    <FavoriteRankBadge slug={character.slug} locale={locale} className="absolute bottom-3 right-3" />
+                  </div>
+                  <h3 className="mt-5 font-display text-xl font-semibold">{crewName(character.slug, character.name, locale)}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5c6b61]">{localized(character.shortDescription, locale)}</p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="mx-auto mt-8 max-w-2xl rounded-2xl border border-[#d7e1d3] bg-[#fbfcf8] px-6 py-5 text-center text-sm leading-6 text-[#52655a]">
+              {isEn
+                ? 'The latest published story has no characters linked yet. Once they are selected in the CMS, they will appear here.'
+                : 'La historia publicada más reciente aún no tiene personajes vinculados. Cuando se seleccionen en el CMS, aparecerán aquí.'}
+            </p>
+          )}
           <div className="mt-9 text-center">
             <Link href={`/${locale}/personajes`} className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-900 underline decoration-emerald-700/40 underline-offset-4 hover:decoration-emerald-800">
               {isEn ? 'Meet the whole crew' : 'Conocer a toda la tripulación'} <ArrowRight className="h-4 w-4" />
@@ -153,6 +168,7 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
 
       {featuredBook && featuredCover && (
         <section className="bg-[#fffdf7] px-5 py-20 text-[#20352c] sm:px-8 sm:py-28 lg:px-12">
+          <SectionEmblem icon={BookOpen} tone="amber" label={isEn ? 'Curileta’s published book' : 'El libro publicado de Curileta'} />
           <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#163b32] text-white shadow-[0_28px_90px_rgba(16,48,38,0.18)] lg:grid-cols-[0.92fr_1.08fr]">
             <div className="relative min-h-[320px] overflow-hidden bg-[#163b32] sm:min-h-[400px] lg:min-h-[560px]">
               <Image
@@ -170,7 +186,6 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-16">
               <p className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">
-                <BookOpen className="h-4 w-4" />
                 {isEn ? 'The story in a book' : 'La historia en un libro'}
               </p>
               <h2 className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-5xl">
@@ -200,10 +215,10 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
       )}
 
       <section className="bg-[#f2f0e6] px-5 py-20 text-[#20352c] sm:px-8 sm:py-24 lg:px-12">
+        <SectionEmblem icon={Sparkles} tone="blue" label={isEn ? 'Your next stop' : 'Tu próxima parada'} />
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-7 rounded-[1.75rem] border border-[#dbe1d4] bg-[#fbfcf8] p-7 sm:p-10 md:flex-row md:items-center">
           <div className="max-w-2xl">
             <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
-              <Sparkles className="h-4 w-4" />
               {isEn ? 'Your next stop' : 'Tu próxima parada'}
             </p>
             <h2 className="font-display text-3xl font-semibold leading-tight tracking-[-0.035em] sm:text-4xl">

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Locale } from '@curileta/i18n';
 import type { LetterItem } from '@curileta/cms';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
+import { SectionEmblem } from '@/components/SectionEmblem';
 import {
   Mail,
   Compass,
@@ -96,8 +97,8 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Encabezado */}
         <div className="text-center max-w-3xl mx-auto mb-14">
+          <SectionEmblem icon={Mail} tone="amber" label={isEn ? "Expedition's mail chest" : 'Baúl postal de la expedición'} />
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-500/50 text-amber-900 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <Mail className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             <span>{isEn ? "The Expedition's Mail Chest" : 'El Baúl Postal de la Expedición'}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -114,7 +115,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
         </div>
 
         {/* Carrusel de Sobres / Selector de Cartas */}
-        <div className="mb-8 flex items-center justify-start gap-2 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:justify-center">
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-2 pb-2">
           {letters.map((item, idx) => {
             const isSelected = item.id === selectedLetterId;
             const countryName = item.country[locale] || item.country.es;

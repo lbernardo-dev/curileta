@@ -19,6 +19,13 @@ import { detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { cmsProvider } from '@/lib/cms';
 import { getVideoVoteCounts } from '@/lib/video-votes';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
+import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';
+import { getBookCatalogSettings } from '@/lib/book-catalog.server';
+import { getLatestBooks, mergeBookCatalog } from '@/lib/book-catalog';
+import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
+import { CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
+import { getHomeCharacterCrewSelection } from '@/lib/home-character-crew.server';
+import { getLatestStorySource, resolveHomeCrew } from '@/lib/home-character-crew';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
@@ -79,6 +86,9 @@ export default async function HomePage({
     videoVoteCounts,
     imageFrames,
     requestHeaders,
+    characterRankings,
+    configuredCrew,
+    bookCatalogSettings,
   ] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
@@ -94,7 +104,32 @@ export default async function HomePage({
     getVideoVoteCounts(),
     getImageFrameSettings(),
     headers(),
+    getCharacterFavoriteRankings(locale),
+    getHomeCharacterCrewSelection(),
+    getBookCatalogSettings(),
   ]);
+
+  const displayBooks = mergeBookCatalog(books, bookCatalogSettings);
+  const featuredBooks = getLatestBooks(displayBooks, bookCatalogSettings.featuredBookSlugs, 3);
+  const storyRoute = books.find((book) => book.slug === 'las-aventuras-de-curileta')?.locations || [];
+  const routeIndex = (location: (typeof locations)[number]) => {
+    const index = storyRoute.findIndex((id) => id === location.id || id === location.slug);
+    return index < 0 ? storyRoute.length : index;
+  };
+  const orderedLocations = locations.slice().sort((left, right) => routeIndex(left) - routeIndex(right));
+
+  const resolvedChannelSettings = await resolveYouTubeChannelSettings(settings);
+  const latestStory = getLatestStorySource(videos, books);
+  const latestEpisode = latestStory?.kind === 'episode' ? videos.find((video) => video.slug === latestStory.slug) : null;
+  const latestBook = latestStory?.kind === 'book' ? books.find((book) => book.slug === latestStory.slug) : null;
+  const featuredCrew = resolveHomeCrew(
+    characters,
+    latestStory,
+    configuredCrew?.chapter_slug,
+    configuredCrew?.character_slugs,
+    latestEpisode,
+    latestBook,
+  );
 
   const publishedBooksCount = books.filter(
     (book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= Date.now()
@@ -119,13 +154,13 @@ export default async function HomePage({
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
-    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
-    globe: <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />,
+    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} featuredCrew={featuredCrew} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
+    globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={letters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
-    books: <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
-    videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={settings} voteCounts={videoVoteCounts} />,
+    books: <BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
+    videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} voteCounts={videoVoteCounts} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,
     collaborations: <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />,
@@ -134,15 +169,17 @@ export default async function HomePage({
   const configuredSections = settings.homepageSections?.length ? settings.homepageSections : sections;
 
   return (
-    <article className="relative flex w-full flex-col">
-      {configuredSections
-        .filter((section) => section.visible && section.key in sectionComponents)
-        .sort((left, right) => left.order - right.order)
-        .map((section) => (
-          <div key={section.key} data-home-section={section.key} className="contents">
-            {sectionComponents[section.key as keyof typeof sectionComponents]}
-          </div>
-        ))}
-    </article>
+    <CharacterFavoritesProvider locale={locale as Locale} initialRankings={characterRankings}>
+      <article className="relative flex w-full flex-col">
+        {configuredSections
+          .filter((section) => section.visible && section.key in sectionComponents)
+          .sort((left, right) => left.order - right.order)
+          .map((section) => (
+            <div key={section.key} data-home-section={section.key} className="contents">
+              {sectionComponents[section.key as keyof typeof sectionComponents]}
+            </div>
+          ))}
+      </article>
+    </CharacterFavoritesProvider>
   );
 }

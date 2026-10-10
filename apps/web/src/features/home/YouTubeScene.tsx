@@ -6,6 +6,7 @@ import type { SiteSettings, Video } from '@curileta/cms';
 import { analytics } from '@curileta/analytics';
 import { ShareActions } from '@/components/ShareActions';
 import { VideoVote } from '@/components/VideoVote';
+import { SectionEmblem } from '@/components/SectionEmblem';
 import {
   Youtube,
   Play,
@@ -96,53 +97,39 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   return (
     <section
       id="escena-youtube"
-      className="relative z-10 py-24 sm:py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
+      className="relative z-10 overflow-hidden bg-[#f3f6f3] py-20 text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white sm:py-24"
     >
-      {/* Resplandor ambiental de fondo */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(239,68,68,0.12),transparent)] pointer-events-none" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera de la sección con Zipi-Bot 3D */}
         {!hideHeader && (
-          <div className="relative max-w-4xl mx-auto mb-14 text-center">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
-              <div className="relative group shrink-0">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-fuchsia-500 via-red-500 to-amber-400 p-1 shadow-2xl shadow-red-500/30 group-hover:rotate-3 transition-transform duration-300">
-                  <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center overflow-hidden relative">
-                    <img
-                      src="/images/characters/zipi-bot-main.webp"
-                      alt={isEn ? 'Zipi-Bot, the cinema operator' : 'Zipi-Bot Operador de Cine'}
-                      className="w-24 h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)] group-hover:scale-115 transition-transform duration-500"
-                    />
-                  </div>
+          <div className="relative mx-auto mb-14 max-w-4xl text-center">
+            <div className="mx-auto mb-6 flex max-w-3xl flex-col items-center gap-5 sm:flex-row sm:justify-center sm:text-left">
+              {settings?.youtubeChannelAvatarUrl ? (
+                <img
+                  src={settings.youtubeChannelAvatarUrl}
+                  alt={settings.youtubeChannelTitle?.[locale] || settings.youtubeChannelTitle?.es || (isEn ? 'YouTube channel avatar' : 'Avatar del canal de YouTube')}
+                  className="h-20 w-20 shrink-0 rounded-full border-4 border-white object-cover shadow-lg dark:border-[#272727] sm:h-24 sm:w-24"
+                />
+              ) : (
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-red-600 text-white shadow-lg sm:h-24 sm:w-24" aria-hidden="true">
+                  <Youtube className="h-10 w-10" />
                 </div>
-                <div className="absolute -bottom-2 -right-2 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-red-400 animate-pulse">
-                  {isEn ? '▶ 3D CINEMA' : '▶ CINE 3D'}
+              )}
+              <div className="min-w-0">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-red-300 bg-red-100 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+                  <Youtube className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  <span>{isEn ? 'Official YouTube channel' : 'Canal oficial de YouTube'}</span>
                 </div>
-              </div>
-
-              <div className="text-center sm:text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/50 text-red-800 dark:text-red-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
-                  <Youtube className="w-4 h-4 text-red-600 dark:text-red-500" />
-                  <span>
-                    {isEn ? 'Scene 05 — The Official YouTube Channel' : 'Escena 05 — El Canal Oficial de YouTube'}
-                  </span>
-                </div>
-
-                <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                  {isEn ? 'The page moves.' : 'La página se mueve.'}
-                  <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-500 to-rose-500 dark:from-red-400 dark:via-amber-300 dark:to-rose-400">
-                    {isEn ? 'Stories sing and come to life.' : 'Las historias cantan y cobran vida.'}
-                  </span>
+                <h2 className="text-balance text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+                  {settings?.youtubeChannelTitle?.[locale] || settings?.youtubeChannelTitle?.es || (isEn ? 'Curileta official channel' : 'Canal oficial de Curileta')}
                 </h2>
               </div>
             </div>
 
-            <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              {isEn
-                ? 'This page lists videos that are available on Curileta’s channel. New entries will appear here when they are published.'
-                : 'Esta página reúne los vídeos disponibles del canal de Curileta. Añadiremos nuevas piezas cuando estén publicadas.'}
+            <p className="mx-auto max-w-2xl text-pretty text-base leading-6 text-slate-600 dark:text-slate-300 sm:text-lg">
+              {settings?.youtubeChannelDescription?.[locale] || settings?.youtubeChannelDescription?.es || (isEn
+                ? 'Episodes, songs and short videos from Curileta.'
+                : 'Episodios, canciones y vídeos cortos de Curileta.')}
             </p>
           </div>
         )}
@@ -150,32 +137,31 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
         {/* CASO A: CUANDO NO HAY VÍDEOS PUBLICADOS REALES */}
         {/* No finge recursos: espacio limpio, honesto y presentación del canal oficial */}
         {!hasRealVideos ? (
-          <div className="max-w-4xl mx-auto">
+          <div className="w-full">
             {/* Tarjeta de Producción Oficial sin recursos falsos */}
-            <div className="rounded-3xl bg-white/80 dark:bg-slate-900/80 border-2 border-dashed border-red-300 dark:border-red-500/30 p-8 sm:p-12 shadow-xl backdrop-blur-xl text-center relative overflow-hidden mb-12">
-              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative mb-12 w-full overflow-hidden rounded-3xl border-2 border-dashed border-[#b9d4c4] bg-[#fffdf7] p-6 text-center shadow-[0_20px_55px_rgba(34,53,45,0.08)] dark:border-emerald-900 dark:bg-[#1f1f1f] sm:p-10 lg:p-12">
 
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/40 text-red-700 dark:text-red-300 text-xs font-black uppercase tracking-wider mb-5">
-                <Clapperboard className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <SectionEmblem icon={Clapperboard} tone="rose" label={isEn ? 'Curileta videos' : 'Vídeos de Curileta'} />
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-rose-800 dark:border-rose-900 dark:bg-[#272727] dark:text-rose-200 mb-5">
                 <span>{isEn ? 'Official channel' : 'Canal oficial'}</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-3">
+              <h3 className="mx-auto mb-3 max-w-3xl text-balance text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
                 {isEn
                   ? 'No videos are listed here yet'
                   : 'Aún no hay vídeos publicados en esta página'}
               </h3>
 
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
+              <p className="mx-auto mb-8 max-w-2xl text-pretty text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
                 {isEn
                   ? 'Only videos with a real YouTube link are shown. This space will update when a published video is added to the catalogue.'
                   : 'Solo mostramos vídeos con un enlace real de YouTube. Este espacio se actualizará cuando añadamos una publicación al catálogo.'}
               </p>
 
               {/* Los 3 formatos en preparación */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left mb-8">
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
-                  <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-3">
+              <div className="mb-8 grid grid-cols-1 gap-4 text-left sm:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-800 dark:bg-[#272727] dark:text-sky-300">
                     <Film className="w-5 h-5" />
                   </div>
                   <h4 className="text-sm font-black text-slate-900 dark:text-white mb-1">
@@ -186,13 +172,13 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                       ? 'Published animated episodes will appear in this collection.'
                       : 'Aquí aparecerán los episodios animados cuando se publiquen.'}
                   </p>
-                  <span className="inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-sky-500/10 text-sky-600 dark:text-sky-300">
+                  <span className="mt-3 inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-semibold uppercase text-sky-800 dark:bg-[#272727] dark:text-sky-200">
                     {isEn ? 'No releases listed' : 'Sin publicaciones'}
                   </span>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-[#272727] dark:text-emerald-300">
                     <Music className="w-5 h-5" />
                   </div>
                   <h4 className="text-sm font-black text-slate-900 dark:text-white mb-1">
@@ -203,13 +189,13 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                       ? 'Published music videos will appear in this collection.'
                       : 'Aquí aparecerán los vídeos musicales cuando se publiquen.'}
                   </p>
-                  <span className="inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+                  <span className="mt-3 inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase text-emerald-900 dark:bg-[#272727] dark:text-emerald-200">
                     {isEn ? 'No releases listed' : 'Sin publicaciones'}
                   </span>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
-                  <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-800 dark:bg-[#272727] dark:text-rose-300">
                     <Smartphone className="w-5 h-5" />
                   </div>
                   <h4 className="text-sm font-black text-slate-900 dark:text-white mb-1">
@@ -220,7 +206,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                       ? 'Published short-form videos will appear in this collection.'
                       : 'Aquí aparecerán los vídeos cortos cuando se publiquen.'}
                   </p>
-                  <span className="inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-300">
+                  <span className="mt-3 inline-flex rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-semibold uppercase text-rose-800 dark:bg-[#272727] dark:text-rose-200">
                     {isEn ? 'No releases listed' : 'Sin publicaciones'}
                   </span>
                 </div>

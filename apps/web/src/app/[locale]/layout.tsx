@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer';
 
 import { cmsProvider } from '@/lib/cms';
 import { SeasonalThemeProvider } from '@/providers/SeasonalThemeProvider';
+import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';
 
 export async function generateMetadata({
   params,
@@ -40,10 +41,11 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const [activeEvent, settings] = await Promise.all([
+  const [activeEvent, baseSettings] = await Promise.all([
     cmsProvider.getActiveEvent(locale),
     cmsProvider.getSiteSettings(locale),
   ]);
+  const settings = await resolveYouTubeChannelSettings(baseSettings);
 
   return (
     <SeasonalThemeProvider activeEvent={activeEvent}>

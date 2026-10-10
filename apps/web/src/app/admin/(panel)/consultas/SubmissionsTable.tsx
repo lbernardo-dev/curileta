@@ -165,11 +165,11 @@ export function SubmissionsTable() {
                 <time dateTime={item.created_at}>{new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}</time>
                 <span>Correo: {item.email_status === 'sent' ? 'enviado' : item.email_status === 'failed' ? 'fallido' : 'pendiente'}</span>
               </div>
-              {Object.keys(item.answers || {}).some((key) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent'].includes(key)) && (
+              {Object.keys(item.answers || {}).some((key) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)) && (
                 <details className="rounded-lg bg-slate-50 p-4 dark:bg-[#181818]">
                   <summary className="cursor-pointer rounded-sm text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Más respuestas</summary>
                   <dl className="mt-3 space-y-2 text-sm">
-                    {Object.entries(item.answers).filter(([key]) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent'].includes(key)).map(([key, value]) => (
+                    {Object.entries(item.answers).filter(([key]) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)).map(([key, value]) => (
                       <div key={key} className="grid grid-cols-1 gap-1 sm:grid-cols-[12rem_minmax(0,1fr)]">
                         <dt className="font-semibold">{key}</dt>
                         <dd className="break-words text-slate-700 dark:text-slate-200">{String(value)}</dd>

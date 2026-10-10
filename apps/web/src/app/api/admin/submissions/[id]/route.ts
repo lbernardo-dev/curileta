@@ -11,7 +11,7 @@ export async function PATCH(
 ) {
   await requireAdmin(['owner', 'admin']);
   const { id } = await params;
-  let body: { status?: unknown; leadStage?: unknown; leadNotes?: unknown };
+  let body: { status?: unknown; leadStage?: unknown; leadNotes?: unknown; reviewLead?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -37,6 +37,14 @@ export async function PATCH(
     }
     update.lead_notes = body.leadNotes;
   }
+  if (body.reviewLead !== undefined) {
+    if (body.reviewLead !== true) {
+      return NextResponse.json({ success: false, error: 'La revisión de conservación no es válida.' }, { status: 400 });
+    }
+    update.lead_last_activity_at = new Date().toISOString();
+    update.lead_deletion_scheduled_at = null;
+    update.lead_retention_notified_at = null;
+  }
   if (!Object.keys(update).length) {
     return NextResponse.json({ success: false, error: 'No hay cambios para guardar.' }, { status: 400 });
   }
@@ -48,7 +56,7 @@ export async function PATCH(
       .from('contact_submissions')
       .update(update)
       .eq('id', id)
-      .select('id, status, lead_stage, lead_notes, resolved_at')
+      .select('id, status, lead_stage, lead_notes, resolved_at, lead_last_activity_at, lead_deletion_scheduled_at, lead_retention_notified_at')
       .single();
     if (error) throw error;
     return NextResponse.json({ success: true, data });

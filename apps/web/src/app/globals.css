@@ -318,6 +318,33 @@ html[data-seasonal-theme] :focus-visible {
   }
 }
 
+@keyframes nautical-needle-sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes nautical-needle-flourish {
+  0% { transform: rotate(0deg); }
+  40% { transform: rotate(22deg); }
+  72% { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.nautical-compass-needle {
+  transform-box: view-box;
+  transform-origin: 24px 24px;
+  animation: nautical-needle-sway 12s cubic-bezier(0.32, 0.72, 0, 1) infinite;
+}
+
+.group:hover .nautical-compass-needle,
+.group:focus-visible .nautical-compass-needle {
+  animation: nautical-needle-flourish 1.8s cubic-bezier(0.32, 0.72, 0, 1) infinite;
+}
+
+.group:active .nautical-compass-needle {
+  animation-duration: 0.8s;
+}
+
 .animate-float-gentle {
   animation: float-gentle 5s ease-in-out infinite;
 }

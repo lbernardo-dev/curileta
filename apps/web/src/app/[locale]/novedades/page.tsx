@@ -7,6 +7,8 @@ import { isValidLocale, type Locale } from '@curileta/i18n';
 import { ArrowRight, BookOpen, CalendarDays, Newspaper, Sparkles } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 import { getBookCoverImage } from '@/lib/book-art';
+import { getBookCatalogSettings } from '@/lib/book-catalog.server';
+import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -19,10 +21,11 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
   const isEn = locale === 'en';
-  const [books, event] = await Promise.all([cmsProvider.getBooks(locale), cmsProvider.getActiveEvent(locale)]);
+  const [baseBooks, event, catalogSettings] = await Promise.all([cmsProvider.getBooks(locale), cmsProvider.getActiveEvent(locale), getBookCatalogSettings()]);
+  const books = mergeBookCatalog(baseBooks, catalogSettings);
   const now = Date.now();
-  const publishedBooks = books.filter((book) => Date.parse(book.publicationDate + 'T23:59:59.999Z') <= now);
-  const upcomingBooks = books.filter((book) => Date.parse(book.publicationDate + 'T23:59:59.999Z') > now);
+  const publishedBooks = books.filter((book) => isBookPublished(book, now));
+  const upcomingBooks = books.filter((book) => !isBookPublished(book, now));
   const dateLocale = isEn ? 'en-GB' : 'es-ES';
   const formatDate = (value: string) => new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(value));
 
@@ -67,7 +70,7 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
                   <h2 className="mt-3 font-display text-2xl font-semibold">{book.title[locale] || book.title.es}</h2>
                   {book.subtitle && <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">{book.subtitle[locale] || book.subtitle.es}</p>}
                   <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{book.description[locale] || book.description.es}</p>
-                  <p className="mt-4 text-xs font-medium text-[var(--text-secondary)]">{upcoming ? (isEn ? 'Planned publication' : 'Fecha prevista') : (isEn ? 'Published' : 'Publicado')} · {formatDate(book.publicationDate)}</p>
+                  {(!upcoming || book.publicationDate) && <p className="mt-4 text-xs font-medium text-[var(--text-secondary)]">{upcoming ? (isEn ? 'Planned publication' : 'Fecha prevista') : (isEn ? 'Published' : 'Publicado')} · {formatDate(book.publicationDate)}</p>}
                   <Link href={'/' + locale + '/libros/' + book.slug} className="mt-auto inline-flex min-h-11 items-center gap-2 pt-5 text-sm font-semibold text-[var(--seasonal-accent-strong)]">
                     {isEn ? 'Book details' : 'Ficha del libro'}<ArrowRight className="h-4 w-4" />
                   </Link>

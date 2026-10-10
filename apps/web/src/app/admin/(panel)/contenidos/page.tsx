@@ -78,6 +78,14 @@ export default async function AdminContentPage() {
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
           <ModuleCard
+            title="Catálogo de libros y portada"
+            status="Disponible"
+            description="Selecciona los tres libros de la portada y crea anuncios localizados de próximas aventuras con cubierta reservada."
+            detail="La información editorial completa de los libros publicados sigue en Sanity Studio."
+            href="/admin/libros"
+            actionLabel="Gestionar libros"
+          />
+          <ModuleCard
             title="Sistema editorial Sanity"
             status={deployedStudioUrl ? 'Studio publicado' : 'Studio pendiente de publicar'}
             tone={deployedStudioUrl ? 'ready' : 'pending'}
@@ -90,10 +98,11 @@ export default async function AdminContentPage() {
           />
           <ModuleCard
             title="Portada y canal de YouTube"
-            status={deployedStudioUrl ? 'Disponible en Sanity' : 'Preparado en Sanity'}
-            tone={deployedStudioUrl ? 'ready' : 'pending'}
-            description="Sanity permite ordenar y mostrar secciones de la portada, y configurar el título, descripción, dirección, etiquetas, avatar y cabecera del canal."
-            detail="Cada vídeo admite tipo, lista de reproducción, etiquetas y votación opcional. Los favoritos quedan en el navegador. No hay sincronización automática desde YouTube."
+            status="Disponible"
+            description="Edita desde este panel el nombre, la descripción localizada, la dirección, las etiquetas, el avatar y la cabecera del canal."
+            detail="El avatar y los textos configurados se muestran en la sección de YouTube de la portada y en la página de vídeos."
+            href="/admin/youtube"
+            actionLabel="Configurar canal"
           />
           <ModuleCard
             title="Eventos y temas"

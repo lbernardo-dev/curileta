@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { ArrowRight, BookOpen, Compass, Sparkles } from 'lucide-react';
+import { SectionEmblem } from '@/components/SectionEmblem';
 
 export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   const isEn = locale === 'en';
@@ -20,6 +21,7 @@ export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-36 bg-gradient-to-b from-amber-400 via-emerald-400 to-transparent shadow-[0_0_15px_rgba(245,158,11,0.8)]" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionEmblem icon={Compass} tone="emerald" label={isEn ? 'The journey home' : 'El camino de regreso a casa'} />
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
           <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
           <span>{isEn ? 'The end of this chapter' : 'El final de esta aventura'}</span>

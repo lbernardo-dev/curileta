@@ -9,7 +9,7 @@ export async function GET() {
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from('contact_submissions')
-      .select('id, form_slug, locale, name, email, company, category, message, answers, status, email_status, created_at, resolved_at, lead_stage, lead_notes')
+      .select('id, form_slug, locale, name, email, company, category, message, answers, status, email_status, created_at, resolved_at, lead_stage, lead_notes, lead_last_activity_at, lead_deletion_scheduled_at, lead_retention_notified_at')
       .not('lead_stage', 'is', null)
       .order('updated_at', { ascending: false })
       .limit(500);

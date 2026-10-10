@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
+import { CharacterFavoriteButton, CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
+import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
 import { ArrowRight, BookOpen, Compass, Heart, Map } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -18,7 +20,10 @@ export default async function CuriletaBioPage({ params }: { params: Promise<{ lo
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
 
-  const character = await cmsProvider.getCharacterBySlug('curileta', locale as Locale);
+  const [character, rankings] = await Promise.all([
+    cmsProvider.getCharacterBySlug('curileta', locale as Locale),
+    getCharacterFavoriteRankings(locale),
+  ]);
   if (!character) notFound();
 
   const isEn = locale === 'en';
@@ -31,17 +36,18 @@ export default async function CuriletaBioPage({ params }: { params: Promise<{ lo
     : ['Curiosa', 'Valiente', 'Leal', 'Observadora', 'Empática'];
 
   return (
+    <CharacterFavoritesProvider locale={locale as Locale} initialRankings={rankings}>
     <div className="min-h-screen bg-[var(--background-canvas)] py-12 text-[var(--text-primary)] sm:py-20">
       <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
         <section className="grid overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(25,57,42,0.12)] ring-1 ring-[#20352c]/10 dark:bg-slate-900 dark:ring-white/10 md:grid-cols-[0.88fr_1.12fr]">
-          <div className="relative min-h-[28rem] bg-[#f1ead7] dark:bg-slate-800 sm:min-h-[34rem]">
+          <div className="relative min-h-[28rem] overflow-hidden bg-transparent sm:min-h-[34rem]">
             <Image
               src={character.mainImage.url}
               alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 45vw"
-              className="object-contain object-bottom p-5 sm:p-8"
+              className="object-cover object-[50%_100%]"
             />
             <span className="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-xs font-semibold text-[#254537] shadow-sm dark:bg-slate-950/85 dark:text-emerald-100">
               <Compass className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
@@ -75,6 +81,7 @@ export default async function CuriletaBioPage({ params }: { params: Promise<{ lo
             </div>
 
             <div className="mt-9 flex flex-wrap gap-3">
+              <CharacterFavoriteButton slug={character.slug} locale={locale as Locale} />
               <Link href={`/${locale}/libros/las-aventuras-de-curileta`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">
                 <BookOpen className="h-4 w-4" />{isEn ? 'Read her story' : 'Leer su historia'}<ArrowRight className="h-4 w-4" />
               </Link>
@@ -111,5 +118,6 @@ export default async function CuriletaBioPage({ params }: { params: Promise<{ lo
         </div>
       </div>
     </div>
+    </CharacterFavoritesProvider>
   );
 }

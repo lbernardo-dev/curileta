@@ -6,6 +6,8 @@ import { Locale } from '@curileta/i18n';
 import { Character, INITIAL_CHARACTERS } from '@curileta/cms';
 import { getCharacterImageAspectRatio } from '@/lib/character-image';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
+import { CharacterFavoriteButton, FavoriteRankBadge } from '@/components/CharacterFavoritesProvider';
+import { SectionEmblem } from '@/components/SectionEmblem';
 import {
   Sparkles,
   Compass,
@@ -23,6 +25,7 @@ import {
   ZoomIn,
   Eye,
   ExternalLink,
+  Users,
 } from 'lucide-react';
 
 interface CharacterHubSceneProps {
@@ -447,6 +450,9 @@ const TiltCharacterCard: React.FC<{
           <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mt-1.5 tracking-wide line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-5">
             {roleText}
           </p>
+          <div className="mt-2 flex justify-center">
+            <FavoriteRankBadge slug={character.slug} locale={locale} />
+          </div>
         </div>
 
         {/* Cita célebre de expedición */}
@@ -587,8 +593,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         {/* Cabecera */}
         {!hideHeader && (
           <div className="text-center max-w-3xl mx-auto mb-12">
+            <SectionEmblem icon={Users} tone="emerald" label={copy(locale, 'Tripulación de exploradores', 'Explorer crew')} />
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
-              <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               <span>{copy(locale, 'Escena 03 — El espacio de los personajes', 'Scene 03 — Meet the characters')}</span>
             </div>
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -692,6 +698,9 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   ? selectedCharacter.passportRole[locale] || selectedCharacter.passportRole.es
                   : selectedCharacter.species}
               </p>
+              <div className="mt-3 flex justify-center lg:justify-start">
+                <CharacterFavoriteButton slug={selectedCharacter.slug} locale={locale} />
+              </div>
 
               {/* Nota Canónica especial si es Pompón o la familia Canguro */}
               {selectedCharacter.id === 'pompon' && (

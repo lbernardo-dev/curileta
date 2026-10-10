@@ -13,9 +13,12 @@ import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon
 import { CURILETA_BOOK_APLUS, CURILETA_BOOK_BACK_COVER, getBookCoverImage } from '@/lib/book-art';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { getImageFrame } from '@/lib/image-frames';
+import { getBookCatalogSettings } from '@/lib/book-catalog.server';
+import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
 
 export async function generateStaticParams() {
-  const books = await cmsProvider.getBooks('es');
+  const [baseBooks, settings] = await Promise.all([cmsProvider.getBooks('es'), getBookCatalogSettings()]);
+  const books = mergeBookCatalog(baseBooks, settings);
   const params: Array<{ locale: string; slug: string }> = [];
 
   for (const locale of locales) {
@@ -34,7 +37,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolvedParams = await params;
   const { locale, slug } = resolvedParams;
-  const book = await cmsProvider.getBookBySlug(slug, locale);
+  const [baseBooks, settings] = await Promise.all([cmsProvider.getBooks(locale), getBookCatalogSettings()]);
+  const book = mergeBookCatalog(baseBooks, settings).find((item) => item.slug === slug) || null;
 
   if (!book) {
     return { title: 'Libro no encontrado' };
@@ -67,7 +71,8 @@ export default async function BookDetailPage({
     notFound();
   }
 
-  const book = await cmsProvider.getBookBySlug(slug, locale);
+  const [baseBooks, settings] = await Promise.all([cmsProvider.getBooks(locale), getBookCatalogSettings()]);
+  const book = mergeBookCatalog(baseBooks, settings).find((item) => item.slug === slug) || null;
 
   if (!book) {
     notFound();
@@ -79,6 +84,7 @@ export default async function BookDetailPage({
   const format = book.format?.[locale] || book.format?.es;
   const amazonCountry = detectAmazonCountryFromHeaders(await headers());
   const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
+  const isPublished = isBookPublished(book);
   const coverImage = getBookCoverImage(book);
   const imageFrames = isCuriletaBook ? await getImageFrameSettings() : {};
   const detailCoverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'book-detail-cover') : null;
@@ -88,22 +94,22 @@ export default async function BookDetailPage({
     : new URL(coverImage.url, process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').toString();
 
   // JSON-LD structured data
-  const jsonLd = generateBookSchema({
+  const jsonLd = isPublished ? generateBookSchema({
     title,
     isbn: book.isbn?.[0],
     datePublished: book.publicationDate,
     description: desc,
     image: imageUrl,
     inLanguage: locale,
-  });
+  }) : null;
 
   return (
     <div className="min-h-screen bg-[#000000] py-16 text-white sm:py-24">
       {/* Schema.org JSON-LD Script */}
-      <script
+      {jsonLd && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      />}
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Link
@@ -175,12 +181,9 @@ export default async function BookDetailPage({
           {/* Details */}
           <div className="space-y-4 flex-1 text-center md:text-left">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-              <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-semibold text-slate-950">
-                {locale === 'en' ? `Ages ${book.ageRange}` : `Edad: ${book.ageRange}`}
-              </span>
-              <span className="rounded-full border border-[#313131] bg-[#272727] px-3 py-1 text-xs font-semibold text-slate-300">
-                {locale === 'en' ? `${book.pageCount} pages` : `${book.pageCount} páginas`}
-              </span>
+              {!isPublished && <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-semibold text-slate-950">{locale === 'en' ? 'Coming soon' : 'Próximamente'}</span>}
+              {book.ageRange && <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-semibold text-slate-950">{locale === 'en' ? `Ages ${book.ageRange}` : `Edad: ${book.ageRange}`}</span>}
+              {book.pageCount && <span className="rounded-full border border-[#313131] bg-[#272727] px-3 py-1 text-xs font-semibold text-slate-300">{locale === 'en' ? `${book.pageCount} pages` : `${book.pageCount} páginas`}</span>}
               {format && (
                 <span className="rounded-full border border-[#313131] bg-[#272727] px-3 py-1 text-xs font-semibold text-slate-300">
                   {format}
@@ -236,7 +239,7 @@ export default async function BookDetailPage({
                 </div>
               </div>
             )}
-            {!isCuriletaBook && (!book.purchaseLinks || book.purchaseLinks.length === 0) && (
+            {!isCuriletaBook && isPublished && (!book.purchaseLinks || book.purchaseLinks.length === 0) && (
               <div className="pt-6">
                 <Link href={`/${locale}/contacto`} className="inline-flex items-center gap-2 rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                   {locale === 'en' ? 'Ask about availability' : 'Consultar disponibilidad'} <ArrowRight className="h-4 w-4" />

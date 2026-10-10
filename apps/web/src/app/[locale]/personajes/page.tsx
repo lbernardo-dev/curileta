@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation';
 import { cmsProvider } from '@/lib/cms';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { Sparkles, ArrowRight, Compass, Download, Shield } from 'lucide-react';
+import { CharacterFavoritesProvider, FavoriteLeaderboard } from '@/components/CharacterFavoritesProvider';
+import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -26,7 +28,10 @@ export default async function CharactersPage({
     notFound();
   }
 
-  const characters = await cmsProvider.getCharacters(locale);
+  const [characters, rankings] = await Promise.all([
+    cmsProvider.getCharacters(locale),
+    getCharacterFavoriteRankings(locale),
+  ]);
   const isEn = locale === 'en';
 
   return (
@@ -58,8 +63,14 @@ export default async function CharactersPage({
         </div>
       </div>
 
-      {/* Hub Interactivo 3D con filtrado y pasaporte */}
-      <CharacterHubScene locale={locale as Locale} characters={characters} hideHeader={true} />
+      <CharacterFavoritesProvider locale={locale as Locale} initialRankings={rankings}>
+        <FavoriteLeaderboard
+          locale={locale as Locale}
+          characters={characters.map((character) => ({ slug: character.slug, name: character.name, image: character.mainImage.url }))}
+        />
+
+        {/* Hub Interactivo 3D con filtrado y pasaporte */}
+        <CharacterHubScene locale={locale as Locale} characters={characters} hideHeader={true} />
 
       {/* Directorio de enlaces directos a cada ficha individual */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-12 border-t border-slate-200 dark:border-slate-900">
@@ -91,6 +102,7 @@ export default async function CharactersPage({
           ))}
         </div>
       </div>
+      </CharacterFavoritesProvider>
     </div>
   );
 }
