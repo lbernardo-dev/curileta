@@ -1,12 +1,10 @@
-import React from 'react';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { HeroScene } from '@/features/home/HeroScene';
-import {
-  SeasonalEventSectionWrapper,
-  GlobeTrailConnector,
-} from '@/features/events/SeasonalEventSectionWrapper';
+import { StoryLanding } from '@/features/home/StoryLanding';
+import { SeasonalEventSectionWrapper } from '@/features/events/SeasonalEventSectionWrapper';
 import { Globe3DScene } from '@/features/home/Globe3DScene';
 import { AdventureRadar } from '@/features/home/AdventureRadar';
 import { LettersScene } from '@/features/home/LettersScene';
@@ -17,82 +15,71 @@ import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
-import {
-  ExpeditionTrail,
-  AdventureTrailConnector,
-  TreasureDestinationMark,
-} from '@curileta/motion';
+import { detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { cmsProvider } from '@curileta/cms';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const resolvedParams = await params;
-  const { locale } = resolvedParams;
-
-  if (locale === 'en') {
-    return {
-      title: 'Curileta Official Website — A Continuous Adventure',
-      description:
-        'Explore the world of Curileta: books, animated episodes, songs, and friendly companions on an educational and inspiring journey.',
-      alternates: {
-        canonical: 'https://curileta.com/en',
-        languages: {
-          'es-ES': 'https://curileta.com/es',
-          'en-US': 'https://curileta.com/en',
-        },
-      },
-    };
-  }
+  const { locale } = await params;
+  const isEn = locale === 'en';
+  const baseUrl = siteUrl.replace(/\/$/, '');
 
   return {
-    title: 'Las Aventuras de Curileta — Web Oficial',
-    description:
-      'Descubre el universo de Curileta: libros, episodios animados, canciones y amigos en un viaje educativo e inspirador por el mundo.',
+    title: isEn ? 'Official Website' : 'Web Oficial',
+    description: isEn
+      ? 'Discover Curileta: an illustrated journey through books, places, friendship and the joy of exploring the world together.'
+      : 'Descubre a Curileta: un viaje ilustrado por libros, lugares, amistad y la alegría de explorar el mundo en familia.',
     alternates: {
-      canonical: 'https://curileta.com/es',
+      canonical: `${baseUrl}/${locale}`,
       languages: {
-        'es-ES': 'https://curileta.com/es',
-        'en-US': 'https://curileta.com/en',
+        'es-ES': `${baseUrl}/es`,
+        'en-US': `${baseUrl}/en`,
       },
+    },
+    openGraph: {
+      title: isEn ? 'Curileta — Official Website' : 'Curileta — Web Oficial',
+      description: isEn
+        ? 'An illustrated journey through books, places and friendship.'
+        : 'Un viaje ilustrado por libros, lugares y amistad.',
+      url: `${baseUrl}/${locale}`,
+      images: [HERO_SOCIAL_IMAGE],
     },
   };
 }
+
+const HERO_SOCIAL_IMAGE = '/images/hero/curileta-world-expedition-clean-v1.jpg';
 
 export default async function HomePage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const resolvedParams = await params;
-  const { locale } = resolvedParams;
+  const { locale } = await params;
+  if (!isValidLocale(locale)) notFound();
 
-  if (!isValidLocale(locale)) {
-    notFound();
-  }
-
-  // Carga de datos dinámicos gestionables desde Backend / CMS (Base de datos SQLite persistente)
   const [
     locations,
     characters,
     books,
     letters,
-    waypoints,
     milestones,
     videos,
     wallpapers,
     activeEvent,
     universeRoadmap,
     collaborations,
-    siteSettings,
+    settings,
+    requestHeaders,
   ] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
     cmsProvider.getBooks(locale),
     cmsProvider.getLetters(locale),
-    cmsProvider.getTrailWaypoints(locale),
     cmsProvider.getNarrativeMilestones(locale),
     cmsProvider.getVideos(locale),
     cmsProvider.getWallpapers(locale),
@@ -100,139 +87,39 @@ export default async function HomePage({
     cmsProvider.getUniverseRoadmap(locale),
     cmsProvider.getCollaborations(locale),
     cmsProvider.getSiteSettings(locale),
+    headers(),
   ]);
 
+  const publishedBooksCount = books.filter(
+    (book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= Date.now()
+  ).length;
+  const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
+
   return (
-    <article className="flex flex-col w-full relative">
-      {/* Ambientación cartográfica de fondo y Brújula HUD interactiva de expedición */}
-      <ExpeditionTrail waypoints={waypoints} locale={locale} />
-
-      {/* Escena 01 — Hero: Bosque Encantado y Curileta */}
-      <HeroScene locale={locale as Locale} settings={siteSettings} />
-
-      {/* Evento Estacional Activo: Especial de Halloween (Se oculta automáticamente si está desactivado) */}
+    <article className="relative flex w-full flex-col">
+      <HeroScene
+        locale={locale as Locale}
+        settings={settings}
+        publishedBooksCount={publishedBooksCount}
+      />
       <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />
-
-      {/* Conector Cartográfico: Rumbo al Globo Aerostático 3D (Paso 1 o 2 según evento) */}
-      <GlobeTrailConnector locale={locale as Locale} />
-
-      {/* Escena 02 — Globo Terráqueo 3D Interactivo con Three.js */}
+      <StoryLanding
+        locale={locale as Locale}
+        locations={locations}
+        characters={characters}
+        books={books}
+        amazonCountry={amazonCountry}
+      />
       <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />
-
-      {/* Conector Cartográfico 03: Rumbo al Radar GPS de Aventuras */}
-      <AdventureTrailConnector
-        stepNumber={3}
-        destinationTitle={{
-          es: 'Sintonizando el Radar GPS de Aventuras',
-          en: 'Tuning GPS Adventure Radar',
-        }}
-        coordinatesText="Sonda Atmosférica • Detección Local"
-        distanceText={{ es: '+8 Leguas Náuticas', en: '+8 Nautical Leagues' }}
-        targetId="#radar-curileta"
-        curveVariant="right-to-left"
-        locale={locale}
-      />
-
-      {/* Radar de Aventuras: Detección de localización del usuario */}
       <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />
-
-      {/* Conector Cartográfico 04: Rumbo al Baúl Postal de Pompón */}
-      <AdventureTrailConnector
-        stepNumber={4}
-        destinationTitle={{
-          es: 'Rumbo al Baúl Postal de Pompón',
-          en: "Towards Pompón's Mail Chest",
-        }}
-        coordinatesText="Buzón del Bosque • Matasellos & Polaroids"
-        distanceText={{ es: '+15 Leguas Terrestres', en: '+15 Overland Leagues' }}
-        targetId="#escena-cartas"
-        curveVariant="left-to-center"
-        locale={locale}
-      />
-
-      {/* Escena 02.5 — El Baúl Postal: Cartas a Pompón con Matasellos y Polaroids */}
       <LettersScene locale={locale as Locale} letters={letters} />
-
-      {/* Conector Cartográfico 05: Rumbo al Campamento de los 19 Personajes */}
-      <AdventureTrailConnector
-        stepNumber={5}
-        destinationTitle={{
-          es: 'Encuentro con la Tripulación de 19 Amigos',
-          en: 'Meeting the Crew of 19 Friends',
-        }}
-        coordinatesText="Valle de la Buena Amistad • Alianza"
-        distanceText={{ es: '+22 Leguas de Alianza', en: '+22 Alliance Leagues' }}
-        targetId="#escena-personajes"
-        curveVariant="center-to-right"
-        locale={locale}
-      />
-
-      {/* Escena 03 — El Espacio de los Personajes con Efecto 3D Tilt */}
       <CharacterHubScene locale={locale as Locale} characters={characters} />
-
-      {/* Conector Cartográfico 06: Rumbo a los Libros Ilustrados */}
-      <AdventureTrailConnector
-        stepNumber={6}
-        destinationTitle={{
-          es: 'Bóveda de Libros Ilustrados & Secretos',
-          en: 'Vault of Illustrated Books & Secrets',
-        }}
-        coordinatesText="Gran Biblioteca Secreta • Tapa Dura"
-        distanceText={{ es: '+18 Leguas Literarias', en: '+18 Literary Leagues' }}
-        targetId="#escena-libros"
-        curveVariant="right-to-left"
-        locale={locale}
-      />
-
-      {/* Escena 04 — Los Libros */}
-      <BooksScene locale={locale as Locale} books={books} />
-
-      {/* Conector Cartográfico 07: Rumbo a YouTube y Canciones */}
-      <AdventureTrailConnector
-        stepNumber={7}
-        destinationTitle={{
-          es: 'Estación de Transmisión • Cine & Música',
-          en: 'Broadcast Station • Cinema & Music',
-        }}
-        coordinatesText="Onda Corta 104.7 MHz • YouTube"
-        distanceText={{ es: '+30 Leguas Sonoras', en: '+30 Sound Leagues' }}
-        targetId="#escena-youtube"
-        curveVariant="left-to-center"
-        locale={locale}
-      />
-
-      {/* Escena 05 — YouTube y Canciones */}
+      <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} />
       <YouTubeScene locale={locale as Locale} videos={videos} />
-
-      {/* Conector Cartográfico 08: Rumbo al Mirador de Fondos de Pantalla */}
-      <AdventureTrailConnector
-        stepNumber={8}
-        destinationTitle={{
-          es: 'Mirador de Recuerdos 2K • Fondos de Pantalla',
-          en: '2K Memory Viewpoint • Wallpapers',
-        }}
-        coordinatesText="Cumbre de las Postales 2K"
-        distanceText={{ es: '+10 Leguas Panorámicas', en: '+10 Panoramic Leagues' }}
-        targetId="#galeria-fondos"
-        curveVariant="center-to-right"
-        locale={locale}
-      />
-
-      {/* Escena 05.5 — Galería de Fondos de Pantalla 2K para Móvil y Ordenador */}
       <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />
-
-      {/* Escena 06 — El Universo sigue creciendo */}
       <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />
-
-      {/* Escena 07 — Colaboraciones y Licensing B2B */}
       <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />
-
-      {/* LA GRAN X DEL TESORO: Meta oficial de la expedición («X Marks the Spot») */}
-      <TreasureDestinationMark locale={locale} targetId="#cierre-expedicion" />
-
-      {/* Escena 08 — Cierre del círculo narrativo */}
       <ClosingScene locale={locale as Locale} />
     </article>
   );
 }
-

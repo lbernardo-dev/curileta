@@ -1,23 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Locale } from '@curileta/i18n';
 import { SeasonalEvent } from '@curileta/cms';
 import {
-  Sparkles,
-  Calendar,
   Clock,
-  Bell,
-  Play,
-  Download,
-  CheckCircle2,
   Lock,
-  Gift,
-  ExternalLink,
   Flame,
-  ChevronRight,
 } from 'lucide-react';
-import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
 
 interface HalloweenEventSectionProps {
   locale: Locale;
@@ -28,66 +18,59 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
   locale,
   event,
 }) => {
-  const { isSeasonalActive } = useSeasonalTheme();
-  const [notifyEmail, setNotifyEmail] = useState('');
-  const [notified, setNotified] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 21, hours: 4, minutes: 30, seconds: 15 });
 
-  // Countdown timer simulation for October 31
+  // Derive the premiere date from CMS content so the campaign can be reused next year.
   useEffect(() => {
-    const timer = setInterval(() => {
-      const targetDate = new Date('2026-10-31T18:00:00Z').getTime();
-      const now = new Date().getTime();
-      const difference = targetDate - now;
+    const releaseDate = event?.specialChapter.releaseDate || '2026-10-31';
+    const targetDate = new Date(`${releaseDate}T18:00:00Z`).getTime();
 
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        });
-      }
+    const updateCountdown = () => {
+      const difference = Math.max(0, targetDate - Date.now());
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      });
+    };
+
+    updateCountdown();
+    const timer = setInterval(() => {
+      updateCountdown();
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [event?.specialChapter.releaseDate]);
 
-  const handleNotify = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (notifyEmail.trim()) {
-      setNotified(true);
-      setTimeout(() => setNotified(false), 5000);
-    }
-  };
-
-  // Solo se renderiza mientras el evento estacional esté activo y NO haya sido desactivado por el usuario
-  if (!event || !event.active || !isSeasonalActive) {
+  // La preferencia visual del visitante no oculta el contenido editorial del evento.
+  if (!event || !event.active || event.themeKey !== 'halloween') {
     return null;
   }
 
   const isEn = locale === 'en';
+  const copy = (es: string, en: string) => isEn ? en : es;
 
   return (
     <section
       id="evento-halloween"
-      className="relative z-10 py-28 bg-gradient-to-b from-[#180829] via-[#240e3b] to-[#0c0517] text-white overflow-hidden"
+      className="relative z-10 py-24 sm:py-28 bg-gradient-to-b from-[#0c211a] via-[#153d30] to-[#0b2019] text-white overflow-hidden"
     >
       {/* Luces y ambientación mágica de Halloween estilo Pixar */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(249,115,22,0.22),transparent)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_80%,rgba(168,85,247,0.18),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_80%,rgba(16,185,129,0.13),transparent)] pointer-events-none" />
 
       {/* Partículas flotantes de Halloween */}
-      <div className="absolute top-10 left-10 text-3xl animate-bounce duration-1000 opacity-60 pointer-events-none">
+      <div className="absolute top-10 left-10 text-3xl animate-float-gentle opacity-45 pointer-events-none">
         🎃
       </div>
-      <div className="absolute top-20 right-16 text-2xl animate-pulse duration-700 opacity-50 pointer-events-none">
+      <div className="absolute top-20 right-16 text-2xl animate-float-slow opacity-40 pointer-events-none">
         🦇
       </div>
-      <div className="absolute bottom-16 left-1/4 text-2xl animate-bounce duration-1000 opacity-40 pointer-events-none">
+      <div className="absolute bottom-16 left-1/4 text-2xl animate-float-slow opacity-35 pointer-events-none">
         ✨
       </div>
-      <div className="absolute bottom-20 right-1/4 text-3xl animate-pulse duration-1000 opacity-50 pointer-events-none">
+      <div className="absolute bottom-20 right-1/4 text-3xl animate-float-gentle opacity-40 pointer-events-none">
         🕯️
       </div>
 
@@ -106,12 +89,12 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
             {isEn ? 'The Enchanted Pumpkin Patch.' : 'El Huerto de las Calabazas Encantadas.'}
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-200 to-emerald-200">
               {isEn ? 'A night of gentle magic and golden lanterns.' : 'Una noche de magia y linternas doradas.'}
             </span>
           </h2>
 
-          <p className="mt-4 text-base sm:text-lg text-purple-200/90 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-emerald-50/90 leading-relaxed">
             {isEn
               ? 'Each holiday season transforms Curileta’s Forest. During Halloween, stories are not scary: they are filled with friendly secrets, singing pumpkins, and autumn family recipes.'
               : 'Cada festividad transforma el Bosque de Curileta. En Halloween las historias no dan miedo: se llenan de secretos amistosos, calabazas cantarinas y recetas de otoño para disfrutar en familia.'}
@@ -132,53 +115,57 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
               <span className="text-2xl sm:text-3xl font-black text-orange-400 font-mono">
                 {String(timeLeft.days).padStart(2, '0')}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Días</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{copy('Días', 'Days')}</span>
             </div>
             <span className="text-orange-500 font-black text-xl">:</span>
             <div className="text-center">
               <span className="text-2xl sm:text-3xl font-black text-orange-400 font-mono">
                 {String(timeLeft.hours).padStart(2, '0')}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Horas</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{copy('Horas', 'Hours')}</span>
             </div>
             <span className="text-orange-500 font-black text-xl">:</span>
             <div className="text-center">
               <span className="text-2xl sm:text-3xl font-black text-orange-400 font-mono">
                 {String(timeLeft.minutes).padStart(2, '0')}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Min</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{copy('Min', 'Min')}</span>
             </div>
             <span className="text-orange-500 font-black text-xl">:</span>
             <div className="text-center">
               <span className="text-2xl sm:text-3xl font-black text-amber-300 font-mono">
                 {String(timeLeft.seconds).padStart(2, '0')}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Seg</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{copy('Seg', 'Sec')}</span>
             </div>
           </div>
         </div>
 
         {/* Módulo Principal: Capítulo Especial de Halloween (Con Badge Próximamente) */}
-        <div className="rounded-3xl bg-gradient-to-br from-purple-950/80 via-slate-900 to-orange-950/80 border-2 border-orange-500/40 p-8 sm:p-12 shadow-2xl shadow-orange-950/30 backdrop-blur-xl mb-12">
+        <div className="rounded-3xl bg-gradient-to-br from-[#143d30]/90 via-[#10261e] to-[#382718]/80 border border-amber-400/35 p-6 sm:p-10 lg:p-12 shadow-[0_24px_70px_rgba(4,24,16,0.28)] backdrop-blur-xl mb-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Lado izquierdo: Portada del Capítulo Especial */}
             <div className="lg:col-span-5 relative">
               <div className="relative aspect-video lg:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-2 border-orange-500/50 group">
                 <img
-                  src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1000&auto=format&fit=crop&q=80"
-                  alt="Especial de Halloween Curileta y Pompón — Próximamente"
+                  src="/images/events/halloween-curileta-pompon-wide.webp"
+                  alt={locale === 'en'
+                    ? 'Curileta and Pompón explore a glowing pumpkin clearing in the Enchanted Forest'
+                    : 'Curileta y Pompón exploran un claro de calabazas luminosas en el Bosque Encantado'}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#091e18] via-[#09241f]/30 to-transparent" />
 
                 {/* Badge Oficial PRÓXIMAMENTE */}
                 <div className="absolute top-3 left-3 flex items-center gap-2">
-                  <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-orange-600 text-slate-950 shadow-lg border border-orange-400 flex items-center gap-1.5 animate-pulse">
+                <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-amber-300 text-[#183a2e] shadow-md border border-amber-100/80 flex items-center gap-1.5">
                     <span>🎃</span>
-                    <span>PRÓXIMAMENTE</span>
+                    <span>{copy('PRÓXIMAMENTE', 'COMING SOON')}</span>
                   </span>
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-black/80 text-amber-300 border border-amber-500/30">
-                    Estreno: 31 Octubre
+                    {copy('Estreno: 31 de octubre', 'Premiere: October 31')}
                   </span>
                 </div>
 
@@ -189,7 +176,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
 
                 <div className="absolute bottom-3 inset-x-3 text-center">
                   <span className="text-[11px] font-mono font-bold text-amber-200 bg-black/80 px-3 py-1 rounded-full backdrop-blur-md">
-                    🔒 Contenido bloqueado hasta el estreno
+                    {copy('🔒 Contenido bloqueado hasta el estreno', '🔒 Unlocks on premiere day')}
                   </span>
                 </div>
               </div>
@@ -199,59 +186,44 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
             <div className="lg:col-span-7 space-y-5">
               <div className="inline-flex items-center gap-2 text-xs font-black uppercase text-orange-400">
                 <Flame className="w-4 h-4 text-orange-500" />
-                <span>Capítulo Exclusivo del Evento de Temporada</span>
+                <span>{copy('Capítulo exclusivo del evento de temporada', 'Seasonal special episode')}</span>
               </div>
 
               <h3 className="text-2xl sm:text-4xl font-black text-white leading-tight">
-                Curileta y la Noche de las Calabazas Brillantes
+                {copy('Curileta y la Noche de las Calabazas Brillantes', 'Curileta and the Night of the Shining Pumpkins')}
               </h3>
 
-              <p className="text-sm sm:text-base text-purple-200/90 leading-relaxed">
-                Una misteriosa estela de hojas doradas guía a Curileta y Pompón a la colina más alta del Bosque Encantado. Allí descubren que las calabazas milenarias no asustan a nadie: ¡hablan con voz dulce, custodian historias ancestrales de los antiguos mayas e iluminan el camino de las luciérnagas viajeras!
+              <p className="text-sm sm:text-base text-emerald-50/90 leading-relaxed">
+                {copy(
+                  'Una misteriosa estela de hojas doradas guía a Curileta y Pompón a la colina más alta del Bosque Encantado. Allí descubren que las calabazas milenarias no asustan a nadie: ¡hablan con voz dulce, custodian historias ancestrales de los antiguos mayas e iluminan el camino de las luciérnagas viajeras!',
+                  'A trail of golden leaves leads Curileta and Pompón to the highest hill in the Enchanted Forest. There, friendly ancient pumpkins share Maya stories and light the way for traveling fireflies.'
+                )}
               </p>
 
               {/* Ficha técnica del capítulo */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-2 text-xs">
-                <div className="p-3 rounded-xl bg-slate-950/60 border border-purple-900/60">
-                  <span className="text-slate-400 block text-[10px] uppercase">Formato</span>
-                  <strong className="text-white">Episodio Especial (12 min)</strong>
+                <div className="p-3 rounded-xl bg-[#0b211a]/65 border border-emerald-900/70">
+                  <span className="text-slate-400 block text-[10px] uppercase">{copy('Formato', 'Format')}</span>
+                  <strong className="text-white">{copy('Episodio especial (12 min)', 'Special episode (12 min)')}</strong>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/60 border border-purple-900/60">
-                  <span className="text-slate-400 block text-[10px] uppercase">Edad sugerida</span>
-                  <strong className="text-amber-300">Todas las edades (0+ seguro)</strong>
+                <div className="p-3 rounded-xl bg-[#0b211a]/65 border border-emerald-900/70">
+                  <span className="text-slate-400 block text-[10px] uppercase">{copy('Edad sugerida', 'Suggested age')}</span>
+                  <strong className="text-amber-300">{copy('Todas las edades (0+ seguro)', 'All ages (safe for 0+)')}</strong>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/60 border border-purple-900/60 col-span-2 sm:col-span-1">
-                  <span className="text-slate-400 block text-[10px] uppercase">Valores</span>
-                  <strong className="text-emerald-300">Empatía, sin sustos, fiesta</strong>
+                <div className="p-3 rounded-xl bg-[#0b211a]/65 border border-emerald-900/70 col-span-2 sm:col-span-1">
+                  <span className="text-slate-400 block text-[10px] uppercase">{copy('Valores', 'Values')}</span>
+                  <strong className="text-emerald-300">{copy('Empatía, sin sustos y celebración', 'Empathy, gentle fun and celebration')}</strong>
                 </div>
               </div>
 
               {/* Notificación de Estreno */}
               <div className="pt-2">
-                {notified ? (
-                  <div className="p-4 rounded-2xl bg-emerald-950 border border-emerald-500/50 text-emerald-200 text-xs font-bold flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    <span>¡Listo! Te avisaremos por correo el 31 de octubre cuando se publique el capítulo en YouTube y en la web.</span>
-                  </div>
-                ) : (
-                  <form onSubmit={handleNotify} className="flex flex-col sm:flex-row gap-2.5">
-                    <input
-                      type="email"
-                      required
-                      value={notifyEmail}
-                      onChange={(e) => setNotifyEmail(e.target.value)}
-                      placeholder="Correo para avisarme del estreno..."
-                      className="flex-1 px-4 py-3 rounded-2xl bg-slate-950 border border-orange-500/40 text-white placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-inner"
-                    />
-                    <button
-                      type="submit"
-                      className="px-6 py-3 rounded-2xl font-black text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
-                    >
-                      <Bell className="w-4 h-4 text-slate-950" />
-                      <span>Avisarme al estrenar</span>
-                    </button>
-                  </form>
-                )}
+              <p role="status" className="rounded-2xl border border-orange-500/30 bg-[#091e18]/70 px-4 py-3 text-xs leading-5 text-amber-100/90">
+                  {copy(
+                    'El aviso por correo estará disponible cuando publiquemos el calendario oficial del estreno.',
+                    'Email reminders will be available once the official release schedule is published.'
+                  )}
+                </p>
               </div>
             </div>
           </div>
@@ -262,87 +234,99 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
           <div className="flex items-center justify-between mb-6">
             <div>
               <h4 className="text-xl sm:text-2xl font-black text-white">
-                Materiales y Actividades del Evento
+                {copy('Materiales y actividades del evento', 'Event activities and materials')}
               </h4>
-              <p className="text-xs text-purple-300/80 mt-0.5">
-                Todo el contenido se habilitará progresivamente conforme nos acerquemos a la noche de Halloween.
+              <p className="text-xs text-emerald-100/75 mt-0.5">
+                {copy(
+                  'El contenido se publicará poco a poco a medida que se acerque Halloween.',
+                  'New activities will be revealed as Halloween approaches.'
+                )}
               </p>
             </div>
             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-orange-950 border border-orange-500/30 text-orange-300 hidden sm:inline">
-              3 Actividades en Producción
+              {copy('3 actividades en producción', '3 activities in production')}
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Actividad 1 */}
-            <div className="rounded-2xl bg-slate-900/80 border border-orange-500/30 p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+            <div className="rounded-2xl bg-[#123328]/90 border border-orange-500/30 p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl">🎭</span>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-orange-500/20 text-orange-300 border border-orange-500/40 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    <span>PRÓXIMAMENTE</span>
+                    <span>{copy('PRÓXIMAMENTE', 'COMING SOON')}</span>
                   </span>
                 </div>
                 <h5 className="text-lg font-black text-white">
-                  Máscara Imprimible de Curileta Hechicera
+                  {copy('Máscara imprimible de Curileta hechicera', 'Printable Curileta explorer mask')}
                 </h5>
-                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                  Plantilla oficial en PDF de alta resolución en tamaño DIN-A4. Colorea con lápices, recorta con tijeras infantiles y añade una goma para tu disfraz.
+                <p className="text-xs text-emerald-50/85 mt-2 leading-relaxed">
+                  {copy(
+                    'Plantilla oficial en PDF tamaño DIN A4. Coloréala, recórtala con ayuda de una persona adulta y úsala para tu disfraz.',
+                    'Official high-resolution A4 PDF template. Color it, cut it out with an adult, and wear it as part of your costume.'
+                  )}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                <span className="font-mono">PDF Imprimible</span>
-                <span className="font-bold text-orange-400">Desbloqueo 25 Octubre</span>
+              <div className="mt-6 pt-4 border-t border-emerald-950/80 flex items-center justify-between text-xs text-emerald-100/70">
+                <span className="font-mono">{copy('PDF imprimible', 'Printable PDF')}</span>
+                <span className="font-bold text-orange-400">{copy('Disponible el 25 de octubre', 'Available October 25')}</span>
               </div>
             </div>
 
             {/* Actividad 2 */}
-            <div className="rounded-2xl bg-slate-900/80 border border-orange-500/30 p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+            <div className="rounded-2xl bg-[#123328]/90 border border-orange-500/30 p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl">🍪</span>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-orange-500/20 text-orange-300 border border-orange-500/40 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    <span>PRÓXIMAMENTE</span>
+                    <span>{copy('PRÓXIMAMENTE', 'COMING SOON')}</span>
                   </span>
                 </div>
                 <h5 className="text-lg font-black text-white">
-                  Receta: Galletas de Calabaza de Pompón
+                  {copy('Receta: galletas de calabaza de Pompón', 'Recipe: Pompón’s pumpkin cookies')}
                 </h5>
-                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                  Receta ilustrada paso a paso para cocinar en familia con puré de calabaza, avena y canela dulce. Sin azúcares refinados y apta para pequeños cocineros.
+                <p className="text-xs text-emerald-50/85 mt-2 leading-relaxed">
+                  {copy(
+                    'Receta ilustrada para cocinar en familia con calabaza, avena y canela. Sin azúcares refinados y apta para pequeños cocineros.',
+                    'A family-friendly illustrated recipe with pumpkin, oats and cinnamon. No refined sugar, and made for little cooks.'
+                  )}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                <span className="font-mono">Ficha de Cocina</span>
-                <span className="font-bold text-orange-400">Desbloqueo 28 Octubre</span>
+              <div className="mt-6 pt-4 border-t border-emerald-950/80 flex items-center justify-between text-xs text-emerald-100/70">
+                <span className="font-mono">{copy('Ficha de cocina', 'Recipe card')}</span>
+                <span className="font-bold text-orange-400">{copy('Disponible el 28 de octubre', 'Available October 28')}</span>
               </div>
             </div>
 
             {/* Actividad 3 */}
-            <div className="rounded-2xl bg-slate-900/80 border border-orange-500/30 p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+            <div className="rounded-2xl bg-[#123328]/90 border border-orange-500/30 p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl">📱</span>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-orange-500/20 text-orange-300 border border-orange-500/40 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    <span>PRÓXIMAMENTE</span>
+                    <span>{copy('PRÓXIMAMENTE', 'COMING SOON')}</span>
                   </span>
                 </div>
                 <h5 className="text-lg font-black text-white">
-                  Fondos 2K Halloween: Curileta & Calabazas
+                  {copy('Fondos 2K de Halloween: Curileta y calabazas', 'Halloween 2K wallpapers: Curileta and pumpkins')}
                 </h5>
-                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                  Ilustración 3D de alta fidelidad con resolución 2K Ultra HD para pantallas de móvil y ordenadores, con Curileta sosteniendo una linterna de bellota dorada.
+                <p className="text-xs text-emerald-50/85 mt-2 leading-relaxed">
+                  {copy(
+                    'Ilustraciones 3D en resolución 2K para móvil y ordenador, con Curileta en el bosque encantado.',
+                    'High-resolution 2K illustrations for phones and desktops, featuring Curileta in the Enchanted Forest.'
+                  )}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                <span className="font-mono">WebP 2K QHD</span>
-                <span className="font-bold text-orange-400">Desbloqueo 30 Octubre</span>
+              <div className="mt-6 pt-4 border-t border-emerald-950/80 flex items-center justify-between text-xs text-emerald-100/70">
+                <span className="font-mono">WebP · 2K QHD</span>
+                <span className="font-bold text-orange-400">{copy('Disponible el 30 de octubre', 'Available October 30')}</span>
               </div>
             </div>
           </div>

@@ -690,19 +690,13 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
   const [activeSectionId, setActiveSectionId] = useState<string>('');
   const isEn = locale === 'en';
 
-  // Solo mostrar hitos que existen en el DOM y respetar la activación del tema estacional
+  // Solo mostrar hitos cuyo contenido realmente exista en el DOM.
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const filterExisting = () => {
-      const isSeasonalThemeActive = document.documentElement.hasAttribute('data-seasonal-theme');
-
       const activeInDom = items
         .filter((item) => {
-          // Si el tema estacional está desactivado, ocultar el hito de Halloween
-          if (item.id === 'evento-halloween' && !isSeasonalThemeActive) {
-            return false;
-          }
           const el = document.querySelector(item.targetId) || document.getElementById(item.id);
           return !!el;
         })
@@ -719,7 +713,7 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
     filterExisting();
     const timer = setTimeout(filterExisting, 300);
 
-    // Observador para cambios reactivos cuando el usuario activa o desactiva el tema estacional
+    // Recalcular si la página añade o quita hitos después del montaje.
     const observer = new MutationObserver(() => {
       filterExisting();
     });

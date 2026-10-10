@@ -1,137 +1,85 @@
-import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
-import { Calendar, MapPin, Clock, Sparkles, ArrowLeft, ArrowRight, Building } from 'lucide-react';
+import { cmsProvider } from '@curileta/cms';
+import { isValidLocale, type Locale } from '@curileta/i18n';
+import { ArrowRight, CalendarDays, Clock3, Mail, Sparkles } from 'lucide-react';
+import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 
-export const metadata: Metadata = {
-  title: 'Agenda de Eventos y Firmas — Las Aventuras de Curileta',
-  description:
-    'Próximas firmas de libros, talleres infantiles de narración, visitas a colegios y presentaciones oficiales de Curileta.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return locale === 'en'
+    ? { title: 'Events and seasonal stories', description: 'Current seasonal stories and announced Curileta events.' }
+    : { title: 'Eventos y aventuras de temporada', description: 'Historias de temporada y eventos de Curileta anunciados.' };
+}
 
-const UPCOMING_EVENTS = [
-  {
-    id: 'feria-del-libro-madrid-2026',
-    title: 'Feria del Libro de Madrid — Encuentro y Firma Oficial',
-    category: 'Firma de Libros',
-    date: '30 de Mayo, 2026',
-    time: '11:30 - 13:30',
-    location: 'Parque del Retiro, Madrid (Caseta Curileta Publishing)',
-    city: 'Madrid, España',
-    description: 'Sesión de firmas de ejemplares de «El Misterio del Quetzal Dorado», entrega de pasaportes de explorador y fotos con el mapa gigante.',
-    status: 'Confirmado',
-  },
-  {
-    id: 'taller-narrativa-barcelona',
-    title: 'Taller de Cartografía Mágica para Pequeños Exploradores',
-    category: 'Taller Infantil & Cuentacuentos',
-    date: '14 de Junio, 2026',
-    time: '17:00 - 18:30',
-    location: 'Biblioteca Jaume Fuster, Barcelona',
-    city: 'Barcelona, España',
-    description: 'Actividad interactiva para niños de 5 a 10 años donde aprenderán a dibujar mapas imaginarios y crear sus propios animales compañeros.',
-    status: 'Inscripción Gratuita',
-  },
-  {
-    id: 'visita-colegios-valencia',
-    title: 'Semana de la Lectura Escolar en Centros Educativos',
-    category: 'Visita Escolar',
-    date: '22 de Junio, 2026',
-    time: 'Jornada escolar',
-    location: 'Centros escolares adscritos',
-    city: 'Valencia, España',
-    description: 'Encuentros didácticos en aulas de primaria fomentando la curiosidad geográfica y los valores de respeto medioambiental.',
-    status: 'Solo para Centros Concertados',
-  },
-];
-
-export default async function EventsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const resolvedParams = await params;
-  const { locale } = resolvedParams;
-
-  if (!isValidLocale(locale)) {
-    notFound();
-  }
+export default async function EventsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isValidLocale(locale)) notFound();
+  const isEn = locale === 'en';
+  const event = await cmsProvider.getActiveEvent(locale);
+  const dateLocale = isEn ? 'en-GB' : 'es-ES';
+  const formatDate = (value: string) => new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(value));
 
   return (
-    <div className="py-16 sm:py-24 bg-slate-950 text-white min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link
-          href={`/${locale}`}
-          className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Volver al inicio</span>
-        </Link>
-
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-950 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
-            <Calendar className="w-3.5 h-3.5 text-amber-400" />
-            <span>Agenda Oficial de Encuentros</span>
-          </div>
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
-            Próximos Eventos y Firmas
-          </h1>
-          <p className="mt-4 text-slate-300 text-base sm:text-lg">
-            Acompáñanos en presentaciones en vivo, ferias del libro y talleres donde la magia de Curileta salta de las páginas a la realidad.
-          </p>
-        </div>
-
-        {/* Events Grid */}
-        <div className="space-y-6">
-          {UPCOMING_EVENTS.map((event) => (
-            <div
-              key={event.id}
-              className="rounded-3xl bg-slate-900 border border-slate-800 p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 hover:border-amber-500/40 transition-all shadow-xl"
-            >
-              <div className="space-y-3 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400 text-slate-950">
-                    {event.category}
-                  </span>
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1 rounded-full">
-                    {event.status}
-                  </span>
-                </div>
-
-                <h2 className="text-2xl font-black text-white">{event.title}</h2>
-                <p className="text-sm text-slate-300 leading-relaxed">{event.description}</p>
-
-                <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-400 font-semibold">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-amber-400" />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-emerald-400" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-sky-400" />
-                    <span>{event.location}</span>
-                  </div>
+    <SitePageLayout
+      locale={locale as Locale}
+      eyebrow={isEn ? 'Seasonal adventures' : 'Aventuras de temporada'}
+      title={isEn ? 'Stories to share all year' : 'Historias para compartir todo el año'}
+      description={isEn
+        ? 'Special chapters and public appearances are listed here when they are announced. Seasonal themes may also bring new activities to the site.'
+        : 'Aquí aparecerán los capítulos especiales y encuentros públicos cuando se anuncien. Las temporadas también pueden traer nuevas actividades a la web.'}
+      icon={<CalendarDays className="h-4 w-4" />}
+    >
+      {event ? (
+        <SitePageCard className="overflow-hidden !p-0">
+          <div className="relative overflow-hidden bg-[var(--background-secondary)]">
+            <div className="absolute inset-0 opacity-20" style={{ background: 'radial-gradient(ellipse at 78% 16%, ' + event.ambientDecorations.glowColor + ', transparent 50%)' }} />
+            <div className="relative grid gap-8 p-6 sm:p-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+              <div>
+                <p className="inline-flex items-center gap-2 rounded-full bg-[var(--background-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--seasonal-accent-strong)] ring-1 ring-[var(--border-subtle)]">
+                  <Sparkles className="h-3.5 w-3.5" />{isEn ? 'Now in the Curileta world' : 'Ahora en el mundo de Curileta'}
+                </p>
+                <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-4xl">{event.name[locale] || event.name.es}</h2>
+                <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">{event.tagline[locale] || event.tagline.es}</p>
+                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-secondary)]">
+                  <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{formatDate(event.startDate)} – {formatDate(event.endDate)}</span>
+                  <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{event.specialChapter.status === 'published' ? (isEn ? 'Available now' : 'Disponible') : (isEn ? 'Coming soon' : 'Próximamente')}</span>
                 </div>
               </div>
-
-              <div className="shrink-0 w-full md:w-auto">
-                <Link
-                  href={`/${locale}/contacto`}
-                  className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-all"
-                >
-                  <span>Solicitar asistencia o charla escolar</span>
-                  <ArrowRight className="w-4 h-4" />
+              <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--background-primary)] p-6 shadow-sm">
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--seasonal-accent-strong)]">{isEn ? 'Seasonal chapter' : 'Capítulo de temporada'}</span>
+                <h3 className="mt-3 font-display text-2xl font-semibold">{event.specialChapter.title[locale] || event.specialChapter.title.es}</h3>
+                <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{event.specialChapter.synopsis[locale] || event.specialChapter.synopsis.es}</p>
+                <p className="mt-4 text-sm font-medium text-[var(--text-secondary)]">{isEn ? 'Release date' : 'Fecha prevista'}: {formatDate(event.specialChapter.releaseDate)}</p>
+                <Link href={event.specialChapter.status === 'published' && event.specialChapter.youtubeId ? '/' + locale + '/videos' : '/' + locale + (event.themeKey === 'halloween' ? '#evento-halloween' : '')} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]">
+                  {event.specialChapter.status === 'published' && event.specialChapter.youtubeId
+                    ? (isEn ? 'Watch the special' : 'Ver el especial')
+                    : (isEn ? 'Explore the seasonal feature' : 'Ver la experiencia de temporada')}
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
-          ))}
+          </div>
+        </SitePageCard>
+      ) : (
+        <SitePageCard className="py-12 text-center sm:py-16">
+          <CalendarDays className="mx-auto h-10 w-10 text-[var(--seasonal-accent-strong)]" />
+          <h2 className="mt-4 font-display text-2xl font-semibold">{isEn ? 'No public events announced yet' : 'Todavía no hay eventos públicos anunciados'}</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--text-secondary)]">
+            {isEn ? 'When a seasonal story or public event is confirmed, it will appear here.' : 'Cuando se confirme una historia de temporada o un encuentro público, aparecerá aquí.'}
+          </p>
+        </SitePageCard>
+      )}
+      <SitePageCard className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="font-display text-xl font-semibold">{isEn ? 'Invite Curileta to a school or library' : 'Invita a Curileta a tu centro o biblioteca'}</h2>
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">{isEn ? 'Ask about a possible reading, workshop or collaboration.' : 'Consulta la posibilidad de organizar una lectura, taller o colaboración.'}</p>
         </div>
-      </div>
-    </div>
+        <Link href={'/' + locale + '/contacto'} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-[var(--background-secondary)] px-5 py-3 text-sm font-semibold text-[var(--text-primary)] ring-1 ring-[var(--border-subtle)] transition hover:text-[var(--seasonal-accent-strong)]">
+          <Mail className="h-4 w-4" />{isEn ? 'Make an enquiry' : 'Hacer una consulta'}
+        </Link>
+      </SitePageCard>
+    </SitePageLayout>
   );
 }

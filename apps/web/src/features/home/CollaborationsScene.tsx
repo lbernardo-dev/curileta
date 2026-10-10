@@ -70,7 +70,7 @@ export const CollaborationsScene: React.FC<CollaborationsSceneProps> = ({ locale
               href={`/${locale}/prensa`}
               className="px-8 py-3.5 rounded-full font-bold text-sm bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 dark:border-slate-700 transition-all shadow-sm"
             >
-              {isEn ? 'Download Official Media Kit' : 'Descargar Media Kit Oficial'}
+              {isEn ? 'Request press information' : 'Solicitar información de prensa'}
             </Link>
           </div>
         </div>

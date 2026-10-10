@@ -104,104 +104,92 @@ export function createPixarMonumentMesh(id: string): THREE.Group {
     // --- 1. ESPAÑA: EL GRAN ÁRBOL MÁGICO Y CABAÑA (BOSQUE ENCANTADO) ---
     case 'espana-inicio':
     case 'espana-regreso': {
-      // Tronco curvado de madera cálida
-      const trunkGeo = new THREE.CylinderGeometry(0.018 * SCALE, 0.032 * SCALE, 0.085 * SCALE, 8);
+      const treeScale = SCALE * 0.78;
+      // Árbol de copas escalonadas y tronco visible desde la vista orbital.
+      const trunkGeo = new THREE.CylinderGeometry(0.015 * treeScale, 0.026 * treeScale, 0.12 * treeScale, 8);
       const trunkMat = new THREE.MeshStandardMaterial({
-        color: 0x78350f,
-        roughness: 0.8,
+        color: 0x76513a,
+        roughness: 0.92,
       });
       const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-      trunk.position.y = 0.042 * SCALE;
+      trunk.position.y = 0.06 * treeScale;
       group.add(trunk);
 
-      // Copa esponjosa de follaje Pixar (3 esferas verdes vibrantes)
-      const foliageMat = new THREE.MeshStandardMaterial({
-        color: 0x22c55e,
-        roughness: 0.45,
+      const foliageMaterials = [
+        new THREE.MeshStandardMaterial({ color: 0x47724c, roughness: 0.88 }),
+        new THREE.MeshStandardMaterial({ color: 0x5d8755, roughness: 0.86 }),
+        new THREE.MeshStandardMaterial({ color: 0x78965b, roughness: 0.84 }),
+      ];
+      const canopyLevels = [
+        { radius: 0.078, height: 0.08, y: 0.13 },
+        { radius: 0.061, height: 0.07, y: 0.19 },
+        { radius: 0.044, height: 0.07, y: 0.235 },
+      ];
+      canopyLevels.forEach((level, index) => {
+        const canopy = new THREE.Mesh(
+          new THREE.ConeGeometry(level.radius * treeScale, level.height * treeScale, 7, 2),
+          foliageMaterials[index]
+        );
+        canopy.position.y = level.y * treeScale;
+        canopy.rotation.y = index * 0.22;
+        group.add(canopy);
       });
-      const leaves1 = new THREE.Mesh(new THREE.SphereGeometry(0.05 * SCALE, 12, 12), foliageMat);
-      leaves1.position.set(0, 0.095 * SCALE, 0);
-      group.add(leaves1);
 
-      const leaves2 = new THREE.Mesh(new THREE.SphereGeometry(0.038 * SCALE, 10, 10), foliageMat);
-      leaves2.position.set(0.032 * SCALE, 0.082 * SCALE, 0.018 * SCALE);
-      group.add(leaves2);
-
-      const leaves3 = new THREE.Mesh(new THREE.SphereGeometry(0.036 * SCALE, 10, 10), foliageMat);
-      leaves3.position.set(-0.028 * SCALE, 0.085 * SCALE, -0.018 * SCALE);
-      group.add(leaves3);
-
-      // Tejadito de la casita / buzón de Pompón
-      const roofGeo = new THREE.ConeGeometry(0.028 * SCALE, 0.032 * SCALE, 4);
-      const roofMat = new THREE.MeshStandardMaterial({
-        color: 0xdc2626,
-        roughness: 0.35,
-      });
-      const roof = new THREE.Mesh(roofGeo, roofMat);
-      roof.position.set(0, 0.135 * SCALE, 0);
-      roof.rotation.y = Math.PI / 4;
-      group.add(roof);
-
-      // Farolillo dorado con brillo mágico
-      const lanternGeo = new THREE.SphereGeometry(0.012 * SCALE, 8, 8);
-      const lanternMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
-      const lantern = new THREE.Mesh(lanternGeo, lanternMat);
-      lantern.position.set(0.04 * SCALE, 0.075 * SCALE, 0);
+      // Pequeña luz de bienvenida bajo las ramas.
+      const lantern = new THREE.Mesh(
+        new THREE.SphereGeometry(0.012 * treeScale, 10, 8),
+        new THREE.MeshBasicMaterial({ color: 0xf4d68a })
+      );
+      lantern.position.set(0.03 * treeScale, 0.12 * treeScale, 0.018 * treeScale);
       group.add(lantern);
-
-      // Mochilita roja de Curileta
-      const packGeo = new THREE.BoxGeometry(0.016 * SCALE, 0.02 * SCALE, 0.012 * SCALE);
-      const packMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
-      const backpack = new THREE.Mesh(packGeo, packMat);
-      backpack.position.set(-0.025 * SCALE, 0.035 * SCALE, 0.015 * SCALE);
-      group.add(backpack);
       break;
     }
 
     // --- 2. MÉXICO: PIRÁMIDE DEL SOL DE TEOTIHUACÁN ---
     case 'mexico': {
-      // 4 niveles escalonados de piedra arenisca cálida
+      // Terrazas trapezoidales de piedra, visibles desde el ángulo orbital.
       const level1 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.14 * SCALE, 0.024 * SCALE, 0.14 * SCALE),
-        new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.7 })
+        new THREE.CylinderGeometry(0.075 * SCALE, 0.105 * SCALE, 0.05 * SCALE, 4, 1),
+        new THREE.MeshStandardMaterial({ color: 0xb98260, roughness: 0.88 })
       );
-      level1.position.y = 0.012 * SCALE;
+      level1.position.y = 0.025 * SCALE;
+      level1.rotation.y = Math.PI / 4;
       group.add(level1);
 
       const level2 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.105 * SCALE, 0.024 * SCALE, 0.105 * SCALE),
-        new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.65 })
+        new THREE.CylinderGeometry(0.052 * SCALE, 0.078 * SCALE, 0.045 * SCALE, 4, 1),
+        new THREE.MeshStandardMaterial({ color: 0xc99a70, roughness: 0.86 })
       );
-      level2.position.y = 0.034 * SCALE;
+      level2.position.y = 0.0725 * SCALE;
+      level2.rotation.y = Math.PI / 4;
       group.add(level2);
 
       const level3 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.075 * SCALE, 0.024 * SCALE, 0.075 * SCALE),
-        new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.6 })
+        new THREE.CylinderGeometry(0.031 * SCALE, 0.055 * SCALE, 0.04 * SCALE, 4, 1),
+        new THREE.MeshStandardMaterial({ color: 0xd6ad82, roughness: 0.82 })
       );
-      level3.position.y = 0.056 * SCALE;
+      level3.position.y = 0.115 * SCALE;
+      level3.rotation.y = Math.PI / 4;
       group.add(level3);
 
-      // Altar solar en la cúspide
+      // Santuario pequeño en la cúspide, sin brillo metálico excesivo.
       const altar = new THREE.Mesh(
-        new THREE.BoxGeometry(0.042 * SCALE, 0.02 * SCALE, 0.042 * SCALE),
+        new THREE.BoxGeometry(0.038 * SCALE, 0.025 * SCALE, 0.038 * SCALE),
         new THREE.MeshStandardMaterial({
-          color: 0xfacc15,
-          emissive: 0xeab308,
-          emissiveIntensity: 0.5,
-          roughness: 0.3,
+          color: 0xe3c28f,
+          roughness: 0.78,
         })
       );
-      altar.position.y = 0.076 * SCALE;
+      altar.position.y = 0.1475 * SCALE;
+      altar.rotation.y = Math.PI / 4;
       group.add(altar);
 
-      // Rampa de escalinata central
+      // Escalinata frontal de la pirámide.
       const stair = new THREE.Mesh(
-        new THREE.BoxGeometry(0.028 * SCALE, 0.075 * SCALE, 0.05 * SCALE),
-        new THREE.MeshStandardMaterial({ color: 0x9a3412 })
+        new THREE.BoxGeometry(0.028 * SCALE, 0.12 * SCALE, 0.035 * SCALE),
+        new THREE.MeshStandardMaterial({ color: 0x9b7055, roughness: 0.9 })
       );
-      stair.position.set(0, 0.038 * SCALE, 0.068 * SCALE);
-      stair.rotation.x = -Math.PI / 6;
+      stair.position.set(0, 0.06 * SCALE, 0.096 * SCALE);
       group.add(stair);
       break;
     }

@@ -3,14 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
-import { Compass, Sparkles, Youtube, BookOpen, ArrowUp } from 'lucide-react';
+import { ArrowRight, BookOpen, Compass, Sparkles } from 'lucide-react';
 
 export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
-  const scrollToTop = () => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+  const isEn = locale === 'en';
 
   return (
     <section
@@ -26,42 +22,35 @@ export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
           <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-          <span>Escena 10 — Cierre del Círculo Narrativo</span>
+          <span>{isEn ? 'The end of this chapter' : 'El final de esta aventura'}</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 dark:text-white">
-          ¿Seguimos explorando?
+        <h2 className="mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-6xl">
+          {isEn ? 'The greatest treasure is finding your way home.' : 'El mayor tesoro es volver a casa.'}
         </h2>
 
-        <p className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-          El mapa nunca se cierra del todo; solo espera la próxima mirada curiosa. Regresamos al Bosque Encantado para planear la siguiente expedición.
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-emerald-100/90 sm:text-lg">
+          {isEn
+            ? 'After crossing the world, Curileta discovers that the place she missed most was home, beside her friend Pompón.'
+            : 'Después de recorrer el mundo, Curileta descubre que el lugar que más echaba de menos era su hogar, junto a Pompón.'}
         </p>
 
-        {/* Action Triggers */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href={`/${locale}/libros`}
-            className="px-7 py-3.5 rounded-full font-bold text-sm bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-xl transition-all flex items-center gap-2"
+            href={`/${locale}/libros/las-aventuras-de-curileta`}
+            className="inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-amber-300"
           >
-            <BookOpen className="w-4 h-4 text-emerald-950" />
-            <span>Descubrir los Libros</span>
+            <BookOpen className="h-4 w-4 text-emerald-950" />
+            <span>{isEn ? 'Read the story' : 'Conocer el libro'}</span>
+            <ArrowRight className="h-4 w-4" />
           </Link>
-          <a
-            href="https://www.youtube.com/@curileta"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-7 py-3.5 rounded-full font-bold text-sm bg-red-600 hover:bg-red-500 text-white shadow-xl transition-all flex items-center gap-2"
+          <Link
+            href={`/${locale}/mundo`}
+            className="inline-flex min-h-12 items-center gap-2 rounded-full border border-emerald-900/20 bg-white/75 px-6 py-3 text-sm font-semibold text-emerald-950 shadow-sm transition hover:bg-white dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
           >
-            <Youtube className="w-4 h-4" />
-            <span>Ver Episodios en YouTube</span>
-          </a>
-          <button
-            onClick={scrollToTop}
-            className="px-6 py-3.5 rounded-full font-bold text-sm bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:border-white/20 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
-          >
-            <ArrowUp className="w-4 h-4" />
-            <span>Volver al Inicio</span>
-          </button>
+            <Compass className="h-4 w-4" />
+            <span>{isEn ? 'Explore the atlas again' : 'Volver a explorar el atlas'}</span>
+          </Link>
         </div>
       </div>
     </section>

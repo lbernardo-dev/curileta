@@ -1,76 +1,67 @@
-import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { FileText, ArrowLeft, ShieldCheck, Scale } from 'lucide-react';
+import { notFound } from 'next/navigation';
+import { isValidLocale, type Locale } from '@curileta/i18n';
+import { FileText, Mail, Scale } from 'lucide-react';
+import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 
-export const metadata: Metadata = {
-  title: 'Aviso Legal y Términos de Uso — Las Aventuras de Curileta',
-  description:
-    'Aviso legal, titularidad de marca y condiciones de uso del sitio web oficial de Las Aventuras de Curileta.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return locale === 'en'
+    ? { title: 'Legal notice', description: 'Website ownership, intellectual property and terms of use for Curileta Adventures.' }
+    : { title: 'Aviso legal', description: 'Titularidad, propiedad intelectual y condiciones de uso de la web de Las Aventuras de Curileta.' };
+}
 
-export default async function LegalNoticePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const resolvedParams = await params;
-  const { locale } = resolvedParams;
+export default async function LegalNoticePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isValidLocale(locale)) notFound();
+  const isEn = locale === 'en';
 
   return (
-    <div className="py-16 sm:py-24 bg-slate-950 text-white min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link
-          href={`/${locale}`}
-          className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Volver al inicio</span>
-        </Link>
+    <SitePageLayout
+      locale={locale as Locale}
+      eyebrow={isEn ? 'Website information' : 'Información de la web'}
+      title={isEn ? 'Legal notice' : 'Aviso legal'}
+      description={isEn
+        ? 'General information about this website and the creative material published here.'
+        : 'Información general sobre este sitio web y los contenidos creativos publicados en él.'}
+      icon={<Scale className="h-4 w-4" />}
+    >
+      <SitePageCard className="border-l-4 border-l-amber-500">
+        <h2 className="font-display text-xl font-semibold">{isEn ? 'Website owner' : 'Titular del sitio web'}</h2>
+        <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+          <div><dt className="font-semibold">{isEn ? 'Name or legal entity' : 'Nombre o razón social'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'To be confirmed' : 'Pendiente de confirmar'}</dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Tax ID' : 'NIF o identificador fiscal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'To be confirmed' : 'Pendiente de confirmar'}</dd></div>
+          <div className="sm:col-span-2"><dt className="font-semibold">{isEn ? 'Registered address' : 'Domicilio legal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">{isEn ? 'To be confirmed' : 'Pendiente de confirmar'}</dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Contact' : 'Contacto'}</dt><dd className="mt-1"><Link href={`/${locale}/contacto`} className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">{isEn ? 'Contact form' : 'Formulario de contacto'}</Link></dd></div>
+        </dl>
+      </SitePageCard>
 
-        <div className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 space-y-8 shadow-2xl">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-400">
-              <Scale className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-4xl font-black text-white">
-                Aviso Legal
-              </h1>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">
-                Información general y propiedad intelectual
-              </p>
-            </div>
+      <SitePageCard>
+        <div className="flex items-start gap-3">
+          <FileText className="mt-1 h-5 w-5 shrink-0 text-[var(--seasonal-accent-strong)]" />
+          <div>
+            <h2 className="font-display text-xl font-semibold">{isEn ? 'Intellectual property' : 'Propiedad intelectual'}</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+              {isEn
+                ? 'The Curileta name, characters, stories, illustrations, logos, audiovisual works and page design may be protected by intellectual-property rights. Rights belong to their respective owners. Do not reproduce or use protected material commercially without prior authorisation from the rights holder.'
+                : 'El nombre Curileta, sus personajes, historias, ilustraciones, logotipos, obras audiovisuales y diseño de la web pueden estar protegidos por derechos de propiedad intelectual. Los derechos corresponden a sus respectivos titulares. No reproduzcas ni utilices comercialmente material protegido sin autorización previa de quien tenga los derechos.'}
+            </p>
           </div>
-
-          <section className="space-y-4 text-sm text-slate-300 leading-relaxed">
-            <h2 className="text-xl font-bold text-white">1. Titularidad del Sitio Web</h2>
-            <p>
-              El presente sitio web oficial de *Las Aventuras de Curileta* es propiedad y está administrado por el equipo de producción editorial y marca oficial de Curileta con sede en España.
-            </p>
-            <p>
-              Para cualquier consulta legal o comercial, puede dirigirse a través de nuestro canal unificado en la sección de <Link href={`/${locale}/contacto`} className="text-amber-400 underline">contacto</Link> o por correo a <code className="text-emerald-400 bg-slate-950 px-2 py-1 rounded">legal@curileta.com</code>.
-            </p>
-          </section>
-
-          <section className="space-y-4 text-sm text-slate-300 leading-relaxed">
-            <h2 className="text-xl font-bold text-white">2. Propiedad Intelectual e Industrial</h2>
-            <p>
-              Todos los contenidos de este sitio web, incluyendo de forma no limitativa: el nombre comercial *Curileta*, los personajes (Curileta, Pompón, Quetzal, Lulú), textos narrativos, ilustraciones originales, música, logotipos, vídeos y diseños son creaciones protegidas por la legislación española e internacional de propiedad intelectual y derechos de autor.
-            </p>
-            <p>
-              Queda estrictamente prohibida la reproducción, distribución, comunicación pública o transformación de estos elementos con fines comerciales sin la autorización previa y por escrito de los titulares de los derechos.
-            </p>
-          </section>
-
-          <section className="space-y-4 text-sm text-slate-300 leading-relaxed">
-            <h2 className="text-xl font-bold text-white">3. Licencias y Uso Educativo</h2>
-            <p>
-              Colegios, centros educativos y bibliotecas públicas que deseen utilizar material complementario o solicitar visitas de autor pueden hacerlo a través del formulario de <Link href={`/${locale}/colaboraciones`} className="text-amber-400 underline">colaboraciones educativas</Link>.
-            </p>
-          </section>
         </div>
-      </div>
-    </div>
+      </SitePageCard>
+
+      <SitePageCard>
+        <h2 className="font-display text-xl font-semibold">{isEn ? 'Use of the website' : 'Uso del sitio web'}</h2>
+        <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+          {isEn
+            ? 'Please use this website lawfully and avoid actions that could disrupt its availability or security. External links lead to services operated by third parties, which are responsible for their own content and policies.'
+            : 'Utiliza esta web de forma lícita y evita acciones que puedan afectar a su disponibilidad o seguridad. Los enlaces externos dirigen a servicios de terceros, responsables de sus propios contenidos y políticas.'}
+        </p>
+        <Link href={`/${locale}/contacto`} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]">
+          <Mail className="h-4 w-4" />{isEn ? 'Contact the team' : 'Contactar con el equipo'}
+        </Link>
+      </SitePageCard>
+    </SitePageLayout>
   );
 }

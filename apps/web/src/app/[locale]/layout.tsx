@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { locales, Locale, isValidLocale } from '@curileta/i18n';
 import { Header } from '@/components/Header';
@@ -6,6 +7,20 @@ import { Footer } from '@/components/Footer';
 
 import { cmsProvider } from '@curileta/cms';
 import { SeasonalThemeProvider } from '@/providers/SeasonalThemeProvider';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: {
+      template: locale === 'en' ? '%s | Curileta Adventures' : '%s | Las Aventuras de Curileta',
+      default: locale === 'en' ? 'Curileta Adventures — Official Website' : 'Las Aventuras de Curileta — Web Oficial',
+    },
+  };
+}
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

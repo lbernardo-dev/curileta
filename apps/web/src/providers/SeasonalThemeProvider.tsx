@@ -19,27 +19,62 @@ const SeasonalThemeContext = createContext<SeasonalThemeContextType>({
   themeKey: null,
 });
 
-const STORAGE_KEY = 'curileta-seasonal-disabled';
+const STORAGE_KEY_PREFIX = 'curileta-seasonal-disabled:';
+const LEGACY_STORAGE_KEY = 'curileta-seasonal-disabled';
+
+const getCampaignStorageKey = (event: SeasonalEvent, now = new Date()) => {
+  const start = new Date(event.startDate);
+  const end = new Date(event.endDate);
+  const startMonth = start.getUTCMonth();
+  const endMonth = end.getUTCMonth();
+  const crossesYear = endMonth < startMonth || (endMonth === startMonth && end.getUTCDate() < start.getUTCDate());
+  const currentMonth = now.getUTCMonth();
+  const currentDay = now.getUTCDate();
+  const isInEndPartOfCrossYearCampaign = crossesYear && (
+    currentMonth < endMonth || (currentMonth === endMonth && currentDay <= end.getUTCDate())
+  );
+  const campaignStartYear = now.getUTCFullYear() - (isInEndPartOfCrossYearCampaign ? 1 : 0);
+
+  return `${STORAGE_KEY_PREFIX}${event.id}:${campaignStartYear}`;
+};
 
 export const SeasonalThemeProvider: React.FC<{
   activeEvent: SeasonalEvent | null;
   children: React.ReactNode;
 }> = ({ activeEvent, children }) => {
-  const [isUserDismissed, setIsUserDismissed] = useState(false);
+  const [dismissedEvent, setDismissedEvent] = useState<{ id: string | null; dismissed: boolean }>({
+    id: null,
+    dismissed: false,
+  });
   const [mounted, setMounted] = useState(false);
+  const campaignStorageKey = activeEvent ? getCampaignStorageKey(activeEvent) : null;
 
   useEffect(() => {
     setMounted(true);
+    if (!activeEvent || !campaignStorageKey) {
+      setDismissedEvent({ id: null, dismissed: false });
+      return;
+    }
+
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored === 'true') {
-        setIsUserDismissed(true);
+      const scopedValue = localStorage.getItem(campaignStorageKey);
+      const legacyValue = localStorage.getItem(LEGACY_STORAGE_KEY);
+      const dismissed = scopedValue === 'true' || (scopedValue === null && legacyValue === 'true');
+
+      // Migrate the old global preference once, so it only affects its current campaign.
+      if (scopedValue === null && legacyValue === 'true') {
+        localStorage.setItem(campaignStorageKey, 'true');
       }
+      if (legacyValue !== null) localStorage.removeItem(LEGACY_STORAGE_KEY);
+
+      setDismissedEvent({ id: campaignStorageKey, dismissed });
     } catch {
       // Ignorar errores de localStorage
+      setDismissedEvent({ id: campaignStorageKey, dismissed: false });
     }
-  }, []);
+  }, [campaignStorageKey]);
 
+  const isUserDismissed = dismissedEvent.id === campaignStorageKey && dismissedEvent.dismissed;
   const isSeasonalActive = Boolean(activeEvent && activeEvent.active && !isUserDismissed);
   const themeKey = isSeasonalActive && activeEvent ? activeEvent.themeKey : null;
 
@@ -60,14 +95,18 @@ export const SeasonalThemeProvider: React.FC<{
   }, [mounted, isSeasonalActive, themeKey]);
 
   const toggleSeasonalTheme = () => {
-    setIsUserDismissed((prev) => {
-      const next = !prev;
+    if (!campaignStorageKey) return;
+
+    setDismissedEvent((previous) => {
+      const currentlyDismissed = previous.id === campaignStorageKey && previous.dismissed;
+      const next = !currentlyDismissed;
       try {
-        localStorage.setItem(STORAGE_KEY, next ? 'true' : 'false');
+        if (next) localStorage.setItem(campaignStorageKey, 'true');
+        else localStorage.removeItem(campaignStorageKey);
       } catch {
         // Ignorar errores de almacenamiento
       }
-      return next;
+      return { id: campaignStorageKey, dismissed: next };
     });
   };
 

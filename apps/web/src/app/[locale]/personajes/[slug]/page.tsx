@@ -4,21 +4,22 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { locales, Locale, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@curileta/cms';
+import { getCharacterImageAspectRatio } from '@/lib/character-image';
+import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import {
   Sparkles,
   ArrowLeft,
   Compass,
   BookOpen,
-  Volume2,
   Briefcase,
   Lightbulb,
   Shield,
   Zap,
   MapPin,
-  Download,
   Share2,
   ChevronRight,
   Award,
+  Download,
 } from 'lucide-react';
 
 export async function generateStaticParams() {
@@ -95,13 +96,6 @@ export default async function CharacterDetailPage({
             <span>Volver a la Galería de Personajes</span>
           </Link>
 
-          <Link
-            href={`/${locale}/fondos`}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-emerald-500/30 text-emerald-300 text-xs font-bold hover:bg-slate-800 transition-colors"
-          >
-            <Download className="w-3.5 h-3.5 text-amber-400" />
-            <span>Fondos 2K de {character.name}</span>
-          </Link>
         </div>
 
         {/* Ficha Principal de Pasaporte de Explorador */}
@@ -114,7 +108,7 @@ export default async function CharacterDetailPage({
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8 sm:gap-12">
             {/* Retrato 3D con halo */}
             <div className="flex flex-col items-center shrink-0">
-              <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-2xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 relative group">
+              <div className="w-56 sm:w-64 rounded-3xl overflow-hidden shadow-2xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 relative group" style={{ aspectRatio: getCharacterImageAspectRatio(character.mainImage.url, character.mainImage.aspectRatio) }}>
                 <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-950">
                   <img
                     src={character.mainImage.url}
@@ -164,9 +158,9 @@ export default async function CharacterDetailPage({
                 </div>
               )}
 
-              {character.id === 'joey-canguro' && (
+              {character.id === 'joey' && (
                 <div className="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs leading-relaxed">
-                  <strong>Familia del Outback:</strong> Mamá Canguro y el bebé canguro. Joey es el koala de peluche inseparable que Curileta rescató en Uluru.
+                  <strong>Familia del Outback:</strong> Mamá Canguro y Bebé Canguro son dos personajes distintos. Joey es el koala de peluche de Bebé Canguro, rescatado por Curileta en Uluru.
                 </div>
               )}
 
@@ -190,14 +184,17 @@ export default async function CharacterDetailPage({
         {/* Cita Célebre de Expedición */}
         {character.voiceQuote && (
           <div className="mt-8 rounded-3xl bg-amber-500/10 border border-amber-500/30 p-6 sm:p-8 flex items-start gap-4 text-amber-200">
-            <div className="p-3 rounded-2xl bg-amber-500/20 shrink-0 mt-0.5">
-              <Volume2 className="w-6 h-6 text-amber-400" />
-            </div>
+            <CharacterAvatarImage
+              slug={character.slug}
+              name={character.name}
+              size={56}
+              alt={locale === 'en' ? `${character.name} portrait` : `Retrato de ${character.name}`}
+            />
             <div>
               <span className="text-xs uppercase font-mono font-bold tracking-wider text-amber-400 block mb-1">
                 Voz & Lema de Expedición:
               </span>
-              <p className="text-lg sm:text-xl font-bold italic leading-snug">
+              <p className="text-lg sm:text-xl font-bold leading-snug">
                 {character.voiceQuote[locale] || character.voiceQuote.es}
               </p>
             </div>
@@ -339,7 +336,7 @@ export default async function CharacterDetailPage({
           </div>
         )}
 
-        {/* CTA Libros y Fondos 2K */}
+        {/* CTA relacionado con la historia */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-4 text-center">
           <Link
             href={`/${locale}/libros`}
@@ -349,13 +346,6 @@ export default async function CharacterDetailPage({
             <span>Descubrir libros con {character.name}</span>
           </Link>
 
-          <Link
-            href={`/${locale}/fondos`}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-sm bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 shadow-xl transition-all"
-          >
-            <Download className="w-4 h-4 text-amber-400" />
-            <span>Descargar fondos de pantalla 2K</span>
-          </Link>
         </div>
       </div>
     </div>

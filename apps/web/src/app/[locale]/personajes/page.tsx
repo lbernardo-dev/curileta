@@ -7,11 +7,12 @@ import { cmsProvider } from '@curileta/cms';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { Sparkles, ArrowRight, Compass, Download, Shield } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Catálogo de los 19 Personajes — Las Aventuras de Curileta',
-  description:
-    'Conoce a los 19 personajes oficiales de Las Aventuras de Curileta: fichas técnicas, modelos 3D, roles de expedición y pasaportes oficiales.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return locale === 'en'
+    ? { title: 'Characters and friends', description: 'Meet Curileta’s friends and explore their individual profiles.' }
+    : { title: 'Personajes y amigos', description: 'Conoce a los amigos de Curileta y descubre sus fichas individuales.' };
+}
 
 export default async function CharactersPage({
   params,
@@ -26,6 +27,7 @@ export default async function CharactersPage({
   }
 
   const characters = await cmsProvider.getCharacters(locale);
+  const isEn = locale === 'en';
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen transition-colors duration-300">
@@ -33,23 +35,25 @@ export default async function CharactersPage({
       <div className="pt-16 sm:pt-24 pb-8 text-center max-w-3xl mx-auto px-4">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider mb-4 shadow-lg backdrop-blur-md">
           <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-          <span>La Gran Alianza de Exploradores (19 Personajes)</span>
+          <span>{isEn ? 'The explorers’ gathering (' + characters.length + ' characters)' : 'La gran alianza de exploradores (' + characters.length + ' personajes)'}</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight">
-          Catálogo Oficial de Personajes
+          {isEn ? 'Meet Curileta’s friends' : 'Conoce a los personajes'}
         </h1>
         <p className="mt-4 text-slate-600 dark:text-slate-300 text-base sm:text-lg">
-          Cada travesía suma nuevas amistades y saberes ancestrales. Explora sus fichas 3D con efecto tilt, revisa sus mochilas y abre sus pasaportes individuales.
+          {isEn
+            ? 'Every journey brings new friends and things to learn. Explore their profiles, discover what they carry and open their story pages.'
+            : 'Cada travesía suma nuevas amistades y cosas que aprender. Explora sus fichas, descubre qué llevan en sus mochilas y abre sus historias.'}
         </p>
 
-        {/* Acceso directo a fondos de pantalla 2K */}
+        {/* Acceso a los fondos de pantalla */}
         <div className="mt-6 flex justify-center">
           <Link
             href={`/${locale}/fondos`}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors shadow-md"
           >
             <Download className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            <span>Descargar Fondos de Pantalla 2K de los Personajes</span>
+            <span>{isEn ? 'Explore wallpapers' : 'Ver fondos de pantalla'}</span>
           </Link>
         </div>
       </div>
@@ -61,7 +65,7 @@ export default async function CharactersPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-12 border-t border-slate-200 dark:border-slate-900">
         <div className="flex items-center gap-2 mb-6">
           <Compass className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-          <h2 className="text-xl font-black text-slate-900 dark:text-white">Directorio de Pasaportes Individuales</h2>
+          <h2 className="text-xl font-black text-slate-900 dark:text-white">{isEn ? 'Character directory' : 'Directorio de personajes'}</h2>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -80,7 +84,7 @@ export default async function CharactersPage({
                 </span>
               </div>
               <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white">
-                <span>Ver ficha</span>
+                <span>{isEn ? 'View profile' : 'Ver ficha'}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </Link>

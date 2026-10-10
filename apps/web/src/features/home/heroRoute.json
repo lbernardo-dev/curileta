@@ -1,0 +1,781 @@
+[
+  {
+    "order": 1,
+    "name": {
+      "es": "Bosque Encantado — Hogar de Curileta",
+      "en": "Enchanted Forest — Curileta’s Home"
+    },
+    "country": {
+      "es": "España",
+      "en": "Spain"
+    },
+    "whatHappens": {
+      "es": "Curileta y Pompón juegan explorando los árboles del bosque. Curileta siente el deseo de conocer el mundo, prepara su mochila, se despide de su mejor amigo y comienza su gran aventura.",
+      "en": "Curileta and Pompón explore the forest trees. Curileta yearns to see the world, packs her gear, says goodbye, and embarks on her journey."
+    },
+    "lat": 40.4168,
+    "isTravesia": false,
+    "monumentId": "espana-inicio",
+    "lng": -3.7038
+  },
+  {
+    "order": 2,
+    "name": {
+      "es": "Teotihuacán — Pirámide del Sol",
+      "en": "Teotihuacan — Pyramid of the Sun"
+    },
+    "country": {
+      "es": "México",
+      "en": "Mexico"
+    },
+    "whatHappens": {
+      "es": "Curileta contempla la inmensa pirámide y comienza a subir sus escalones. En la cima conoce a Quetzal, quien le habla sobre los antiguos conocimientos de astronomía y la relación entre las pirámides y las estrellas.",
+      "en": "Curileta climbs the sun pyramid and meets Quetzal, who reveals ancient astronomical knowledge and constellation alignments."
+    },
+    "lat": 19.6925,
+    "isTravesia": false,
+    "monumentId": "mexico",
+    "lng": -98.8437
+  },
+  {
+    "order": 3,
+    "name": {
+      "es": "Cuexcomate — Puebla",
+      "en": "Cuexcomate — Puebla"
+    },
+    "country": {
+      "es": "México",
+      "en": "Mexico"
+    },
+    "whatHappens": {
+      "es": "Curileta cuenta en su carta que ha escalado este pequeño volcán en un segundo. Es uno de los descubrimientos sorprendentes que comparte con Pompón.",
+      "en": "Curileta scales this 13-meter volcano in a flash, sharing this wonder in her letter to Pompón."
+    },
+    "lat": 19.0414,
+    "isTravesia": false,
+    "monumentId": "cuexcomate",
+    "lng": -98.2063
+  },
+  {
+    "order": 4,
+    "name": {
+      "es": "Machu Picchu",
+      "en": "Machu Picchu"
+    },
+    "country": {
+      "es": "Perú",
+      "en": "Peru"
+    },
+    "whatHappens": {
+      "es": "Curileta llega a la ciudad inca entre montañas y nubes. Conoce a Lulú, una llama que la protege del frío con su lana y le permite contemplar desde su lomo la extraordinaria construcción de piedra.",
+      "en": "Curileta reaches the Inca citadel in the clouds, sheltered by Lulú the llama while marveling at seamless stone architecture."
+    },
+    "isTravesia": false,
+    "monumentId": "peru",
+    "lat": -13.1631,
+    "lng": -72.545
+  },
+  {
+    "order": 5,
+    "name": {
+      "es": "Océano Atlántico — El Galeón de los Sueños",
+      "en": "Atlantic Ocean — The Galleon of Dreams"
+    },
+    "country": {
+      "es": "Travesía marítima entre América y África",
+      "en": "Ocean voyage between Americas and Africa"
+    },
+    "whatHappens": {
+      "es": "Curileta viaja escondida a bordo de un antiguo galeón. Una terrible tormenta amenaza el barco y la pequeña lagartija trepa por el mástil para sujetar una cuerda que golpea el timón, ayudando a salvar la embarcación.",
+      "en": "Stowed away on an old wooden galleon, Curileta climbs the mast during a tempest to secure a loose helm rope, saving the ship."
+    },
+    "lat": 15,
+    "isTravesia": true,
+    "monumentId": "galleon",
+    "lng": -35
+  },
+  {
+    "order": 6,
+    "name": {
+      "es": "Puerto de Alejandría",
+      "en": "Port of Alexandria"
+    },
+    "country": {
+      "es": "Egipto",
+      "en": "Egypt"
+    },
+    "whatHappens": {
+      "es": "Curileta desembarca después de su gran travesía oceánica y comienza su recorrido por Egipto, dirigiéndose hacia las famosas pirámides.",
+      "en": "Curileta disembarks in Alexandria after the ocean crossing, setting off across Egypt toward the pyramids."
+    },
+    "lat": 31.2001,
+    "lng": 29.9187,
+    "isTravesia": false,
+    "monumentId": "egipto"
+  },
+  {
+    "order": 7,
+    "name": {
+      "es": "Pirámides de Giza",
+      "en": "Pyramids of Giza"
+    },
+    "country": {
+      "es": "Egipto",
+      "en": "Egypt"
+    },
+    "whatHappens": {
+      "es": "Curileta descubre las enormes construcciones del antiguo Egipto, soporta el intenso calor del desierto y conoce a Emi, un escarabajo pelotero que le enseña que la sombra es el verdadero tesoro.",
+      "en": "Curileta explores the desert pyramids under blazing heat, learning from dung beetle Emi that shade is a true treasure."
+    },
+    "lat": 29.9792,
+    "lng": 31.1342,
+    "isTravesia": false,
+    "monumentId": "egipto"
+  },
+  {
+    "order": 8,
+    "name": {
+      "es": "Interior de la Gran Pirámide de Giza",
+      "en": "Inside the Great Pyramid of Giza"
+    },
+    "country": {
+      "es": "Egipto",
+      "en": "Egypt"
+    },
+    "whatHappens": {
+      "es": "Emi guía a Curileta por misteriosos pasadizos. La pequeña exploradora descubre jeroglíficos y aprende que las construcciones antiguas guardan historias de faraones y dioses egipcios.",
+      "en": "Emi leads Curileta through hidden passages, deciphering wall hieroglyphs of pharaohs and sacred deities."
+    },
+    "lat": 29.9792,
+    "lng": 31.1342,
+    "isTravesia": false,
+    "monumentId": "egipto"
+  },
+  {
+    "order": 9,
+    "name": {
+      "es": "Campos de lava negra y géiseres",
+      "en": "Black Lava Fields and Geysers"
+    },
+    "country": {
+      "es": "Islandia",
+      "en": "Iceland"
+    },
+    "whatHappens": {
+      "es": "Curileta camina entre paisajes volcánicos helados cuando un géiser lanza inesperadamente una enorme columna de agua caliente. El contraste entre hielo y calor volcánico la deja fascinada.",
+      "en": "Curileta walks black volcanic plains when a geyser suddenly erupts steaming water, mesmerizing her with fire-and-ice contrast."
+    },
+    "lat": 64.3104,
+    "isTravesia": false,
+    "monumentId": "geyser",
+    "lng": -20.3024
+  },
+  {
+    "order": 10,
+    "name": {
+      "es": "Laguna Azul",
+      "en": "Blue Lagoon"
+    },
+    "country": {
+      "es": "Islandia",
+      "en": "Iceland"
+    },
+    "whatHappens": {
+      "es": "Curileta conoce a Picu, un simpático frailecillo. Hablan sobre sus aventuras y el calor que esconde la tierra islandesa. Curileta disfruta de un baño en el agua templada mientras caen copos de nieve sobre su sombrero.",
+      "en": "Curileta meets puffin Picu, enjoying warm turquoise waters as snowflakes settle gently on her explorer hat."
+    },
+    "lat": 63.8804,
+    "isTravesia": false,
+    "monumentId": "islandia",
+    "lng": -22.4495
+  },
+  {
+    "order": 11,
+    "name": {
+      "es": "Cielo nocturno de Islandia — Auroras boreales",
+      "en": "Icelandic Night Sky — Northern Lights"
+    },
+    "country": {
+      "es": "Islandia",
+      "en": "Iceland"
+    },
+    "whatHappens": {
+      "es": "Curileta descubre las luces verdes y violetas que iluminan el cielo nocturno y comparte con Pompón la maravilla de las auroras boreales.",
+      "en": "Curileta gazes upon dancing green and violet aurora curtains, recording the celestial magic for Pompón."
+    },
+    "lat": 64.9631,
+    "isTravesia": false,
+    "monumentId": "aurora",
+    "lng": -19.0208
+  },
+  {
+    "order": 12,
+    "name": {
+      "es": "Tokio",
+      "en": "Tokyo"
+    },
+    "country": {
+      "es": "Japón",
+      "en": "Japan"
+    },
+    "whatHappens": {
+      "es": "Curileta llega a una inmensa ciudad llena de luces, pantallas y movimiento. Se sorprende al descubrir un lugar donde la tecnología y las tradiciones conviven de forma extraordinaria.",
+      "en": "Curileta arrives in neon-lit Tokyo, amazed by the harmony between cutting-edge technology and ancient traditions."
+    },
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "isTravesia": false,
+    "monumentId": "japon"
+  },
+  {
+    "order": 13,
+    "name": {
+      "es": "Tren bala Shinkansen y campos de cerezos",
+      "en": "Shinkansen Bullet Train and Sakura Groves"
+    },
+    "country": {
+      "es": "Japón",
+      "en": "Japan"
+    },
+    "whatHappens": {
+      "es": "Curileta viaja en un tren de alta velocidad y contempla los paisajes de cerezos en flor. Conoce a Zipi-Bot, un pequeño robot perdido, y lo ayuda a reencontrarse con su dueño.",
+      "en": "Riding the ultra-fast bullet train through blooming sakura, Curileta helps lost toy robot Zipi-Bot reunite with his owner."
+    },
+    "lat": 35.0116,
+    "lng": 135.7681,
+    "isTravesia": false,
+    "monumentId": "japon"
+  },
+  {
+    "order": 14,
+    "name": {
+      "es": "Monte Fuji — Vista de la montaña",
+      "en": "Mount Fuji — Mountain Vista"
+    },
+    "country": {
+      "es": "Japón",
+      "en": "Japan"
+    },
+    "whatHappens": {
+      "es": "Curileta contempla el famoso volcán japonés, cuya forma de cono perfecto le parece dibujada con un lápiz. Lo describe posteriormente en su carta a Pompón sin ascender a la cumbre.",
+      "en": "Curileta gazes upon sacred Mount Fuji’s symmetrical snowcap from afar, admiring its hand-drawn appearance."
+    },
+    "lat": 35.3606,
+    "lng": 138.7274,
+    "isTravesia": false,
+    "monumentId": "japon"
+  },
+  {
+    "order": 15,
+    "name": {
+      "es": "Mar de Filipinas",
+      "en": "Philippine Sea"
+    },
+    "country": {
+      "es": "Travesía marítima por el Pacífico occidental",
+      "en": "Pacific Ocean Sea Voyage"
+    },
+    "whatHappens": {
+      "es": "Curileta navega en un velero y descubre la bioluminiscencia nocturna. Un grupo de peces voladores salta cerca de la cubierta y conoce a Glub, quien le cuenta curiosidades de las profundidades oceánicas.",
+      "en": "Sailing through glowing bioluminescent waters, flying fish leap aboard and Glub shares oceanic abyss tales."
+    },
+    "lat": 18,
+    "lng": 130,
+    "isTravesia": true,
+    "monumentId": "sailboat"
+  },
+  {
+    "order": 16,
+    "name": {
+      "es": "Outback australiano",
+      "en": "Australian Outback"
+    },
+    "country": {
+      "es": "Australia",
+      "en": "Australia"
+    },
+    "whatHappens": {
+      "es": "Curileta llega a un paisaje de tierra roja, grandes rocas y horizontes infinitos. Conoce a una familia de canguros e inicia una pequeña misión para devolver el peluche perdido de una cría.",
+      "en": "Stepping into red desert earth, Curileta sets out on a quest to return the baby kangaroo’s lost stuffed toy."
+    },
+    "lng": 133,
+    "isTravesia": false,
+    "monumentId": "australia",
+    "lat": -25
+  },
+  {
+    "order": 17,
+    "name": {
+      "es": "Riachuelo del Outback",
+      "en": "Outback Creek"
+    },
+    "country": {
+      "es": "Australia",
+      "en": "Australia"
+    },
+    "whatHappens": {
+      "es": "Durante su búsqueda, Curileta cruza un riachuelo y casi pisa a un ornitorrinco. Poco después debe esquivar a un emú que intenta picotear su sombrero.",
+      "en": "Crossing a bush creek, Curileta almost steps on a platypus and dodges a curious emu pecking at her hat."
+    },
+    "lng": 132.8,
+    "isTravesia": false,
+    "monumentId": "australia",
+    "lat": -25.2
+  },
+  {
+    "order": 18,
+    "name": {
+      "es": "Uluru",
+      "en": "Uluru"
+    },
+    "country": {
+      "es": "Australia",
+      "en": "Australia"
+    },
+    "whatHappens": {
+      "es": "Curileta llega hasta la enorme formación rocosa roja y encuentra a la familia canguro. Devuelve el peluche llamado Joey al bebé y recibe como agradecimiento un emocionante paseo a grandes saltos.",
+      "en": "Curileta reaches the giant monolith, returns the stuffed koala Joey, and is gifted a joyful 4-meter leaping ride."
+    },
+    "lng": 131.0369,
+    "isTravesia": false,
+    "monumentId": "australia",
+    "lat": -25.3444
+  },
+  {
+    "order": 19,
+    "name": {
+      "es": "Hyams Beach",
+      "en": "Hyams Beach"
+    },
+    "country": {
+      "es": "Australia",
+      "en": "Australia"
+    },
+    "whatHappens": {
+      "es": "La mamá canguro lleva a Curileta hasta una playa de arena extraordinariamente blanca. La exploradora disfruta del paisaje, se despide de sus nuevos amigos, descubre un huevo de emú y prepara su siguiente travesía.",
+      "en": "Mama Kangaroo carries Curileta to the whitest sands on Earth, discovering a dark emu egg before setting sail."
+    },
+    "lng": 150.6936,
+    "isTravesia": false,
+    "monumentId": "australia",
+    "lat": -35.1423
+  },
+  {
+    "order": 20,
+    "name": {
+      "es": "Mar de Tasmania",
+      "en": "Tasman Sea"
+    },
+    "country": {
+      "es": "Entre Australia y Nueva Zelanda",
+      "en": "Between Australia and New Zealand"
+    },
+    "whatHappens": {
+      "es": "Curileta contempla el mar desde la costa australiana y utiliza un pequeño tronco como balsa para iniciar su recorrido hacia Nueva Zelanda.",
+      "en": "Curileta uses a small eucalyptus log as a raft to cross the ocean towards New Zealand."
+    },
+    "lng": 160,
+    "isTravesia": true,
+    "monumentId": "raft",
+    "lat": -37
+  },
+  {
+    "order": 21,
+    "name": {
+      "es": "Bosques de la Isla Norte",
+      "en": "North Island Forests"
+    },
+    "country": {
+      "es": "Nueva Zelanda",
+      "en": "New Zealand"
+    },
+    "whatHappens": {
+      "es": "Curileta explora un bosque de árboles gigantes y helechos plateados. Durante la noche conoce a Kiki, un kiwi que le explica por qué estos pájaros no vuelan y cómo viven.",
+      "en": "Walking among giant silver ferns, Curileta meets nocturnal kiwi Kiki and learns about his unique life."
+    },
+    "lng": 175.5,
+    "isTravesia": false,
+    "monumentId": "nueva-zelanda",
+    "lat": -38
+  },
+  {
+    "order": 22,
+    "name": {
+      "es": "Cuevas de Waitomo",
+      "en": "Waitomo Caves"
+    },
+    "country": {
+      "es": "Nueva Zelanda",
+      "en": "New Zealand"
+    },
+    "whatHappens": {
+      "es": "Kiki lleva a Curileta a una cueva misteriosa cuyo techo está iluminado por miles de pequeños organismos bioluminiscentes. Curileta siente que está contemplando un cielo lleno de estrellas bajo tierra.",
+      "en": "Kiki guides Curileta into underground caverns illuminated by thousands of sapphire glowworms like night skies."
+    },
+    "lng": 175.103,
+    "isTravesia": false,
+    "monumentId": "nueva-zelanda",
+    "lat": -38.261
+  },
+  {
+    "order": 23,
+    "name": {
+      "es": "Aldea maorí",
+      "en": "Maori Village"
+    },
+    "country": {
+      "es": "Nueva Zelanda",
+      "en": "New Zealand"
+    },
+    "whatHappens": {
+      "es": "Curileta conoce parte de la cultura maorí y presencia una haka. Intenta imitar los movimientos de los bailarines con sus pequeñas patitas, provocando las carcajadas de Kiki.",
+      "en": "Curileta observes the powerful Maori Haka dance and tries imitating the moves with her little paws, making Kiki laugh."
+    },
+    "lng": 176.249,
+    "isTravesia": false,
+    "monumentId": "nueva-zelanda",
+    "lat": -38.138
+  },
+  {
+    "order": 24,
+    "name": {
+      "es": "Hobbiton — El pueblo de las puertas redondas",
+      "en": "Hobbiton — Town of Round Doors"
+    },
+    "country": {
+      "es": "Nueva Zelanda",
+      "en": "New Zealand"
+    },
+    "whatHappens": {
+      "es": "Curileta descubre un pueblo de fantasía escondido entre colinas verdes, con casitas de puertas redondas, chimeneas, jardines y huertos. Explora sus rincones y encuentra una pequeña pluma dorada que decide regalar a Pompón.",
+      "en": "Curileta wanders tiny hill-homes with colorful round doors, finding a golden feather souvenir for Pompón."
+    },
+    "lng": 175.683,
+    "isTravesia": false,
+    "monumentId": "nueva-zelanda",
+    "lat": -37.872
+  },
+  {
+    "order": 25,
+    "name": {
+      "es": "Gran Muralla China",
+      "en": "Great Wall of China"
+    },
+    "country": {
+      "es": "China",
+      "en": "China"
+    },
+    "whatHappens": {
+      "es": "Curileta descubre una construcción que serpentea entre las montañas como un enorme dragón de piedra. Comienza a trepar sus interminables escalones y admira la grandeza del monumento.",
+      "en": "Curileta climbs the winding Great Wall resembling a resting stone dragon spanning mountain ridges."
+    },
+    "lat": 40.4319,
+    "lng": 116.5704,
+    "isTravesia": false,
+    "monumentId": "china"
+  },
+  {
+    "order": 26,
+    "name": {
+      "es": "Bosque de bambú junto a la Gran Muralla",
+      "en": "Bamboo Forest by the Great Wall"
+    },
+    "country": {
+      "es": "China",
+      "en": "China"
+    },
+    "whatHappens": {
+      "es": "Curileta conoce a Bao, un panda gigante que está comiendo bambú. Ambos entablan amistad, hablan de la suerte y los dragones de la cultura china y buscan juntos un brote especialmente tierno.",
+      "en": "Curileta meets hungry panda Bao among bamboo shoots, sharing lore on dragons, luck, and friendship."
+    },
+    "lat": 40.435,
+    "lng": 116.565,
+    "isTravesia": false,
+    "monumentId": "china"
+  },
+  {
+    "order": 27,
+    "name": {
+      "es": "Torre de vigilancia de la Gran Muralla",
+      "en": "Great Wall Watchtower"
+    },
+    "country": {
+      "es": "China",
+      "en": "China"
+    },
+    "whatHappens": {
+      "es": "Bao lleva a Curileta sobre su cabeza hasta una de las torres más altas de la muralla. Juntos contemplan un maravilloso atardecer sobre las montañas.",
+      "en": "Bao carries Curileta atop his head to the highest watchtower to watch the sunset paint the distant peaks."
+    },
+    "lat": 40.438,
+    "lng": 116.572,
+    "isTravesia": false,
+    "monumentId": "china"
+  },
+  {
+    "order": 28,
+    "name": {
+      "es": "Roma",
+      "en": "Rome"
+    },
+    "country": {
+      "es": "Italia",
+      "en": "Italy"
+    },
+    "whatHappens": {
+      "es": "Curileta llega a la capital italiana y descubre sus estatuas, fuentes, columnas y monumentos históricos en el museo al aire libre más grande del mundo.",
+      "en": "Curileta explores fountains, ancient columns, and historic statues across Rome."
+    },
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "isTravesia": false,
+    "monumentId": "italia"
+  },
+  {
+    "order": 29,
+    "name": {
+      "es": "Florencia — Restaurante y calles artísticas",
+      "en": "Florence — Art Streets and Kitchen"
+    },
+    "country": {
+      "es": "Italia",
+      "en": "Italy"
+    },
+    "whatHappens": {
+      "es": "Curileta conoce a Gino, un ratoncito cocinero con un pequeño gorro de chef. Juntos descubren la gastronomía italiana, observan cómo se prepara una pizza y Curileta intenta pintar utilizando su cola como pincel.",
+      "en": "Curileta meets mouse chef Gino, watches flying pizza dough, and paints using her tail as an art brush."
+    },
+    "lat": 43.7696,
+    "lng": 11.2558,
+    "isTravesia": false,
+    "monumentId": "italia"
+  },
+  {
+    "order": 30,
+    "name": {
+      "es": "Torre de Pisa",
+      "en": "Leaning Tower of Pisa"
+    },
+    "country": {
+      "es": "Italia",
+      "en": "Italy"
+    },
+    "whatHappens": {
+      "es": "Curileta descubre la famosa torre inclinada y se fotografía intentando sujetarla con sus pequeñas patitas para evitar que parezca caerse.",
+      "en": "Curileta poses playfully holding up the famous 4-meter tilted tower with her paws."
+    },
+    "lat": 43.7229,
+    "lng": 10.3966,
+    "isTravesia": false,
+    "monumentId": "italia"
+  },
+  {
+    "order": 31,
+    "name": {
+      "es": "Venecia",
+      "en": "Venice"
+    },
+    "country": {
+      "es": "Italia",
+      "en": "Italy"
+    },
+    "whatHappens": {
+      "es": "Curileta descubre una ciudad donde los canales sustituyen a muchas calles y las góndolas recorren el agua sobre miles de postes de madera.",
+      "en": "Curileta marvels at Venice’s water streets, wooden piles, and singing gondoliers."
+    },
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "isTravesia": false,
+    "monumentId": "italia"
+  },
+  {
+    "order": 32,
+    "name": {
+      "es": "Alpes franceses — Travesía en autocaravana",
+      "en": "French Alps — Camper Van Ride"
+    },
+    "country": {
+      "es": "Francia",
+      "en": "France"
+    },
+    "whatHappens": {
+      "es": "Curileta viaja escondida en una autocaravana con turistas y el perro Barnaby. El olor a queso Roquefort provoca un alboroto y Curileta se esconde dentro de una baguette hasta que una niña la descubre.",
+      "en": "Stowed away in a camper van, cheese odor excites dog Barnaby and Curileta hides safely inside a baguette."
+    },
+    "lat": 45.8326,
+    "lng": 6.8652,
+    "isTravesia": true,
+    "monumentId": "campervan"
+  },
+  {
+    "order": 33,
+    "name": {
+      "es": "Torre Eiffel — París",
+      "en": "Eiffel Tower — Paris"
+    },
+    "country": {
+      "es": "Francia",
+      "en": "France"
+    },
+    "whatHappens": {
+      "es": "Curileta escala las estructuras metálicas de la famosa torre. Descubre que el hierro se dilata con el calor y contempla la impresionante vista de París.",
+      "en": "Curileta scales the iron girders of Paris, discovering that warm summer heat causes the metal to expand."
+    },
+    "lat": 48.8584,
+    "lng": 2.2945,
+    "isTravesia": false,
+    "monumentId": "francia"
+  },
+  {
+    "order": 34,
+    "name": {
+      "es": "Cafetería de la Torre Eiffel",
+      "en": "Eiffel Tower Cafe"
+    },
+    "country": {
+      "es": "Francia",
+      "en": "France"
+    },
+    "whatHappens": {
+      "es": "Curileta encuentra un delicioso croissant y lo prueba por primera vez. Después dibuja en una servilleta, disfrutando de las vistas de París y de su nueva experiencia gastronómica.",
+      "en": "Curileta tastes her first buttery crescent croissant and sketches her thoughts on a cafe napkin."
+    },
+    "lat": 48.8584,
+    "lng": 2.2945,
+    "isTravesia": false,
+    "monumentId": "francia"
+  },
+  {
+    "order": 35,
+    "name": {
+      "es": "Museo del Louvre — París",
+      "en": "Louvre Museum — Paris"
+    },
+    "country": {
+      "es": "Francia",
+      "en": "France"
+    },
+    "whatHappens": {
+      "es": "Curileta visita el museo, descubre su entrada con forma de pirámide de cristal y contempla la Mona Lisa, cuya misteriosa mirada parece seguirla mientras se mueve.",
+      "en": "Curileta visits the glass pyramid and plays peekaboo with the enigmatic eyes of the Mona Lisa."
+    },
+    "lat": 48.8606,
+    "lng": 2.3376,
+    "isTravesia": false,
+    "monumentId": "louvre"
+  },
+  {
+    "order": 36,
+    "name": {
+      "es": "Palacio de Versalles",
+      "en": "Palace of Versailles"
+    },
+    "country": {
+      "es": "Francia",
+      "en": "France"
+    },
+    "whatHappens": {
+      "es": "Curileta conoce el extraordinario palacio y su famosa Galería de los Espejos. Imagina lo divertido que sería compartir ese lugar con muchos reflejos de Pompón.",
+      "en": "Curileta explores the Hall of Mirrors with 357 gold reflections, imagining hundreds of jumping Pompons."
+    },
+    "lat": 48.8049,
+    "lng": 2.1204,
+    "isTravesia": false,
+    "monumentId": "versailles"
+  },
+  {
+    "order": 37,
+    "name": {
+      "es": "Pirineos",
+      "en": "Pyrenees Mountains"
+    },
+    "country": {
+      "es": "España",
+      "en": "Spain"
+    },
+    "whatHappens": {
+      "es": "Curileta comienza su viaje de regreso al Bosque Encantado, atravesando las montañas que separan Francia de España. Los aromas y paisajes familiares le anuncian que está cerca de casa.",
+      "en": "Curileta crosses the misty Pyrenees mountain passes, greeted by the scent of rosemary and Iberian stone."
+    },
+    "lat": 42.6667,
+    "lng": 0.5,
+    "isTravesia": false,
+    "monumentId": "pyrenees"
+  },
+  {
+    "order": 38,
+    "name": {
+      "es": "Tierras de Castilla",
+      "en": "Castilian Plains"
+    },
+    "country": {
+      "es": "España",
+      "en": "Spain"
+    },
+    "whatHappens": {
+      "es": "Curileta atraviesa paisajes de tierra rojiza en su recorrido hacia el hogar, descubriendo nuevos rincones del país donde comenzó su aventura.",
+      "en": "Curileta walks across red clay plains toward home, marveling at the land where her journey began."
+    },
+    "lat": 41.5,
+    "isTravesia": false,
+    "monumentId": "espana-inicio",
+    "lng": -4.5
+  },
+  {
+    "order": 39,
+    "name": {
+      "es": "Andalucía",
+      "en": "Andalusia"
+    },
+    "country": {
+      "es": "España",
+      "en": "Spain"
+    },
+    "whatHappens": {
+      "es": "Curileta escucha música flamenca, baila y conoce a Lola, una tortuga mora muy sabia que le da pistas para encontrar la entrada invisible de su Bosque Encantado.",
+      "en": "Listening to flamenco rhythms, Curileta meets wise tortoise Lola, who reveals the secret portal key."
+    },
+    "lat": 37.3891,
+    "isTravesia": false,
+    "monumentId": "espana-inicio",
+    "lng": -5.9845
+  },
+  {
+    "order": 40,
+    "name": {
+      "es": "Entrada invisible del Bosque Encantado",
+      "en": "Invisible Forest Portal"
+    },
+    "country": {
+      "es": "España",
+      "en": "Spain"
+    },
+    "whatHappens": {
+      "es": "Siguiendo las indicaciones de Lola, Curileta encuentra una piedra con forma de tortuga que reconoce de su infancia. Sigue un camino de flores especiales y cruza un arroyo cristalino hasta localizar la entrada de su hogar.",
+      "en": "Following Lola’s clues, Curileta spots the familiar tortoise-shaped stone, crossing crystal brooks into her forest."
+    },
+    "lat": 40.5,
+    "isTravesia": false,
+    "monumentId": "espana-inicio",
+    "lng": -3.8
+  },
+  {
+    "order": 41,
+    "name": {
+      "es": "Bosque Encantado — El gran reencuentro",
+      "en": "Enchanted Forest — The Grand Reunion"
+    },
+    "country": {
+      "es": "España",
+      "en": "Spain"
+    },
+    "whatHappens": {
+      "es": "Curileta regresa al árbol donde comenzó su aventura y vuelve a encontrarse con Pompón. Le trae recuerdos, regalos y una última carta que decide leerle personalmente. Comprende que el mayor tesoro es la amistad y el hogar.",
+      "en": "Curileta reunites under the tallest tree with Pompón, reading her final letter aloud: true treasure is home and friendship."
+    },
+    "lat": 40.4168,
+    "isTravesia": false,
+    "monumentId": "espana-inicio",
+    "lng": -3.7038
+  }
+]

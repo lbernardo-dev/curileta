@@ -1,17 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { use, useState } from 'react';
 import { Locale } from '@curileta/i18n';
 import { Mail, Send, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: 'general', label: 'Consulta General' },
-  { id: 'editorial', label: 'Editorial & Derechos de Publicación' },
-  { id: 'licensing', label: 'Licensing & Colaboraciones de Marca' },
-  { id: 'press', label: 'Prensa & Comunicación' },
-  { id: 'education', label: 'Centros Educativos & Colegios' },
-  { id: 'events', label: 'Eventos & Charlas' },
+  { id: 'general', es: 'Consulta general', en: 'General enquiry' },
+  { id: 'editorial', es: 'Editorial y derechos de publicación', en: 'Publishing and rights' },
+  { id: 'licensing', es: 'Licencias y colaboraciones', en: 'Licensing and partnerships' },
+  { id: 'press', es: 'Prensa y comunicación', en: 'Press and media' },
+  { id: 'education', es: 'Centros educativos', en: 'Education' },
+  { id: 'events', es: 'Eventos y charlas', en: 'Events and talks' },
 ];
 
 export default function ContactPage({
@@ -19,6 +18,8 @@ export default function ContactPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const { locale } = use(params);
+  const isEn = locale === 'en';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -43,7 +44,9 @@ export default function ContactPage({
     }
 
     if (!formData.adultConsent || !formData.privacyConsent) {
-      setError('Debes confirmar que eres mayor de edad y aceptar la política de privacidad.');
+      setError(isEn
+        ? 'Please confirm that you are an adult and accept the privacy policy.'
+        : 'Debes confirmar que eres mayor de edad y aceptar la política de privacidad.');
       return;
     }
 
@@ -59,30 +62,35 @@ export default function ContactPage({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Error al enviar el mensaje.');
+        const message = res.status === 503
+          ? (isEn ? 'The form is not connected to an email service yet.' : 'El formulario todavía no está conectado al servicio de correo.')
+          : (isEn ? 'We could not send your message. Please try again later.' : 'No se pudo enviar el mensaje. Inténtalo de nuevo más tarde.');
+        throw new Error(message);
       }
 
       setSubmitted(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Error al procesar el mensaje.');
+      setError(err instanceof Error ? err.message : (isEn ? 'There was a problem processing your message.' : 'Se produjo un problema al procesar el mensaje.'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="py-16 sm:py-24 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen transition-colors duration-300">
+      <div className="min-h-screen bg-[#f7f8f3] py-16 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white sm:py-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
             <Mail className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-            <span>Centro Oficial de Contacto</span>
+            <span>{isEn ? 'Contact the team' : 'Contacto'}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-            Ponte en contacto
+            {isEn ? 'Let’s talk' : 'Ponte en contacto'}
           </h1>
           <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-            Canal oficial para editoriales, medios de comunicación, acuerdos de licencia y familias. Todos los mensajes son gestionados por el equipo responsable de Las Aventuras de Curileta.
+            {isEn
+              ? 'For publishing, media, partnerships, education and family enquiries. This form is intended for adults.'
+              : 'Para consultas editoriales, prensa, colaboraciones, educación y familias. Este formulario está dirigido a personas adultas.'}
           </p>
         </div>
 
@@ -90,7 +98,10 @@ export default function ContactPage({
         <div className="mb-8 p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-emerald-300 dark:border-emerald-500/30 flex items-start gap-3 text-xs text-slate-700 dark:text-slate-300">
           <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
           <p>
-            <strong className="text-slate-900 dark:text-white">Aviso de Privacidad Infantil:</strong> Este formulario está dirigido estrictamente a personas adultas (madres, padres, tutores, docentes o profesionales del sector). No recopilamos datos personales de menores de edad.
+            <strong className="text-slate-900 dark:text-white">{isEn ? 'Privacy for children:' : 'Privacidad infantil:'}</strong>{' '}
+            {isEn
+              ? 'This form is only for adults such as parents, guardians, educators and professionals. Do not send personal information about a child.'
+              : 'Este formulario está reservado a madres, padres, tutores, docentes y profesionales. No envíes datos personales de menores.'}
           </p>
         </div>
 
@@ -99,9 +110,9 @@ export default function ContactPage({
             <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">¡Mensaje recibido con éxito!</h2>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">{isEn ? 'Your message has been sent.' : 'Tu mensaje se ha enviado.'}</h2>
             <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-              Hemos redirigido tu solicitud al departamento correspondiente ({formData.category}). Te responderemos con la mayor brevedad posible.
+              {isEn ? 'The message reached the Curileta team. We’ll reply as soon as we can.' : 'El mensaje ha llegado al equipo de Curileta. Te responderemos lo antes posible.'}
             </p>
           </div>
         ) : (
@@ -112,7 +123,7 @@ export default function ContactPage({
             {error && (
               <div className="p-4 rounded-xl bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
-                <span>{error}</span>
+                <span role="alert">{error}</span>
               </div>
             )}
 
@@ -129,29 +140,31 @@ export default function ContactPage({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Nombre y Apellidos *
+                <label htmlFor="contact-name" className="mb-2 block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {isEn ? 'Name *' : 'Nombre y apellidos *'}
                 </label>
                 <input
+                  id="contact-name"
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Tu nombre completo"
+                  placeholder={isEn ? 'Your full name' : 'Tu nombre completo'}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Correo Electrónico Profesional o de Contacto *
+                <label htmlFor="contact-email" className="mb-2 block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {isEn ? 'Contact email *' : 'Correo electrónico de contacto *'}
                 </label>
                 <input
+                  id="contact-email"
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="ejemplo@entidad.com"
+                  placeholder={isEn ? 'you@example.com' : 'ejemplo@entidad.com'}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 />
               </div>
@@ -159,30 +172,32 @@ export default function ContactPage({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Organización / Empresa (Opcional)
+                <label htmlFor="contact-company" className="mb-2 block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {isEn ? 'Organisation (optional)' : 'Organización o empresa (opcional)'}
                 </label>
                 <input
+                  id="contact-company"
                   type="text"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  placeholder="Editorial, medio o colegio"
+                  placeholder={isEn ? 'Publisher, media or school' : 'Editorial, medio o colegio'}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Categoría de la Consulta *
+                <label htmlFor="contact-category" className="mb-2 block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {isEn ? 'Topic *' : 'Motivo de la consulta *'}
                 </label>
                 <select
+                  id="contact-category"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.label}
+                      {isEn ? c.en : c.es}
                     </option>
                   ))}
                 </select>
@@ -190,15 +205,16 @@ export default function ContactPage({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Mensaje o Propuesta *
+              <label htmlFor="contact-message" className="mb-2 block text-xs font-bold text-slate-700 dark:text-slate-300">
+                {isEn ? 'Message *' : 'Mensaje *'}
               </label>
               <textarea
+                id="contact-message"
                 required
                 rows={5}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Describe tu propuesta, consulta o solicitud con detalle..."
+                placeholder={isEn ? 'Tell us how we can help...' : 'Cuéntanos cómo podemos ayudarte...'}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
               />
             </div>
@@ -214,7 +230,7 @@ export default function ContactPage({
                   className="mt-1 rounded text-emerald-600 focus:ring-emerald-400 w-4 h-4"
                 />
                 <span className="text-xs text-slate-600 dark:text-slate-300">
-                  Confirmo expresamente que soy mayor de edad (18 años o más) y realizo esta consulta en calidad de persona adulta o representante legal. *
+                  {isEn ? 'I confirm that I am 18 or older and am contacting you as an adult or legal guardian. *' : 'Confirmo que tengo 18 años o más y realizo esta consulta como persona adulta o representante legal. *'}
                 </span>
               </label>
 
@@ -227,7 +243,7 @@ export default function ContactPage({
                   className="mt-1 rounded text-emerald-600 focus:ring-emerald-400 w-4 h-4"
                 />
                 <span className="text-xs text-slate-600 dark:text-slate-300">
-                  He leído y acepto la política de privacidad y el tratamiento de datos para responder a mi solicitud. *
+                  {isEn ? 'I have read and accept the privacy policy and the use of my data to answer this enquiry. *' : 'He leído y acepto la política de privacidad y el uso de mis datos para responder a esta consulta. *'}
                 </span>
               </label>
             </div>
@@ -238,7 +254,7 @@ export default function ContactPage({
               className="w-full py-4 rounded-full font-black text-sm bg-amber-400 hover:bg-amber-300 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <Send className="w-4 h-4 text-emerald-950" />
-              <span>{loading ? 'Enviando solicitud...' : 'Enviar Mensaje al Equipo Oficial'}</span>
+              <span>{loading ? (isEn ? 'Sending...' : 'Enviando...') : (isEn ? 'Send message' : 'Enviar mensaje')}</span>
             </button>
           </form>
         )}

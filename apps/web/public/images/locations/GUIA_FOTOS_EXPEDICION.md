@@ -1,6 +1,8 @@
 # Guía de Fotografías de Lugares y Cuaderno de Expedición
 
-Coloca en esta carpeta (`apps/web/public/images/locations/`) las ilustraciones o fotografías de cada una de las 12 etapas del viaje de Curileta:
+Coloca en esta carpeta (`apps/web/public/images/locations/`) las ilustraciones oficiales de cada una de las etapas del viaje de Curileta. La ruta de la landing las presenta en marcos apaisados **4:3**; prepara imágenes de **1600 × 1200 px** como mínimo, en WebP optimizado. Mantén el monumento o punto principal dentro del encuadre central para que la composición también funcione en móvil.
+
+Ahora mismo la página usa fotos genéricas de destino como recurso provisional. Para sustituirlas, copia el archivo con el nombre indicado y actualiza el `heroImage.url` de esa parada en `packages/cms/src/localProvider.ts` a `/images/locations/<archivo>`. No añadas texto ni títulos dentro de la imagen: los presenta la propia tarjeta.
 
 ## Nombres de Archivo:
 

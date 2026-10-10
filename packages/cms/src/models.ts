@@ -36,6 +36,7 @@ export interface Character {
 
 export interface Book {
   id: string;
+  author?: string;
   title: LocalizedString;
   slug: string;
   subtitle?: LocalizedString;
@@ -50,6 +51,7 @@ export interface Book {
   ageRange: string;
   pageCount?: number;
   publisher?: string;
+  format?: LocalizedString;
   badge?: LocalizedString;
   colorTheme?: string;
   destinations?: string[];
@@ -184,7 +186,7 @@ export interface SeasonalEvent {
   slug: string;
   name: LocalizedString;
   tagline: LocalizedString;
-  themeKey: 'halloween' | 'christmas' | 'spring' | 'summer';
+  themeKey: 'halloween' | 'christmas' | 'spring' | 'summer' | 'easter' | 'valentines';
   active: boolean;
   startDate: string;
   endDate: string;

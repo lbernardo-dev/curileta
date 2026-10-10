@@ -1,21 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Locale } from '@curileta/i18n';
 import { Location, NarrativeMilestone } from '@curileta/cms';
 import {
   Compass,
   MapPin,
   Sparkles,
-  Navigation,
   Play,
   Mail,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   ChevronRight,
-  RefreshCw,
-  Search,
 } from 'lucide-react';
 
 interface AdventureRadarProps {
@@ -33,17 +27,17 @@ interface UserCoords {
 
 // Preset cities for quick testing
 const PRESET_CITIES = [
-  { name: 'Madrid, España', lat: 40.4168, lng: -3.7038 },
-  { name: 'Ciudad de México, México', lat: 19.4326, lng: -99.1332 },
-  { name: 'Cusco, Perú', lat: -13.5319, lng: -71.9675 },
-  { name: 'El Cairo, Egipto', lat: 30.0444, lng: 31.2357 },
-  { name: 'Reikiavik, Islandia', lat: 64.1466, lng: -21.9426 },
-  { name: 'Tokio, Japón', lat: 35.6762, lng: 139.6503 },
-  { name: 'Sídney, Australia', lat: -33.8688, lng: 151.2093 },
-  { name: 'Roma, Italia', lat: 41.9028, lng: 12.4964 },
-  { name: 'París, Francia', lat: 48.8566, lng: 2.3522 },
-  { name: 'Buenos Aires, Argentina', lat: -34.6037, lng: -58.3816 },
-  { name: 'Bogotá, Colombia', lat: 4.711, lng: -74.0721 },
+  { name: 'Madrid, España', en: 'Madrid, Spain', lat: 40.4168, lng: -3.7038 },
+  { name: 'Ciudad de México, México', en: 'Mexico City, Mexico', lat: 19.4326, lng: -99.1332 },
+  { name: 'Cusco, Perú', en: 'Cusco, Peru', lat: -13.5319, lng: -71.9675 },
+  { name: 'El Cairo, Egipto', en: 'Cairo, Egypt', lat: 30.0444, lng: 31.2357 },
+  { name: 'Reikiavik, Islandia', en: 'Reykjavik, Iceland', lat: 64.1466, lng: -21.9426 },
+  { name: 'Tokio, Japón', en: 'Tokyo, Japan', lat: 35.6762, lng: 139.6503 },
+  { name: 'Sídney, Australia', en: 'Sydney, Australia', lat: -33.8688, lng: 151.2093 },
+  { name: 'Roma, Italia', en: 'Rome, Italy', lat: 41.9028, lng: 12.4964 },
+  { name: 'París, Francia', en: 'Paris, France', lat: 48.8566, lng: 2.3522 },
+  { name: 'Buenos Aires, Argentina', en: 'Buenos Aires, Argentina', lat: -34.6037, lng: -58.3816 },
+  { name: 'Bogotá, Colombia', en: 'Bogota, Colombia', lat: 4.711, lng: -74.0721 },
 ];
 
 // Haversine formula to compute distance in kilometers
@@ -71,57 +65,15 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
   locations = [],
   milestones = [],
 }) => {
-  const [userCoords, setUserCoords] = useState<UserCoords | null>(null);
-  const [isLocating, setIsLocating] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
+  const [userCoords, setUserCoords] = useState<UserCoords>(() => ({
+    lat: PRESET_CITIES[0].lat,
+    lng: PRESET_CITIES[0].lng,
+    cityName: locale === 'en' ? PRESET_CITIES[0].en : PRESET_CITIES[0].name,
+  }));
   const [selectedDestinationIndex, setSelectedDestinationIndex] = useState(0);
 
-  // Request browser geolocation
-  const handleDetectLocation = () => {
-    setIsLocating(true);
-    setLocationError(null);
-
-    if (!('geolocation' in navigator)) {
-      setLocationError(
-        locale === 'en'
-          ? 'Geolocation is not supported by your browser. Please select a city below.'
-          : 'La geolocalización no está soportada por tu navegador. Elige una ciudad abajo.'
-      );
-      setIsLocating(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setUserCoords({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          cityName: locale === 'en' ? 'Your Current Location' : 'Tu Ubicación Actual',
-        });
-        setIsLocating(false);
-      },
-      (error) => {
-        setIsLocating(false);
-        if (error.code === error.PERMISSION_DENIED) {
-          setLocationError(
-            locale === 'en'
-              ? 'Permission denied. You can select any city from the presets to test.'
-              : 'Permiso de ubicación no concedido. ¡Puedes probar con una ciudad de la lista!'
-          );
-        } else {
-          setLocationError(
-            locale === 'en'
-              ? 'Could not obtain location. Try selecting a city preset.'
-              : 'No pudimos obtener la ubicación. Prueba seleccionando una ciudad.'
-          );
-        }
-      },
-      { timeout: 10000, enableHighAccuracy: false }
-    );
-  };
-
-  // Default to first preset if no coords detected yet
-  const activeCoords: UserCoords = userCoords || PRESET_CITIES[0];
+  // City presets are processed locally; the browser location is never requested.
+  const activeCoords: UserCoords = userCoords;
 
   // Calculate sorted destinations by distance to user
   const sortedDestinations = useMemo(() => {
@@ -162,98 +114,60 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
   return (
     <section
       id="radar-curileta"
-      className="relative z-10 py-24 bg-gradient-to-b from-emerald-950 via-slate-950 to-slate-950 text-white overflow-hidden transition-colors duration-300"
+      className="relative z-10 py-24 bg-gradient-to-b from-[#123a2f] via-[#0e2b22] to-[#0b211a] text-white overflow-hidden transition-colors duration-300"
     >
       {/* Resplandor y círculos de radar de fondo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-        <div className="w-[500px] h-[500px] sm:w-[800px] sm:h-[800px] rounded-full border border-emerald-400 animate-ping duration-1000" />
+        <div className="w-[500px] h-[500px] sm:w-[800px] sm:h-[800px] rounded-full border border-emerald-300/70 animate-radar-breathe" />
         <div className="w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] rounded-full border border-amber-400" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Cabecera con Emi el Escarabajo 3D */}
+        {/* El atlas se presenta como una herramienta de exploración, sin atribuirlo a otro personaje. */}
         <div className="relative max-w-4xl mx-auto mb-14 text-center">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
-            <div className="relative group shrink-0">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-500 to-emerald-400 p-1 shadow-2xl shadow-yellow-500/30 group-hover:rotate-3 transition-transform duration-300">
-                <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center overflow-hidden relative">
-                  <img
-                    src="/images/characters/emi-main.webp"
-                    alt="Emi el Escarabajo Navegante"
-                    className="w-24 h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-115 transition-transform duration-500"
-                  />
-                </div>
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-amber-200">
-                🧭 GPS 3D
-              </div>
-            </div>
-
             <div className="text-center sm:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/80 border border-emerald-400/50 text-emerald-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
-                <Compass className="w-4 h-4 text-amber-400 animate-spin duration-3000" />
-                <span>Radar Geográfico de Expedición</span>
+                <Compass className="w-4 h-4 text-amber-400" />
+                <span>{locale === 'en' ? 'Interactive expedition atlas' : 'Atlas interactivo de la expedición'}</span>
               </div>
 
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-                ¿Ha estado Curileta cerca de ti?<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-amber-300 to-sky-300">
-                  Descubre qué aventura vivió cerca de tu ciudad.
+              <h2 className="text-balance text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+                {locale === 'en' ? 'Which stop is near you?' : '¿Qué parada queda cerca?'}<br />
+                <span className="text-amber-300">
+                  {locale === 'en' ? 'Choose a city and follow the route.' : 'Elige una ciudad y sigue la ruta.'}
                 </span>
               </h2>
             </div>
           </div>
 
           <p className="mt-3 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Activa el radar para calcular en tiempo real los kilómetros exactos que separan tu ubicación de los 11 destinos del libro. Te recomendaremos el capítulo, los personajes y la carta postal correspondiente.
+            {locale === 'en'
+              ? 'Pick a sample city to find the closest place from the book in a straight line. We never request or store your location.'
+              : 'Elige una ciudad de ejemplo y descubre qué lugar del libro queda más cerca en línea recta. No pedimos ni guardamos tu ubicación.'}
           </p>
 
-          {/* Botón de Detección GPS con Bisel Táctil 3D */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={handleDetectLocation}
-              disabled={isLocating}
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 border-b-4 border-amber-600 hover:border-b-2 hover:translate-y-[2px] active:border-b-0 active:translate-y-[4px] shadow-[0_6px_20px_rgba(245,158,11,0.4)] transition-all cursor-pointer disabled:opacity-50"
-            >
-              {isLocating ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-                  <span>Calculando coordenadas GPS...</span>
-                </>
-              ) : (
-                <>
-                  <Navigation className="w-4 h-4 fill-current text-slate-950" />
-                  <span>Detectar mi ubicación actual</span>
-                </>
-              )}
-            </button>
-          </div>
-
-          {locationError && (
-            <p className="mt-3 text-xs text-amber-300 font-medium">
-              ℹ️ {locationError}
-            </p>
-          )}
-
-          {/* Selector de Ciudades Preset con botones táctiles */}
+          {/* Sample city selector. The browser location is never requested. */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs">
-            <span className="text-slate-400 font-bold mr-1">O prueba una ciudad:</span>
+            <span className="mr-1 font-bold text-slate-400">{locale === 'en' ? 'Choose a sample city:' : 'Elige una ciudad de ejemplo:'}</span>
             {PRESET_CITIES.map((city) => {
-              const isSelected = activeCoords.cityName === city.name;
+              const cityName = locale === 'en' ? city.en : city.name;
+              const isSelected = activeCoords.cityName === cityName;
               return (
                 <button
                   key={city.name}
                   onClick={() => {
-                    setUserCoords({ lat: city.lat, lng: city.lng, cityName: city.name });
+                    setUserCoords({ lat: city.lat, lng: city.lng, cityName });
                     setSelectedDestinationIndex(0);
                   }}
+                  aria-pressed={isSelected}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     isSelected
                       ? 'bg-gradient-to-b from-amber-300 to-amber-400 text-slate-950 border-b-2 border-amber-600 font-black shadow-md'
-                      : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-emerald-400/50 hover:text-white shadow-xs'
+                      : 'bg-[#0b211a]/85 text-slate-200 border-emerald-950/70 hover:border-emerald-300/50 hover:text-white shadow-xs'
                   }`}
                 >
-                  {city.name.split(',')[0]}
+                  {cityName.split(',')[0]}
                 </button>
               );
             })}
@@ -262,7 +176,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
 
         {/* Tarjeta de Resultado del Radar */}
         {currentDestination && (
-          <div className="max-w-4xl mx-auto rounded-3xl bg-slate-900/90 border-2 border-emerald-400/40 p-6 sm:p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden">
+          <div className="max-w-4xl mx-auto rounded-3xl bg-[#12382e]/90 border border-emerald-200/25 p-6 sm:p-10 shadow-[0_24px_70px_rgba(2,18,13,0.38)] backdrop-blur-2xl relative overflow-hidden">
             {/* Cabecera del hallazgo */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
               <div className="flex items-center gap-3">
@@ -272,10 +186,10 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono font-black uppercase text-amber-400">
-                      DESTINO MÁS CERCANO A TI
+                      {locale === 'en' ? 'CLOSEST STORY PLACE TO' : 'LUGAR DEL RELATO MÁS CERCANO A'}
                     </span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      📍 {activeCoords.cityName || 'Ubicación'}
+                      {activeCoords.cityName || (locale === 'en' ? 'Selected city' : 'Ciudad elegida')}
                     </span>
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-black text-white mt-0.5">
@@ -290,7 +204,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
               {/* Indicador de Distancia */}
               <div className="text-left sm:text-right bg-slate-950/80 px-5 py-3 rounded-2xl border border-slate-800">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
-                  DISTANCIA ESTIMADA
+                  {locale === 'en' ? 'APPROXIMATE DISTANCE' : 'DISTANCIA APROXIMADA'}
                 </span>
                 <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-300 font-mono">
                   {currentDestination.distanceKm.toLocaleString()} km
@@ -302,7 +216,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
             <div className="py-6 space-y-4">
               <h4 className="text-sm font-black uppercase tracking-wider text-amber-300 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>Lo que Curileta vivió en este lugar</span>
+                <span>{locale === 'en' ? 'A moment from the story' : 'Un momento de la historia'}</span>
               </h4>
 
               <p className="text-base text-slate-200 leading-relaxed">
@@ -313,7 +227,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
               {currentDestination.milestones.length > 0 && (
                 <div className="p-4 rounded-2xl bg-slate-950/60 border border-emerald-500/20">
                   <div className="text-xs font-bold text-emerald-300 mb-1">
-                    📖 Crónica del libro (Hito #{currentDestination.milestones[0].order}):
+                    {locale === 'en' ? `From the story (stop ${currentDestination.milestones[0].order}):` : `Un momento del relato (parada ${currentDestination.milestones[0].order}):`}
                   </div>
                   <p className="text-xs sm:text-sm text-slate-300 italic leading-relaxed">
                     «{currentDestination.milestones[0].whatHappens[locale] || currentDestination.milestones[0].whatHappens.es}»
@@ -330,25 +244,22 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-mono font-black uppercase text-sky-400 flex items-center gap-1">
                       <Play className="w-3 h-3 fill-current" />
-                      <span>CAPÍTULO RECOMENDADO</span>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300">
-                      DISPONIBLE
+                      <span>{locale === 'en' ? 'THE BOOK' : 'EL LIBRO'}</span>
                     </span>
                   </div>
                   <h5 className="font-bold text-sm text-white">
-                    Aventuras de Curileta en {currentDestination.location.name[locale] || currentDestination.location.name.es}
+                    {locale === 'en' ? 'Curileta’s journey to ' : 'El viaje de Curileta por '}{currentDestination.location.name[locale] || currentDestination.location.name.es}
                   </h5>
                   <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                    Acompaña a la pequeña lagartija en su expedición por estas tierras milenarias.
+                    {locale === 'en' ? 'Read about the places and story moments in the book.' : 'Lee sobre los lugares y momentos de la historia en el libro.'}
                   </p>
                 </div>
 
                 <a
-                  href="#escena-youtube"
+                  href={`/${locale}/libros/las-aventuras-de-curileta`}
                   className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors"
                 >
-                  <span>Ver capítulo en el reproductor</span>
+                  <span>{locale === 'en' ? 'Explore the book' : 'Conocer el libro'}</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -359,25 +270,25 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-mono font-black uppercase text-amber-400 flex items-center gap-1">
                       <Mail className="w-3.5 h-3.5" />
-                      <span>CARTA ENVIADA A POMPÓN</span>
+                      <span>{locale === 'en' ? 'MEET THE FRIENDS' : 'CONOCE A SUS AMIGOS'}</span>
                     </span>
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-400/20 text-amber-300">
-                      MATASELLOS #{currentDestination.location.passportStamp?.code || '01'}
+                      {locale === 'en' ? 'PASSPORT' : 'PASAPORTE'} #{currentDestination.location.passportStamp?.code || '01'}
                     </span>
                   </div>
                   <h5 className="font-bold text-sm text-white">
-                    Palabras enviadas al Bosque Encantado
+                    {locale === 'en' ? 'Friends along the way' : 'Amistades que acompañan el viaje'}
                   </h5>
                   <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                    Curileta escribió una carta sellada a mano para compartir sus descubrimientos con su mejor amigo.
+                    {locale === 'en' ? 'Meet the characters who bring each part of the journey to life.' : 'Conoce a los personajes que acompañan cada tramo de la aventura.'}
                   </p>
                 </div>
 
                 <a
-                  href="#escena-cartas"
+                  href={`/${locale}/personajes`}
                   className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors"
                 >
-                  <span>Abrir sobre en el Baúl Postal</span>
+                  <span>{locale === 'en' ? 'Meet the crew' : 'Conocer a la tripulación'}</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -385,8 +296,8 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
 
             {/* Navegación por otros destinos cercanos */}
             <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-              <span className="font-bold">Explorar los siguientes destinos más cercanos:</span>
-              <div className="flex gap-2">
+              <span className="font-bold">{locale === 'en' ? 'Explore other nearby story places:' : 'Explora otros lugares cercanos del relato:'}</span>
+              <div className="flex flex-wrap gap-2">
                 {sortedDestinations.slice(0, 4).map((dest, idx) => (
                   <button
                     key={dest.location.id}

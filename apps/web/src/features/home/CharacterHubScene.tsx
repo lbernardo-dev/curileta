@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { Character, INITIAL_CHARACTERS } from '@curileta/cms';
+import { getCharacterImageAspectRatio } from '@/lib/character-image';
+import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import {
   Sparkles,
   Compass,
@@ -14,7 +16,6 @@ import {
   ChevronRight,
   Heart,
   Award,
-  Volume2,
   X,
   MapPin,
   Smile,
@@ -38,6 +39,81 @@ interface CharacterTheme {
   badgeBg: string;
   badgeText: string;
 }
+
+const copy = (locale: Locale, es: string, en: string) => locale === 'en' ? en : es;
+
+const CHARACTER_NAME_EN: Record<string, string> = {
+  curileta: 'Curileta', pompon: 'Pompón', quetzal: 'Quetzal',
+  lulu: 'Lulu the Llama', emi: 'Emi the Beetle', picu: 'Picu the Puffin',
+  'zipi-bot': 'Zipi-Bot', kiki: 'Kiki the Kiwi', bao: 'Bao the Panda',
+  gino: 'Gino the Mouse Chef', lola: 'Lola the Moorish Tortoise',
+  'canguro-mama': 'Mama Kangaroo', 'mama-canguro': 'Mama Kangaroo',
+  'canguro-bebe': 'Baby Kangaroo', 'bebe-canguro': 'Baby Kangaroo',
+  joey: 'Joey, the plush koala', 'joey-peluche': 'Joey, the plush koala',
+  'pez-volador': 'Glub the Flying Fish', glub: 'Glub the Flying Fish',
+  ornitorrinco: 'The Wise Platypus', emu: 'The Curious Emu',
+  basset: 'Barnaby the Basset Hound', barnaby: 'Barnaby the Basset Hound',
+  cobaya: 'Andean Guinea Pig', cuy: 'Andean Guinea Pig',
+};
+
+const CHARACTER_TRAIT_EN: Record<string, string> = {
+  Curiosa: 'Curious', Curioso: 'Curious', Valiente: 'Brave', Leal: 'Loyal',
+  Observadora: 'Observant', Observador: 'Observant', Empática: 'Empathetic',
+  Tierno: 'Tender', Tierna: 'Tender', Fiel: 'Faithful', Hogareño: 'Home-loving',
+  Alegre: 'Cheerful', Saltarín: 'Hoppy', Místico: 'Mystical', Majestuoso: 'Majestic',
+  Sabio: 'Wise', Sabia: 'Wise', Ágil: 'Agile', Generosa: 'Generous',
+  Tranquila: 'Calm', Tranquilo: 'Calm', Acogedora: 'Welcoming', Fuerte: 'Strong',
+  Filosófico: 'Thoughtful', Tenaz: 'Tenacious', Amable: 'Kind', Perspicaz: 'Perceptive',
+  Divertido: 'Playful', Divertida: 'Playful', Expresivo: 'Expressive', Expresiva: 'Expressive',
+  Acróbata: 'Acrobatic', Entusiasta: 'Enthusiastic', Musical: 'Musical', Tímido: 'Shy',
+  Nocturno: 'Nocturnal', Glotón: 'Food-loving', Sereno: 'Serene', Bondadoso: 'Kind-hearted',
+  Rilax: 'Relaxed', Relajado: 'Relaxed', Apasionado: 'Passionate', Gourmet: 'Gourmet', Creativo: 'Creative',
+  Serena: 'Serene', Cálida: 'Warm', Agradecida: 'Grateful', Protectora: 'Protective',
+  Veloz: 'Fast', Cariñosa: 'Affectionate', Juguetón: 'Playful', Juguetona: 'Playful',
+  Silencioso: 'Quiet', Reconfortante: 'Comforting', Suave: 'Gentle', Incondicional: 'Devoted',
+  Luminoso: 'Bright', Vivaz: 'Lively', Enigmático: 'Mysterious',
+  Pacífico: 'Peaceful', Acelerado: 'Energetic', Simpático: 'Friendly', Incansable: 'Tireless',
+  Bonachón: 'Good-natured', Despistado: 'Absent-minded', Sociable: 'Sociable',
+};
+
+const characterName = (character: Character, locale: Locale) =>
+  locale === 'en' ? CHARACTER_NAME_EN[character.id] || character.name : character.name;
+
+const characterTrait = (trait: string, locale: Locale) => {
+  if (locale === 'en') return CHARACTER_TRAIT_EN[trait] || trait;
+  return trait === 'Rilax' ? 'Relajado' : trait;
+};
+
+const CHARACTER_REGION_EN: Record<string, string> = {
+  curileta: 'Enchanted Forest / Global',
+  pompon: 'Enchanted Forest (Spain)',
+  quetzal: 'Teotihuacan (Mexico)',
+  lulu: 'Machu Picchu (Peru)',
+  emi: 'Giza & Cairo (Egypt)',
+  picu: 'Blue Lagoon (Iceland)',
+  'zipi-bot': 'Tokyo & Shibuya (Japan)',
+  'canguro-mama': 'Uluru & Outback (Australia)',
+  'mama-canguro': 'Uluru & Outback (Australia)',
+  'canguro-bebe': 'Uluru & Hyams Beach (Australia)',
+  'bebe-canguro': 'Uluru & Hyams Beach (Australia)',
+  joey: 'Uluru (Australia)',
+  'joey-peluche': 'Uluru (Australia)',
+  kiki: 'Waitomo Caves (New Zealand)',
+  bao: 'Great Wall & Bamboo (China)',
+  gino: 'Florence & Rome (Italy)',
+  lola: 'Andalusia & Forest (Spain)',
+  ornitorrinco: 'Outback Creeks (Australia)',
+  emu: 'Outback Plains (Australia)',
+  'pez-volador': 'Philippine Sea & Pacific Ocean',
+  glub: 'Philippine Sea & Pacific Ocean',
+  cobaya: 'Sacred Valley of the Andes (Peru)',
+  cuy: 'Sacred Valley of the Andes (Peru)',
+  basset: 'French Alps (France)',
+  barnaby: 'French Alps (France)',
+};
+
+const localizedRegion = (id: string, region: string, locale: Locale) =>
+  locale === 'en' ? CHARACTER_REGION_EN[id] || region : region;
 
 const CHARACTER_THEMES: Record<string, CharacterTheme> = {
   curileta: {
@@ -234,7 +310,7 @@ const getCharacterImagePath = (slug: string): string => {
     case 'joey-peluche':
       return '/images/characters/joey-main.webp';
     case 'joey-canguro':
-      return '/images/characters/canguro-mama-main.webp';
+      return '/images/characters/joey-main.webp';
     case 'kiki':
       return '/images/characters/kiki-main.webp';
     case 'bao':
@@ -266,7 +342,7 @@ const CharacterAvatar: React.FC<{
   character: Character;
   locale: Locale;
   className?: string;
-}> = ({ character, locale, className = 'w-full h-full object-cover' }) => {
+}> = ({ character, locale, className = 'w-full h-full object-contain' }) => {
   const [imgSrc, setImgSrc] = useState<string>(() => character.mainImage?.url || getCharacterImagePath(character.slug));
 
   useEffect(() => {
@@ -283,7 +359,7 @@ const CharacterAvatar: React.FC<{
   return (
     <img
       src={imgSrc}
-      alt={character.mainImage?.alt?.[locale] || character.mainImage?.alt?.es || character.name}
+      alt={character.mainImage?.alt?.[locale] || character.mainImage?.alt?.es || characterName(character, locale)}
       className={className}
       onError={handleError}
       loading="lazy"
@@ -299,42 +375,7 @@ const TiltCharacterCard: React.FC<{
   onSelect: () => void;
   onOpenZoom: (c: Character) => void;
 }> = ({ character, locale, isSelected, onSelect, onOpenZoom }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [transform, setTransform] = useState<string>('');
-  const [glarePosition, setGlarePosition] = useState<{ x: number; y: number; opacity: number }>({
-    x: 50,
-    y: 50,
-    opacity: 0,
-  });
-
   const theme = getCharacterTheme(character.id);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-
-    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.025, 1.025, 1.025)`);
-    setGlarePosition({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
-      opacity: 0.22,
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
-    setGlarePosition({ x: 50, y: 50, opacity: 0 });
-  };
 
   const roleText = character.passportRole
     ? character.passportRole[locale] || character.passportRole.es
@@ -342,90 +383,84 @@ const TiltCharacterCard: React.FC<{
 
   return (
     <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       onClick={onSelect}
-      style={{
-        transform,
-        transition: 'transform 0.15s ease-out, border-color 0.2s ease, box-shadow 0.2s ease',
-        transformStyle: 'preserve-3d',
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect();
+        }
       }}
-      className={`group relative rounded-[2rem] p-5 cursor-pointer border-2 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between ${
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
+      className={`group relative rounded-[1.65rem] p-4 sm:p-5 cursor-pointer border transition-all duration-300 flex flex-col justify-between focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
         isSelected
-          ? 'bg-gradient-to-b from-amber-50 via-white to-amber-50/40 dark:from-slate-900/95 dark:via-slate-900 dark:to-slate-950 border-amber-400 shadow-[0_16px_40px_rgba(245,158,11,0.25)] ring-2 ring-amber-400/50 text-slate-900 dark:text-white -translate-y-1'
-          : 'bg-white/95 dark:bg-slate-900/80 border-slate-200/90 dark:border-slate-800 hover:border-emerald-400/60 hover:bg-slate-50 dark:hover:bg-slate-900/95 shadow-lg dark:shadow-[0_12px_32px_rgba(0,0,0,0.4)] text-slate-800 dark:text-white hover:-translate-y-1'
+          ? 'bg-[#fff9ed] dark:bg-slate-900 border-amber-400 shadow-[0_14px_36px_rgba(104,75,22,0.14)] ring-1 ring-amber-300/70 text-slate-900 dark:text-white -translate-y-1'
+          : 'bg-[#fffdf8] dark:bg-slate-900/80 border-[#e8e1d5] dark:border-slate-800 hover:border-emerald-700/45 hover:bg-white dark:hover:bg-slate-900 shadow-[0_10px_30px_rgba(24,54,41,0.06)] text-slate-800 dark:text-white hover:-translate-y-1'
       }`}
     >
-      {/* Orificio superior estilo blíster de juguete coleccionable */}
-      <div className="w-10 h-2 rounded-full bg-slate-300/60 dark:bg-slate-800/80 border border-slate-400/30 dark:border-slate-700/60 mx-auto -mt-1 mb-2.5 shadow-inner" />
-
-      {/* Glare 3D interactivo acrílico */}
-      <div
-        className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-200"
-        style={{
-          background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255,255,255,${glarePosition.opacity}), transparent 60%)`,
-        }}
-      />
-
       <div>
         {/* Cabecera de la tarjeta: País / Región + ID */}
         <div className="flex items-center justify-between gap-1.5 mb-2">
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black border shadow-xs ${theme.badgeBg} ${theme.badgeText}`}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${theme.badgeBg} ${theme.badgeText}`}
           >
             <span>{theme.flag}</span>
-            <span className="truncate max-w-[120px]">{theme.region}</span>
+            <span className="truncate max-w-[120px]">{localizedRegion(character.id, theme.region, locale)}</span>
           </span>
-          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-black shrink-0 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-mono text-slate-600 dark:text-slate-300 font-semibold shrink-0 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
             #{character.id.toUpperCase().slice(0, 8)}
           </span>
         </div>
 
-        {/* Retrato 3D estilo Blíster con Avatar que sobresale en relieve */}
-        <div className="relative w-36 h-36 mx-auto my-3 group-hover:scale-105 transition-transform duration-500">
-          {/* Cúpula acrílica con resplandor */}
-          <div className={`w-full h-full rounded-3xl bg-gradient-to-tr ${theme.gradient} p-1.5 shadow-[0_10px_25px_rgba(0,0,0,0.25)] relative overflow-hidden`}>
-            {/* Brillo diagonal de cristal */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent rounded-3xl pointer-events-none z-10" />
-
-            <div className="w-full h-full rounded-[20px] overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 relative flex items-center justify-center">
-              <CharacterAvatar
-                character={character}
-                locale={locale}
-                className="w-full h-full object-contain p-1.5 drop-shadow-[0_12px_20px_rgba(0,0,0,0.9)] group-hover:scale-115 group-hover:-translate-y-1 transition-all duration-500"
-              />
-              {/* Botón de lupa rápida */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenZoom(character);
-                }}
-                title="Ampliar Render 3D"
-                className="absolute bottom-1.5 right-1.5 p-1.5 rounded-xl bg-slate-950/85 hover:bg-amber-400 hover:text-slate-950 text-white border border-white/20 transition-all opacity-0 group-hover:opacity-100 shadow-lg cursor-pointer z-20"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-            </div>
+        {/* Avatar circular; la ilustración completa se conserva para la ficha ampliada */}
+        <div
+          className={`relative mx-auto my-4 h-44 w-44 max-w-full rounded-full border-2 bg-gradient-to-tr bg-[#f5edde] p-1 shadow-[0_12px_30px_rgba(61,45,23,0.12)] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-0.5 ${theme.gradient}`}
+        >
+          <div className="relative h-full w-full overflow-hidden rounded-full bg-[#f5edde]">
+            <CharacterAvatarImage
+              slug={character.slug}
+              name={characterName(character, locale)}
+              size={176}
+              className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.025]"
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenZoom(character);
+              }}
+              title={copy(locale, 'Ampliar retrato', 'Enlarge portrait')}
+              aria-label={copy(locale, `Ampliar retrato de ${characterName(character, locale)}`, `Enlarge ${characterName(character, locale)} portrait`)}
+              className="absolute bottom-2 right-2 rounded-full border border-white/80 bg-white/95 p-2 text-emerald-950 shadow-md transition-colors hover:bg-amber-300 cursor-pointer"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
         {/* Nombre y Rol */}
         <div className="text-center mt-3">
-          <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-amber-500 dark:group-hover:text-amber-300 transition-colors">
-            {character.name}
+          <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-emerald-800 dark:group-hover:text-amber-300 transition-colors">
+            {characterName(character, locale)}
           </h3>
-          <p className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wider line-clamp-2 min-h-[2.2rem] flex items-center justify-center">
+          <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mt-1.5 tracking-wide line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-5">
             {roleText}
           </p>
         </div>
 
         {/* Cita célebre de expedición */}
         {character.voiceQuote && (
-          <p className="text-[11px] text-slate-600 dark:text-slate-300/90 text-center italic mt-2 px-1 line-clamp-2 leading-relaxed bg-slate-50/80 dark:bg-slate-950/50 py-1 rounded-xl">
-            «{character.voiceQuote[locale] || character.voiceQuote.es}»
-          </p>
+          <div className="mt-2 flex items-center gap-2 rounded-xl bg-[#f7f4ec] px-2 py-2 dark:bg-slate-950/50">
+            <CharacterAvatarImage
+              slug={character.slug}
+              name={characterName(character, locale)}
+              size={32}
+            />
+            <p className="line-clamp-2 text-xs leading-5 text-slate-700 dark:text-slate-300">
+              «{character.voiceQuote[locale] || character.voiceQuote.es}»
+            </p>
+          </div>
         )}
       </div>
 
@@ -435,7 +470,7 @@ const TiltCharacterCard: React.FC<{
           <div className="space-y-2 mb-3">
             <div className="flex items-center justify-between text-[10px] font-black text-slate-700 dark:text-slate-300">
               <span className="flex items-center gap-1 text-amber-600 dark:text-amber-300">
-                <Compass className="w-3.5 h-3.5" /> Curiosidad
+                <Compass className="w-3.5 h-3.5" /> {copy(locale, 'Curiosidad', 'Curiosity')}
               </span>
               <span className="font-mono text-amber-600 dark:text-amber-400 font-black">{character.explorerStats.curiosity}%</span>
             </div>
@@ -448,7 +483,7 @@ const TiltCharacterCard: React.FC<{
 
             <div className="flex items-center justify-between text-[10px] font-black text-slate-700 dark:text-slate-300 pt-0.5">
               <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-300">
-                <Shield className="w-3.5 h-3.5" /> Valentía
+                <Shield className="w-3.5 h-3.5" /> {copy(locale, 'Valentía', 'Courage')}
               </span>
               <span className="font-mono text-emerald-600 dark:text-emerald-400 font-black">{character.explorerStats.courage}%</span>
             </div>
@@ -469,7 +504,7 @@ const TiltCharacterCard: React.FC<{
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b-4 border-slate-300 dark:border-slate-700 group-hover:bg-gradient-to-b group-hover:from-amber-300 group-hover:via-amber-400 group-hover:to-amber-500 group-hover:text-slate-950 group-hover:border-amber-600 shadow-sm'
             }`}
           >
-            <span>{isSelected ? '★ Pasaporte Abierto' : 'Abrir Pasaporte'}</span>
+            <span>{isSelected ? copy(locale, '★ Pasaporte abierto', '★ Passport open') : copy(locale, 'Abrir pasaporte', 'Open passport')}</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </span>
         </div>
@@ -483,9 +518,16 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   characters: initialCharacters = [],
   hideHeader = false,
 }) => {
-  const charactersList =
+  const characterSource =
     initialCharacters && initialCharacters.length > 0 ? initialCharacters : INITIAL_CHARACTERS;
-  const [selectedCharacter, setSelectedCharacter] = useState<Character>(charactersList[0]);
+  const charactersList = useMemo(() => {
+    const leadOrder: Record<string, number> = { curileta: 0, pompon: 1 };
+    return [...characterSource].sort(
+      (a, b) => (leadOrder[a.id] ?? 2) - (leadOrder[b.id] ?? 2)
+    );
+  }, [characterSource]);
+  const initialCharacter = charactersList.find((character) => character.id === 'curileta') || charactersList[0];
+  const [selectedCharacter, setSelectedCharacter] = useState<Character>(initialCharacter);
   const [activeTab, setActiveTab] = useState<'biografia' | 'mochila' | 'curiosidades'>('biografia');
   const [filterCategory, setFilterCategory] = useState<
     'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania'
@@ -534,9 +576,9 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   const selectedTheme = getCharacterTheme(selectedCharacter.id);
 
   return (
-    <section id="escena-personajes" className="relative z-10 py-28 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
+    <section id="escena-personajes" className="relative z-10 py-24 sm:py-28 bg-[#f7f5ed] dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Línea divisoria superior */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-emerald-500 to-sky-400 shadow-[0_0_20px_rgba(16,185,129,0.8)]" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-700/45 to-transparent" />
 
       {/* Partículas de ambiente */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.08),transparent)] pointer-events-none" />
@@ -547,16 +589,20 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
               <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-              <span>Escena 03 — El Espacio de los Personajes</span>
+              <span>{copy(locale, 'Escena 03 — El espacio de los personajes', 'Scene 03 — Meet the characters')}</span>
             </div>
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              La Alianza de los<br />
+              {copy(locale, 'La alianza de los', 'Meet the')}<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
-                19 Grandes Exploradores.
+                {copy(locale, '19 grandes exploradores.', '19 great explorers.')}
               </span>
             </h2>
             <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-              Mueve el cursor sobre las fichas 3D para sentir el relieve de su pasaporte oficial. Cada personaje posee habilidades únicas indispensables para descifrar los enigmas del mundo. Haz clic en la lupa para ampliar su diseño 3D en alta definición.
+              {copy(
+                locale,
+                'Explora el pasaporte de cada personaje y descubre las habilidades que ayudan a descifrar los enigmas del mundo. Pulsa la lupa para ampliar su diseño 3D en alta definición.',
+                'Explore each character’s passport and discover the skills they bring to the adventure. Select the magnifier to view a high-resolution 3D portrait.'
+              )}
             </p>
           </div>
         )}
@@ -564,11 +610,11 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         {/* Filtros por Región / Categoría */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
           {[
-            { id: 'todos', label: `Todos los Exploradores (${charactersList.length})` },
-            { id: 'protagonistas', label: 'Protagonistas (2)' },
-            { id: 'america-africa', label: 'América & África (4)' },
-            { id: 'europa', label: 'Europa (4)' },
-            { id: 'asia-oceania', label: 'Asia & Oceanía (9)' },
+            { id: 'todos', label: copy(locale, `Todos los exploradores (${charactersList.length})`, `All explorers (${charactersList.length})`) },
+            { id: 'protagonistas', label: copy(locale, 'Protagonistas (2)', 'Main characters (2)') },
+            { id: 'america-africa', label: copy(locale, 'América y África (4)', 'The Americas & Africa (4)') },
+            { id: 'europa', label: copy(locale, 'Europa (4)', 'Europe (4)') },
+            { id: 'asia-oceania', label: copy(locale, 'Asia y Oceanía (9)', 'Asia & Oceania (9)') },
           ].map((cat) => {
             const isCatActive = filterCategory === cat.id;
             return (
@@ -602,21 +648,21 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         </div>
 
         {/* Panel Detallado: Ficha de Expedicionario / Pasaporte Oficial */}
-        <div className="bg-white/95 dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border-2 border-emerald-500/30 dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+        <div className="bg-[#fffdf8] dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-[#e7e1d5] dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_18px_55px_rgba(24,54,41,0.09)] relative overflow-hidden">
           {/* Sello de agua del Pasaporte */}
           <div className="absolute right-6 -bottom-10 opacity-5 pointer-events-none font-black text-9xl text-amber-500 select-none">
-            PASAPORTE
+            {copy(locale, 'PASAPORTE', 'PASSPORT')}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Retrato y datos principales */}
             <div className="lg:col-span-4 text-center lg:text-left flex flex-col items-center lg:items-start">
-              <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl mb-4 group">
+              <div className="relative w-44 sm:w-52 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-300 via-emerald-300 to-emerald-500 shadow-lg mb-4 group" style={{ aspectRatio: getCharacterImageAspectRatio(selectedCharacter.mainImage?.url || getCharacterImagePath(selectedCharacter.slug), selectedCharacter.mainImage?.aspectRatio) }}>
                 <CharacterAvatar
                   key={selectedCharacter.id}
                   character={selectedCharacter}
                   locale={locale}
-                  className="w-full h-full object-cover rounded-[22px] group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover rounded-[22px] group-hover:scale-[1.025] transition-transform duration-500"
                 />
                 <button
                   type="button"
@@ -624,23 +670,23 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 text-white font-bold text-xs rounded-[22px] transition-opacity cursor-pointer backdrop-blur-xs"
                 >
                   <ZoomIn className="w-4 h-4 text-amber-400" />
-                  <span>Ampliar Render 3D</span>
+                  <span>{copy(locale, 'Ampliar render 3D', 'Enlarge 3D render')}</span>
                 </button>
               </div>
 
               <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start mb-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider shadow-sm">
-                  ★ PASAPORTE: {selectedCharacter.id.toUpperCase()}
+                  ★ {copy(locale, 'PASAPORTE', 'PASSPORT')}: {selectedCharacter.id.toUpperCase()}
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${selectedTheme.badgeBg} ${selectedTheme.badgeText}`}
                 >
                   <span>{selectedTheme.flag}</span>
-                  <span>{selectedTheme.region}</span>
+                  <span>{localizedRegion(selectedCharacter.id, selectedTheme.region, locale)}</span>
                 </span>
               </div>
 
-              <h3 className="text-3xl font-black text-slate-900 dark:text-white">{selectedCharacter.name}</h3>
+              <h3 className="text-3xl font-black text-slate-900 dark:text-white">{characterName(selectedCharacter, locale)}</h3>
               <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                 {selectedCharacter.passportRole
                   ? selectedCharacter.passportRole[locale] || selectedCharacter.passportRole.es
@@ -650,13 +696,15 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               {/* Nota Canónica especial si es Pompón o la familia Canguro */}
               {selectedCharacter.id === 'pompon' && (
                 <div className="mt-3 p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs leading-relaxed text-left">
-                  <strong>Nota Canónica:</strong> Pompón permanece en el Bosque Encantado custodiando el árbol más alto y el buzón postal. No viaja físicamente por el mundo, pero vive cada aventura en las cartas de Curileta.
+                  <strong>{copy(locale, 'Nota canónica:', 'Story note:')}</strong>{' '}
+                  {copy(locale, 'Pompón permanece en el Bosque Encantado, junto al árbol más alto y el buzón postal. No viaja físicamente, pero acompaña cada aventura a través de las cartas de Curileta.', 'Pompón stays in the Enchanted Forest, guarding the tallest tree and the mailbox. He does not travel in person, but follows every adventure through Curileta’s letters.')}
                 </div>
               )}
 
               {selectedCharacter.id === 'joey' && (
                 <div className="mt-3 p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-500/30 text-teal-900 dark:text-teal-200 text-xs leading-relaxed text-left">
-                  <strong>Amigo Inseparable:</strong> Joey es el koala de peluche del bebé canguro que Curileta rescató en Uluru para devolverle la sonrisa a la familia del Outback.
+                  <strong>{copy(locale, 'Amigo inseparable:', 'Faithful companion:')}</strong>{' '}
+                  {copy(locale, 'Joey es el koala de peluche del bebé canguro que Curileta ayudó a reunir con su familia en Uluru.', 'Joey is the baby kangaroo’s plush koala. Curileta helped reunite them with their family at Uluru.')}
                 </div>
               )}
 
@@ -667,7 +715,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                     key={trait}
                     className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm"
                   >
-                    ✨ {trait}
+                    ✨ {characterTrait(trait, locale)}
                   </span>
                 ))}
               </div>
@@ -679,7 +727,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-300 transition-colors cursor-pointer"
               >
                 <Eye className="w-3.5 h-3.5 text-amber-500" />
-                <span>Examinar modelo 3D en alta definición</span>
+                <span>{copy(locale, 'Examinar modelo 3D en alta definición', 'View the high-resolution 3D model')}</span>
               </button>
             </div>
 
@@ -695,7 +743,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                       : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  📖 Historia & Biografía
+                  {copy(locale, '📖 Historia y biografía', '📖 Story & biography')}
                 </button>
                 <button
                   onClick={() => setActiveTab('mochila')}
@@ -705,7 +753,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                       : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  🎒 Mochila de Expedición
+                  {copy(locale, '🎒 Mochila de expedición', '🎒 Explorer’s backpack')}
                 </button>
                 <button
                   onClick={() => setActiveTab('curiosidades')}
@@ -715,7 +763,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                       : 'bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  🔍 Secretos & Curiosidades
+                  {copy(locale, '🔍 Secretos y curiosidades', '🔍 Secrets & curiosities')}
                 </button>
               </div>
 
@@ -732,8 +780,12 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
 
                   {selectedCharacter.voiceQuote && (
                     <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200">
-                      <Volume2 className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm font-semibold italic">
+                      <CharacterAvatarImage
+                        slug={selectedCharacter.slug}
+                        name={characterName(selectedCharacter, locale)}
+                        size={48}
+                      />
+                      <p className="text-sm font-semibold">
                         {selectedCharacter.voiceQuote[locale] || selectedCharacter.voiceQuote.es}
                       </p>
                     </div>
@@ -743,25 +795,25 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   {selectedCharacter.explorerStats && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                       <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Curiosidad</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">{copy(locale, 'Curiosidad', 'Curiosity')}</span>
                         <span className="text-lg font-mono font-black text-amber-600 dark:text-amber-400">
                           {selectedCharacter.explorerStats.curiosity}%
                         </span>
                       </div>
                       <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Valentía</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">{copy(locale, 'Valentía', 'Courage')}</span>
                         <span className="text-lg font-mono font-black text-emerald-600 dark:text-emerald-400">
                           {selectedCharacter.explorerStats.courage}%
                         </span>
                       </div>
                       <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Agilidad</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">{copy(locale, 'Agilidad', 'Agility')}</span>
                         <span className="text-lg font-mono font-black text-sky-600 dark:text-sky-400">
                           {selectedCharacter.explorerStats.agility}%
                         </span>
                       </div>
                       <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">Sabiduría</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block mb-1">{copy(locale, 'Sabiduría', 'Wisdom')}</span>
                         <span className="text-lg font-mono font-black text-purple-600 dark:text-purple-400">
                           {selectedCharacter.explorerStats.wisdom}%
                         </span>
@@ -774,7 +826,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               {/* Contenido de la pestaña Mochila */}
               {activeTab === 'mochila' && (
                 <div className="space-y-4 animate-in fade-in duration-200">
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Objetos mágicos y herramientas que lleva en su bolsa de viaje:</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{copy(locale, 'Objetos mágicos y herramientas que lleva en su bolsa de viaje:', 'Magical objects and tools packed for the journey:')}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedCharacter.backpackItems && selectedCharacter.backpackItems.length > 0 ? (
                       selectedCharacter.backpackItems.map((item, idx) => (
@@ -789,7 +841,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                         </div>
                       ))
                     ) : (
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Equipo en preparación para la próxima misión.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{copy(locale, 'Equipo en preparación para la próxima misión.', 'Gear is being prepared for the next mission.')}</p>
                     )}
                   </div>
                 </div>
@@ -811,7 +863,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Descubre sus secretos en las páginas del libro.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{copy(locale, 'Descubre sus secretos en las páginas del libro.', 'Discover more secrets in the pages of the book.')}</p>
                   )}
                 </div>
               )}
@@ -822,7 +874,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                   href={`/${locale}/personajes/${selectedCharacter.slug}`}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg shadow-amber-400/20 transition-all cursor-pointer"
                 >
-                  <span>Conocer a fondo a {selectedCharacter.name}</span>
+                  <span>{copy(locale, `Conocer a fondo a ${characterName(selectedCharacter, locale)}`, `Meet ${characterName(selectedCharacter, locale)}`)}</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
                 <div className="flex items-center gap-3">
@@ -832,20 +884,13 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-full transition-colors cursor-pointer"
                   >
                     <ZoomIn className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Ampliar 3D</span>
+                    <span>{copy(locale, 'Ampliar 3D', 'View 3D')}</span>
                   </button>
-                  <Link
-                    href={`/${locale}/fondos`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 px-4 py-2.5 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-900 transition-colors shadow-sm"
-                  >
-                    <Download className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Fondos 2K</span>
-                  </Link>
                   <Link
                     href={`/${locale}/personajes`}
                     className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    Ver los 19 →
+                    {copy(locale, 'Ver los 19 →', 'See all 19 →')}
                   </Link>
                 </div>
               </div>
@@ -869,7 +914,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               type="button"
               onClick={() => setLightboxCharacter(null)}
               className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer z-20"
-              aria-label="Cerrar vista 3D"
+              aria-label={copy(locale, 'Cerrar vista 3D', 'Close 3D view')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -882,8 +927,8 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
 
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
               {/* Imagen oficial con marco de expedición */}
-              <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-sky-400 shadow-2xl shrink-0">
-                <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-950 flex items-center justify-center">
+              <div className="relative w-56 sm:w-64 rounded-3xl p-1 bg-gradient-to-tr from-amber-300 via-emerald-300 to-emerald-500 shadow-xl shrink-0" style={{ aspectRatio: getCharacterImageAspectRatio(lightboxCharacter.mainImage?.url || getCharacterImagePath(lightboxCharacter.slug), lightboxCharacter.mainImage?.aspectRatio) }}>
+                <div className="w-full h-full rounded-[22px] overflow-hidden bg-[#f5edde] flex items-center justify-center">
                   <CharacterAvatar
                     character={lightboxCharacter}
                     locale={locale}
@@ -896,16 +941,16 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               <div className="text-center sm:text-left space-y-3 flex-1">
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                   <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400">
-                    ★ FICHA OFICIAL
+                    ★ {copy(locale, 'FICHA OFICIAL', 'OFFICIAL PROFILE')}
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    {getCharacterTheme(lightboxCharacter.id).flag} {getCharacterTheme(lightboxCharacter.id).region}
+                    {getCharacterTheme(lightboxCharacter.id).flag} {localizedRegion(lightboxCharacter.id, getCharacterTheme(lightboxCharacter.id).region, locale)}
                   </span>
                 </div>
 
                 <div>
                   <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                    {lightboxCharacter.name}
+                    {characterName(lightboxCharacter, locale)}
                   </h3>
                   <p className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mt-0.5">
                     {lightboxCharacter.passportRole
@@ -919,9 +964,16 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 </p>
 
                 {lightboxCharacter.voiceQuote && (
-                  <p className="text-xs text-amber-700 dark:text-amber-300/90 italic border-l-2 border-amber-400 pl-3">
-                    {lightboxCharacter.voiceQuote[locale] || lightboxCharacter.voiceQuote.es}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <CharacterAvatarImage
+                      slug={lightboxCharacter.slug}
+                      name={characterName(lightboxCharacter, locale)}
+                      size={40}
+                    />
+                    <p className="text-xs text-amber-700 dark:text-amber-300/90">
+                      {lightboxCharacter.voiceQuote[locale] || lightboxCharacter.voiceQuote.es}
+                    </p>
+                  </div>
                 )}
 
                 {/* Botones de acción */}
@@ -932,23 +984,17 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-md transition-colors cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Descargar Imagen Oficial</span>
+                    <span>{copy(locale, 'Descargar imagen oficial', 'Download official image')}</span>
                   </a>
 
                   <Link
                     href={`/${locale}/personajes/${lightboxCharacter.slug}`}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 transition-colors"
                   >
-                    <span>Abrir Pasaporte</span>
+                    <span>{copy(locale, 'Abrir pasaporte', 'Open passport')}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </Link>
 
-                  <Link
-                    href={`/${locale}/fondos`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                  >
-                    <span>Fondos 2K</span>
-                  </Link>
                 </div>
               </div>
             </div>

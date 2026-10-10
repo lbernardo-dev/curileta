@@ -15,7 +15,7 @@ Esta guía contiene toda la información necesaria para alimentar la web con rec
 
 ## 1. Inventario de Recursos Requeridos y Rutas de Directorio
 
-Todos los archivos estáticos se sirven desde el directorio público de la aplicación web:  
+Los archivos que la web debe servir se guardan en el directorio público de la aplicación web. Los originales de trabajo se conservan fuera de `public` para que no se publiquen ni se descarguen por error:
 👉 `apps/web/public/`
 
 A continuación se detalla cada carpeta, qué archivos se necesitan, especificaciones técnicas y formatos recomendados:
@@ -23,7 +23,8 @@ A continuación se detalla cada carpeta, qué archivos se necesitan, especificac
 ```
 apps/web/public/
 ├── images/
-│   ├── characters/      <- Ilustraciones de personajes con fondo transparente
+│   ├── characters/      <- Retratos principales y avatares optimizados
+│   │   └── avatars/     <- Retratos circulares WebP
 │   ├── books/           <- Portadas de libros, renders 3D y pliegos interiores
 │   ├── locations/       <- Fotografías y postales de monumentos mundiales
 │   ├── wallpapers/      <- Fondos de pantalla en alta resolución (PC y móvil)
@@ -40,17 +41,26 @@ apps/web/public/
 * **Formato recomendado:** `.webp` con canal alfa (fondo 100% transparente).
 * **Resolución:** Entre `800 x 1000 px` y `1200 x 1400 px`.
 * **Peso:** Optimizado entre 25 KB y 80 KB por imagen.
-* **Nomenclatura requerida:**
-  * `curileta-main.webp` (Curileta de cuerpo entero con mochila y brújula)
-  * `pompon-main.webp` (Pompón el conejo cartero)
-  * `quetzal-main.webp` (Quetzal el ave sagrada con plumaje)
-  * `bao-main.webp` (Bao el Panda)
-  * `lola-main.webp` (Lola la Koala)
-  * `kiki-main.webp` (Kiki la Nutria)
-  * `gino-main.webp` (Gino el Pingüino)
-  * `basset-main.webp` o `barnaby-main.webp` (Barnaby el Basset Hound)
-  * `zipi-bot-main.webp` (Zipi-Bot el robot explorador)
-  * *(y las demás 10 figuras de la tripulación)*
+* **Nomenclatura requerida:** conserva el nombre canónico de cada personaje para que imágenes, citas y fichas no intercambien identidades:
+  * `curileta-main.webp` (Curileta)
+  * `pompon-main.webp` (Pompón)
+  * `quetzal-main.webp` (Quetzal)
+  * `lulu-main.webp` (Lulú la Llama)
+  * `emi-main.webp` (Emi el Escarabajo)
+  * `picu-main.webp` (Picu el Frailecillo)
+  * `zipi-bot-main.webp` (Zipi-Bot)
+  * `kiki-main.webp` (Kiki el Kiwi)
+  * `bao-main.webp` (Bao el Oso Panda)
+  * `gino-main.webp` (Gino el Ratoncito Chef)
+  * `lola-main.webp` (Lola la Tortuga Mora)
+  * `canguro-mama-main.webp` (Mamá Canguro)
+  * `canguro-bebe-main.webp` (Bebé Canguro)
+  * `joey-main.webp` (Joey, koala de peluche de Bebé Canguro)
+  * `pez-volador-main.webp` (Glub el Pez Volador)
+  * `ornitorrinco-main.webp` (El Ornitorrinco Sabio)
+  * `emu-main.webp` (El Emú Curioso)
+  * `basset-main.webp` (Barnaby el Basset Hound)
+  * `cobaya-main.webp` (Cuy Andino / Cobaya)
 
 ---
 
@@ -216,25 +226,29 @@ Si deseas que redactores o ilustradores agreguen contenido desde una interfaz we
 ## 4. Gestión de Eventos Estacionales (Halloween y Próximos Eventos)
 
 El evento de Halloween está programado en la base de datos con un mecanismo de **reversión temporal automática**:
-* **Ventana activa:** Del `1 de octubre` al `5 de noviembre`.
+* **Ventana activa (UTC):** Del `1 de octubre a las 00:00` al `5 de noviembre a las 23:59:59`.
 * **Comportamiento automático:**
   * Mientras la fecha actual esté dentro de ese rango, la web muestra la ambientación del Bosque Encantado, los acentos calabaza y las actividades especiales.
-  * En cuanto llega el **6 de noviembre a las 00:00**, la web detecta el fin de temporada y **regresa automáticamente al tema original de Curileta** (verde esmeralda y oro aventurero) sin que tengas que cambiar una sola línea de código.
+  * Al llegar el **6 de noviembre a las 00:00 UTC**, la web detecta el fin de temporada y **regresa automáticamente al tema original de Curileta** (verde esmeralda y oro aventurero) sin que tengas que cambiar una sola línea de código. El banner conserva la fecha de campaña en UTC para que no cambie según el país del visitante.
 
 ### ¿Cómo Cambiar las Fechas o Crear un Nuevo Evento (ej. Especial de Navidad)?
-En `packages/cms/src/db/seed.ts` (tabla `seasonal_events`):
+Los temas disponibles se declaran en `SeasonalEvent.themeKey` (`halloween`, `christmas`, `spring`, `summer`, `easter` y `valentines`). La capa visual global vive en `apps/web/src/app/globals.css`; el tema conserva la preferencia claro/oscuro, se activa durante el rango del CMS y la opción de volver al tema habitual se guarda por campaña y año, sin apagar la siguiente temporada.
+
+En `packages/cms/src/localProvider.ts` o en la tabla `seasonal_events` del CMS:
 ```typescript
 {
   id: 'event-navidad',
   slug: 'navidad-bosque-nevado',
-  name_es: 'Navidad en el Bosque Nevado',
-  name_en: 'Winter Wonderland Expedition',
-  theme_key: 'winter', // Aplica paleta blanco escarcha y azul hielo
-  start_date: '2026-12-01T00:00:00Z',
-  end_date: '2027-01-06T23:59:59Z',
-  is_active: 1
+  name: { es: 'Navidad en el Bosque Nevado', en: 'Winter Wonderland Expedition' },
+  themeKey: 'christmas', // Debe coincidir con una clave de SeasonalEvent.themeKey
+  active: true,
+  startDate: '2026-12-01T00:00:00Z',
+  endDate: '2027-01-06T23:59:59Z',
+  // Completar también tagline, bannerImage, ambientDecorations y specialChapter.
 }
 ```
+
+Los eventos que atraviesan diciembre y enero también se repiten anualmente. El banner y la ambientación son genéricos; cada campaña necesita además su sección editorial e imágenes propias antes de publicarse para evitar mostrar contenido de otra festividad.
 
 ---
 

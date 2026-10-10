@@ -18,7 +18,31 @@ import type {
 } from '../models.ts';
 import { getDatabase } from './database.ts';
 import { seedDatabase } from './seed.ts';
-import { LocalCMSProvider, isSeasonalEventActive } from '../localProvider.ts';
+import { INITIAL_BOOKS, INITIAL_LOCATIONS, INITIAL_SETTINGS, LocalCMSProvider, isSeasonalEventActive } from '../localProvider.ts';
+
+const isOfficialWallpaperAsset = (assetPath: string) =>
+  /^\/images\/wallpapers\/(?:desktop|mobile)\/[^/]+\.(?:webp|png|jpe?g)$/i.test(assetPath);
+
+function applyVerifiedRetailDetails(book: Book): Book {
+  if (book.slug !== 'las-aventuras-de-curileta') return book;
+  const canonical = INITIAL_BOOKS.find((item) => item.slug === book.slug);
+  if (!canonical) return book;
+  const existingLinks = (book.purchaseLinks || []).filter((link) => !/amazon/i.test(link.storeName));
+
+  return {
+    ...book,
+    author: canonical.author,
+    coverImage: canonical.coverImage,
+    publicationDate: canonical.publicationDate,
+    isbn: canonical.isbn,
+    languages: canonical.languages,
+    ageRange: canonical.ageRange,
+    pageCount: canonical.pageCount,
+    publisher: canonical.publisher,
+    format: canonical.format,
+    purchaseLinks: [...existingLinks, ...(canonical.purchaseLinks || [])],
+  };
+}
 
 export class DatabaseCMSProvider implements CMSProvider {
   private fallbackProvider = new LocalCMSProvider();
@@ -75,7 +99,7 @@ export class DatabaseCMSProvider implements CMSProvider {
     if (!db) return this.fallbackProvider.getCharacterBySlug(slug, locale);
 
     try {
-      const targetSlug = slug === 'joey-canguro' ? 'canguro-mama' : slug;
+      const targetSlug = slug === 'joey-canguro' ? 'joey' : slug;
       const r = db.prepare('SELECT * FROM characters WHERE slug = ?').get(targetSlug) as any;
       if (!r) return null;
 
@@ -111,7 +135,7 @@ export class DatabaseCMSProvider implements CMSProvider {
 
     try {
       const rows = db.prepare('SELECT * FROM books ORDER BY publication_date ASC').all() as any[];
-      return rows.map((r) => ({
+      return rows.map((r) => applyVerifiedRetailDetails({
         id: r.id,
         slug: r.slug,
         title: { es: r.title_es, en: r.title_en },
@@ -145,7 +169,7 @@ export class DatabaseCMSProvider implements CMSProvider {
       const r = db.prepare('SELECT * FROM books WHERE slug = ?').get(slug) as any;
       if (!r) return null;
 
-      return {
+      return applyVerifiedRetailDetails({
         id: r.id,
         slug: r.slug,
         title: { es: r.title_es, en: r.title_en },
@@ -164,7 +188,7 @@ export class DatabaseCMSProvider implements CMSProvider {
         purchaseLinks: JSON.parse(r.purchase_links_json || '[]'),
         characters: JSON.parse(r.characters_json || '[]'),
         locations: JSON.parse(r.locations_json || '[]'),
-      };
+      });
     } catch (err) {
       console.warn('[DatabaseCMSProvider] Error fetching book by slug, falling back:', err);
       return this.fallbackProvider.getBookBySlug(slug, locale);
@@ -209,7 +233,8 @@ export class DatabaseCMSProvider implements CMSProvider {
     if (!db) return this.fallbackProvider.getLocations(locale);
 
     try {
-      const rows = db.prepare('SELECT * FROM locations ORDER BY id ASC').all() as any[];
+      const rows = db.prepare('SELECT * FROM locations').all() as any[];
+      const narrativeOrder = new Map(INITIAL_LOCATIONS.map((location, index) => [location.id, index]));
       return rows.map((r) => ({
         id: r.id,
         slug: r.slug,
@@ -225,7 +250,11 @@ export class DatabaseCMSProvider implements CMSProvider {
         characters: JSON.parse(r.characters_json || '[]'),
         milestones: JSON.parse(r.milestones_json || '[]'),
         mentionedPlaces: JSON.parse(r.mentioned_places_json || '[]'),
-      }));
+      })).sort((first, second) => {
+        const firstOrder = narrativeOrder.get(first.id) ?? Number.MAX_SAFE_INTEGER;
+        const secondOrder = narrativeOrder.get(second.id) ?? Number.MAX_SAFE_INTEGER;
+        return firstOrder - secondOrder || first.id.localeCompare(second.id);
+      });
     } catch (err) {
       console.warn('[DatabaseCMSProvider] Error fetching locations, falling back:', err);
       return this.fallbackProvider.getLocations(locale);
@@ -302,21 +331,27 @@ export class DatabaseCMSProvider implements CMSProvider {
 
     try {
       const rows = db.prepare('SELECT * FROM wallpapers ORDER BY id ASC').all() as any[];
-      return rows.map((r) => ({
-        id: r.id,
-        slug: r.slug,
-        title: { es: r.title_es, en: r.title_en },
-        deviceType: r.device_type,
-        category: r.category,
-        resolution: r.resolution,
-        thumbnail: r.thumbnail,
-        fullImageUrl: r.full_image_url,
-        tags: JSON.parse(r.tags_json || '[]'),
-        characterId: r.character_id || undefined,
-        country: r.country_es ? { es: r.country_es, en: r.country_en } : undefined,
-        description: r.description_es ? { es: r.description_es, en: r.description_en } : undefined,
-        fileSizeBytes: r.file_size_bytes || undefined,
-      }));
+      return rows
+        .map((r) => ({
+          id: r.id,
+          slug: r.slug,
+          title: { es: r.title_es, en: r.title_en },
+          deviceType: r.device_type,
+          category: r.category,
+          resolution: r.resolution,
+          thumbnail: r.thumbnail,
+          fullImageUrl: r.full_image_url,
+          tags: JSON.parse(r.tags_json || '[]'),
+          characterId: r.character_id || undefined,
+          country: r.country_es ? { es: r.country_es, en: r.country_en } : undefined,
+          description: r.description_es ? { es: r.description_es, en: r.description_en } : undefined,
+          fileSizeBytes: r.file_size_bytes || undefined,
+        }))
+        .filter((wallpaper) =>
+          wallpaper.category !== 'personajes' &&
+          isOfficialWallpaperAsset(wallpaper.thumbnail) &&
+          isOfficialWallpaperAsset(wallpaper.fullImageUrl)
+        );
     } catch (err) {
       console.warn('[DatabaseCMSProvider] Error fetching wallpapers, falling back:', err);
       return this.fallbackProvider.getWallpapers(locale);
@@ -460,7 +495,23 @@ export class DatabaseCMSProvider implements CMSProvider {
     try {
       const row = db.prepare('SELECT value_json FROM site_settings WHERE key = ?').get('site_config') as any;
       if (row && row.value_json) {
-        return JSON.parse(row.value_json);
+        const settings = JSON.parse(row.value_json) as SiteSettings;
+        const legacyHeroSubtitle = {
+          es: 'Libros ilustrados, canciones y episodios animados para pequeños grandes exploradores.',
+          en: 'Illustrated books, songs, and animated episodes for young great explorers.',
+        };
+
+        return {
+          ...settings,
+          heroSubtitle: {
+            es: settings.heroSubtitle?.es === legacyHeroSubtitle.es
+              ? INITIAL_SETTINGS.heroSubtitle.es
+              : settings.heroSubtitle?.es || INITIAL_SETTINGS.heroSubtitle.es,
+            en: settings.heroSubtitle?.en === legacyHeroSubtitle.en
+              ? INITIAL_SETTINGS.heroSubtitle.en
+              : settings.heroSubtitle?.en || INITIAL_SETTINGS.heroSubtitle.en,
+          },
+        };
       }
       return this.fallbackProvider.getSiteSettings(locale);
     } catch (err) {

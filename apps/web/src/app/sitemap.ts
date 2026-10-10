@@ -3,7 +3,7 @@ import { locales } from '@curileta/i18n';
 import { cmsProvider } from '@curileta/cms';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://curileta.com';
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').replace(/\/$/, '');
   const routes: MetadataRoute.Sitemap = [];
 
   const staticPaths = [

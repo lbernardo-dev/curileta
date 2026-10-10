@@ -1,11 +1,14 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { locales, Locale, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@curileta/cms';
 import { generateBookSchema } from '@curileta/seo';
-import { BookOpen, ArrowLeft, ExternalLink, CheckCircle2, Bookmark, Calendar, Globe } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
+import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 
 export async function generateStaticParams() {
   const books = await cmsProvider.getBooks('es');
@@ -37,7 +40,7 @@ export async function generateMetadata({
   const desc = book.description[locale] || book.description.es;
 
   return {
-    title: `${title} — Las Aventuras de Curileta`,
+    title,
     description: desc,
   };
 }
@@ -63,6 +66,11 @@ export default async function BookDetailPage({
   const title = book.title[locale] || book.title.es;
   const subtitle = book.subtitle?.[locale] || book.subtitle?.es;
   const desc = book.description[locale] || book.description.es;
+  const format = book.format?.[locale] || book.format?.es;
+  const amazonCountry = detectAmazonCountryFromHeaders(await headers());
+  const imageUrl = book.coverImage.url.startsWith('http')
+    ? book.coverImage.url
+    : new URL(book.coverImage.url, process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').toString();
 
   // JSON-LD structured data
   const jsonLd = generateBookSchema({
@@ -70,7 +78,7 @@ export default async function BookDetailPage({
     isbn: book.isbn?.[0],
     datePublished: book.publicationDate,
     description: desc,
-    image: book.coverImage.url,
+    image: imageUrl,
     inLanguage: locale,
   });
 
@@ -88,29 +96,37 @@ export default async function BookDetailPage({
           className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Volver al catálogo de libros</span>
+          <span>{locale === 'en' ? 'Back to books' : 'Volver al catálogo de libros'}</span>
         </Link>
 
         {/* Book Hero Showcase */}
         <div className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 shadow-2xl flex flex-col md:flex-row gap-10 items-center">
           {/* Cover */}
-          <div className="w-60 sm:w-72 aspect-[3/4] shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-slate-700 relative group">
+          <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-2xl border border-slate-700 bg-[#102925] shadow-2xl md:w-[48%]">
             <img
               src={book.coverImage.url}
               alt={book.coverImage.alt[locale] || book.coverImage.alt.es}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="h-full w-full object-contain transition-transform duration-500"
             />
+            <span className="absolute bottom-3 left-3 rounded-full bg-slate-950/70 px-3 py-1 text-[10px] font-semibold text-white/90">
+              {locale === 'en' ? 'Story illustration' : 'Ilustración de la aventura'}
+            </span>
           </div>
 
           {/* Details */}
           <div className="space-y-4 flex-1 text-center md:text-left">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400 text-slate-950">
-                Edad: {book.ageRange}
+                {locale === 'en' ? `Ages ${book.ageRange}` : `Edad: ${book.ageRange}`}
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
-                {book.pageCount} páginas
+                {locale === 'en' ? `${book.pageCount} pages` : `${book.pageCount} páginas`}
               </span>
+              {format && (
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                  {format}
+                </span>
+              )}
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">{title}</h1>
@@ -121,12 +137,28 @@ export default async function BookDetailPage({
             )}
 
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed pt-2">{desc}</p>
+            {book.author && (
+              <p className="text-xs text-slate-400">
+                {locale === 'en' ? 'Author:' : 'Autoría:'} <span className="font-semibold text-slate-200">{book.author}</span>
+              </p>
+            )}
 
             {/* Purchase Points */}
-            {book.purchaseLinks && book.purchaseLinks.length > 0 && (
+            {book.slug === CURILETA_BOOK_SLUG && (
               <div className="pt-6 border-t border-slate-800 space-y-3">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Puntos de venta recomendados:
+                  {locale === 'en' ? 'Order from your local Amazon store' : 'Compra en tu tienda local de Amazon'}
+                </h2>
+                <AmazonMarketplaceLink locale={locale} initialCountry={amazonCountry} />
+                {book.isbn?.[0] && (
+                  <p className="text-xs text-slate-500">ISBN-13: {book.isbn[0]}</p>
+                )}
+              </div>
+            )}
+            {book.slug !== CURILETA_BOOK_SLUG && book.purchaseLinks && book.purchaseLinks.length > 0 && (
+              <div className="pt-6 border-t border-slate-800 space-y-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  {locale === 'en' ? 'Where to find it:' : 'Puntos de venta:'}
                 </h2>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                   {book.purchaseLinks.map((store) => (
@@ -142,6 +174,13 @@ export default async function BookDetailPage({
                     </a>
                   ))}
                 </div>
+              </div>
+            )}
+            {(!book.purchaseLinks || book.purchaseLinks.length === 0) && (
+              <div className="pt-6">
+                <Link href={`/${locale}/contacto`} className="inline-flex items-center gap-2 rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200">
+                  {locale === 'en' ? 'Ask about availability' : 'Consultar disponibilidad'} <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
             )}
           </div>

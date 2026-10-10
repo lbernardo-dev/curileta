@@ -1,6 +1,4 @@
-// Generador de texturas procedurales para el Globo 3D Estilo Animado Pixar
-// Diseñado con alto contraste, océanos zafiro profundos, plataformas costeras turquesas brillantes,
-// continentes verdes esmeralda vibrantes, playas doradas y regiones desérticas y montañosas perfectamente delimitadas.
+// Textura de atlas ilustrado para el globo 3D de Curileta.
 
 export function createPixarEarthCanvas(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
@@ -15,25 +13,25 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
   const toX = (lng: number) => ((lng + 180) / 360) * w;
   const toY = (lat: number) => ((90 - lat) / 180) * h;
 
-  // 1. BASE DE OCÉANOS PROFUNDOS (Gradiente vibrante estilo animación Pixar)
+  // 1. Océanos azules de atlas, con profundidad sin derivar al verde petróleo.
   const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
-  oceanGrad.addColorStop(0, '#06193e');    // Polo norte: azul noche ártico
-  oceanGrad.addColorStop(0.2, '#0c2461');  // Atlántico norte profundo
-  oceanGrad.addColorStop(0.5, '#0984e3');  // Cinturón ecuatorial: azul zafiro luminoso
-  oceanGrad.addColorStop(0.8, '#0c2461');  // Mares del sur
-  oceanGrad.addColorStop(1, '#06193e');    // Océano Antártico
+  oceanGrad.addColorStop(0, '#123d70');
+  oceanGrad.addColorStop(0.2, '#175b91');
+  oceanGrad.addColorStop(0.5, '#287cad');
+  oceanGrad.addColorStop(0.8, '#175b91');
+  oceanGrad.addColorStop(1, '#123d70');
   ctx.fillStyle = oceanGrad;
   ctx.fillRect(0, 0, w, h);
 
-  // Efecto de corrientes marinas y textura de agua animada
+  // Corrientes marinas finas para dar escala sin competir con la ruta.
   ctx.save();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 1.8;
+  ctx.strokeStyle = 'rgba(210, 234, 249, 0.11)';
+  ctx.lineWidth = 1.2;
   for (let lat = -80; lat <= 80; lat += 12) {
     ctx.beginPath();
     const y = toY(lat);
     for (let x = 0; x <= w; x += 30) {
-      const wave = Math.sin((x / w) * Math.PI * 14 + lat * 0.1) * 5;
+      const wave = Math.sin((x / w) * Math.PI * 12 + lat * 0.1) * 4;
       if (x === 0) ctx.moveTo(x, y + wave);
       else ctx.lineTo(x, y + wave);
     }
@@ -277,26 +275,13 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     ctx.closePath();
   };
 
-  // 3. CAPA DE AGUAS COSTERAS TURQUESAS PROFUNDAS (Shelf costero luminoso Pixar)
-  // Primer anillo exterior amplio (resplandor azul turquesa)
+  // 3. Bordes costeros suaves. El doble contorno neón anterior desdibujaba
+  // las formas y hacía que el planeta pareciera un gráfico luminoso.
   ctx.save();
-  ctx.strokeStyle = '#00d2d3';
-  ctx.lineWidth = 22;
+  ctx.strokeStyle = 'rgba(17, 50, 48, 0.48)';
+  ctx.lineWidth = 7;
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-  ctx.shadowColor = '#00f2fe';
-  ctx.shadowBlur = 18;
-  landmasses.forEach((land) => {
-    drawPolygon(land.points);
-    ctx.stroke();
-  });
-  ctx.restore();
-
-  // Segundo anillo intermedio turquesa brillante
-  ctx.save();
-  ctx.strokeStyle = '#48dbfb';
-  ctx.lineWidth = 10;
-  ctx.lineJoin = 'round';
   landmasses.forEach((land) => {
     drawPolygon(land.points);
     ctx.stroke();
@@ -310,36 +295,54 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     ctx.clip(); // CLIPPING ESTRICTO: todo lo que se pinte quedará dentro del continente
 
     if (land.isSnow) {
-      // Región polar (nieve blanca luminosa)
+      // Regiones polares en marfil cálido.
       const snowGrad = ctx.createLinearGradient(0, 0, 0, h);
-      snowGrad.addColorStop(0, '#ffffff');
-      snowGrad.addColorStop(1, '#dfe6e9');
+      snowGrad.addColorStop(0, '#e2e2d3');
+      snowGrad.addColorStop(1, '#c4d0c5');
       ctx.fillStyle = snowGrad;
       ctx.fillRect(0, 0, w, h);
     } else if (land.isDesert) {
-      // Arabia / Desierto puro
+      // Arabia y grandes regiones áridas.
       const desertGrad = ctx.createLinearGradient(0, 0, 0, h);
-      desertGrad.addColorStop(0, '#f59e0b');
-      desertGrad.addColorStop(1, '#d97706');
+      desertGrad.addColorStop(0, '#c99e73');
+      desertGrad.addColorStop(1, '#ad7959');
       ctx.fillStyle = desertGrad;
       ctx.fillRect(0, 0, w, h);
     } else {
-      // Tierra continental fértil (Verde esmeralda Pixar rico y saturado)
+      // Tierra fértil en verdes hoja y salvia.
       const landGrad = ctx.createLinearGradient(0, 0, 0, h);
-      landGrad.addColorStop(0.1, '#10ac84'); // Verde norte
-      landGrad.addColorStop(0.35, '#2ecc71'); // Verde vibrante
-      landGrad.addColorStop(0.65, '#27ae60'); // Verde bosque templado
-      landGrad.addColorStop(0.9, '#16a085'); // Verde austral
+      landGrad.addColorStop(0.1, '#829b70');
+      landGrad.addColorStop(0.35, '#a0ad78');
+      landGrad.addColorStop(0.65, '#839b69');
+      landGrad.addColorStop(0.9, '#718e68');
       ctx.fillStyle = landGrad;
       ctx.fillRect(0, 0, w, h);
+    }
+
+    if (!land.isSnow && !land.isDesert) {
+      // Relieve topográfico tenue para que el planeta parezca un atlas impreso.
+      ctx.save();
+      ctx.strokeStyle = 'rgba(42, 72, 54, 0.13)';
+      ctx.lineWidth = 2.1;
+      for (let band = 0; band < 13; band += 1) {
+        const baseY = 52 + band * 77;
+        ctx.beginPath();
+        for (let x = -20; x <= w + 20; x += 32) {
+          const y = baseY + Math.sin(x * 0.006 + band * 0.72) * 8 + Math.sin(x * 0.014 - band) * 3;
+          if (x === -20) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
     }
 
     // DESIERTOS INTERNOS (Clipped de forma 100% segura dentro del continente)
     if (land.hasSahara) {
       // Sahara en África
       const saharaGrad = ctx.createRadialGradient(toX(18), toY(24), 20, toX(18), toY(24), 160);
-      saharaGrad.addColorStop(0, '#f59e0b');
-      saharaGrad.addColorStop(0.7, '#d97706');
+      saharaGrad.addColorStop(0, '#d6a36f');
+      saharaGrad.addColorStop(0.7, '#bd875f');
       saharaGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = saharaGrad;
       ctx.beginPath();
@@ -350,8 +353,8 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     if (land.hasOutback) {
       // Outback de Australia (Tierra roja sagrada)
       const outbackGrad = ctx.createRadialGradient(toX(133), toY(-25), 15, toX(133), toY(-25), 90);
-      outbackGrad.addColorStop(0, '#dc2626');
-      outbackGrad.addColorStop(0.6, '#ea580c');
+      outbackGrad.addColorStop(0, '#c66e54');
+      outbackGrad.addColorStop(0.6, '#ce9367');
       outbackGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = outbackGrad;
       ctx.beginPath();
@@ -362,8 +365,8 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     if (land.hasGobi) {
       // Desierto de Gobi en Asia
       const gobiGrad = ctx.createRadialGradient(toX(102), toY(42), 10, toX(102), toY(42), 70);
-      gobiGrad.addColorStop(0, '#fbbf24');
-      gobiGrad.addColorStop(0.8, '#f59e0b');
+      gobiGrad.addColorStop(0, '#d7b16e');
+      gobiGrad.addColorStop(0.8, '#c69a69');
       gobiGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = gobiGrad;
       ctx.beginPath();
@@ -374,8 +377,8 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
     if (land.hasSonora) {
       // Altiplano y desierto de México/Suroeste EE.UU.
       const sonoraGrad = ctx.createRadialGradient(toX(-103), toY(27), 10, toX(-103), toY(27), 50);
-      sonoraGrad.addColorStop(0, '#ea580c');
-      sonoraGrad.addColorStop(0.8, '#d97706');
+      sonoraGrad.addColorStop(0, '#c98f64');
+      sonoraGrad.addColorStop(0.8, '#b97f5c');
       sonoraGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = sonoraGrad;
       ctx.beginPath();
@@ -385,11 +388,11 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
 
     ctx.restore();
 
-    // Borde costero de playa de arena dorada
+    // Fino ribete cálido que separa tierra y mar como una ilustración impresa.
     ctx.save();
     drawPolygon(land.points);
-    ctx.strokeStyle = '#ffeaa7';
-    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = 'rgba(229, 202, 149, 0.72)';
+    ctx.lineWidth = 2.4;
     ctx.lineJoin = 'round';
     ctx.stroke();
     ctx.restore();
@@ -397,7 +400,7 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
 
   // 5. CÓDIGO CARTOGRÁFICO DECORATIVO (Nombres de Océanos y Mares estilo clásico ilustrado)
   ctx.save();
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+  ctx.fillStyle = 'rgba(239, 231, 200, 0.54)';
   ctx.font = 'bold 15px system-ui, sans-serif';
   ctx.letterSpacing = '6px';
   ctx.textAlign = 'center';
@@ -413,9 +416,9 @@ export function createPixarEarthCanvas(): HTMLCanvasElement {
   ctx.save();
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
   ctx.lineWidth = 1;
-  // Línea del Ecuador dorada brillante
-  ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
-  ctx.lineWidth = 1.5;
+  // Referencias cartográficas discretas.
+  ctx.strokeStyle = 'rgba(231, 209, 161, 0.22)';
+  ctx.lineWidth = 1.2;
   ctx.setLineDash([8, 8]);
   ctx.beginPath();
   ctx.moveTo(0, toY(0));

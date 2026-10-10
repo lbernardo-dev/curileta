@@ -12,7 +12,6 @@ import {
   Film,
   Music,
   Smartphone,
-  CheckCircle2,
   Bell,
   X,
   Clapperboard,
@@ -76,13 +75,13 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center overflow-hidden relative">
                     <img
                       src="/images/characters/zipi-bot-main.webp"
-                      alt="Zipi-Bot Operador de Cine"
+                      alt={isEn ? 'Zipi-Bot, the cinema operator' : 'Zipi-Bot Operador de Cine'}
                       className="w-24 h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)] group-hover:scale-115 transition-transform duration-500"
                     />
                   </div>
                 </div>
                 <div className="absolute -bottom-2 -right-2 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-red-400 animate-pulse">
-                  ▶ CINE 3D
+                  {isEn ? '▶ 3D CINEMA' : '▶ CINE 3D'}
                 </div>
               </div>
 
@@ -106,8 +105,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
             <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
               {isEn
-                ? 'Our audiovisual universe is in full production: animated episodes, official music videos, and educational Shorts for the whole family.'
-                : 'Nuestro universo audiovisual está en plena producción: capítulos de la serie animada, canciones con coreografías oficiales y micro-momentos educativos en Shorts.'}
+                ? 'This page lists videos that are available on Curileta’s channel. New entries will appear here when they are published.'
+                : 'Esta página reúne los vídeos disponibles del canal de Curileta. Añadiremos nuevas piezas cuando estén publicadas.'}
             </p>
           </div>
         )}
@@ -122,19 +121,19 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 dark:bg-red-950/80 border border-red-300 dark:border-red-500/40 text-red-700 dark:text-red-300 text-xs font-black uppercase tracking-wider mb-5">
                 <Clapperboard className="w-4 h-4 text-red-600 dark:text-red-400" />
-                <span>{isEn ? 'Content in Production • Coming Soon' : 'Contenido en Producción • Próximamente'}</span>
+                <span>{isEn ? 'Official channel' : 'Canal oficial'}</span>
               </div>
 
               <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-3">
                 {isEn
-                  ? 'Official Episodes and Shorts Coming Soon'
-                  : 'Los primeros capítulos y Shorts se estrenarán próximamente'}
+                  ? 'No videos are listed here yet'
+                  : 'Aún no hay vídeos publicados en esta página'}
               </h3>
 
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
                 {isEn
-                  ? 'To maintain transparency and not display mock resources, video players will become active as official episodes are released on our verified YouTube channel.'
-                  : 'Para garantizar total autenticidad y no mostrar recursos ficticios, los reproductores y fichas se habilitarán en cuanto se publiquen los episodios oficiales en nuestro canal de YouTube.'}
+                  ? 'Only videos with a real YouTube link are shown. This space will update when a published video is added to the catalogue.'
+                  : 'Solo mostramos vídeos con un enlace real de YouTube. Este espacio se actualizará cuando añadamos una publicación al catálogo.'}
               </p>
 
               {/* Los 3 formatos en preparación */}
@@ -148,11 +147,11 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                     {isEn
-                      ? 'Episodes of 8–12 minutes journeying across 40 cultures with Curileta and Pompón.'
-                      : 'Capítulos completos de 8 a 12 minutos recorriendo 40 culturas con Curileta y sus amigos.'}
+                      ? 'Published animated episodes will appear in this collection.'
+                      : 'Aquí aparecerán los episodios animados cuando se publiquen.'}
                   </p>
                   <span className="inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-sky-500/10 text-sky-600 dark:text-sky-300">
-                    {isEn ? 'In Production' : 'En Producción'}
+                    {isEn ? 'No releases listed' : 'Sin publicaciones'}
                   </span>
                 </div>
 
@@ -165,11 +164,11 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                     {isEn
-                      ? 'Original family songs with choreographies and values of empathy and nature.'
-                      : 'Canciones oficiales con coreografías para cantar en familia y aprender jugando.'}
+                      ? 'Published music videos will appear in this collection.'
+                      : 'Aquí aparecerán los vídeos musicales cuando se publiquen.'}
                   </p>
                   <span className="inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
-                    {isEn ? 'In Production' : 'En Producción'}
+                    {isEn ? 'No releases listed' : 'Sin publicaciones'}
                   </span>
                 </div>
 
@@ -182,30 +181,15 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                     {isEn
-                      ? 'Vertical quick curiosities and funny micro-moments in 30–60 seconds.'
-                      : 'Curiosidades geográficas exprés y micro-momentos divertidos en formato vertical.'}
+                      ? 'Published short-form videos will appear in this collection.'
+                      : 'Aquí aparecerán los vídeos cortos cuando se publiquen.'}
                   </p>
                   <span className="inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-300">
-                    {isEn ? 'In Production' : 'En Producción'}
+                    {isEn ? 'No releases listed' : 'Sin publicaciones'}
                   </span>
                 </div>
               </div>
 
-              {/* Botón CTA al canal de YouTube */}
-              <a
-                href="https://www.youtube.com/@curileta?sub_confirmation=1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-sm sm:text-base bg-red-600 hover:bg-red-500 text-white shadow-xl shadow-red-600/40 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <Youtube className="w-5 h-5 fill-current" />
-                <span>
-                  {isEn
-                    ? 'Subscribe to @curileta on YouTube'
-                    : 'Suscribirse al Canal Oficial @curileta en YouTube'}
-                </span>
-                <ExternalLink className="w-4 h-4 ml-1 opacity-80" />
-              </a>
             </div>
           </div>
         ) : (
@@ -532,14 +516,13 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Canal Oficial: @curileta
+                  {isEn ? 'Official Channel: @curileta' : 'Canal Oficial: @curileta'}
                 </h4>
-                <CheckCircle2 className="w-5 h-5 text-sky-500 dark:text-sky-400" />
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-xl">
                 {isEn
-                  ? 'Official animated episodes, family songs with choreographies, and educational Shorts. Join the journey!'
-                  : 'Capítulos de la serie, videoclips para cantar en casa y Shorts educativos. ¡Acompáñanos en cada travesía suscribiéndote gratis!'}
+                  ? 'When the first episodes are released, we will gather Curileta’s adventures, songs and Shorts here. Follow the channel for release news.'
+                  : 'Cuando publiquemos los primeros episodios, reuniremos aquí las aventuras, canciones y Shorts de Curileta. Sigue el canal para conocer los estrenos.'}
               </p>
               <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
                 <span className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 font-bold border border-slate-200 dark:border-transparent shadow-sm">

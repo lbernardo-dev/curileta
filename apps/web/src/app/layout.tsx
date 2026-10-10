@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   },
   description:
     'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
-  metadataBase: new URL('https://curileta.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com'),
 };
 
 import { ThemeProvider } from '@/providers/ThemeProvider';
@@ -26,6 +26,8 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  var locale = window.location.pathname.split('/')[1];
+                  document.documentElement.lang = locale === 'en' ? 'en' : 'es';
                   var stored = localStorage.getItem('curileta-theme');
                   var mql = window.matchMedia('(prefers-color-scheme: dark)');
                   var isDark = stored === 'dark' || ((!stored || stored === 'system') && mql.matches);
@@ -46,7 +48,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>

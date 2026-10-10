@@ -4,7 +4,7 @@
 
 :root {
   --font-outfit: 'Outfit', sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-display: var(--font-outfit);
 
   /* Brand Primitive Colors */
   --color-curileta-green: #1B8A44;
@@ -19,6 +19,18 @@
   --color-ocean: #0284C7;
   --color-sunset: #F97316;
   --color-berry: #BE185D;
+
+  /* Event themes override these shared accents for the duration of a campaign. */
+  --seasonal-accent: var(--color-adventure-gold);
+  --seasonal-accent-strong: #b45309;
+  --seasonal-glow: rgba(245, 158, 11, 0.18);
+  --seasonal-glow-secondary: rgba(27, 138, 68, 0.08);
+  --seasonal-banner-start: #102d23;
+  --seasonal-banner-end: #174635;
+  --seasonal-header-light: rgba(251, 252, 248, 0.96);
+  --seasonal-header-dark: rgba(2, 6, 23, 0.96);
+  --seasonal-footer-light: #fbfcf8;
+  --seasonal-footer-dark: #020617;
 
   /* Semantic Tokens - Light Theme */
   --background-primary: #FFFFFF;
@@ -90,8 +102,8 @@ html.dark {
   }
 
   html.dark body {
-    background-color: #020617;
-    color: #F8FAFC;
+    background-color: var(--background-canvas);
+    color: var(--text-primary);
   }
 
   /* Custom scrollbar for brand personality */
@@ -122,6 +134,19 @@ html.dark {
   }
 }
 
+.hero-copy-shadow {
+  text-shadow: 0 2px 24px rgba(4, 23, 19, 0.58);
+}
+
+@keyframes radar-breathe {
+  0%, 100% { transform: scale(0.97); opacity: 0.12; }
+  50% { transform: scale(1.02); opacity: 0.32; }
+}
+
+.animate-radar-breathe {
+  animation: radar-breathe 14s ease-in-out infinite;
+}
+
 /* Reduced motion global overrides */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -132,27 +157,136 @@ html.dark {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
 }
 
 /* ============================================================
-   TEMPORARY SEASONAL THEME: HALLOWEEN
-   Active only during the event window (Oct 1 - Nov 5).
-   Reverts automatically to original theme when event concludes.
+   SEASONAL THEMES
+   Themes are selected by the active CMS event. Shared tokens keep the
+   light/dark preference intact while the ambient layer ties every route
+   together for the length of the campaign.
    ============================================================ */
 html[data-seasonal-theme="halloween"] {
   --color-adventure-gold: #f97316;
   --color-adventure-gold-light: #fb923c;
   --seasonal-accent: #f97316;
-  --seasonal-glow: rgba(249, 115, 22, 0.45);
+  --seasonal-accent-strong: #c2410c;
+  --seasonal-glow: rgba(249, 115, 22, 0.28);
+  --seasonal-glow-secondary: rgba(180, 83, 9, 0.13);
+  --seasonal-banner-start: #17251d;
+  --seasonal-banner-end: #452313;
+  --seasonal-header-light: rgba(250, 247, 239, 0.96);
+  --seasonal-header-dark: rgba(15, 18, 15, 0.96);
+  --seasonal-footer-light: #faf7ef;
+  --seasonal-footer-dark: #0b100e;
+  --background-canvas: #fbf8f1;
+  --background-secondary: #f5f0e6;
 }
 
-html[data-seasonal-theme="halloween"] ::selection {
-  background-color: #ea580c;
+html[data-seasonal-theme="christmas"] {
+  --color-adventure-gold: #d96b55;
+  --color-adventure-gold-light: #f0a08f;
+  --seasonal-accent: #d96b55;
+  --seasonal-accent-strong: #a63838;
+  --seasonal-glow: rgba(217, 107, 85, 0.2);
+  --seasonal-glow-secondary: rgba(53, 133, 91, 0.14);
+  --seasonal-banner-start: #15392f;
+  --seasonal-banner-end: #542c35;
+  --seasonal-header-light: rgba(247, 250, 246, 0.96);
+  --seasonal-header-dark: rgba(8, 23, 19, 0.96);
+  --seasonal-footer-light: #f7faf6;
+  --seasonal-footer-dark: #081713;
+  --background-canvas: #f7faf6;
+  --background-secondary: #edf4ed;
+}
+
+html[data-seasonal-theme="spring"],
+html[data-seasonal-theme="easter"] {
+  --color-adventure-gold: #b66e9c;
+  --color-adventure-gold-light: #dca8c7;
+  --seasonal-accent: #b66e9c;
+  --seasonal-accent-strong: #85416d;
+  --seasonal-glow: rgba(214, 158, 194, 0.2);
+  --seasonal-glow-secondary: rgba(142, 180, 111, 0.14);
+  --seasonal-banner-start: #304c37;
+  --seasonal-banner-end: #573b57;
+  --seasonal-header-light: rgba(251, 248, 251, 0.96);
+  --seasonal-header-dark: rgba(21, 18, 24, 0.96);
+  --seasonal-footer-light: #fbf8fb;
+  --seasonal-footer-dark: #151218;
+  --background-canvas: #fbf8fb;
+  --background-secondary: #f4edf4;
+}
+
+html[data-seasonal-theme="summer"] {
+  --color-adventure-gold: #e38443;
+  --color-adventure-gold-light: #f3b47b;
+  --seasonal-accent: #e38443;
+  --seasonal-accent-strong: #a64d26;
+  --seasonal-glow: rgba(246, 181, 102, 0.2);
+  --seasonal-glow-secondary: rgba(47, 158, 176, 0.13);
+  --seasonal-banner-start: #154b50;
+  --seasonal-banner-end: #8a4c2e;
+  --seasonal-header-light: rgba(248, 251, 248, 0.96);
+  --seasonal-header-dark: rgba(9, 26, 29, 0.96);
+  --seasonal-footer-light: #f8fbf8;
+  --seasonal-footer-dark: #091a1d;
+  --background-canvas: #f8fbf8;
+  --background-secondary: #edf5f0;
+}
+
+html[data-seasonal-theme="valentines"] {
+  --color-adventure-gold: #dc6b87;
+  --color-adventure-gold-light: #f1a4b7;
+  --seasonal-accent: #dc6b87;
+  --seasonal-accent-strong: #a83f61;
+  --seasonal-glow: rgba(230, 116, 151, 0.22);
+  --seasonal-glow-secondary: rgba(184, 79, 134, 0.12);
+  --seasonal-banner-start: #582d42;
+  --seasonal-banner-end: #7b3947;
+  --seasonal-header-light: rgba(253, 247, 249, 0.96);
+  --seasonal-header-dark: rgba(30, 15, 22, 0.96);
+  --seasonal-footer-light: #fdf7f9;
+  --seasonal-footer-dark: #1e0f16;
+  --background-canvas: #fdf7f9;
+  --background-secondary: #f8edf1;
+}
+
+html.dark[data-seasonal-theme] {
+  --background-canvas: var(--seasonal-footer-dark);
+}
+
+html[data-seasonal-theme] header[data-seasonal-surface="header"] {
+  background-color: var(--seasonal-header-light);
+  border-color: color-mix(in srgb, var(--seasonal-accent) 20%, #e5e9df);
+}
+
+html.dark[data-seasonal-theme] header[data-seasonal-surface="header"] {
+  background-color: var(--seasonal-header-dark);
+  border-color: color-mix(in srgb, var(--seasonal-accent) 28%, #1e293b);
+}
+
+html[data-seasonal-theme] footer[data-seasonal-surface="footer"] {
+  background-color: var(--seasonal-footer-light);
+  border-color: color-mix(in srgb, var(--seasonal-accent) 20%, #e2e7dd);
+}
+
+html.dark[data-seasonal-theme] footer[data-seasonal-surface="footer"] {
+  background-color: var(--seasonal-footer-dark);
+  border-color: color-mix(in srgb, var(--seasonal-accent) 28%, #1e293b);
+}
+
+html[data-seasonal-theme] ::selection {
+  background-color: var(--seasonal-accent-strong);
   color: #ffffff;
 }
 
-html[data-seasonal-theme="halloween"] ::-webkit-scrollbar-thumb {
-  background: #ea580c;
+html[data-seasonal-theme] ::-webkit-scrollbar-thumb {
+  background: var(--seasonal-accent);
+}
+
+html[data-seasonal-theme] :focus-visible {
+  outline-color: var(--seasonal-accent-strong);
 }
 
 /* ============================================================
