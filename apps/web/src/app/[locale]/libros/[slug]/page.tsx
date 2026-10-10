@@ -11,6 +11,8 @@ import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { ShareActions } from '@/components/ShareActions';
 import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { CURILETA_BOOK_APLUS, CURILETA_BOOK_BACK_COVER, getBookCoverImage } from '@/lib/book-art';
+import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
+import { getImageFrame } from '@/lib/image-frames';
 
 export async function generateStaticParams() {
   const books = await cmsProvider.getBooks('es');
@@ -78,6 +80,8 @@ export default async function BookDetailPage({
   const amazonCountry = detectAmazonCountryFromHeaders(await headers());
   const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
   const coverImage = getBookCoverImage(book);
+  const imageFrames = isCuriletaBook ? await getImageFrameSettings() : {};
+  const detailCoverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'book-detail-cover') : null;
   const coverAlt = coverImage.alt[locale] || coverImage.alt.es;
   const imageUrl = coverImage.url.startsWith('http')
     ? coverImage.url
@@ -120,9 +124,21 @@ export default async function BookDetailPage({
                   target="_blank"
                   rel="noreferrer"
                   aria-label={locale === 'en' ? 'Open the full size front cover' : 'Abrir la portada a tamaño completo'}
-                  className="block rounded-2xl bg-[#fff8e7] p-2 shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                  className="relative block aspect-[4/5] overflow-hidden rounded-2xl shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
                 >
-                  <Image src={coverImage.url} alt={coverAlt} width={1600} height={2560} sizes="(max-width: 768px) 58vw, 280px" className="h-auto w-full rounded-lg" priority />
+                  <Image
+                    src={coverImage.url}
+                    alt={coverAlt}
+                    fill
+                    sizes="(max-width: 768px) 58vw, 280px"
+                    className="object-cover"
+                    style={detailCoverFrame ? {
+                      objectPosition: `${detailCoverFrame.positionX}% ${detailCoverFrame.positionY}%`,
+                      transform: `scale(${detailCoverFrame.zoom})`,
+                      transformOrigin: `${detailCoverFrame.positionX}% ${detailCoverFrame.positionY}%`,
+                    } : undefined}
+                    priority
+                  />
                 </a>
                 <figcaption className="mt-3 text-center text-xs font-semibold text-slate-300">
                   {locale === 'en' ? 'Front cover' : 'Portada'}

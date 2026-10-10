@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description:
     'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com'),
+  icons: {
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+  },
 };
 
 import { ThemeProvider } from '@/providers/ThemeProvider';

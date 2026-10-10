@@ -18,6 +18,7 @@ import { ClosingScene } from '@/features/home/ClosingScene';
 import { detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { cmsProvider } from '@/lib/cms';
 import { getVideoVoteCounts } from '@/lib/video-votes';
+import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
@@ -76,6 +77,7 @@ export default async function HomePage({
     collaborations,
     settings,
     videoVoteCounts,
+    imageFrames,
     requestHeaders,
   ] = await Promise.all([
     cmsProvider.getLocations(locale),
@@ -90,6 +92,7 @@ export default async function HomePage({
     cmsProvider.getCollaborations(locale),
     cmsProvider.getSiteSettings(locale),
     getVideoVoteCounts(),
+    getImageFrameSettings(),
     headers(),
   ]);
 
@@ -116,12 +119,12 @@ export default async function HomePage({
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
-    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} amazonCountry={amazonCountry} />,
+    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
     globe: <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={letters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
-    books: <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} />,
+    books: <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
     videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={settings} voteCounts={videoVoteCounts} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,

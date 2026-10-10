@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <style>
+    @keyframes needle-sway {
+      0%, 100% { transform: rotate(-9deg); }
+      50% { transform: rotate(9deg); }
+    }
+    .needle {
+      transform-box: view-box;
+      transform-origin: 24px 24px;
+      animation: needle-sway 18s cubic-bezier(0.32, 0.72, 0, 1) infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .needle { animation: none; }
+    }
+  </style>
+  <rect width="48" height="48" rx="16" fill="#1C493B"/>
+  <circle cx="24" cy="24" r="17.5" stroke="#FCD878" stroke-opacity=".72" stroke-width="1.25"/>
+  <circle cx="24" cy="24" r="13.5" stroke="#FCD878" stroke-opacity=".28" stroke-width=".75"/>
+  <path d="M24 7v3M41 24h-3M24 41v-3M7 24h3M12 12l2.1 2.1M36 12l-2.1 2.1M36 36l-2.1-2.1M12 36l2.1-2.1" stroke="#FCD878" stroke-linecap="round" stroke-width="1.2"/>
+  <path d="m24 12 3.1 8.9L36 24l-8.9 3.1L24 36l-3.1-8.9L12 24l8.9-3.1L24 12Z" stroke="#FCD878" stroke-opacity=".8" stroke-width="1.2"/>
+  <g class="needle">
+    <path d="m24 10 3.1 13.1L24 21l-3.1 2.1L24 10Z" fill="#FFE8A3"/>
+    <path d="m24 38-3.1-13.1L24 27l3.1-2.1L24 38Z" fill="#D99035"/>
+  </g>
+  <circle cx="24" cy="24" r="2.1" fill="#FFF7DC" stroke="#A96728" stroke-width=".8"/>
+</svg>

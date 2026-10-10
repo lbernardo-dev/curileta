@@ -187,7 +187,7 @@ El panel usa Supabase Auth para validar identidad y cookies de sesión. Después
 |---|---|---|
 | `owner` | Control total del panel | Resumen, formularios, consultas, leads y estadísticas |
 | `admin` | Administración operativa | Resumen, formularios, consultas, leads y estadísticas |
-| `editor` | Acceso interno limitado | Resumen e indicadores; no consulta mensajes personales |
+| `editor` | Acceso interno limitado | Resumen, contenidos y encuadres visuales; no consulta mensajes personales |
 | `analyst` | Análisis | Resumen y estadísticas agregadas; no ve mensajes personales ni formularios |
 
 El panel oculta navegación según el rol y las rutas de API vuelven a exigir autorización en servidor. No se debe confiar solo en que una sección esté oculta en el navegador. `owner` y `admin` son los únicos roles que pueden revisar y eliminar consultas. `analyst` puede ver estadísticas agregadas. El primer usuario necesita un registro en `admin_profiles`; el SQL de ejemplo está en [BACKEND_SETUP.md](./BACKEND_SETUP.md).
@@ -199,6 +199,7 @@ El panel oculta navegación según el rol y las rutas de API vuelven a exigir au
 - **Consultas:** bandeja con estado de tratamiento y estado de aviso por correo.
 - **Oportunidades:** consultas seleccionadas, notas y fase. La URL interna sigue siendo `/admin/leads`; la interfaz se muestra en español.
 - **Contenidos:** acceso editorial a Sanity y estado de módulos operativos o pendientes. El editor de documentos requiere publicar Sanity Studio.
+- **Encuadres:** `/admin/encuadres` permite previsualizar, arrastrar, posicionar y ampliar imágenes dentro de cuatro marcos registrados. `owner`, `admin` y `editor` pueden guardar. Los valores están limitados a posiciones entre 0 y 100 y ampliación de 1 a 2. Se guardan en Supabase y se aplican en la página de inicio, el catálogo y el detalle del libro mediante `revalidatePath`. Si la tabla no existe, la web pública usa valores por defecto y la API del panel responde 503.
 - **Estadísticas:** recuentos de páginas, formularios, acciones para compartir, canales y votos en rangos de 7 a 90 días para administración y analistas.
 
 ## 7. Estadísticas y minimización de datos
@@ -379,3 +380,13 @@ La referencia de configuración y despliegue es la guía enlazada arriba. Los co
 ## 15. Regla de mantenimiento para cambios futuros
 
 `AGENTS.md` obliga a actualizar este documento en el mismo cambio de código cuando haya modificaciones funcionales o técnicas. La actualización debe explicar el propósito, comportamiento, configuración, datos, permisos, impacto operativo y estado verificado; registrar limitaciones relevantes y mantener las instrucciones de `README.md` y `BACKEND_SETUP.md` coherentes. Los valores secretos nunca se documentan. Los despliegues y cambios remotos se marcan como no verificados hasta confirmarlos expresamente en el proveedor correspondiente.
+
+## 16. Editor visual de encuadres
+
+El panel `/admin/encuadres` permite a los roles `owner`, `admin` y `editor` ajustar la posición horizontal, posición vertical y ampliación de cuatro encuadres: la portada editorial del inicio, la tarjeta de libros del inicio, la tarjeta de la página `/libros` y la cubierta frontal de `/libros/las-aventuras-de-curileta`. La vista previa admite arrastre y los controles permiten afinar valores; `Guardar encuadre` persiste los cambios y `Restaurar valores iniciales` vuelve a los valores definidos en el código. El editor cubre marcos registrados, no cargas de imágenes ni un editor libre de toda la página.
+
+El flujo usa `apps/web/src/app/admin/(panel)/encuadres/ImageFrameEditor.tsx`, el registro tipado `apps/web/src/lib/image-frames.ts`, la lectura de servidor `apps/web/src/lib/image-frame-settings.server.ts` y `apps/web/src/app/api/admin/image-frames/route.ts`. La API vuelve a comprobar el rol en cada petición, solo admite claves registradas, restringe posiciones a 0–100 y zoom a 1–2, guarda `updated_by` y `updated_at`, y revalida inicio, catálogo y detalle del libro. La página usa el cliente administrativo de Supabase únicamente en servidor.
+
+La migración `supabase/migrations/20261010060000_image_frame_settings.sql` crea `public.image_frame_settings`, activa RLS y revoca permisos directos de `public`, `anon` y `authenticated`; concede al servidor `service_role`. Esta migración se aplicó manualmente en Supabase Production el 10 de octubre de 2026. La verificación devolvió RLS activo, lectura denegada a `anon` y `authenticated` y lectura permitida a `service_role`. El historial de migraciones sigue sin reconciliarse, por lo que no se debe ejecutar `supabase db push` hasta reconciliarlo.
+
+No se añade una variable de entorno nueva; el editor usa la configuración existente del cliente de servidor Supabase. La ejecución local de `npm run typecheck --workspace=apps/web` y `npm run build --workspace=apps/web` terminó correctamente. Durante build, Sanity no resolvió desde este entorno (`ENOTFOUND`) y el proveedor usó el contenido local de respaldo. En este cambio, código y favicon están en el árbol local; el despliegue de la web se registra cuando Vercel termine la publicación.

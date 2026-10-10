@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Locale, getMessages } from '@curileta/i18n';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 import { SkipLink, Button } from '@curileta/design-system';
 import { SeasonalBanner } from './SeasonalBanner';
-import { Menu, X, Compass, BookOpen, ArrowRight } from 'lucide-react';
+import { Menu, X, BookOpen, ArrowRight } from 'lucide-react';
 
 export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,11 +36,14 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
             href={`/${locale}`}
             className="group flex items-center gap-2.5 rounded-xl p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1c493b] shadow-sm transition-transform group-hover:scale-105">
-              <div className="flex h-full w-full items-center justify-center rounded-[14px]">
-                <Compass className="h-5 w-5 text-amber-300 transition-transform duration-500 group-hover:rotate-45" />
-              </div>
-            </div>
+            <Image
+              src="/favicon.svg"
+              alt=""
+              width={40}
+              height={40}
+              unoptimized
+              className="h-10 w-10 shrink-0 rounded-2xl shadow-sm transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+            />
             <div className="flex flex-col">
               <span className="font-display text-xl font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
                 Curileta<span className="text-amber-500">.</span>

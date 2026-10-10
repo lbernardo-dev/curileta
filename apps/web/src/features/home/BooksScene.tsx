@@ -9,14 +9,16 @@ import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, MapPin } from 'lucide
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
 import { getBookCoverImage } from '@/lib/book-art';
+import { getImageFrame, type ImageFrameMap } from '@/lib/image-frames';
 
 interface BooksSceneProps {
   locale: Locale;
   books: Book[];
   amazonCountry: string | null;
+  imageFrames: ImageFrameMap;
 }
 
-export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amazonCountry }) => {
+export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amazonCountry, imageFrames }) => {
   const isEn = locale === 'en';
   const now = Date.now();
   const destinationNamesEn: Record<string, string> = {
@@ -54,6 +56,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             const badge = book.badge?.[locale] || book.badge?.es;
             const format = book.format?.[locale] || book.format?.es;
             const coverImage = getBookCoverImage(book);
+            const coverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'home-books-cover') : null;
 
             return (
               <article
@@ -67,7 +70,12 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                       alt={coverImage.alt[locale] || coverImage.alt.es}
                       fill
                       sizes="(max-width: 768px) 100vw, 35vw"
-                      className="object-cover object-center transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                      style={coverFrame ? {
+                        objectPosition: `${coverFrame.positionX}% ${coverFrame.positionY}%`,
+                        transform: `scale(${coverFrame.zoom})`,
+                        transformOrigin: `${coverFrame.positionX}% ${coverFrame.positionY}%`,
+                      } : undefined}
                     />
                     {!isCuriletaBook && (
                       <>

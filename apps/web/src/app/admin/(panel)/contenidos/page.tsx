@@ -102,6 +102,14 @@ export default async function AdminContentPage() {
             description="Los eventos estacionales admiten fechas, tema visual, banner, actividades y estados de publicación."
             detail="La gestión se hace como documentos de evento; todavía no existe una biblioteca separada de temas reutilizables."
           />
+          <ModuleCard
+            title="Encuadres de imágenes"
+            status="Disponible"
+            description="Ajusta la posición y la ampliación de imágenes dentro de los marcos de la portada y del catálogo de libros."
+            detail="Arrastra la imagen en la vista previa o usa los controles. Los cambios se guardan en Supabase y se aplican a la web al actualizar la página."
+            href="/admin/encuadres"
+            actionLabel="Editar encuadres"
+          />
         </div>
       </section>
 

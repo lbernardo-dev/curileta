@@ -6,6 +6,7 @@ import { ArrowRight, BookOpen, Compass, Heart, MapPin, Sparkles } from 'lucide-r
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
 import { getBookCoverImage } from '@/lib/book-art';
+import { getImageFrame, type ImageFrameMap } from '@/lib/image-frames';
 
 interface StoryLandingProps {
   locale: Locale;
@@ -13,6 +14,7 @@ interface StoryLandingProps {
   characters: Character[];
   books: Book[];
   amazonCountry: string | null;
+  imageFrames: ImageFrameMap;
 }
 
 const localized = (value: { es: string; en?: string } | undefined, locale: Locale) =>
@@ -24,7 +26,7 @@ const crewName = (slug: string, name: string, locale: Locale) => {
   return name;
 };
 
-export function StoryLanding({ locale, locations, characters, books, amazonCountry }: StoryLandingProps) {
+export function StoryLanding({ locale, locations, characters, books, amazonCountry, imageFrames }: StoryLandingProps) {
   const isEn = locale === 'en';
   const crew = ['curileta', 'pompon', 'quetzal']
     .map((slug) => characters.find((character) => character.slug === slug))
@@ -33,6 +35,8 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
   const publishedBooks = books.filter((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= today);
   const featuredBook = publishedBooks[0] || books[0];
   const featuredCover = featuredBook ? getBookCoverImage(featuredBook) : null;
+  const isCuriletaBook = featuredBook?.slug === CURILETA_BOOK_SLUG || featuredBook?.id === CURILETA_BOOK_SLUG;
+  const coverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'home-book-cover') : null;
   const nextBook = books.find((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) > today);
   const routeFromBook = featuredBook?.locations
     ?.map((locationId) => locations.find((location) => location.id === locationId || location.slug === locationId))
@@ -156,7 +160,12 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
                 alt={featuredCover.alt[locale] || featuredCover.alt.es}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="origin-bottom object-cover object-bottom scale-[1.08]"
+                className="object-cover"
+                style={coverFrame ? {
+                  objectPosition: `${coverFrame.positionX}% ${coverFrame.positionY}%`,
+                  transform: `scale(${coverFrame.zoom})`,
+                  transformOrigin: `${coverFrame.positionX}% ${coverFrame.positionY}%`,
+                } : undefined}
               />
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-16">
