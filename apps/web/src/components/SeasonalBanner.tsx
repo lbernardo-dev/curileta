@@ -55,7 +55,7 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-          {canExploreEvent && (
+          {canExploreEvent && isSeasonalActive && (
             <a
               href="#evento-halloween"
               className="inline-flex min-h-8 items-center gap-1 rounded-full bg-[var(--seasonal-accent)] px-3 py-1.5 text-xs font-bold text-slate-950 shadow-sm transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

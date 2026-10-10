@@ -9,6 +9,8 @@ import {
   Flame,
 } from 'lucide-react';
 
+import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
+
 interface HalloweenEventSectionProps {
   locale: Locale;
   event?: SeasonalEvent | null;
@@ -18,6 +20,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
   locale,
   event,
 }) => {
+  const { isSeasonalActive } = useSeasonalTheme();
   const [timeLeft, setTimeLeft] = useState({ days: 21, hours: 4, minutes: 30, seconds: 15 });
 
   // Derive the premiere date from CMS content so the campaign can be reused next year.
@@ -43,8 +46,8 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
     return () => clearInterval(timer);
   }, [event?.specialChapter.releaseDate]);
 
-  // La preferencia visual del visitante no oculta el contenido editorial del evento.
-  if (!event || !event.active || event.themeKey !== 'halloween') {
+  // Si el tema estacional está desactivado o el evento no está activo, no renderizar
+  if (!event || !event.active || !isSeasonalActive || event.themeKey !== 'halloween') {
     return null;
   }
 
