@@ -690,21 +690,49 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
   const [activeSectionId, setActiveSectionId] = useState<string>('');
   const isEn = locale === 'en';
 
-  // Solo mostrar hitos que existen en el DOM (ej. evento de Halloween si está activo)
+  // Solo mostrar hitos que existen en el DOM y respetar la activación del tema estacional
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
     const filterExisting = () => {
-      const activeInDom = items.filter((item) => {
-        const el = document.querySelector(item.targetId) || document.getElementById(item.id);
-        return !!el;
-      });
+      const isSeasonalThemeActive = document.documentElement.hasAttribute('data-seasonal-theme');
+
+      const activeInDom = items
+        .filter((item) => {
+          // Si el tema estacional está desactivado, ocultar el hito de Halloween
+          if (item.id === 'evento-halloween' && !isSeasonalThemeActive) {
+            return false;
+          }
+          const el = document.querySelector(item.targetId) || document.getElementById(item.id);
+          return !!el;
+        })
+        .map((item, index) => ({
+          ...item,
+          stepNumber: index + 1,
+        }));
+
       if (activeInDom.length > 0) {
         setMountedItems(activeInDom);
       }
     };
+
     filterExisting();
-    const timer = setTimeout(filterExisting, 600);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(filterExisting, 300);
+
+    // Observador para cambios reactivos cuando el usuario activa o desactiva el tema estacional
+    const observer = new MutationObserver(() => {
+      filterExisting();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-seasonal-theme'],
+    });
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [items]);
 
   // Rastrear la sección activa al hacer scroll por el documento
@@ -750,95 +778,77 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
 
   return (
     <aside
-      className={`fixed right-3 lg:right-5 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center pointer-events-auto select-none ${className}`}
+      className={`fixed right-3 lg:right-5 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col items-center pointer-events-auto select-none ${className}`}
       aria-label={isEn ? 'Expedition Chapter Markers' : 'Marcadores laterales de los capítulos'}
     >
       <nav
-        className="relative flex flex-col items-center gap-2 p-2 rounded-full bg-slate-950/90 border-2 border-amber-400/40 shadow-[0_12px_40px_rgba(0,0,0,0.75)] backdrop-blur-xl"
+        className="relative flex flex-col items-center gap-2 p-1.5 sm:p-2 rounded-full bg-slate-950/90 border border-amber-400/30 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl"
         role="navigation"
       >
         {/* Hilo de sendero vertical discontinuo que une los marcadores de los capítulos */}
         <div
-          className="absolute top-5 bottom-5 left-1/2 -translate-x-1/2 w-0.5 border-l-2 border-dashed border-amber-400/30 pointer-events-none -z-0"
+          className="absolute top-5 bottom-5 left-1/2 -translate-x-1/2 w-0.5 border-l border-dashed border-amber-400/25 pointer-events-none -z-0"
           aria-hidden="true"
         />
 
         {mountedItems.map((item) => {
           const isActive = activeSectionId === item.id;
           const title = item.title[locale as 'es' | 'en'] || item.title.es;
-          const subtitle = item.subtitle[locale as 'es' | 'en'] || item.subtitle.es;
 
           return (
             <button
               key={item.id}
               onClick={() => handleScrollTo(item.targetId, item.id)}
-              className="group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 z-10 cursor-pointer"
+              className="group relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 z-10 cursor-pointer"
               style={{
                 backgroundColor: isActive ? item.themeColor : '#0f172a',
                 color: isActive ? '#020617' : '#e2e8f0',
                 border: isActive
-                  ? `2.5px solid #fef08a`
-                  : `1.5px solid ${item.themeColor}55`,
+                  ? `2px solid #fef08a`
+                  : `1px solid ${item.themeColor}55`,
                 boxShadow: isActive
-                  ? `0 0 18px ${item.themeColor}aa, 0 0 30px ${item.themeColor}55`
-                  : '0 2px 8px rgba(0,0,0,0.4)',
-                transform: isActive ? 'scale(1.15)' : 'scale(1)',
+                  ? `0 0 14px ${item.themeColor}aa`
+                  : '0 2px 6px rgba(0,0,0,0.3)',
+                transform: isActive ? 'scale(1.12)' : 'scale(1)',
               }}
-              aria-label={`${title} (${subtitle})`}
+              aria-label={title}
               aria-current={isActive ? 'true' : undefined}
             >
               {/* Icono temático representativo de cada capítulo */}
-              <div className="transition-transform duration-300 group-hover:scale-115">
+              <div className="transition-transform duration-300 group-hover:scale-110">
                 {getChapterIcon(
                   item.iconName,
                   isActive
-                    ? 'w-5 h-5 text-slate-950 stroke-[2.5]'
-                    : 'w-4 h-4 text-slate-200 group-hover:text-amber-300'
+                    ? 'w-4 h-4 text-slate-950 stroke-[2.5]'
+                    : 'w-3.5 h-3.5 text-slate-200 group-hover:text-amber-300'
                 )}
               </div>
 
               {/* Indicador de pulso activo */}
               {isActive && (
                 <span
-                  className="absolute -inset-1 rounded-full animate-ping opacity-30 pointer-events-none"
+                  className="absolute -inset-1 rounded-full animate-ping opacity-25 pointer-events-none"
                   style={{ backgroundColor: item.themeColor }}
                   aria-hidden="true"
                 />
               )}
 
-              {/* Tooltip interactivo deslizante hacia la izquierda con título e icono temático */}
+              {/* Tooltip sutil, compacto y no invasivo hacia la izquierda */}
               <div
-                className="absolute right-13 sm:right-15 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200 pointer-events-none z-50 flex items-center shadow-2xl"
+                className="absolute right-11 sm:right-13 opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-150 pointer-events-none z-30 flex items-center"
                 role="tooltip"
               >
-                <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-slate-950/95 border-2 border-amber-400/60 backdrop-blur-xl text-left whitespace-nowrap shadow-[0_8px_30px_rgba(0,0,0,0.85)]">
-                  {/* Badge con el número de capítulo */}
-                  <div
-                    className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-black shadow-md flex-shrink-0"
+                <div className="px-2.5 py-1 rounded-lg bg-slate-950/95 border border-slate-700/80 backdrop-blur-md text-left whitespace-nowrap shadow-lg flex items-center gap-1.5">
+                  <span
+                    className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
                     style={{ backgroundColor: item.themeColor, color: '#020617' }}
                   >
                     {item.stepNumber}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
-                        {isEn ? `CH. ${item.stepNumber}` : `CAP. ${item.stepNumber}`}
-                      </span>
-                      <span className="text-xs font-black text-white">
-                        {title}
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 block font-medium">
-                      {subtitle}
-                    </span>
-                  </div>
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-100">
+                    {title}
+                  </span>
                 </div>
-
-                {/* Flechita apuntando al marcador */}
-                <div
-                  className="w-2.5 h-2.5 bg-slate-950 border-r-2 border-t-2 border-amber-400/60 rotate-45 -ml-1 flex-shrink-0"
-                  aria-hidden="true"
-                />
               </div>
             </button>
           );
@@ -852,8 +862,8 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
  * ============================================================================
  * 4. EXPEDITION COMPASS HUD (ROSA DE LOS VIENTOS FLOTANTE & PASAPORTE)
  * ============================================================================
- * Icono de brújula de bronce y oro en la esquina inferior derecha.
- * Permite ver el itinerario completo de la expedición y saltar a cualquier hito.
+ * Ubicado en la esquina inferior izquierda (bottom-left) para evitar colisiones
+ * con el menú de capítulos de la derecha y prevenir que los textos emergentes se cubran.
  */
 export const ExpeditionCompassHUD: React.FC<{
   waypoints?: TrailWaypoint[];
@@ -866,10 +876,10 @@ export const ExpeditionCompassHUD: React.FC<{
 
   return (
     <>
-      <div className={`fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 pointer-events-auto ${className}`}>
-        {/* Menú desplegable con los hitos de la ruta */}
+      <div className={`fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3 pointer-events-auto ${className}`}>
+        {/* Menú desplegable con los hitos de la ruta hacia arriba */}
         {isCompassMenuOpen && (
-          <div className="mb-2 w-72 rounded-3xl bg-slate-950/95 border-2 border-amber-400/60 p-4 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-200 text-white">
+          <div className="mb-2 w-72 rounded-3xl bg-slate-950/95 border border-amber-400/40 p-4 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-200 text-white">
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <Compass className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '8s' }} />
@@ -879,7 +889,7 @@ export const ExpeditionCompassHUD: React.FC<{
               </div>
               <button
                 onClick={() => setIsCompassMenuOpen(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label="Cerrar ruta"
               >
                 <X className="w-3.5 h-3.5" />
@@ -920,7 +930,7 @@ export const ExpeditionCompassHUD: React.FC<{
         {/* Botón interactivo de la Brújula de Expedición */}
         <button
           onClick={() => setIsCompassMenuOpen(!isCompassMenuOpen)}
-          className="group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-950/90 hover:bg-slate-900 border-2 border-amber-400/70 hover:border-amber-300 text-white shadow-[0_8px_25px_rgba(245,158,11,0.35)] backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          className="group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-950/90 hover:bg-slate-900 border border-amber-400/50 hover:border-amber-300 text-white shadow-[0_8px_25px_rgba(245,158,11,0.25)] backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer"
           title={isEn ? 'View adventure map milestones' : 'Ver hitos del mapa de aventuras'}
           aria-label={isEn ? 'View adventure map milestones' : 'Ver hitos del mapa de aventuras'}
         >

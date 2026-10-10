@@ -3,7 +3,10 @@ import type { Metadata } from 'next';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { HeroScene } from '@/features/home/HeroScene';
-import { HalloweenEventSection } from '@/features/events/HalloweenEventSection';
+import {
+  SeasonalEventSectionWrapper,
+  GlobeTrailConnector,
+} from '@/features/events/SeasonalEventSectionWrapper';
 import { Globe3DScene } from '@/features/home/Globe3DScene';
 import { AdventureRadar } from '@/features/home/AdventureRadar';
 import { LettersScene } from '@/features/home/LettersScene';
@@ -107,39 +110,11 @@ export default async function HomePage({
       {/* Escena 01 — Hero: Bosque Encantado y Curileta */}
       <HeroScene locale={locale as Locale} settings={siteSettings} />
 
-      {/* Evento Estacional Activo: Especial de Halloween (Con conector dedicado si está activo) */}
-      {activeEvent && (
-        <>
-          <AdventureTrailConnector
-            stepNumber={1}
-            destinationTitle={{
-              es: 'Desvío Estacional: El Huerto Encantado 🎃',
-              en: 'Seasonal Detour: The Enchanted Orchard 🎃',
-            }}
-            coordinatesText="Bosque de Calabazas • Tiempo Limitado"
-            distanceText={{ es: '+3 Leguas Mágicas', en: '+3 Magical Leagues' }}
-            targetId="#evento-halloween"
-            curveVariant="zigzag"
-            isHalloweenSpecial={true}
-            locale={locale}
-          />
-          <HalloweenEventSection locale={locale as Locale} event={activeEvent} />
-        </>
-      )}
+      {/* Evento Estacional Activo: Especial de Halloween (Se oculta automáticamente si está desactivado) */}
+      <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />
 
-      {/* Conector Cartográfico 02: Rumbo al Globo Aerostático 3D */}
-      <AdventureTrailConnector
-        stepNumber={2}
-        destinationTitle={{
-          es: 'Rumbo al Globo Aerostático 3D',
-          en: 'Towards 3D Hot Air Balloon',
-        }}
-        coordinatesText="Alt. 3.200m • Cartografía de 40 Culturas"
-        distanceText={{ es: '+12 Leguas Aéreas', en: '+12 Aerial Leagues' }}
-        targetId="#escena-mapa"
-        curveVariant="left-to-center"
-        locale={locale}
-      />
+      {/* Conector Cartográfico: Rumbo al Globo Aerostático 3D (Paso 1 o 2 según evento) */}
+      <GlobeTrailConnector locale={locale as Locale} />
 
       {/* Escena 02 — Globo Terráqueo 3D Interactivo con Three.js */}
       <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />

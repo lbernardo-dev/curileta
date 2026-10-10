@@ -15,9 +15,9 @@ import {
   Gift,
   ExternalLink,
   Flame,
-  Moon,
   ChevronRight,
 } from 'lucide-react';
+import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
 
 interface HalloweenEventSectionProps {
   locale: Locale;
@@ -28,6 +28,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
   locale,
   event,
 }) => {
+  const { isSeasonalActive } = useSeasonalTheme();
   const [notifyEmail, setNotifyEmail] = useState('');
   const [notified, setNotified] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 21, hours: 4, minutes: 30, seconds: 15 });
@@ -60,8 +61,8 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
     }
   };
 
-  // Solo se renderiza mientras el evento estacional esté activo y dentro de sus fechas
-  if (!event || !event.active) {
+  // Solo se renderiza mientras el evento estacional esté activo y NO haya sido desactivado por el usuario
+  if (!event || !event.active || !isSeasonalActive) {
     return null;
   }
 
