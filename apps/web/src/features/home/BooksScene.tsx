@@ -47,7 +47,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
           </p>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        <div className={`grid gap-6 ${books.length === 1 ? 'grid-cols-1' : 'lg:grid-cols-2 xl:grid-cols-3'}`}>
           {books.map((book) => {
             const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
             const isPublished = isBookPublished(book, now);
@@ -62,9 +62,9 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             return (
               <article
                 key={book.id || book.slug}
-                className="group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]"
+                className={`group ${books.length === 1 ? 'mx-auto w-full max-w-5xl lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]' : 'flex flex-col'} h-full min-w-0 overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]`}
               >
-                <div className="relative aspect-[5/4] overflow-hidden sm:aspect-[16/10]">
+                <div className={`relative overflow-hidden ${books.length === 1 ? 'aspect-[5/4] lg:aspect-auto lg:min-h-[30rem]' : 'aspect-[5/4] sm:aspect-[16/10]'}`}>
                   <BookCoverPanel
                     src={coverImage.url}
                     alt={coverImage.alt[locale] || coverImage.alt.es}
