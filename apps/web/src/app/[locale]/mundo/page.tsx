@@ -3,7 +3,7 @@ import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { Globe3DScene } from '@/features/home/Globe3DScene';
 import { AdventureRadar } from '@/features/home/AdventureRadar';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { CheckCircle2, Sparkles } from 'lucide-react';
 
 export async function generateMetadata({

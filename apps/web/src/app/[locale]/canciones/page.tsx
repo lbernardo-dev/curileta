@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { isValidLocale, type Locale } from '@curileta/i18n';
 import { ArrowRight, Disc3, Music2, Youtube } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';

@@ -1,46 +1,44 @@
+import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
 
-/**
- * Webhook para invalidación de caché On-Demand de Sanity (Section 64)
- * Permite que los editores vean sus cambios inmediatamente sin reconstruir toda la app.
- */
 export async function POST(request: NextRequest) {
-  try {
-    const secret = request.nextUrl.searchParams.get('secret');
-
-    if (secret !== process.env.SANITY_REVALIDATE_SECRET && process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ message: 'Invalid secret token' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { _type, slug, _id } = body;
-
-    // Invalidar tags específicos según la entidad modificada
-    if (_type === 'character') {
-      revalidateTag(`character:${_id}`);
-      revalidateTag('characters');
-    } else if (_type === 'book') {
-      revalidateTag(`book:${_id}`);
-      revalidateTag('books');
-    } else if (_type === 'adventure') {
-      revalidateTag(`adventure:${_id}`);
-      revalidateTag('adventures');
-    } else if (_type === 'video') {
-      revalidateTag('videos');
-    }
-
-    // Invalidar la home si el contenido afecta a la portada
-    revalidateTag('homepage');
-
-    return NextResponse.json({
-      revalidated: true,
-      now: Date.now(),
-      type: _type,
-      id: _id,
-    });
-  } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json({ message: 'Error revalidating', error: errorMessage }, { status: 500 });
+  const secret = process.env.SANITY_REVALIDATE_SECRET;
+  if (!secret) {
+    return NextResponse.json({ message: 'La revalidación no está configurada.' }, { status: 503 });
   }
+  const declaredLength = Number(request.headers.get('content-length') || 0);
+  if (declaredLength > 32_000) {
+    return NextResponse.json({ message: 'El cuerpo supera el tamaño permitido.' }, { status: 413 });
+  }
+
+  const rawBody = await request.text();
+  if (rawBody.length > 32_000) {
+    return NextResponse.json({ message: 'El cuerpo supera el tamaño permitido.' }, { status: 413 });
+  }
+  const signature = request.headers.get(SIGNATURE_HEADER_NAME);
+  if (!signature || !(await isValidSignature(rawBody, signature, secret))) {
+    return NextResponse.json({ message: 'Firma no válida.' }, { status: 401 });
+  }
+
+  let payload: { _type?: string; contentType?: string };
+  try {
+    payload = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ message: 'El cuerpo debe ser JSON válido.' }, { status: 400 });
+  }
+
+  const tags = new Set<string>(['sanity:siteSettings']);
+  if (payload._type === 'contentEntry' && payload.contentType) {
+    tags.add(`sanity:${payload.contentType}`);
+  } else if (payload._type === 'siteSettings') {
+    tags.add('sanity:siteSettings');
+  } else {
+    return NextResponse.json({ message: 'Tipo de contenido no reconocido.' }, { status: 400 });
+  }
+
+  tags.forEach((tag) => revalidateTag(tag));
+  revalidatePath('/', 'layout');
+
+  return NextResponse.json({ revalidated: true, tags: [...tags] });
 }

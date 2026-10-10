@@ -16,7 +16,7 @@ import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
 import { detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
@@ -95,31 +95,48 @@ export default async function HomePage({
   ).length;
   const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
 
+  const sections = [
+    { key: 'hero' as const, visible: true, order: 0 },
+    { key: 'seasonalEvent' as const, visible: true, order: 1 },
+    { key: 'story' as const, visible: true, order: 2 },
+    { key: 'globe' as const, visible: true, order: 3 },
+    { key: 'radar' as const, visible: true, order: 4 },
+    { key: 'letters' as const, visible: true, order: 5 },
+    { key: 'characters' as const, visible: true, order: 6 },
+    { key: 'books' as const, visible: true, order: 7 },
+    { key: 'videos' as const, visible: true, order: 8 },
+    { key: 'wallpapers' as const, visible: true, order: 9 },
+    { key: 'roadmap' as const, visible: true, order: 10 },
+    { key: 'collaborations' as const, visible: true, order: 11 },
+    { key: 'closing' as const, visible: true, order: 12 },
+  ];
+  const sectionComponents = {
+    hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
+    seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
+    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} amazonCountry={amazonCountry} />,
+    globe: <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />,
+    radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
+    letters: <LettersScene locale={locale as Locale} letters={letters} />,
+    characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
+    books: <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} />,
+    videos: <YouTubeScene locale={locale as Locale} videos={videos} />,
+    wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
+    roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,
+    collaborations: <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />,
+    closing: <ClosingScene locale={locale as Locale} />,
+  };
+  const configuredSections = settings.homepageSections?.length ? settings.homepageSections : sections;
+
   return (
     <article className="relative flex w-full flex-col">
-      <HeroScene
-        locale={locale as Locale}
-        settings={settings}
-        publishedBooksCount={publishedBooksCount}
-      />
-      <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />
-      <StoryLanding
-        locale={locale as Locale}
-        locations={locations}
-        characters={characters}
-        books={books}
-        amazonCountry={amazonCountry}
-      />
-      <Globe3DScene locale={locale as Locale} locations={locations} milestones={milestones} />
-      <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />
-      <LettersScene locale={locale as Locale} letters={letters} />
-      <CharacterHubScene locale={locale as Locale} characters={characters} />
-      <BooksScene locale={locale as Locale} books={books} amazonCountry={amazonCountry} />
-      <YouTubeScene locale={locale as Locale} videos={videos} />
-      <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />
-      <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />
-      <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />
-      <ClosingScene locale={locale as Locale} />
+      {configuredSections
+        .filter((section) => section.visible && section.key in sectionComponents)
+        .sort((left, right) => left.order - right.order)
+        .map((section) => (
+          <div key={section.key} data-home-section={section.key} className="contents">
+            {sectionComponents[section.key as keyof typeof sectionComponents]}
+          </div>
+        ))}
     </article>
   );
 }

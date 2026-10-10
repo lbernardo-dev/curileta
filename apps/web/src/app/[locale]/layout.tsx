@@ -5,7 +5,7 @@ import { locales, Locale, isValidLocale } from '@curileta/i18n';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { SeasonalThemeProvider } from '@/providers/SeasonalThemeProvider';
 
 export async function generateMetadata({

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { Sparkles, Download } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

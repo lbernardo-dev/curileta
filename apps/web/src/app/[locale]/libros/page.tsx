@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Locale, isValidLocale } from '@curileta/i18n';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock3 } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';

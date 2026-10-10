@@ -13,6 +13,7 @@ Los vídeos de `base` alternan al recargar la página y cada 5 minutos mientras 
 - Formato recomendado: MP4 con vídeo H.264, sin pista de audio.
 - Composición: horizontal 16:9, idealmente 1920 × 1080, 24 fps y unos 8 segundos.
 - Mantén cámara fija y movimientos suaves para que el bucle no distraiga del texto.
-- La web conserva el póster `public/images/hero/curileta-world-expedition-clean-v1.jpg` como imagen accesible y respaldo.
+- Para que el bucle no dé un salto cada 8 segundos, procura que el último fotograma encaje con el primero en encuadre y pose.
+- La imagen `public/images/hero/curileta-world-expedition-clean-v1.jpg` se conserva para la sección de ruta y la imagen social del sitio.
 
-Con movimiento reducido, el hero vuelve al póster.
+Con movimiento reducido, el hero muestra el fotograma de respaldo del vídeo correspondiente.

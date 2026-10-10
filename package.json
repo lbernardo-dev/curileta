@@ -10,6 +10,8 @@
     "dev": "npm run dev --workspace=apps/web",
     "dev:studio": "npm run dev --workspace=apps/studio",
     "dev:all": "npm run dev --workspaces --if-present",
+    "sanity:import:dry-run": "node --experimental-strip-types tooling/scripts/import-local-content-to-sanity.mjs --dry-run",
+    "sanity:import": "node --experimental-strip-types tooling/scripts/import-local-content-to-sanity.mjs",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",

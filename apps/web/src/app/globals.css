@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-outfit: 'Outfit', sans-serif;
-  --font-display: var(--font-outfit);
+  --font-geist: 'Geist', sans-serif;
+  --font-display: var(--font-geist);
 
   /* Brand Primitive Colors */
   --color-curileta-green: #1B8A44;
@@ -23,8 +23,6 @@
   /* Event themes override these shared accents for the duration of a campaign. */
   --seasonal-accent: var(--color-adventure-gold);
   --seasonal-accent-strong: #b45309;
-  --seasonal-glow: rgba(245, 158, 11, 0.18);
-  --seasonal-glow-secondary: rgba(27, 138, 68, 0.08);
   --seasonal-banner-start: #102d23;
   --seasonal-banner-end: #174635;
   --seasonal-header-light: rgba(251, 252, 248, 0.96);
@@ -162,17 +160,14 @@ html.dark {
 
 /* ============================================================
    SEASONAL THEMES
-   Themes are selected by the active CMS event. Shared tokens keep the
-   light/dark preference intact while the ambient layer ties every route
-   together for the length of the campaign.
+   Themes are selected by the active CMS event. Shared tokens preserve the
+   light/dark preference and keep seasonal accents consistent across routes.
    ============================================================ */
 html[data-seasonal-theme="halloween"] {
   --color-adventure-gold: #f97316;
   --color-adventure-gold-light: #fb923c;
   --seasonal-accent: #f97316;
   --seasonal-accent-strong: #c2410c;
-  --seasonal-glow: rgba(249, 115, 22, 0.28);
-  --seasonal-glow-secondary: rgba(180, 83, 9, 0.13);
   --seasonal-banner-start: #17251d;
   --seasonal-banner-end: #452313;
   --seasonal-header-light: rgba(250, 247, 239, 0.96);
@@ -188,8 +183,6 @@ html[data-seasonal-theme="christmas"] {
   --color-adventure-gold-light: #f0a08f;
   --seasonal-accent: #d96b55;
   --seasonal-accent-strong: #a63838;
-  --seasonal-glow: rgba(217, 107, 85, 0.2);
-  --seasonal-glow-secondary: rgba(53, 133, 91, 0.14);
   --seasonal-banner-start: #15392f;
   --seasonal-banner-end: #542c35;
   --seasonal-header-light: rgba(247, 250, 246, 0.96);
@@ -206,8 +199,6 @@ html[data-seasonal-theme="easter"] {
   --color-adventure-gold-light: #dca8c7;
   --seasonal-accent: #b66e9c;
   --seasonal-accent-strong: #85416d;
-  --seasonal-glow: rgba(214, 158, 194, 0.2);
-  --seasonal-glow-secondary: rgba(142, 180, 111, 0.14);
   --seasonal-banner-start: #304c37;
   --seasonal-banner-end: #573b57;
   --seasonal-header-light: rgba(251, 248, 251, 0.96);
@@ -223,8 +214,6 @@ html[data-seasonal-theme="summer"] {
   --color-adventure-gold-light: #f3b47b;
   --seasonal-accent: #e38443;
   --seasonal-accent-strong: #a64d26;
-  --seasonal-glow: rgba(246, 181, 102, 0.2);
-  --seasonal-glow-secondary: rgba(47, 158, 176, 0.13);
   --seasonal-banner-start: #154b50;
   --seasonal-banner-end: #8a4c2e;
   --seasonal-header-light: rgba(248, 251, 248, 0.96);
@@ -240,8 +229,6 @@ html[data-seasonal-theme="valentines"] {
   --color-adventure-gold-light: #f1a4b7;
   --seasonal-accent: #dc6b87;
   --seasonal-accent-strong: #a83f61;
-  --seasonal-glow: rgba(230, 116, 151, 0.22);
-  --seasonal-glow-secondary: rgba(184, 79, 134, 0.12);
   --seasonal-banner-start: #582d42;
   --seasonal-banner-end: #7b3947;
   --seasonal-header-light: rgba(253, 247, 249, 0.96);

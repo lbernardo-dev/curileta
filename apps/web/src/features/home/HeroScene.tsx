@@ -21,20 +21,22 @@ interface HeroSceneProps {
   publishedBooksCount: number;
 }
 
-const HERO_POSTER = '/images/hero/curileta-world-expedition-clean-v1.jpg';
 const route = routeData;
 
 export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishedBooksCount }) => {
-  const { isSeasonalActive, themeKey } = useSeasonalTheme();
-  const [baseVideoIndex, setBaseVideoIndex] = useState(0);
-  const eventVideo = isSeasonalActive && themeKey
+  const { isReady: seasonalThemeReady, isSeasonalActive, themeKey } = useSeasonalTheme();
+  const [baseVideoIndex, setBaseVideoIndex] = useState<number | null>(null);
+  const seasonalVideo = isSeasonalActive && themeKey
     ? HERO_EVENT_VIDEOS[themeKey as SeasonalEvent['themeKey']]
     : undefined;
-  const heroVideo = eventVideo ?? HERO_BASE_VIDEOS[baseVideoIndex];
-  const heroPoster = heroVideo?.poster ?? HERO_POSTER;
+  const eventVideo = seasonalThemeReady ? seasonalVideo : undefined;
+  const heroVideo = seasonalThemeReady
+    ? eventVideo ?? (baseVideoIndex === null ? undefined : HERO_BASE_VIDEOS[baseVideoIndex])
+    : undefined;
+  const heroPoster = heroVideo?.poster ?? seasonalVideo?.poster ?? HERO_BASE_VIDEOS[0].poster;
 
   useEffect(() => {
-    if (eventVideo) return;
+    if (!seasonalThemeReady || eventVideo) return;
 
     try {
       const storedIndex = sessionStorage.getItem(HERO_BASE_VIDEO_INDEX_STORAGE_KEY);
@@ -48,27 +50,27 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
     } catch {
       setBaseVideoIndex(Math.floor(Math.random() * HERO_BASE_VIDEOS.length));
     }
-  }, [eventVideo]);
+  }, [eventVideo, seasonalThemeReady]);
 
   useEffect(() => {
-    if (eventVideo) return;
+    if (!seasonalThemeReady || eventVideo || baseVideoIndex === null) return;
 
     try {
       sessionStorage.setItem(HERO_BASE_VIDEO_INDEX_STORAGE_KEY, String(baseVideoIndex));
     } catch {
       // La rotación sigue funcionando aunque el navegador bloquee el almacenamiento de sesión.
     }
-  }, [baseVideoIndex, eventVideo]);
+  }, [baseVideoIndex, eventVideo, seasonalThemeReady]);
 
   useEffect(() => {
-    if (eventVideo || HERO_BASE_VIDEOS.length < 2) return;
+    if (!seasonalThemeReady || eventVideo || baseVideoIndex === null || HERO_BASE_VIDEOS.length < 2) return;
 
     const rotationTimer = window.setInterval(() => {
-      setBaseVideoIndex((index) => (index + 1) % HERO_BASE_VIDEOS.length);
+      setBaseVideoIndex((index) => (index === null ? 0 : (index + 1) % HERO_BASE_VIDEOS.length));
     }, HERO_VIDEO_ROTATION_INTERVAL_MS);
 
     return () => window.clearInterval(rotationTimer);
-  }, [eventVideo]);
+  }, [baseVideoIndex === null, eventVideo, seasonalThemeReady]);
 
   const isEn = locale === 'en';
   const tagline = settings?.heroSubtitle?.[locale] || settings?.heroSubtitle?.es;

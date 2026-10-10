@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { Sparkles, ArrowRight, Compass, Download, Shield } from 'lucide-react';
 

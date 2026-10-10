@@ -2648,6 +2648,10 @@ export const INITIAL_SETTINGS: SiteSettings = {
       value: '11',
     },
   ],
+  homepageSections: [
+    'hero', 'seasonalEvent', 'story', 'globe', 'radar', 'letters', 'characters',
+    'books', 'videos', 'wallpapers', 'roadmap', 'collaborations', 'closing',
+  ].map((key, order) => ({ key, visible: true, order })) as SiteSettings['homepageSections'],
 };
 
 export class LocalCMSProvider implements CMSProvider {

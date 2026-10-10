@@ -28,7 +28,7 @@ curileta-web/
 ## 🚀 Inicio Rápido
 
 ### Requisitos previos
-- **Node.js**: v20+ (probado en Node v26)
+- **Node.js**: v22.18+ (necesario para el SDK de Supabase y la importación local de contenido a Sanity)
 - **npm**: v10+
 
 ### Instalación de dependencias
@@ -70,3 +70,4 @@ La aplicación web estará disponible en [http://localhost:3000](http://localhos
 
 - [Documento Maestro de Producto](./Docs/Proyecto_Web_Oficial_Las_Aventuras_de_Curileta.md)
 - [Plan de Implementación Operativo](./Docs/PLAN_IMPLEMENTACION.md)
+- [Configuración del backend y conexión de servicios](./Docs/BACKEND_SETUP.md)

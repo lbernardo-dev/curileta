@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Locale, isValidLocale } from '@curileta/i18n';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import { ArrowRight, BookOpen, Compass, Heart, Map } from 'lucide-react';
 

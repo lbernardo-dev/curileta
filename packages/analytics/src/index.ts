@@ -1,4 +1,5 @@
 export type AnalyticsEvent =
+  | { name: 'page_view'; properties: { path: string; locale: string } }
   | { name: 'book_view'; properties: { bookId: string; slug: string } }
   | { name: 'book_purchase_click'; properties: { bookId: string; storeName: string } }
   | { name: 'video_play'; properties: { videoId: string; title: string } }
@@ -19,7 +20,28 @@ class PrivacySafeAnalytics implements AnalyticsProvider {
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Analytics Event - No PII]`, event.name, event.properties);
     }
-    // Implementación segura que no guarda IP ni identifiers personales
+
+    if (typeof window === 'undefined' || window.navigator.doNotTrack === '1') return;
+
+    const supportedEvents = new Set([
+      'page_view',
+      'book_view',
+      'book_purchase_click',
+      'video_play',
+      'character_view',
+      'map_destination_open',
+      'song_play',
+    ]);
+    if (!supportedEvents.has(event.name)) return;
+
+    const path = window.location.pathname;
+    const locale = path.split('/')[1] === 'en' ? 'en' : 'es';
+    void fetch('/api/admin/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventName: event.name, path, locale }),
+      keepalive: true,
+    }).catch(() => undefined);
   }
 }
 

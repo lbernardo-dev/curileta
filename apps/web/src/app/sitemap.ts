@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { locales } from '@curileta/i18n';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').replace(/\/$/, '');

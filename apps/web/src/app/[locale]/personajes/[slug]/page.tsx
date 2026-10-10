@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { locales, Locale, isValidLocale } from '@curileta/i18n';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 import { getCharacterImageAspectRatio } from '@/lib/character-image';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsProvider } from '@curileta/cms';
+import { cmsProvider } from '@/lib/cms';
 
 export async function GET(
   request: NextRequest,

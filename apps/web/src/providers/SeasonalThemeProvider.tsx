@@ -5,6 +5,7 @@ import { SeasonalEvent } from '@curileta/cms';
 
 interface SeasonalThemeContextType {
   activeEvent: SeasonalEvent | null;
+  isReady: boolean;
   isSeasonalActive: boolean;
   isUserDismissed: boolean;
   toggleSeasonalTheme: () => void;
@@ -13,6 +14,7 @@ interface SeasonalThemeContextType {
 
 const SeasonalThemeContext = createContext<SeasonalThemeContextType>({
   activeEvent: null,
+  isReady: false,
   isSeasonalActive: false,
   isUserDismissed: false,
   toggleSeasonalTheme: () => {},
@@ -77,6 +79,7 @@ export const SeasonalThemeProvider: React.FC<{
   const isUserDismissed = dismissedEvent.id === campaignStorageKey && dismissedEvent.dismissed;
   const isSeasonalActive = Boolean(activeEvent && activeEvent.active && !isUserDismissed);
   const themeKey = isSeasonalActive && activeEvent ? activeEvent.themeKey : null;
+  const isReady = mounted && (!campaignStorageKey || dismissedEvent.id === campaignStorageKey);
 
   // Sincronizar atributo data-seasonal-theme en <html>
   useEffect(() => {
@@ -114,6 +117,7 @@ export const SeasonalThemeProvider: React.FC<{
     <SeasonalThemeContext.Provider
       value={{
         activeEvent,
+        isReady,
         isSeasonalActive,
         isUserDismissed,
         toggleSeasonalTheme,

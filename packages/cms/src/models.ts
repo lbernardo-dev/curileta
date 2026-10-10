@@ -270,4 +270,9 @@ export interface SiteSettings {
     label: LocalizedString;
     value: string;
   }>;
+  homepageSections?: Array<{
+    key: 'hero' | 'seasonalEvent' | 'story' | 'globe' | 'radar' | 'letters' | 'characters' | 'books' | 'videos' | 'wallpapers' | 'roadmap' | 'collaborations' | 'closing';
+    visible: boolean;
+    order: number;
+  }>;
 }

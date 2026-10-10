@@ -43,8 +43,8 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
             <h2 className="font-display text-xl font-semibold">{isEn ? 'Information sent through the contact form' : 'Información enviada mediante el formulario de contacto'}</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
               {isEn
-                ? 'The form is intended for adults. It asks for a name, email address, organisation (if applicable), country, enquiry category and message. The website’s contact endpoint uses the name, email, organisation, category and message to prepare an email. When the email integration is configured, the message is delivered through Resend to the project contact address. The current endpoint does not save submissions in a Curileta website database.'
-                : 'El formulario está dirigido a personas adultas. Solicita nombre, correo electrónico, organización (si procede), país, categoría de consulta y mensaje. El servicio de contacto utiliza el nombre, correo, organización, categoría y mensaje para preparar un correo. Cuando la integración está configurada, el mensaje se entrega mediante Resend a la dirección de contacto del proyecto. El servicio actual no guarda los envíos en una base de datos propia de la web de Curileta.'}
+                ? 'The form is intended for adults. It asks for a name, email address, organisation (if applicable), country, enquiry category and message, together with adult and privacy confirmations. When the backend is configured, the website stores the submission and form answers in Supabase so authorised team members can review them in the dashboard. If email delivery is configured, Resend sends a notification to the selected project address. A delivery failure leaves the submission available in the dashboard. Cloudflare Turnstile checks public submissions for spam.'
+                : 'El formulario está dirigido a personas adultas. Solicita nombre, correo electrónico, organización (si procede), país, categoría de consulta y mensaje, además de las confirmaciones de edad adulta y privacidad. Cuando se configure el backend, la web guardará el envío y sus respuestas en Supabase para que el equipo autorizado pueda revisarlos en el panel. Si se configura el correo, Resend enviará un aviso a la dirección elegida para el proyecto. Si el aviso falla, el mensaje seguirá disponible en el panel. Cloudflare Turnstile comprobará los envíos públicos para reducir el correo no deseado.'}
             </p>
           </div>
         </div>
@@ -53,14 +53,19 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
             ? 'Do not include personal information about children in the message. The technical hosting and email providers may process data as needed to deliver and secure the service; their applicable privacy terms should also be reviewed.'
             : 'No incluyas datos personales de menores en el mensaje. Los proveedores técnicos de alojamiento y correo pueden tratar datos para prestar y proteger el servicio; también deben consultarse sus políticas de privacidad aplicables.'}
         </p>
+        <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
+          {isEn
+            ? 'When site analytics are enabled, the backend stores daily aggregate event counts by page and language. The application does not save a persistent visitor identifier or visitor profile, and page tracking respects the browser’s Do Not Track signal.'
+            : 'Cuando se activen las estadísticas del sitio, el backend guardará recuentos diarios agregados por página e idioma. La aplicación no guarda un identificador persistente ni un perfil de visitante, y el seguimiento de páginas respeta la señal Do Not Track del navegador.'}
+        </p>
       </SitePageCard>
 
       <SitePageCard>
         <h2 className="font-display text-xl font-semibold">{isEn ? 'Purpose, rights and contact' : 'Finalidad, derechos y contacto'}</h2>
         <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
-            ? 'Information is used to respond to the enquiry and manage the resulting conversation. You may request access, correction or deletion of information you sent by contacting the project through the form. The responsible party’s direct privacy contact and any applicable retention periods will be added once confirmed.'
-            : 'La información se utiliza para responder a la consulta y gestionar la conversación que se derive. Puedes solicitar acceso, rectificación o eliminación de la información enviada contactando con el proyecto mediante el formulario. Añadiremos el contacto directo de privacidad de la persona responsable y los plazos de conservación aplicables cuando se confirmen.'}
+            ? 'Information is used to respond to the enquiry and manage the resulting conversation. You may request access, correction or deletion of information you sent by contacting the project through the form. The responsible party’s direct privacy contact, identity, registered address and retention period still need to be confirmed before the form is activated in production.'
+            : 'La información se utiliza para responder a la consulta y gestionar la conversación que se derive. Puedes solicitar acceso, rectificación o eliminación de la información enviada contactando con el proyecto mediante el formulario. La identidad y dirección de la persona responsable, el contacto directo de privacidad y el plazo de conservación aún deben confirmarse antes de activar el formulario en producción.'}
         </p>
         <Link href={`/${locale}/contacto`} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--seasonal-accent-strong)]">
           <Mail className="h-4 w-4" />{isEn ? 'Contact the team' : 'Contactar con el equipo'}
