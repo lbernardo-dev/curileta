@@ -181,7 +181,7 @@ export const contentEntry = defineType({
     defineField({ name: 'coordinates', title: 'Coordenadas', type: 'object', fields: [
       { name: 'lat', title: 'Latitud', type: 'number' },
       { name: 'lng', title: 'Longitud', type: 'number' },
-    ], ...forTypes(...locationTypes) }),
+    ], ...forTypes(...locationTypes, ...milestoneTypes) }),
     defineField({ name: 'passportStamp', title: 'Sello del pasaporte', type: 'object', fields: [
       { name: 'icon', title: 'Icono', type: 'string' },
       { name: 'code', title: 'Código', type: 'string' },
@@ -241,10 +241,6 @@ export const contentEntry = defineType({
       { name: 'curiosityFact', title: 'Curiosidad', type: 'localizedText' },
       { name: 'isMentionOnly', title: 'Solo se menciona', type: 'boolean' },
     ] }], ...forTypes(...locationTypes) }),
-    defineField({ name: 'coordinates', title: 'Coordenadas del hito', type: 'object', fields: [
-      { name: 'lat', title: 'Latitud', type: 'number' },
-      { name: 'lng', title: 'Longitud', type: 'number' },
-    ], ...forTypes(...milestoneTypes) }),
     defineField({ name: 'isTravesia', title: 'Es una travesía', type: 'boolean', ...forTypes(...milestoneTypes) }),
     defineField({ name: 'isMentionOnly', title: 'Solo se menciona', type: 'boolean', ...forTypes(...curiosityTypes) }),
     defineField({ name: 'active', title: 'Evento activo', type: 'boolean', ...forTypes(...eventTypes) }),
