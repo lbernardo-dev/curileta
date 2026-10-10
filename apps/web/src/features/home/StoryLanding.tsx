@@ -5,6 +5,7 @@ import type { Locale } from '@curileta/i18n';
 import { ArrowRight, BookOpen, Compass, Heart, MapPin, Sparkles } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
+import { getBookCoverImage } from '@/lib/book-art';
 
 interface StoryLandingProps {
   locale: Locale;
@@ -31,6 +32,7 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
   const today = Date.now();
   const publishedBooks = books.filter((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= today);
   const featuredBook = publishedBooks[0] || books[0];
+  const featuredCover = featuredBook ? getBookCoverImage(featuredBook) : null;
   const nextBook = books.find((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) > today);
   const routeFromBook = featuredBook?.locations
     ?.map((locationId) => locations.find((location) => location.id === locationId || location.slug === locationId))
@@ -145,19 +147,17 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
         </div>
       </section>
 
-      {featuredBook && (
+      {featuredBook && featuredCover && (
         <section className="bg-[#fffdf7] px-5 py-20 text-[#20352c] sm:px-8 sm:py-28 lg:px-12">
           <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#163b32] text-white shadow-[0_28px_90px_rgba(16,48,38,0.18)] lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="relative min-h-[320px] overflow-hidden bg-[#183f35] sm:min-h-[400px] lg:min-h-[560px]">
+            <div className="relative min-h-[320px] overflow-hidden bg-[#e8ddc1] sm:min-h-[400px] lg:min-h-[560px]">
               <Image
-                src="/images/hero/curileta-world-expedition-clean-v1.jpg"
-                alt={isEn ? 'Curileta follows her route across the world' : 'Curileta sigue su ruta por el mundo'}
+                src={featuredCover.url}
+                alt={featuredCover.alt[locale] || featuredCover.alt.es}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                unoptimized
-                className="object-cover object-[76%_center]"
+                className="object-contain p-5 drop-shadow-2xl sm:p-8"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#163b32]/35 to-transparent" />
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-16">
               <p className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">

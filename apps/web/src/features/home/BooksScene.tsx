@@ -67,7 +67,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                       alt={coverImage.alt[locale] || coverImage.alt.es}
                       fill
                       sizes="(max-width: 768px) 100vw, 35vw"
-                      className={isCuriletaBook ? 'object-contain p-4' : 'object-cover transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]'}
+                      className="object-cover object-center transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
                     />
                     {!isCuriletaBook && (
                       <>
