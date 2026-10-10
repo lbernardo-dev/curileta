@@ -62,26 +62,25 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             return (
               <article
                 key={book.id || book.slug}
-                className="group h-full overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]"
+                className="group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]"
               >
-                <div className="grid h-full md:min-h-[34rem] md:grid-cols-[0.7fr_1.3fr]">
-                  <div className="relative min-h-[24rem] overflow-hidden md:min-h-full">
-                    <BookCoverPanel
-                      src={coverImage.url}
-                      alt={coverImage.alt[locale] || coverImage.alt.es}
-                      locale={locale}
-                      upcoming={!isPublished}
-                      frame={coverFrame}
-                      fillContainer
-                    />
-                    {!isCuriletaBook && isPublished && (
-                      <span className="absolute bottom-4 left-4 rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-[#20352c] shadow-sm">
-                        {isEn ? 'Story illustration' : 'Ilustración del relato'}
-                      </span>
-                    )}
-                  </div>
+                <div className="relative aspect-[5/4] overflow-hidden sm:aspect-[16/10]">
+                  <BookCoverPanel
+                    src={coverImage.url}
+                    alt={coverImage.alt[locale] || coverImage.alt.es}
+                    locale={locale}
+                    upcoming={!isPublished}
+                    frame={coverFrame}
+                    fillContainer
+                  />
+                  {!isCuriletaBook && isPublished && (
+                    <span className="absolute bottom-4 left-4 rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-[#20352c] shadow-sm">
+                      {isEn ? 'Story illustration' : 'Ilustración del relato'}
+                    </span>
+                  )}
+                </div>
 
-                  <div className="flex flex-col p-6 sm:p-8">
+                  <div className="flex min-w-0 flex-1 flex-col p-6 sm:p-8">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${isPublished ? 'bg-emerald-100 text-emerald-900 dark:bg-[#313131] dark:text-emerald-200' : 'bg-amber-100 text-amber-950 dark:bg-[#313131] dark:text-amber-200'}`}>
                         {isPublished ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> : <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -92,7 +91,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
 
                     <h3 className="mt-5 font-display text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl">{title}</h3>
                     {subtitle && <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">{subtitle}</p>}
-                    <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
+                    <p className="mt-4 line-clamp-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
 
                     <div className="mt-5 flex flex-wrap gap-2">
                       {format && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{format}</span>}
@@ -111,21 +110,22 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                       </div>
                     )}
 
-                    <div className="mt-auto flex flex-col items-start gap-4 border-t border-slate-200 pt-6 dark:border-slate-800 sm:flex-row sm:flex-wrap sm:items-center">
+                    <div className="mt-auto flex flex-col items-stretch gap-3 border-t border-slate-200 pt-6 dark:border-slate-800">
                       <Link
                         href={`/${locale}/libros/${book.slug || book.id}`}
-                        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
                       >
                         <BookOpen className="h-4 w-4" aria-hidden="true" />
                         {isEn ? 'Book details' : 'Detalles del libro'}
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </Link>
                       {isCuriletaBook && isPublished && (
-                        <AmazonMarketplaceLink locale={locale} initialCountry={amazonCountry} compact />
+                        <div className="flex justify-center sm:justify-start">
+                          <AmazonMarketplaceLink locale={locale} initialCountry={amazonCountry} compact />
+                        </div>
                       )}
                     </div>
                   </div>
-                </div>
               </article>
             );
           })}

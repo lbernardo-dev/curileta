@@ -14,7 +14,7 @@ interface BookCoverPanelProps {
 export function BookCoverPanel({ src, alt, locale, upcoming, frame, fillContainer = false }: BookCoverPanelProps) {
   const isEn = locale === 'en';
   return (
-    <div className={`relative w-full overflow-hidden bg-[#173e35] ${fillContainer ? 'h-full min-h-[24rem]' : 'aspect-[4/5]'}`}>
+    <div className={`relative w-full overflow-hidden bg-[#173e35] ${fillContainer ? 'h-full min-h-0' : 'aspect-[4/5]'}`}>
       <Image
         src={src}
         alt={upcoming ? '' : alt}

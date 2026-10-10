@@ -68,7 +68,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
               : (isEn ? 'To be announced' : 'Fecha por anunciar');
 
             return (
-              <article key={book.id} className="overflow-hidden rounded-3xl bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
+              <article key={book.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
                 <div className="relative">
                   <BookCoverPanel
                     src={coverImage.url}
@@ -82,7 +82,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
                     {isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Coming soon' : 'Próximamente')}
                   </div>
                 </div>
-                <div className="p-6 sm:p-8">
+                <div className="flex min-w-0 flex-1 flex-col p-6 sm:p-8">
                   <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-[#647268]">
                     {(isPublished || book.publicationDate) && <span className="inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />{isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Expected' : 'Previsto')}: {formattedDate}</span>}
                     {book.ageRange && <span className="rounded-full bg-[#f1f3eb] px-2.5 py-1">{book.ageRange}</span>}
@@ -93,7 +93,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
                   <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">{title}</h2>
                   {subtitle && <p className="mt-2 text-sm font-medium text-emerald-800">{subtitle}</p>}
                   <p className="mt-4 text-sm leading-6 text-[#5c6b61]">{description}</p>
-                  <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-[#e7eae2] pt-5">
+                  <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-[#e7eae2] pt-5">
                     <Link href={`/${locale}/libros/${book.slug}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e]">
                       {isEn ? 'Book details' : 'Detalles del libro'} <ArrowRight className="h-4 w-4" />
                     </Link>
