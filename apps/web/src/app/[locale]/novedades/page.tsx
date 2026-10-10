@@ -6,6 +6,7 @@ import { cmsProvider } from '@/lib/cms';
 import { isValidLocale, type Locale } from '@curileta/i18n';
 import { ArrowRight, BookOpen, CalendarDays, Newspaper, Sparkles } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
+import { getBookCoverImage } from '@/lib/book-art';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -51,26 +52,29 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
 
       {(publishedBooks.length > 0 || upcomingBooks.length > 0) ? (
         <div className="grid gap-5 md:grid-cols-2">
-          {[...publishedBooks.map((book) => ({ book, upcoming: false })), ...upcomingBooks.map((book) => ({ book, upcoming: true }))].map(({ book, upcoming }) => (
-            <article key={book.id} className="overflow-hidden rounded-[1.5rem] bg-[var(--background-primary)] shadow-sm ring-1 ring-[var(--border-subtle)] sm:grid sm:grid-cols-[minmax(150px,0.42fr)_1fr]">
-              <div className="relative aspect-[4/3] bg-[var(--background-secondary)] sm:aspect-auto sm:min-h-64">
-                <Image src={book.coverImage.url} alt={book.coverImage.alt[locale] || book.coverImage.alt.es} fill className="object-contain p-5" sizes="(max-width: 640px) 100vw, 320px" />
-              </div>
-              <div className="flex flex-col p-6 sm:p-7">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--seasonal-accent-strong)]">
-                  {upcoming ? <CalendarDays className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
-                  {upcoming ? (isEn ? 'Coming soon' : 'Próximamente') : (isEn ? 'Published' : 'Publicado')}
-                </span>
-                <h2 className="mt-3 font-display text-2xl font-semibold">{book.title[locale] || book.title.es}</h2>
-                {book.subtitle && <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">{book.subtitle[locale] || book.subtitle.es}</p>}
-                <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{book.description[locale] || book.description.es}</p>
-                <p className="mt-4 text-xs font-medium text-[var(--text-secondary)]">{upcoming ? (isEn ? 'Planned publication' : 'Fecha prevista') : (isEn ? 'Published' : 'Publicado')} · {formatDate(book.publicationDate)}</p>
-                <Link href={'/' + locale + '/libros/' + book.slug} className="mt-auto inline-flex min-h-11 items-center gap-2 pt-5 text-sm font-semibold text-[var(--seasonal-accent-strong)]">
-                  {isEn ? 'Book details' : 'Ficha del libro'}<ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </article>
-          ))}
+          {[...publishedBooks.map((book) => ({ book, upcoming: false })), ...upcomingBooks.map((book) => ({ book, upcoming: true }))].map(({ book, upcoming }) => {
+            const coverImage = getBookCoverImage(book);
+            return (
+              <article key={book.id} className="overflow-hidden rounded-3xl bg-[var(--background-primary)] shadow-sm ring-1 ring-[var(--border-subtle)] sm:grid sm:grid-cols-[minmax(150px,0.42fr)_1fr]">
+                <div className="relative aspect-[4/5] bg-[#f1ead5] p-4 sm:aspect-auto sm:min-h-64">
+                  <Image src={coverImage.url} alt={coverImage.alt[locale] || coverImage.alt.es} fill className="object-contain p-5" sizes="(max-width: 640px) 100vw, 320px" />
+                </div>
+                <div className="flex flex-col p-6 sm:p-7">
+                  <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--seasonal-accent-strong)]">
+                    {upcoming ? <CalendarDays className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
+                    {upcoming ? (isEn ? 'Coming soon' : 'Próximamente') : (isEn ? 'Published' : 'Publicado')}
+                  </span>
+                  <h2 className="mt-3 font-display text-2xl font-semibold">{book.title[locale] || book.title.es}</h2>
+                  {book.subtitle && <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">{book.subtitle[locale] || book.subtitle.es}</p>}
+                  <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{book.description[locale] || book.description.es}</p>
+                  <p className="mt-4 text-xs font-medium text-[var(--text-secondary)]">{upcoming ? (isEn ? 'Planned publication' : 'Fecha prevista') : (isEn ? 'Published' : 'Publicado')} · {formatDate(book.publicationDate)}</p>
+                  <Link href={'/' + locale + '/libros/' + book.slug} className="mt-auto inline-flex min-h-11 items-center gap-2 pt-5 text-sm font-semibold text-[var(--seasonal-accent-strong)]">
+                    {isEn ? 'Book details' : 'Ficha del libro'}<ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         </div>
       ) : !event ? (
         <SitePageCard className="py-12 text-center">

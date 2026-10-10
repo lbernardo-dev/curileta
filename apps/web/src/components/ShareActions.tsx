@@ -20,8 +20,19 @@ export function ShareActions({ contentType, contentSlug, title, description, url
   const text = description || (isEn ? 'Discover this Curileta story.' : 'Descubre esta historia de Curileta.');
 
   function shareUrl() {
-    if (!url) return window.location.href;
-    return url.startsWith('/') ? new URL(url, window.location.origin).toString() : url;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta-pink.vercel.app';
+    const defaultPathByType: Record<ShareableContentType, string> = {
+      video: `/${locale}/videos`,
+      book: `/${locale}/libros/${contentSlug}`,
+      character: `/${locale}/personajes/${contentSlug}`,
+      song: `/${locale}/canciones`,
+      adventure: `/${locale}/libros/${contentSlug}`,
+      location: `/${locale}/mundo#lugar-${contentSlug}`,
+      wallpaper: `/${locale}/fondos`,
+      seasonalEvent: `/${locale}/eventos`,
+    };
+    const target = url || defaultPathByType[contentType];
+    return target.startsWith('/') ? new URL(target, siteUrl).toString() : target;
   }
 
   function shareMessage() {

@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from 'react';
 declare global {
   interface Window {
     turnstile?: {
-      render: (target: HTMLElement, options: {
+      render: (container: HTMLElement, options: {
         sitekey: string;
         callback: (token: string) => void;
-        'expired-callback'?: () => void;
-        'error-callback'?: () => void;
+        'expired-callback': () => void;
+        'error-callback': () => void;
       }) => string;
       remove: (widgetId: string) => void;
+      reset: (widgetId: string) => void;
     };
   }
 }

@@ -8,6 +8,7 @@ import type { Book } from '@curileta/cms';
 import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, MapPin } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
+import { getBookCoverImage } from '@/lib/book-art';
 
 interface BooksSceneProps {
   locale: Locale;
@@ -52,35 +53,39 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             const description = book.description[locale] || book.description.es;
             const badge = book.badge?.[locale] || book.badge?.es;
             const format = book.format?.[locale] || book.format?.es;
+            const coverImage = getBookCoverImage(book);
 
             return (
               <article
                 key={book.id || book.slug}
-                className="group overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-slate-700 dark:bg-slate-950"
+                className="group overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]"
               >
                 <div className="grid h-full md:grid-cols-[0.78fr_1.22fr]">
-                  <div className="relative min-h-[260px] overflow-hidden bg-[#dce9de] md:min-h-full">
+                  <div className={`relative min-h-[260px] overflow-hidden md:min-h-full ${isCuriletaBook ? 'bg-[#f1ead5]' : 'bg-[#dce9de]'}`}>
                     <Image
-                      src={book.coverImage.url}
-                      alt={book.coverImage.alt[locale] || book.coverImage.alt.es}
+                      src={coverImage.url}
+                      alt={coverImage.alt[locale] || coverImage.alt.es}
                       fill
                       sizes="(max-width: 768px) 100vw, 35vw"
-                      unoptimized
-                      className={`object-cover transition-transform duration-700 group-hover:scale-[1.04] ${isCuriletaBook ? 'object-[78%_center]' : 'object-center'}`}
+                      className={isCuriletaBook ? 'object-contain p-4' : 'object-cover transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]'}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#142c24]/75 via-transparent to-transparent" />
-                    <span className="absolute bottom-4 left-4 rounded-full border border-white/35 bg-[#122a22]/75 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-white backdrop-blur-md">
-                      {isEn ? 'Story illustration' : 'Ilustración del relato'}
-                    </span>
+                    {!isCuriletaBook && (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#142c24]/75 via-transparent to-transparent" />
+                        <span className="absolute bottom-4 left-4 rounded-full border border-white/35 bg-[#122a22]/75 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-white backdrop-blur-md">
+                          {isEn ? 'Story illustration' : 'Ilustración del relato'}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex flex-col p-6 sm:p-8">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold ${isPublished ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200' : 'bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-200'}`}>
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${isPublished ? 'bg-emerald-100 text-emerald-900 dark:bg-[#313131] dark:text-emerald-200' : 'bg-amber-100 text-amber-950 dark:bg-[#313131] dark:text-amber-200'}`}>
                         {isPublished ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> : <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />}
                         {badge || (isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Coming soon' : 'Próximamente'))}
                       </span>
-                      {book.ageRange && <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 dark:bg-slate-900 dark:text-slate-300">{isEn ? `${book.ageRange.replace(/\baños\b/i, 'years')}${book.languages?.length === 1 && book.languages.includes('Español') ? ' · Spanish edition' : ''}` : book.ageRange}</span>}
+                      {book.ageRange && <span className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-[#272727] dark:text-slate-300">{isEn ? `${book.ageRange.replace(/\baños\b/i, 'years')}${book.languages?.length === 1 && book.languages.includes('Español') ? ' · Spanish edition' : ''}` : book.ageRange}</span>}
                     </div>
 
                     <h3 className="mt-5 font-display text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl">{title}</h3>
@@ -88,19 +93,19 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                     <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
 
                     <div className="mt-5 flex flex-wrap gap-2">
-                      {format && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">{format}</span>}
-                      {book.pageCount && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
-                      {book.author && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">{isEn ? `By ${book.author}` : `De ${book.author}`}</span>}
+                      {format && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{format}</span>}
+                      {book.pageCount && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
+                      {book.author && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{isEn ? `By ${book.author}` : `De ${book.author}`}</span>}
                     </div>
 
                     {book.destinations && book.destinations.length > 0 && (
                       <div className="mt-5 flex flex-wrap gap-2">
                         {book.destinations.slice(0, 4).map((destination) => (
-                          <span key={destination} className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-200">
+                          <span key={destination} className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-900 dark:bg-[#313131] dark:text-emerald-200">
                             <MapPin className="h-3 w-3" aria-hidden="true" />{isEn ? destinationNamesEn[destination] || destination : destination}
                           </span>
                         ))}
-                        {book.destinations.length > 4 && <span className="px-1 py-1 text-[10px] text-slate-500">+{book.destinations.length - 4}</span>}
+                        {book.destinations.length > 4 && <span className="px-1 py-1 text-xs text-slate-500">+{book.destinations.length - 4}</span>}
                       </div>
                     )}
 

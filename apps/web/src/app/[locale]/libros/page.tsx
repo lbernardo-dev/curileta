@@ -8,6 +8,7 @@ import { cmsProvider } from '@/lib/cms';
 import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock3 } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
+import { getBookCoverImage } from '@/lib/book-art';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -49,18 +50,18 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
             const subtitle = book.subtitle?.[locale] || book.subtitle?.es;
             const description = book.description[locale] || book.description.es;
             const format = book.format?.[locale] || book.format?.es;
+            const coverImage = getBookCoverImage(book);
             const formattedDate = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(`${book.publicationDate}T12:00:00Z`));
 
             return (
-              <article key={book.id} className="group overflow-hidden rounded-[1.75rem] bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
-                <div className="relative aspect-[16/9] overflow-hidden bg-[#e8eee5]">
+              <article key={book.id} className="overflow-hidden rounded-3xl bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[#f1ead5] p-5">
                   <Image
-                    src={book.coverImage.url}
-                    alt={book.coverImage.alt[locale] || book.coverImage.alt.es}
+                    src={coverImage.url}
+                    alt={coverImage.alt[locale] || coverImage.alt.es}
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
-                    unoptimized
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.025]"
+                    className="object-contain"
                   />
                   <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/50 bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#254537] shadow-sm">
                     {isPublished ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" /> : <Clock3 className="h-3.5 w-3.5 text-amber-700" />}

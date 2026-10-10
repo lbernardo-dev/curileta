@@ -1331,8 +1331,11 @@ export const INITIAL_BOOKS: Book[] = [
       en: 'The Round-the-World Journey of a Little Lizard',
     },
     coverImage: {
-      url: '/images/hero/curileta-world-expedition-clean-v1.png',
-      alt: { es: 'Ilustración de Curileta siguiendo su ruta por el mundo', en: 'Story illustration of Curileta following her route around the world' },
+      url: '/images/books/las-aventuras-de-curileta/portada.webp',
+      alt: {
+        es: 'Portada publicada de Las Aventuras de Curileta, con Curileta, Pompón y sus amigos listos para viajar.',
+        en: 'Published cover of The Adventures of Curileta, with Curileta, Pompón and their friends ready to travel.',
+      },
     },
     description: {
       es: 'La historia oficial de una curiosa lagartija que viaja por México, Perú, Egipto, Islandia, Japón, Australia, Nueva Zelanda, China, Italia y Francia, enviando cartas y sellos a su amigo Pompón, hasta descubrir que el mayor tesoro es el hogar.',
