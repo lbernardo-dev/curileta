@@ -30,6 +30,9 @@ const config: Config = {
         '4xl': '2rem',
         '5xl': '2.5rem',
       },
+      transitionTimingFunction: {
+        fluid: 'cubic-bezier(0.32, 0.72, 0, 1)',
+      },
     },
   },
   plugins: [],

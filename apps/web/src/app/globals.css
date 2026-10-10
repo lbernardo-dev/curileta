@@ -68,20 +68,20 @@
 }
 
 html.dark {
-  /* Semantic Tokens - Dark Theme */
-  --background-primary: #020617;
-  --background-secondary: #0F172A;
-  --background-elevated: #1E293B;
-  --background-canvas: #020617;
-  --background-accent: #064E3B;
+  /* Semantic Tokens - Dark Theme (Strictly B4 Palette: #000000, #181818, #1F1F1F, #272727, #313131, #131209) */
+  --background-primary: #181818;
+  --background-secondary: #1F1F1F;
+  --background-elevated: #272727;
+  --background-canvas: #000000;
+  --background-accent: #131209;
 
-  --text-primary: #F8FAFC;
+  --text-primary: #FFFFFF;
   --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
-  --text-inverted: #0F172A;
+  --text-muted: #9B9B9B;
+  --text-inverted: #000000;
 
-  --border-subtle: #1E293B;
-  --border-strong: #334155;
+  --border-subtle: #272727;
+  --border-strong: #313131;
 }
 
 @layer base {
@@ -92,6 +92,15 @@ html.dark {
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* B1. Typography: text-wrap balance for headings, pretty for body copy */
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+
+  p, li {
+    text-wrap: pretty;
+  }
+
   body {
     background-color: var(--background-canvas);
     color: var(--text-primary);
@@ -100,7 +109,7 @@ html.dark {
   }
 
   html.dark body {
-    background-color: var(--background-canvas);
+    background-color: #000000;
     color: var(--text-primary);
   }
 
@@ -114,7 +123,7 @@ html.dark {
   }
 
   html.dark ::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: #181818;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -124,7 +133,8 @@ html.dark {
   }
 
   html.dark ::-webkit-scrollbar-thumb {
-    border: 2px solid #0f172a;
+    background: var(--color-curileta-green);
+    border: 2px solid #181818;
   }
 
   ::-webkit-scrollbar-thumb:hover {
