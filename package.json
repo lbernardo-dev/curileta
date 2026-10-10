@@ -12,6 +12,8 @@
     "dev:all": "npm run dev --workspaces --if-present",
     "sanity:import:dry-run": "node --env-file=apps/web/.env.local --experimental-strip-types tooling/scripts/import-local-content-to-sanity.mjs --dry-run",
     "sanity:import": "node --env-file=apps/web/.env.local --experimental-strip-types tooling/scripts/import-local-content-to-sanity.mjs",
+    "sanity:migrate-public-ids:dry-run": "node --env-file=apps/web/.env.local tooling/scripts/migrate-sanity-public-document-ids.mjs --dry-run",
+    "sanity:migrate-public-ids": "node --env-file=apps/web/.env.local tooling/scripts/migrate-sanity-public-document-ids.mjs",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",

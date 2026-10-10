@@ -247,9 +247,19 @@ export const contentEntry = defineType({
     defineField({ name: 'featured', title: 'Destacar en portada', type: 'boolean', ...forTypes(...collaborationTypes) }),
   ],
   preview: {
-    select: { title: 'title.es', name: 'name.es', characterName: 'characterName', subtitle: 'contentType' },
-    prepare({ title, name, characterName, subtitle }) {
-      return { title: title || name || characterName || 'Contenido sin título', subtitle };
+    select: {
+      title: 'title.es',
+      name: 'name.es',
+      characterName: 'characterName',
+      place: 'place.es',
+      contentType: 'contentType',
+      id: 'id',
+      order: 'order',
+    },
+    prepare({ title, name, characterName, place, contentType, id, order }) {
+      const displayTitle = title || name || characterName || place || id || 'Contenido sin título';
+      const details = [contentType, order == null ? null : `Orden ${order}`].filter(Boolean);
+      return { title: displayTitle, subtitle: details.join(' · ') };
     },
   },
 });

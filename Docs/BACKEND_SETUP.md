@@ -49,12 +49,13 @@ Roles disponibles: `owner`, `admin`, `editor` y `analyst`. Los roles `owner` y `
 ## 4. Crear el proyecto de Sanity
 
 1. Inicia sesión en [Sanity](https://www.sanity.io/manage) y crea el proyecto `Curileta CMS`.
-2. Crea o selecciona el dataset `production`. Como el dataset contiene textos e imágenes públicas del sitio, puedes configurarlo como público; así la web no necesita una clave de lectura.
+2. Crea o selecciona el dataset `production`. Como el dataset contiene textos e imágenes públicas del sitio, configúralo como público; así la web no necesita una clave de lectura. En Sanity, los documentos consultables sin token deben tener IDs sin puntos.
 3. Copia el ID del proyecto a `SANITY_STUDIO_PROJECT_ID` en `apps/studio/.env.local` y `apps/web/.env.local`. Deja `SANITY_STUDIO_DATASET=production` en ambos.
 4. Abre el Studio con `npm run dev:studio` e inicia sesión con tu cuenta de Sanity.
 5. Para importar el contenido SQLite existente, crea temporalmente un token de Sanity con permiso de edición y añádelo a `SANITY_WRITE_TOKEN` en `apps/web/.env.local`.
-6. Ejecuta primero `npm run sanity:import:dry-run`. Si los recuentos son razonables, ejecuta `npm run sanity:import` para copiar los documentos. El script conserva los documentos locales y reemplaza únicamente los documentos de Sanity con los mismos identificadores.
-7. Retira `SANITY_WRITE_TOKEN` de `.env.local` después de importar. Para un dataset privado, configura además `SANITY_READ_TOKEN` con permiso de lectura.
+6. Ejecuta primero `npm run sanity:import:dry-run`. Si los recuentos son razonables, ejecuta `npm run sanity:import` para copiar los documentos. El importador usa IDs estables sin puntos y elimina los IDs del formato anterior cuando existen.
+7. Si el dataset ya contiene documentos importados con IDs como `contentEntry.character.curileta` o `siteSettings.singleton`, ejecuta `npm run sanity:migrate-public-ids:dry-run` y luego `npm run sanity:migrate-public-ids`. La migración conserva los campos, elimina los documentos antiguos y deja disponibles las versiones publicadas para consultas anónimas.
+8. Revoca el token temporal y retira `SANITY_WRITE_TOKEN` de `.env.local` después de importar o migrar. Para un dataset privado, configura además `SANITY_READ_TOKEN` con permiso de lectura y guárdalo solo en el servidor.
 
 El Studio permite editar los documentos y la configuración `siteSettings`, incluida la visibilidad y el orden de las secciones de la portada. La web consulta Sanity; si una consulta falla, conserva el respaldo de desarrollo y deja un aviso en el log del servidor.
 

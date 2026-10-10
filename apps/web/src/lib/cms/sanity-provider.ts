@@ -62,7 +62,7 @@ const cachedList = (contentType: ContentType) => unstable_cache(
 
 const cachedSettings = unstable_cache(
   async () => client.fetch<SanityDocument | null>(
-    '*[_type == "siteSettings" && _id == "siteSettings.singleton"][0]',
+    '*[_type == "siteSettings"][0]',
   ),
   ['sanity-site-settings', projectId || 'unconfigured', dataset],
   { revalidate: 300, tags: ['sanity:siteSettings'] },

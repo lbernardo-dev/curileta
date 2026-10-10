@@ -1,5 +1,6 @@
 import { createClient } from '@sanity/client';
 import { DatabaseCMSProvider } from '../../packages/cms/src/db/DatabaseCMSProvider.ts';
+import { makeContentEntryDocumentId, SITE_SETTINGS_DOCUMENT_ID } from './sanity-document-id.mjs';
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
@@ -35,12 +36,13 @@ const documents = contentGroups.flatMap(([contentType, entries]) =>
   entries.map((entry, index) => {
     const entryId = entry.id || `${contentType}-${entry.order ?? entry.stepNumber ?? index + 1}`;
     const document = {
-      _id: `contentEntry.${contentType}.${entryId}`,
+      _id: makeContentEntryDocumentId(contentType, entryId),
       _type: 'contentEntry',
       contentType,
       ...entry,
       id: entryId,
     };
+    const legacyId = `contentEntry.${contentType}.${entryId}`;
     if (contentType === 'character' && document.name) {
       document.characterName = document.name;
       delete document.name;
@@ -49,13 +51,15 @@ const documents = contentGroups.flatMap(([contentType, entries]) =>
       document.cover = document.coverImage;
       delete document.coverImage;
     }
-    return document;
+    return { document, legacyId };
   }),
 );
 
 const settings = await provider.getSiteSettings();
-const settingsDocument = { _id: 'siteSettings.singleton', _type: 'siteSettings', ...settings };
-documents.push(settingsDocument);
+documents.push({
+  document: { _id: SITE_SETTINGS_DOCUMENT_ID, _type: 'siteSettings', ...settings },
+  legacyId: 'siteSettings.singleton',
+});
 
 for (const [contentType, entries] of contentGroups) {
   console.log(`${contentType}: ${entries.length}`);
@@ -71,8 +75,11 @@ if (dryRun) {
 const client = createClient({ projectId, dataset, apiVersion: '2025-02-19', token, useCdn: false });
 for (let index = 0; index < documents.length; index += 50) {
   const batch = documents.slice(index, index + 50);
+  const legacyIds = batch.map((entry) => entry.legacyId);
+  const existingLegacyIds = await client.fetch('*[_id in $ids]._id', { ids: legacyIds });
   let transaction = client.transaction();
-  for (const document of batch) transaction = transaction.createOrReplace(document);
+  for (const { document } of batch) transaction = transaction.createOrReplace(document);
+  for (const id of existingLegacyIds) transaction = transaction.delete(id);
   await transaction.commit();
   console.log(`Importados ${Math.min(index + batch.length, documents.length)} de ${documents.length}`);
 }
