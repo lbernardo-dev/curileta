@@ -35,8 +35,8 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
         </p>
         <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
-            ? 'When aggregate analytics are enabled, page and content sharing actions are sent to the website backend without a cookie or persistent visitor identifier. Sharing counts record clicks on sharing options, not confirmed app launches or sends. Analytics events respect the browser’s Do Not Track signal.'
-            : 'Cuando estén activas las estadísticas agregadas, las visitas y las acciones para compartir contenido se enviarán al backend sin cookies ni identificadores persistentes de visitante. Los recuentos registran clics en opciones para compartir, no aperturas ni envíos confirmados. Los eventos estadísticos respetan la señal Do Not Track del navegador.'}
+            ? 'Aggregate page and content sharing counts are sent to the website backend without a cookie or persistent visitor identifier. Social, email and SMS options record a click; the device share sheet and copy action are recorded only when the browser confirms the action. External message delivery is not confirmed. Analytics events respect the browser’s Do Not Track signal.'
+            : 'Los recuentos agregados de visitas y de acciones para compartir se envían al backend sin cookies ni identificadores persistentes de visitante. Las opciones de redes, correo y SMS registran un clic; compartir desde el dispositivo y copiar enlace solo se registran cuando el navegador confirma la acción. La web no confirma el envío de mensajes externos. Los eventos estadísticos respetan la señal Do Not Track del navegador.'}
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {[
