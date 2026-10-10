@@ -150,13 +150,13 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
       {featuredBook && featuredCover && (
         <section className="bg-[#fffdf7] px-5 py-20 text-[#20352c] sm:px-8 sm:py-28 lg:px-12">
           <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#163b32] text-white shadow-[0_28px_90px_rgba(16,48,38,0.18)] lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="relative min-h-[320px] overflow-hidden bg-[#e8ddc1] sm:min-h-[400px] lg:min-h-[560px]">
+            <div className="relative min-h-[320px] overflow-hidden bg-[#163b32] sm:min-h-[400px] lg:min-h-[560px]">
               <Image
                 src={featuredCover.url}
                 alt={featuredCover.alt[locale] || featuredCover.alt.es}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-contain p-5 drop-shadow-2xl sm:p-8"
+                className="origin-top object-cover object-top scale-[1.08]"
               />
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-16">
