@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta-pink.vercel.app').replace(/\/$/, '');
+
   return {
     rules: [
       {
@@ -9,6 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/_next/'],
       },
     ],
-    sitemap: 'https://curileta.com/sitemap.xml',
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

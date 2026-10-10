@@ -62,7 +62,7 @@ El Studio permite editar los documentos y la configuración `siteSettings`, incl
 ## 5. Actualizar el sitio al publicar contenido
 
 1. Genera un secreto aleatorio para el webhook y guárdalo como `SANITY_REVALIDATE_SECRET` en `apps/web/.env.local`.
-2. En Sanity crea un webhook de tipo documento con método `POST`, URL `https://curileta.com/api/revalidate`, eventos de creación, actualización y eliminación, y la firma activada con el mismo secreto.
+2. En Sanity crea un webhook de tipo documento con método `POST`, URL `https://curileta-pink.vercel.app/api/revalidate`, eventos de creación, actualización y eliminación, y la firma activada con el mismo secreto.
 3. Usa este filtro para limitar los avisos a documentos del sitio:
 
 ```groq
@@ -84,7 +84,7 @@ El endpoint valida la firma `sanity-webhook-signature`; no acepta secretos en la
 
 1. En Resend crea una API key y verifica el dominio remitente siguiendo sus instrucciones DNS.
 2. Añade `RESEND_API_KEY`, `CONTACT_FROM_EMAIL` y `CONTACT_TO_EMAIL` a `apps/web/.env.local`.
-3. En [Cloudflare Turnstile](https://dash.cloudflare.com/) crea un widget para `curileta.com`, añade los dominios de desarrollo que uses y copia sus claves a `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`.
+3. En [Cloudflare Turnstile](https://dash.cloudflare.com/) crea un widget para `curileta-pink.vercel.app`, añade los dominios de desarrollo que uses y copia sus claves a `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`. Cuando conectes un dominio propio, añádelo también al widget.
 4. Define `PRIVACY_NOTICE_VERSION` solo cuando esté aprobada la versión publicada de la política. El backend deja el formulario de producción desactivado si falta la verificación antispam o esta versión.
 5. Completa en la política de privacidad y en el aviso legal la identidad, dirección, contacto y plazo de conservación del responsable. Esos datos siguen pendientes y no deben inventarse.
 
