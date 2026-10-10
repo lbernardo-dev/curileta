@@ -156,7 +156,7 @@ export function StoryLanding({ locale, locations, characters, books, amazonCount
                 alt={featuredCover.alt[locale] || featuredCover.alt.es}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="origin-top object-cover object-top scale-[1.08]"
+                className="origin-bottom object-cover object-bottom scale-[1.08]"
               />
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-16">
