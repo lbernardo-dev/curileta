@@ -28,6 +28,7 @@ import { getUpcomingEpisodeCharacterSlugs } from '@/lib/upcoming-episode-charact
 import { resolveHomepageSections } from '@/lib/homepage-sections';
 import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
 import { getAuthorPages } from '@/lib/author-pages.server';
+import { getRequestTimestamp } from '@/lib/request-time.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 
@@ -123,24 +124,25 @@ export default async function HomePage({
   const orderedLocations = locations.slice().sort((left, right) => routeIndex(left) - routeIndex(right));
 
   const resolvedChannelSettings = await resolveYouTubeChannelSettings(settings);
+  const currentTimestamp = getRequestTimestamp();
   const upcomingCharacters = upcomingCharacterSlugs
     .map((slug) => characters.find((character) => character.slug === slug))
     .filter((character): character is (typeof characters)[number] => Boolean(character));
 
   const publishedBooksCount = books.filter(
-    (book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= Date.now()
+    (book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= currentTimestamp
   ).length;
   const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
 
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
-    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
+    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
     globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={letters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
-    books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={books} /></>,
+    books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={books} /></>,
     videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} voteCounts={videoVoteCounts} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,

@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { ImagePlus, Trash2, Upload } from 'lucide-react';
@@ -210,7 +211,7 @@ export function ImageUploadField({
     <div className="space-y-2">
       <span className="block text-sm font-semibold">{label}</span>
       {value ? (
-        <img src={value} alt="Vista previa de la imagen seleccionada" className="h-32 w-full rounded-lg border border-slate-200 bg-slate-50 object-contain dark:border-[#414141] dark:bg-[#181818]" />
+        <ContentImage src={value} alt="Vista previa de la imagen seleccionada" className="h-32 w-full rounded-lg border border-slate-200 bg-slate-50 object-contain dark:border-[#414141] dark:bg-[#181818]" />
       ) : (
         <div className="flex min-h-32 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 dark:border-[#414141] dark:bg-[#181818] dark:text-slate-400">
           <span className="flex items-center gap-2 text-sm"><ImagePlus className="h-5 w-5" />Sin imagen seleccionada</span>

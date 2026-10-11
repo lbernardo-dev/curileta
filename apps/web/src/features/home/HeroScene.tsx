@@ -39,18 +39,21 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
   useEffect(() => {
     if (!seasonalThemeReady || eventVideo) return;
 
-    try {
-      const storedIndex = sessionStorage.getItem(HERO_BASE_VIDEO_INDEX_STORAGE_KEY);
-      const previousIndex = storedIndex === null ? -1 : Number(storedIndex);
-      const nextIndex = Number.isInteger(previousIndex) && previousIndex >= 0
-        ? (previousIndex + 1) % HERO_BASE_VIDEOS.length
-        : 0;
+    const frameId = window.requestAnimationFrame(() => {
+      try {
+        const storedIndex = sessionStorage.getItem(HERO_BASE_VIDEO_INDEX_STORAGE_KEY);
+        const previousIndex = storedIndex === null ? -1 : Number(storedIndex);
+        const nextIndex = Number.isInteger(previousIndex) && previousIndex >= 0
+          ? (previousIndex + 1) % HERO_BASE_VIDEOS.length
+          : 0;
 
-      sessionStorage.setItem(HERO_BASE_VIDEO_INDEX_STORAGE_KEY, String(nextIndex));
-      setBaseVideoIndex(nextIndex);
-    } catch {
-      setBaseVideoIndex(Math.floor(Math.random() * HERO_BASE_VIDEOS.length));
-    }
+        sessionStorage.setItem(HERO_BASE_VIDEO_INDEX_STORAGE_KEY, String(nextIndex));
+        setBaseVideoIndex(nextIndex);
+      } catch {
+        setBaseVideoIndex(Math.floor(Math.random() * HERO_BASE_VIDEOS.length));
+      }
+    });
+    return () => window.cancelAnimationFrame(frameId);
   }, [eventVideo, seasonalThemeReady]);
 
   useEffect(() => {

@@ -487,18 +487,18 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const container = mountRef.current;
     if (!container) return;
     setIsSceneReady(false);
+    const reportUnsupported = () => {
+      const frameId = window.requestAnimationFrame(() => setWebglSupported(false));
+      return () => window.cancelAnimationFrame(frameId);
+    };
 
     // Verificar soporte de WebGL
     try {
       const testCanvas = document.createElement('canvas');
       const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
-      if (!gl) {
-        setWebglSupported(false);
-        return;
-      }
+      if (!gl) return reportUnsupported();
     } catch {
-      setWebglSupported(false);
-      return;
+      return reportUnsupported();
     }
 
     const width = container.clientWidth;

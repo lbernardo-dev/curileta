@@ -59,12 +59,12 @@ export default function AdminAnalyticsPage() {
   const [totalVisits, setTotalVisits] = useState(0);
   const [chartStart, setChartStart] = useState<string | null>(null);
   const [chartEnd, setChartEnd] = useState(new Date().toISOString().slice(0, 10));
-  const [loading, setLoading] = useState(true);
+  const [loadedRange, setLoadedRange] = useState<string | null>(null);
+  const loading = loadedRange !== range;
   const [error, setError] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
     fetch(`/api/admin/analytics?range=${range}`, { signal: controller.signal })
       .then(async (response) => {
         const result = await response.json();
@@ -81,7 +81,9 @@ export default function AdminAnalyticsPage() {
         if (cause instanceof Error && cause.name === 'AbortError') return;
         setError(cause instanceof Error ? cause.message : 'No se pudieron cargar las estadísticas.');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadedRange(range);
+      });
     return () => controller.abort();
   }, [range]);
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
@@ -343,21 +344,17 @@ const CharacterAvatar: React.FC<{
   locale: Locale;
   className?: string;
 }> = ({ character, locale, className = 'w-full h-full object-contain' }) => {
-  const [imgSrc, setImgSrc] = useState<string>(() => character.mainImage?.url || getCharacterImagePath(character.slug));
-
-  useEffect(() => {
-    setImgSrc(character.mainImage?.url || getCharacterImagePath(character.slug));
-  }, [character.slug, character.mainImage?.url]);
+  const primaryImage = character.mainImage?.url || getCharacterImagePath(character.slug);
+  const fallbackImage = getCharacterImagePath(character.slug);
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const imgSrc = failedImage === primaryImage ? fallbackImage : primaryImage;
 
   const handleError = () => {
-    const fallback = getCharacterImagePath(character.slug);
-    if (imgSrc !== fallback) {
-      setImgSrc(fallback);
-    }
+    setFailedImage(primaryImage);
   };
 
   return (
-    <img
+    <ContentImage
       src={imgSrc}
       alt={character.mainImage?.alt?.[locale] || character.mainImage?.alt?.es || characterName(character, locale)}
       className={className}

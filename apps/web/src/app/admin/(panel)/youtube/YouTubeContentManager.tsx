@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import { useEffect, useMemo, useState } from 'react';
 import type { Video } from '@curileta/cms';
 import type { ManagedYouTubeItem, YouTubeImportDraft, YouTubeManagedKind, YouTubeVideoType } from '@/lib/youtube-content.types';
@@ -143,7 +144,25 @@ export function YouTubeContentManager() {
     }
   }
 
-  useEffect(() => { void loadItems(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/admin/youtube-content', { cache: 'no-store', signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'No se pudo cargar el contenido de YouTube.');
+        setItems(result.items || []);
+        setStorageAvailable(result.storageAvailable !== false);
+        setError('');
+      })
+      .catch((cause: unknown) => {
+        if (cause instanceof Error && cause.name === 'AbortError') return;
+        setError(cause instanceof Error ? cause.message : 'No se pudo cargar el contenido de YouTube.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, []);
 
   const visibleItems = useMemo(() => sortByDate(items.filter((item) => {
     if (filter === 'all') return true;
@@ -489,7 +508,7 @@ export function YouTubeContentManager() {
             {visibleItems.map((item) => (
               <article key={item.itemKey} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 dark:border-[#313131] dark:bg-[#1f1f1f] sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-center">
                 <div className="aspect-video overflow-hidden rounded-lg bg-slate-100 dark:bg-[#272727]">
-                  {item.kind === 'video' ? <img src={item.thumbnail} alt="" className="h-full w-full object-cover" /> : item.coverImage ? <img src={item.coverImage} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-sm text-slate-500">Música</div>}
+                  {item.kind === 'video' ? <ContentImage src={item.thumbnail} alt="" className="h-full w-full object-cover" /> : item.coverImage ? <ContentImage src={item.coverImage} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-sm text-slate-500">Música</div>}
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">

@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import { ContentImage } from '@/components/ContentImage';
+import React, { useState, useMemo } from 'react';
 import { Locale } from '@curileta/i18n';
 import type { SiteSettings, Video } from '@curileta/cms';
 import { analytics } from '@curileta/analytics';
 import { ShareActions } from '@/components/ShareActions';
 import { VideoVote } from '@/components/VideoVote';
 import { SectionEmblem } from '@/components/SectionEmblem';
+import { setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 import {
   Youtube,
   Play,
@@ -47,28 +49,26 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
   const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'song' | 'short' | 'favoritos'>('todos');
   const [activeModalVideo, setActiveModalVideo] = useState<Video | null>(null);
-  const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
-  const [favoritesReady, setFavoritesReady] = useState(false);
+  const favoriteStorageValue = useBrowserStorageValue('local', 'curileta:favorite-videos', '[]');
+  const favoriteSlugs = useMemo(() => {
+    try {
+      const saved: unknown = JSON.parse(favoriteStorageValue || '[]');
+      return Array.isArray(saved) ? saved.filter((value): value is string => typeof value === 'string') : [];
+    } catch {
+      return [];
+    }
+  }, [favoriteStorageValue]);
   const isEn = locale === 'en';
   const configuredChannelUrl = settings?.youtubeChannelUrl;
   const channelUrl = configuredChannelUrl?.startsWith('https://') ? configuredChannelUrl : 'https://www.youtube.com/@curileta';
   const subscribeUrl = `${channelUrl}${channelUrl.includes('?') ? '&' : '?'}sub_confirmation=1`;
   const favoriteSet = useMemo(() => new Set(favoriteSlugs), [favoriteSlugs]);
 
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(window.localStorage.getItem('curileta:favorite-videos') || '[]');
-      if (Array.isArray(saved)) setFavoriteSlugs(saved.filter((value): value is string => typeof value === 'string'));
-    } catch {
-      setFavoriteSlugs([]);
-    }
-    setFavoritesReady(true);
-  }, []);
+  const favoritesReady = useClientHydrated();
 
   function toggleFavorite(slug: string) {
     const next = favoriteSet.has(slug) ? favoriteSlugs.filter((item) => item !== slug) : [...favoriteSlugs, slug];
-    setFavoriteSlugs(next);
-    window.localStorage.setItem('curileta:favorite-videos', JSON.stringify(next));
+    setBrowserStorageValue('local', 'curileta:favorite-videos', JSON.stringify(next));
   }
 
   function openVideo(video: Video) {
@@ -105,7 +105,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
           <div className="relative mx-auto mb-14 max-w-4xl text-center">
             <div className="mx-auto mb-6 flex max-w-3xl flex-col items-center gap-5 sm:flex-row sm:justify-center sm:text-left">
               {settings?.youtubeChannelAvatarUrl ? (
-                <img
+                <ContentImage
                   src={settings.youtubeChannelAvatarUrl}
                   alt={settings.youtubeChannelTitle?.[locale] || settings.youtubeChannelTitle?.es || (isEn ? 'YouTube channel avatar' : 'Avatar del canal de YouTube')}
                   className="h-20 w-20 shrink-0 rounded-full border-4 border-white object-cover shadow-lg dark:border-[#272727] sm:h-24 sm:w-24"
@@ -300,7 +300,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                           className="group rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-red-500/50 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
                         >
                           <div className="relative aspect-video w-full bg-slate-950 overflow-hidden">
-                            <img
+                            <ContentImage
                               src={video.thumbnail}
                               alt={title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 dark:opacity-85"
@@ -416,7 +416,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                           className="group cursor-pointer rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-500 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col relative"
                         >
                           <div className="relative aspect-[9/16] w-full bg-slate-950 overflow-hidden">
-                            <img
+                            <ContentImage
                               src={video.thumbnail}
                               alt={title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 dark:opacity-80"
@@ -594,7 +594,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
         <div className="mt-12 flex flex-col items-center justify-between gap-8 rounded-2xl border border-red-200 bg-red-50 p-8 dark:border-[#313131] dark:bg-[#181818] sm:p-10 md:flex-row">
           <div className="flex items-center gap-5">
             {settings?.youtubeChannelAvatarUrl
-              ? <img src={settings.youtubeChannelAvatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20" />
+              ? <ContentImage src={settings.youtubeChannelAvatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20" />
               : <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-red-600 sm:h-20 sm:w-20"><Youtube className="h-10 w-10 text-white" /></div>}
             <div>
               <div className="flex items-center gap-2">

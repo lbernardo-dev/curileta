@@ -15,6 +15,7 @@ import { getBookCatalogSettings } from '@/lib/book-catalog.server';
 import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
 import { getAuthorPages } from '@/lib/author-pages.server';
 import { getBookAuthorPage } from '@/lib/author-pages';
+import { getRequestTimestamp } from '@/lib/request-time.server';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -36,7 +37,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
   const books = mergeBookCatalog(baseBooks, catalogSettings);
   const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
   const isEn = locale === 'en';
-  const now = Date.now();
+  const now = getRequestTimestamp();
 
   return (
     <div className="min-h-screen bg-[#faf9f4] py-16 text-[#20352c] sm:py-24">

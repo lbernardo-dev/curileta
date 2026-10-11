@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Locale } from '@curileta/i18n';
@@ -191,7 +192,7 @@ export function FavoriteLeaderboard({
                       className="group flex min-w-0 flex-col items-center rounded-xl px-1 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
                     >
                       <span className="mb-1 text-lg" aria-hidden="true">{place === 1 ? '🥇' : place === 2 ? '🥈' : '🥉'}</span>
-                      <img
+                      <ContentImage
                         src={getCharacterAvatarUrl(character.slug, character.image) || undefined}
                         alt={character.name}
                         width={72}

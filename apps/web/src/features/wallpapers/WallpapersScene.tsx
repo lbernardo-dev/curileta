@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
@@ -338,7 +339,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                       isMobile ? 'aspect-[9/16]' : 'aspect-video'
                     }`}
                   >
-                    <img
+                    <ContentImage
                       src={wp.thumbnail}
                       alt={title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
@@ -473,7 +474,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
 
                     {/* Pantalla del Teléfono con Wallpaper */}
                     <div className="relative w-full h-full rounded-[30px] overflow-hidden bg-black flex flex-col justify-between p-4 text-white">
-                      <img
+                      <ContentImage
                         src={selectedWallpaper.fullImageUrl}
                         alt={copy('Vista previa', 'Wallpaper preview')}
                         className="absolute inset-0 w-full h-full object-cover"
@@ -499,7 +500,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                 ) : (
                   <div className="relative w-full max-w-md aspect-video rounded-2xl p-2 bg-gradient-to-b from-slate-700 to-slate-900 shadow-2xl border-2 border-slate-700 ring-1 ring-white/10 flex flex-col">
                     <div className="relative w-full h-full rounded-xl overflow-hidden bg-black">
-                      <img
+                      <ContentImage
                         src={selectedWallpaper.fullImageUrl}
                         alt={copy('Vista previa', 'Wallpaper preview')}
                         className="w-full h-full object-cover"

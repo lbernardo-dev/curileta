@@ -18,11 +18,11 @@ interface BooksSceneProps {
   books: Book[];
   amazonCountry: string | null;
   imageFrames: ImageFrameMap;
+  currentTimestamp: number;
 }
 
-export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amazonCountry, imageFrames }) => {
+export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amazonCountry, imageFrames, currentTimestamp }) => {
   const isEn = locale === 'en';
-  const now = Date.now();
   const destinationNamesEn: Record<string, string> = {
     México: 'Mexico', Perú: 'Peru', Egipto: 'Egypt', Islandia: 'Iceland', Japón: 'Japan',
     Australia: 'Australia', 'Nueva Zelanda': 'New Zealand', China: 'China', Italia: 'Italy',
@@ -50,7 +50,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
         <div className={`grid gap-6 ${books.length === 1 ? 'grid-cols-1' : 'lg:grid-cols-2 xl:grid-cols-3'}`}>
           {books.map((book) => {
             const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
-            const isPublished = isBookPublished(book, now);
+            const isPublished = isBookPublished(book, currentTimestamp);
             const title = book.title[locale] || book.title.es;
             const subtitle = book.subtitle?.[locale] || book.subtitle?.es;
             const description = book.description[locale] || book.description.es;

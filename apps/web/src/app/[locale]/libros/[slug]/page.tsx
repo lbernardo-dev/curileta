@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/ContentImage';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -171,7 +172,7 @@ export default async function BookDetailPage({
             </div>
           ) : (
             <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-2xl border border-[#313131] bg-[#131209] shadow-2xl md:w-[48%]">
-              <img
+              <ContentImage
                 src={coverImage.url}
                 alt={coverAlt}
                 className="h-full w-full object-contain transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"

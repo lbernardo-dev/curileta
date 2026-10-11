@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/ContentImage';
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -133,7 +134,7 @@ export default async function CharacterDetailPage({
             {/* Retrato 3D con halo */}
             <div className="flex flex-col items-center shrink-0">
               <div className="w-56 sm:w-64 overflow-hidden relative group" style={{ aspectRatio: getCharacterImageAspectRatio(character.mainImage.url, character.mainImage.aspectRatio) }}>
-                  <img
+                  <ContentImage
                     src={character.mainImage.url}
                     alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
                     className="h-full w-full object-cover object-[50%_100%] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.025]"

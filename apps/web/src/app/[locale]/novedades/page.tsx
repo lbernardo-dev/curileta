@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { notFound } from 'next/navigation';
 import { cmsProvider } from '@/lib/cms';
 import { isValidLocale, type Locale } from '@curileta/i18n';
@@ -9,6 +10,7 @@ import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 import { getBookCoverImage } from '@/lib/book-art';
 import { getBookCatalogSettings } from '@/lib/book-catalog.server';
 import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
+import { getRequestTimestamp } from '@/lib/request-time.server';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -20,10 +22,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function NewsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
+  await connection();
   const isEn = locale === 'en';
   const [baseBooks, event, catalogSettings] = await Promise.all([cmsProvider.getBooks(locale), cmsProvider.getActiveEvent(locale), getBookCatalogSettings()]);
   const books = mergeBookCatalog(baseBooks, catalogSettings);
-  const now = Date.now();
+  const now = getRequestTimestamp();
   const publishedBooks = books.filter((book) => isBookPublished(book, now));
   const upcomingBooks = books.filter((book) => !isBookPublished(book, now));
   const dateLocale = isEn ? 'en-GB' : 'es-ES';

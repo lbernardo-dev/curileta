@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/ContentImage';
 import Image from 'next/image';
 import { getCharacterAvatarUrl } from '@/lib/character-avatar';
 
@@ -22,7 +23,7 @@ export function CharacterAvatarImage({
   if (!avatarUrl) return null;
   if (avatarUrl === fallbackSrc) {
     return (
-      <img
+      <ContentImage
         src={avatarUrl}
         alt={alt ?? `Retrato de ${name}`}
         width={size}

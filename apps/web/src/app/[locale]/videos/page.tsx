@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/ContentImage';
 import React from 'react';
 import type { Metadata } from 'next';
 import { Locale, isValidLocale } from '@curileta/i18n';
@@ -41,13 +42,13 @@ export default async function VideosPage({
     <div className="min-h-screen bg-[#f3f6f3] text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white">
       <div className="mx-auto max-w-7xl px-5 pt-10 sm:px-8 sm:pt-14 lg:px-12">
         <section className="relative isolate min-h-56 overflow-hidden rounded-3xl border border-[#cfd9d1] bg-[#173e35] shadow-[0_20px_60px_rgba(21,54,43,0.14)] dark:border-[#313131]" aria-label={isEn ? 'Channel information' : 'Información del canal'}>
-          <img src={channelBanner} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <ContentImage src={channelBanner} alt="" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-[#102d27]/70" aria-hidden="true" />
           <div className="relative flex min-h-56 flex-col items-center gap-5 p-6 text-center text-white sm:flex-row sm:items-center sm:p-8 sm:text-left">
             {settings.youtubeChannelAvatarUrl ? (
-              <img src={settings.youtubeChannelAvatarUrl} alt={channelTitle} className="h-20 w-20 shrink-0 rounded-full border-4 border-white/80 object-cover shadow-xl sm:h-24 sm:w-24" />
+              <ContentImage src={settings.youtubeChannelAvatarUrl} alt={channelTitle} className="h-20 w-20 shrink-0 rounded-full border-4 border-white/80 object-cover shadow-xl sm:h-24 sm:w-24" />
             ) : (
-              <img src="/images/characters/avatars/curileta.webp" alt={isEn ? 'Curileta channel avatar' : 'Avatar del canal de Curileta'} className="h-20 w-20 shrink-0 rounded-full border-4 border-white/80 object-cover shadow-xl sm:h-24 sm:w-24" />
+              <ContentImage src="/images/characters/avatars/curileta.webp" alt={isEn ? 'Curileta channel avatar' : 'Avatar del canal de Curileta'} className="h-20 w-20 shrink-0 rounded-full border-4 border-white/80 object-cover shadow-xl sm:h-24 sm:w-24" />
             )}
             <div className="min-w-0">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">{isEn ? 'Curileta on YouTube' : 'Curileta en YouTube'}</p>

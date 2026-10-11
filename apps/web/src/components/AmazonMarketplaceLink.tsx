@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useId, useMemo } from 'react';
 import type { Locale } from '@curileta/i18n';
 import { analytics } from '@curileta/analytics';
 import { ExternalLink } from 'lucide-react';
+import { setBrowserStorageValue, useBrowserStorageValue } from '@/lib/browser-storage';
 import {
   AMAZON_MARKETPLACES,
   CURILETA_BOOK_ASIN,
@@ -26,29 +27,14 @@ export function AmazonMarketplaceLink({
   compact = false,
 }: AmazonMarketplaceLinkProps) {
   const selectId = useId();
-  const [country, setCountry] = useState(() => normalizeAmazonCountry(initialCountry, locale));
+  const defaultCountry = normalizeAmazonCountry(initialCountry, locale);
+  const savedCountry = useBrowserStorageValue('local', 'curileta-amazon-market', defaultCountry);
+  const country = normalizeAmazonCountry(savedCountry, locale);
   const marketplace = useMemo(() => findAmazonMarketplace(country), [country]);
   const isEn = locale === 'en';
 
-  useEffect(() => {
-    let savedCountry: string | null = null;
-    try {
-      savedCountry = localStorage.getItem('curileta-amazon-market');
-    } catch {
-      // Storage may be unavailable in private browsing; use the request region instead.
-    }
-
-    // Browser language is not a reliable location signal (for example, an English browser in Spain).
-    setCountry(normalizeAmazonCountry(savedCountry || initialCountry, locale));
-  }, [initialCountry, locale]);
-
   function changeCountry(value: string) {
-    setCountry(value);
-    try {
-      localStorage.setItem('curileta-amazon-market', value);
-    } catch {
-      // The current selection remains usable even when persistence is unavailable.
-    }
+    setBrowserStorageValue('local', 'curileta-amazon-market', value);
   }
 
   return (

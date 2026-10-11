@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowDown, ArrowUp, Images, Save, Trash2 } from 'lucide-react';
@@ -41,7 +42,8 @@ export default function GalleryManager() {
   const [editingCategorySlug, setEditingCategorySlug] = useState<string | null>(null);
   const [itemDraft, setItemDraft] = useState<ItemDraft>(emptyItem());
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const loading = !loaded;
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -55,7 +57,24 @@ export default function GalleryManager() {
     setData(result as GalleryData);
   }, []);
 
-  useEffect(() => { refresh().catch((cause: unknown) => setError(cause instanceof Error ? cause.message : 'No se pudo cargar la galería.')).finally(() => setLoading(false)); }, [refresh]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/admin/gallery', { cache: 'no-store', signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'No se pudo cargar la galería.');
+        setData(result as GalleryData);
+        setError('');
+      })
+      .catch((cause: unknown) => {
+        if (cause instanceof Error && cause.name === 'AbortError') return;
+        setError(cause instanceof Error ? cause.message : 'No se pudo cargar la galería.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoaded(true);
+      });
+    return () => controller.abort();
+  }, []);
 
   async function saveCategory() {
     setSaving(true); setError(''); setMessage('');
@@ -201,7 +220,7 @@ export default function GalleryManager() {
       </section>
 
       <div aria-live="polite">{message && <p role="status" className="text-sm font-medium text-emerald-800 dark:text-emerald-300">{message}</p>}{error && <p role="alert" className="rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900 dark:bg-[#272727] dark:text-rose-200">{error}</p>}</div>
-      <section className="space-y-4" aria-labelledby="gallery-items-heading"><div><h2 id="gallery-items-heading" className="text-2xl font-bold">Imágenes</h2><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Orden de arriba abajo. Las retiradas permanecen guardadas como borradores.</p></div>{data?.items.length ? <ol className="space-y-3">{data.items.map((item, index) => <li key={item.id} className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 dark:border-[#313131] dark:bg-[#1f1f1f] sm:flex-row sm:items-center sm:justify-between"><div className="flex min-w-0 items-center gap-4"><img src={item.image_url} alt="" className="h-20 w-28 rounded-lg bg-[#131209] object-cover" /><div className="min-w-0"><h3 className="truncate font-semibold">{item.title.es}<span className="font-normal text-slate-500"> · {item.title.en}</span></h3><p className="mt-1 truncate text-xs text-slate-500">{data.categories.find((category) => category.slug === item.category_slug)?.name.es || item.category_slug} · {item.slug}</p><span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.is_published ? 'bg-emerald-100 text-emerald-900 dark:bg-[#272727] dark:text-emerald-200' : 'bg-slate-100 text-slate-700 dark:bg-[#313131] dark:text-slate-200'}`}>{item.is_published ? 'Publicada' : 'Borrador'}</span></div></div><div className="flex flex-wrap gap-1"><button type="button" onClick={() => { void moveItem(index, -1); }} disabled={index === 0} aria-label={`Subir ${item.title.es}`} className="rounded p-2 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"><ArrowUp className="h-4 w-4" /></button><button type="button" onClick={() => { void moveItem(index, 1); }} disabled={index === data.items.length - 1} aria-label={`Bajar ${item.title.es}`} className="rounded p-2 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"><ArrowDown className="h-4 w-4" /></button><button type="button" onClick={() => editItem(item)} className="rounded px-2 py-1 text-sm font-semibold hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]">Editar</button><button type="button" onClick={() => { void toggleItemPublished(item); }} disabled={saving} className="rounded px-2 py-1 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">{item.is_published ? 'Retirar' : 'Publicar'}</button><button type="button" onClick={() => { void deleteItem(item); }} className="inline-flex items-center gap-1 rounded px-2 py-1 text-sm font-semibold text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">{confirmDelete === `item:${item.id}` ? 'Confirmar' : <><Trash2 className="h-4 w-4" />Eliminar</>}</button></div></li>)}</ol> : <p className="rounded-xl border border-dashed border-slate-300 px-5 py-8 text-sm text-slate-600 dark:border-[#414141] dark:text-slate-300">Todavía no hay imágenes. Crea una categoría y carga la primera ilustración.</p>}</section>
+      <section className="space-y-4" aria-labelledby="gallery-items-heading"><div><h2 id="gallery-items-heading" className="text-2xl font-bold">Imágenes</h2><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Orden de arriba abajo. Las retiradas permanecen guardadas como borradores.</p></div>{data?.items.length ? <ol className="space-y-3">{data.items.map((item, index) => <li key={item.id} className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 dark:border-[#313131] dark:bg-[#1f1f1f] sm:flex-row sm:items-center sm:justify-between"><div className="flex min-w-0 items-center gap-4"><ContentImage src={item.image_url} alt="" className="h-20 w-28 rounded-lg bg-[#131209] object-cover" /><div className="min-w-0"><h3 className="truncate font-semibold">{item.title.es}<span className="font-normal text-slate-500"> · {item.title.en}</span></h3><p className="mt-1 truncate text-xs text-slate-500">{data.categories.find((category) => category.slug === item.category_slug)?.name.es || item.category_slug} · {item.slug}</p><span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.is_published ? 'bg-emerald-100 text-emerald-900 dark:bg-[#272727] dark:text-emerald-200' : 'bg-slate-100 text-slate-700 dark:bg-[#313131] dark:text-slate-200'}`}>{item.is_published ? 'Publicada' : 'Borrador'}</span></div></div><div className="flex flex-wrap gap-1"><button type="button" onClick={() => { void moveItem(index, -1); }} disabled={index === 0} aria-label={`Subir ${item.title.es}`} className="rounded p-2 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"><ArrowUp className="h-4 w-4" /></button><button type="button" onClick={() => { void moveItem(index, 1); }} disabled={index === data.items.length - 1} aria-label={`Bajar ${item.title.es}`} className="rounded p-2 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"><ArrowDown className="h-4 w-4" /></button><button type="button" onClick={() => editItem(item)} className="rounded px-2 py-1 text-sm font-semibold hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]">Editar</button><button type="button" onClick={() => { void toggleItemPublished(item); }} disabled={saving} className="rounded px-2 py-1 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">{item.is_published ? 'Retirar' : 'Publicar'}</button><button type="button" onClick={() => { void deleteItem(item); }} className="inline-flex items-center gap-1 rounded px-2 py-1 text-sm font-semibold text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">{confirmDelete === `item:${item.id}` ? 'Confirmar' : <><Trash2 className="h-4 w-4" />Eliminar</>}</button></div></li>)}</ol> : <p className="rounded-xl border border-dashed border-slate-300 px-5 py-8 text-sm text-slate-600 dark:border-[#414141] dark:text-slate-300">Todavía no hay imágenes. Crea una categoría y carga la primera ilustración.</p>}</section>
     </>}
   </div>;
 }

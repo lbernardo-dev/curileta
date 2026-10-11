@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/ContentImage';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Book, Character, Location } from '@curileta/cms';
@@ -19,6 +20,7 @@ interface StoryLandingProps {
   books: Book[];
   amazonCountry: string | null;
   imageFrames: ImageFrameMap;
+  currentTimestamp: number;
 }
 
 const localized = (value: { es: string; en?: string } | undefined, locale: Locale) =>
@@ -30,15 +32,14 @@ const crewName = (slug: string, name: string, locale: Locale) => {
   return name;
 };
 
-export function StoryLanding({ locale, locations, characters, books, upcomingCharacters, amazonCountry, imageFrames }: StoryLandingProps) {
+export function StoryLanding({ locale, locations, characters, books, upcomingCharacters, amazonCountry, imageFrames, currentTimestamp }: StoryLandingProps) {
   const isEn = locale === 'en';
-  const today = Date.now();
-  const publishedBooks = books.filter((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= today);
+  const publishedBooks = books.filter((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= currentTimestamp);
   const featuredBook = publishedBooks[0] || books[0];
   const featuredCover = featuredBook ? getBookCoverImage(featuredBook) : null;
   const isCuriletaBook = featuredBook?.slug === CURILETA_BOOK_SLUG || featuredBook?.id === CURILETA_BOOK_SLUG;
   const coverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'home-book-cover') : null;
-  const nextBook = books.find((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) > today);
+  const nextBook = books.find((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) > currentTimestamp);
   const routeFromBook = featuredBook?.locations
     ?.map((locationId) => locations.find((location) => location.id === locationId || location.slug === locationId))
     .filter((location): location is Location => Boolean(location));
@@ -72,7 +73,7 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
             {route.map((location, index) => (
               <article key={location.id} className="group relative overflow-hidden rounded-[1.65rem] bg-[#fffdf8] shadow-[0_16px_55px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
                 <div className="relative aspect-[4/3] overflow-hidden bg-[#e7ece5]">
-                  <img
+                  <ContentImage
                     src={location.heroImage.url}
                     alt={localized(location.heroImage.alt, locale) || localized(location.name, locale)}
                     loading="lazy"

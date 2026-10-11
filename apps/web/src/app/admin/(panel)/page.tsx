@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/supabase/admin';
+import { getRequestTimestamp } from '@/lib/request-time.server';
 
 function MetricCard({ label, value, detail }: { label: string; value: number; detail: string }) {
   return (
@@ -16,8 +17,9 @@ export default async function AdminOverviewPage() {
   const identity = await requireAdmin();
   const canReadInbox = identity.role === 'owner' || identity.role === 'admin';
   const supabase = createSupabaseAdminClient();
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const today = new Date().toISOString().slice(0, 10);
+  const now = getRequestTimestamp();
+  const since = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const today = new Date(now).toISOString().slice(0, 10);
   const [newSubmissions, weeklySubmissions, activeForms, todayActivity] = await Promise.all([
     supabase.from('contact_submissions').select('id', { count: 'exact', head: true }).eq('status', 'new'),
     supabase.from('contact_submissions').select('id', { count: 'exact', head: true }).gte('created_at', since),

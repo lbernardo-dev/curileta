@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import { useEffect, useState } from 'react';
 import { Save, Youtube } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
@@ -171,9 +172,9 @@ export function YouTubeChannelEditor() {
 
           <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#313131] dark:bg-[#1f1f1f]">
             <h2 className="text-lg font-bold">Vista previa</h2>
-            {config.youtubeChannelHeaderUrl && <img src={config.youtubeChannelHeaderUrl} alt="" className="mt-4 h-24 w-full rounded-lg object-cover" />}
+            {config.youtubeChannelHeaderUrl && <ContentImage src={config.youtubeChannelHeaderUrl} alt="" className="mt-4 h-24 w-full rounded-lg object-cover" />}
             <div className="mt-4 flex items-center gap-3">
-              {config.youtubeChannelAvatarUrl ? <img src={config.youtubeChannelAvatarUrl} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-600 text-white"><Youtube className="h-7 w-7" /></span>}
+              {config.youtubeChannelAvatarUrl ? <ContentImage src={config.youtubeChannelAvatarUrl} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-600 text-white"><Youtube className="h-7 w-7" /></span>}
               <p className="min-w-0 text-base font-bold">{config.youtubeChannelTitle.es || 'Título del canal'}</p>
             </div>
             <p className="mt-3 text-sm leading-5 text-slate-600 dark:text-slate-300">{config.youtubeChannelDescription.es || 'Aquí aparecerá la descripción del canal.'}</p>

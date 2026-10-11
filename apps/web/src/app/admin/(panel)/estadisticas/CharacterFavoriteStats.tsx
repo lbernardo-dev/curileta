@@ -6,12 +6,12 @@ import type { CharacterFavoriteDailyRow, CharacterFavoriteRanking } from '@/lib/
 export function CharacterFavoriteStats({ days }: { days: number | 'all' }) {
   const [rankings, setRankings] = useState<CharacterFavoriteRanking[]>([]);
   const [events, setEvents] = useState<CharacterFavoriteDailyRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedDays, setLoadedDays] = useState<number | 'all' | null>(null);
+  const loading = loadedDays !== days;
   const [error, setError] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
     fetch(`/api/admin/character-favorites?days=${days}`, { signal: controller.signal, cache: 'no-store' })
       .then(async (response) => {
         const result = await response.json();
@@ -24,7 +24,9 @@ export function CharacterFavoriteStats({ days }: { days: number | 'all' }) {
         if (cause instanceof Error && cause.name === 'AbortError') return;
         setError(cause instanceof Error ? cause.message : 'No se pudieron cargar los favoritos.');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadedDays(days);
+      });
     return () => controller.abort();
   }, [days]);
 

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
+import { setBrowserStorageValue, useBrowserStorageValue } from '@/lib/browser-storage';
 
 export type Theme = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
@@ -14,74 +15,48 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'curileta-theme';
+const MEDIA_QUERY = '(prefers-color-scheme: dark)';
+
+function subscribeToSystemTheme(onChange: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  const mediaQuery = window.matchMedia(MEDIA_QUERY);
+  mediaQuery.addEventListener('change', onChange);
+  return () => mediaQuery.removeEventListener('change', onChange);
+}
+
+function getSystemThemeSnapshot() {
+  return typeof window === 'undefined' || window.matchMedia(MEDIA_QUERY).matches;
+}
+
+function getServerSystemThemeSnapshot() {
+  return true;
+}
+
+function applyThemeToDOM(applied: ResolvedTheme) {
+  const root = document.documentElement;
+  root.classList.toggle('dark', applied === 'dark');
+  root.classList.toggle('light', applied === 'light');
+  root.setAttribute('data-theme', applied);
+}
+
+function isTheme(value: string | null): value is Theme {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('dark');
-
-  // Helper to determine system preference
-  const getSystemTheme = (): ResolvedTheme => {
-    if (typeof window === 'undefined') return 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  };
-
-  // Helper to apply class to root HTML
-  const applyThemeToDOM = (applied: ResolvedTheme) => {
-    const root = document.documentElement;
-    if (applied === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
-    }
-    root.setAttribute('data-theme', applied);
-  };
+  const storedTheme = useBrowserStorageValue('local', STORAGE_KEY, 'system');
+  const theme: Theme = isTheme(storedTheme) ? storedTheme : 'system';
+  const prefersDark = useSyncExternalStore(subscribeToSystemTheme, getSystemThemeSnapshot, getServerSystemThemeSnapshot);
+  const resolvedTheme: ResolvedTheme = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
 
   useEffect(() => {
-    let initialTheme: Theme = 'system';
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-      if (stored === 'light' || stored === 'dark' || stored === 'system') {
-        initialTheme = stored;
-      }
-    } catch {
-      // localStorage may fail in private mode
-    }
+    applyThemeToDOM(resolvedTheme);
+  }, [resolvedTheme]);
 
-    setThemeState(initialTheme);
-    const resolved = initialTheme === 'system' ? getSystemTheme() : initialTheme;
-    setResolvedTheme(resolved);
-    applyThemeToDOM(resolved);
-
-    // Listener for system preference changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => {
-      // Re-read current theme from storage or state
-      const currentStored = (localStorage.getItem(STORAGE_KEY) as Theme) || 'system';
-      if (currentStored === 'system') {
-        const newResolved = getSystemTheme();
-        setResolvedTheme(newResolved);
-        applyThemeToDOM(newResolved);
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+  const setTheme = useCallback((newTheme: Theme) => {
+    setBrowserStorageValue('local', STORAGE_KEY, newTheme);
+    if (newTheme !== 'system') applyThemeToDOM(newTheme);
   }, []);
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    try {
-      localStorage.setItem(STORAGE_KEY, newTheme);
-    } catch {
-      // Ignore storage errors
-    }
-
-    const resolved = newTheme === 'system' ? getSystemTheme() : newTheme;
-    setResolvedTheme(resolved);
-    applyThemeToDOM(resolved);
-  };
 
   return (
     <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>

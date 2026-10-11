@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import React, { useEffect, useState } from 'react';
 import { Locale } from '@curileta/i18n';
 import { SeasonalEvent } from '@curileta/cms';
@@ -150,7 +151,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
             {/* Lado izquierdo: Portada del Capítulo Especial */}
             <div className="lg:col-span-5 relative">
               <div className="relative aspect-video lg:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-2 border-orange-500/50 group">
-                <img
+                <ContentImage
                   src="/images/events/halloween-curileta-pompon-wide.webp"
                   alt={locale === 'en'
                     ? 'Curileta and Pompón explore a glowing pumpkin clearing in the Enchanted Forest'

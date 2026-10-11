@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/ContentImage';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -37,7 +38,7 @@ export default async function SongsPage({ params }: { params: Promise<{ locale: 
         <div className="grid gap-5 md:grid-cols-2">
           {availableSongs.map((song) => (
             <SitePageCard key={song.id} className="flex items-center gap-5">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)]">{song.coverImage ? <img src={song.coverImage} alt="" className="h-full w-full object-cover" /> : <Disc3 className="h-8 w-8" />}</div>
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)]">{song.coverImage ? <ContentImage src={song.coverImage} alt="" className="h-full w-full object-cover" /> : <Disc3 className="h-8 w-8" />}</div>
               <div className="min-w-0 flex-1">
                 <h2 className="font-display text-xl font-semibold">{song.title[locale] || song.title.es}</h2>
                 {song.duration && <p className="mt-1 text-sm text-[var(--text-secondary)]">{song.duration}</p>}

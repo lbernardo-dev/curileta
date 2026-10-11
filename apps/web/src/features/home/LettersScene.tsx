@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import React, { useState } from 'react';
 import { Locale } from '@curileta/i18n';
 import type { LetterItem } from '@curileta/cms';
@@ -256,7 +257,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                 <div className="mt-6 rounded-lg border border-[#e3d7bd] bg-[#fffdf7] p-4 text-slate-900 shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-rotate-1 lg:my-auto">
                   <div className="relative flex aspect-[4/3] w-full flex-col justify-between overflow-hidden rounded-md border border-[#d8c7a5] bg-[#dce8e2] p-4 text-[#344236]">
                     {letter.photos[activePhotoIndex].imageUrl ? (
-                      <img
+                      <ContentImage
                         src={letter.photos[activePhotoIndex].imageUrl}
                         alt={letter.photos[activePhotoIndex].title[locale] || letter.photos[activePhotoIndex].title.es}
                         className="absolute inset-0 h-full w-full object-cover"

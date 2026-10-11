@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { SeasonalEvent } from '@curileta/cms';
+import { removeBrowserStorageValue, setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 
 interface SeasonalThemeContextType {
   activeEvent: SeasonalEvent | null;
@@ -44,42 +45,25 @@ export const SeasonalThemeProvider: React.FC<{
   activeEvent: SeasonalEvent | null;
   children: React.ReactNode;
 }> = ({ activeEvent, children }) => {
-  const [dismissedEvent, setDismissedEvent] = useState<{ id: string | null; dismissed: boolean }>({
-    id: null,
-    dismissed: false,
-  });
-  const [mounted, setMounted] = useState(false);
   const campaignStorageKey = activeEvent ? getCampaignStorageKey(activeEvent) : null;
+  const scopedValue = useBrowserStorageValue('local', campaignStorageKey);
+  const legacyValue = useBrowserStorageValue('local', LEGACY_STORAGE_KEY);
+  const mounted = useClientHydrated();
 
   useEffect(() => {
-    setMounted(true);
-    if (!campaignStorageKey) {
-      setDismissedEvent({ id: null, dismissed: false });
-      return;
+    if (!campaignStorageKey || legacyValue === null) return;
+
+    // Migrate the old global preference once, so it only affects its current campaign.
+    if (scopedValue === null && legacyValue === 'true') {
+      setBrowserStorageValue('local', campaignStorageKey, 'true');
     }
+    removeBrowserStorageValue('local', LEGACY_STORAGE_KEY);
+  }, [campaignStorageKey, legacyValue, scopedValue]);
 
-    try {
-      const scopedValue = localStorage.getItem(campaignStorageKey);
-      const legacyValue = localStorage.getItem(LEGACY_STORAGE_KEY);
-      const dismissed = scopedValue === 'true' || (scopedValue === null && legacyValue === 'true');
-
-      // Migrate the old global preference once, so it only affects its current campaign.
-      if (scopedValue === null && legacyValue === 'true') {
-        localStorage.setItem(campaignStorageKey, 'true');
-      }
-      if (legacyValue !== null) localStorage.removeItem(LEGACY_STORAGE_KEY);
-
-      setDismissedEvent({ id: campaignStorageKey, dismissed });
-    } catch {
-      // Ignorar errores de localStorage
-      setDismissedEvent({ id: campaignStorageKey, dismissed: false });
-    }
-  }, [campaignStorageKey]);
-
-  const isUserDismissed = dismissedEvent.id === campaignStorageKey && dismissedEvent.dismissed;
+  const isUserDismissed = Boolean(campaignStorageKey && (scopedValue === 'true' || (scopedValue === null && legacyValue === 'true')));
   const isSeasonalActive = Boolean(activeEvent && activeEvent.active && !isUserDismissed);
   const themeKey = isSeasonalActive && activeEvent ? activeEvent.themeKey : null;
-  const isReady = mounted && (!campaignStorageKey || dismissedEvent.id === campaignStorageKey);
+  const isReady = mounted;
 
   // Sincronizar atributo data-seasonal-theme en <html>
   useEffect(() => {
@@ -100,17 +84,8 @@ export const SeasonalThemeProvider: React.FC<{
   const toggleSeasonalTheme = () => {
     if (!campaignStorageKey) return;
 
-    setDismissedEvent((previous) => {
-      const currentlyDismissed = previous.id === campaignStorageKey && previous.dismissed;
-      const next = !currentlyDismissed;
-      try {
-        if (next) localStorage.setItem(campaignStorageKey, 'true');
-        else localStorage.removeItem(campaignStorageKey);
-      } catch {
-        // Ignorar errores de almacenamiento
-      }
-      return { id: campaignStorageKey, dismissed: next };
-    });
+    if (isUserDismissed) removeBrowserStorageValue('local', campaignStorageKey);
+    else setBrowserStorageValue('local', campaignStorageKey, 'true');
   };
 
   return (

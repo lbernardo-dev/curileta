@@ -44,14 +44,14 @@ export default function ContactPage({ params }: ContactPageProps) {
   const [submitted, setSubmitted] = useState(false);
   const [notificationPending, setNotificationPending] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loadingConfig, setLoadingConfig] = useState(true);
+  const [loadedLocale, setLoadedLocale] = useState<string | null>(null);
+  const loadingConfig = loadedLocale !== locale;
   const [error, setError] = useState('');
   const captchaContainer = useRef<HTMLDivElement>(null);
   const captchaWidget = useRef<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoadingConfig(true);
     fetch(`/api/forms/contact?locale=${locale}`, { signal: controller.signal })
       .then(async (response) => {
         const result = await response.json();
@@ -65,7 +65,9 @@ export default function ContactPage({ params }: ContactPageProps) {
         if (cause instanceof Error && cause.name === 'AbortError') return;
         setError(isEn ? 'The contact form is not connected yet. Please try again later.' : 'El formulario de contacto todavía no está conectado. Inténtalo más tarde.');
       })
-      .finally(() => setLoadingConfig(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadedLocale(locale);
+      });
 
     return () => controller.abort();
   }, [locale, isEn]);

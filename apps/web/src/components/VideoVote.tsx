@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { setBrowserStorageValue, useBrowserStorageValue } from '@/lib/browser-storage';
 
 declare global {
   interface Window {
@@ -30,10 +31,11 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<string | null>(null);
   const [votes, setVotes] = useState(initialVotes);
-  const [voted, setVoted] = useState(false);
   const [showChallenge, setShowChallenge] = useState(false);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
+  const votedStorageValue = useBrowserStorageValue('local', `curileta:video-voted:${slug}`);
+  const voted = votedStorageValue === 'true';
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const isEn = locale === 'en';
 
@@ -55,8 +57,7 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
         }),
       });
       if (!response.ok) throw new Error(isEn ? 'Your vote could not be saved.' : 'No se pudo guardar tu voto. Inténtalo de nuevo.');
-      window.localStorage.setItem(`curileta:video-voted:${slug}`, 'true');
-      setVoted(true);
+      setBrowserStorageValue('local', `curileta:video-voted:${slug}`, 'true');
       setVotes((current) => current + 1);
       setShowChallenge(false);
       setMessage(isEn ? 'Vote saved.' : 'Voto guardado.');
@@ -67,10 +68,6 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
       setSending(false);
     }
   }
-
-  useEffect(() => {
-    setVoted(window.localStorage.getItem(`curileta:video-voted:${slug}`) === 'true');
-  }, [slug]);
 
   useEffect(() => {
     if (!showChallenge || !siteKey || !containerRef.current) return;

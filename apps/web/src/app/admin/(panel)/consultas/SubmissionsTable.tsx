@@ -30,7 +30,8 @@ export function SubmissionsTable() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [status, setStatus] = useState('');
   const [query, setQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loadedStatus, setLoadedStatus] = useState<string | null>(null);
+  const loading = loadedStatus !== status;
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState('');
   const [confirmingDeleteId, setConfirmingDeleteId] = useState('');
@@ -38,7 +39,6 @@ export function SubmissionsTable() {
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
     const suffix = status ? `?status=${encodeURIComponent(status)}` : '';
     fetch(`/api/admin/submissions${suffix}`, { signal: controller.signal })
       .then(async (response) => {
@@ -51,7 +51,9 @@ export function SubmissionsTable() {
         if (cause instanceof Error && cause.name === 'AbortError') return;
         setError(cause instanceof Error ? cause.message : 'No se pudieron cargar las consultas.');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadedStatus(status);
+      });
     return () => controller.abort();
   }, [status]);
 

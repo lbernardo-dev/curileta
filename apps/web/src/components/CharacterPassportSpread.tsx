@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentImage } from '@/components/ContentImage';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { Locale } from '@curileta/i18n';
@@ -60,7 +61,7 @@ export function CharacterPassportSpread({
           <div className="pointer-events-none absolute -right-10 -top-12 h-48 w-48 rounded-full border border-white/10" />
           <div className="pointer-events-none absolute -right-4 -top-6 h-36 w-36 rounded-full border border-white/10" />
           <div className="relative flex items-center gap-4">
-            <img src={character.mainImage.url} alt="" className="h-20 w-20 rounded-2xl border border-amber-200/40 object-cover" />
+            <ContentImage src={character.mainImage.url} alt="" className="h-20 w-20 rounded-2xl border border-amber-200/40 object-cover" />
             <div className="min-w-0">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-200">{isEn ? 'Passport holder' : 'Titular del pasaporte'}</p>
               <h3 className="mt-1 text-2xl font-bold">{character.name}</h3>
