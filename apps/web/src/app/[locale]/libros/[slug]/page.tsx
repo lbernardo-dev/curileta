@@ -52,7 +52,7 @@ export async function generateMetadata({
   const coverImage = getBookCoverImage(book);
   const imageUrl = coverImage.url.startsWith('http')
     ? coverImage.url
-    : new URL(coverImage.url, process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').toString();
+    : new URL(coverImage.url, process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com').toString();
 
   return {
     title,
@@ -95,7 +95,7 @@ export default async function BookDetailPage({
   const coverAlt = coverImage.alt[locale] || coverImage.alt.es;
   const imageUrl = coverImage.url.startsWith('http')
     ? coverImage.url
-    : new URL(coverImage.url, process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').toString();
+    : new URL(coverImage.url, process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com').toString();
 
   // JSON-LD structured data
   const jsonLd = isPublished ? generateBookSchema({

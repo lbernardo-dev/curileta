@@ -29,7 +29,7 @@ import { resolveHomepageSections } from '@/lib/homepage-sections';
 import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
 import { getAuthorPages } from '@/lib/author-pages.server';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 
 export async function generateMetadata({
   params,

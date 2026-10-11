@@ -7,7 +7,7 @@ import { cmsProvider } from '@/lib/cms';
 import { getAuthorPageBySlug } from '@/lib/author-pages.server';
 import { getBookAuthorPage } from '@/lib/author-pages';
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com').replace(/\/$/, '');
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com').replace(/\/$/, '');
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
