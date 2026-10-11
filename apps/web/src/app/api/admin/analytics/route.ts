@@ -6,22 +6,82 @@ import { cmsProvider } from '@/lib/cms';
 
 export async function GET(request: NextRequest) {
   await requireAdmin(['owner', 'admin', 'analyst']);
-  const requestedDays = Number(request.nextUrl.searchParams.get('days') || 30);
-  const days = Number.isFinite(requestedDays) ? Math.min(90, Math.max(7, Math.floor(requestedDays))) : 30;
-  const since = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const requestedRange = request.nextUrl.searchParams.get('range') || '30';
+  const allowedRanges = new Set(['7', '30', '90', '365', '1825', 'all']);
+  const range = allowedRanges.has(requestedRange) ? requestedRange : '30';
+  const days = range === 'all' ? null : Number(range);
+  const today = new Date().toISOString().slice(0, 10);
+  const since = days ? dateDaysAgo(today, days - 1) : null;
 
   try {
     const supabase = createSupabaseAdminClient();
-    const { data, error } = await supabase
-      .from('analytics_daily')
-      .select('day, event_name, path, locale, event_count')
-      .gte('day', since)
-      .order('day', { ascending: true });
-    if (error) throw error;
-    return NextResponse.json({ success: true, days, data: data || [] }, { headers: { 'Cache-Control': 'private, no-store' } });
+    const [periodRows, allTimePageViews] = await Promise.all([
+      fetchAnalyticsRows(supabase, since),
+      range === 'all' ? Promise.resolve(null) : fetchAnalyticsRows(supabase, null, true),
+    ]);
+
+    const totals = new Map<string, { event_name: string; path: string; locale: string; event_count: number }>();
+    const pageViewsByDay = new Map<string, number>();
+    for (const row of periodRows) {
+      const key = `${row.event_name}\u0000${row.path}\u0000${row.locale}`;
+      const aggregate = totals.get(key) || { event_name: row.event_name, path: row.path, locale: row.locale, event_count: 0 };
+      aggregate.event_count += Number(row.event_count) || 0;
+      totals.set(key, aggregate);
+      if (row.event_name === 'page_view') {
+        pageViewsByDay.set(row.day, (pageViewsByDay.get(row.day) || 0) + (Number(row.event_count) || 0));
+      }
+    }
+
+    const totalVisits = (allTimePageViews || periodRows.filter((row) => row.event_name === 'page_view'))
+      .reduce((total, row) => total + (Number(row.event_count) || 0), 0);
+    const earliestPageView = [...pageViewsByDay.keys()].sort()[0] || null;
+    return NextResponse.json({
+      success: true,
+      range,
+      days,
+      since,
+      today,
+      earliestPageView,
+      totalVisits,
+      data: [...totals.values()],
+      pageViewsByDay: [...pageViewsByDay.entries()].map(([day, event_count]) => ({ day, event_count })).sort((left, right) => left.day.localeCompare(right.day)),
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch {
     return NextResponse.json({ success: false, error: 'No se pudieron cargar las estadísticas.' }, { status: 503 });
   }
+}
+
+const ANALYTICS_PAGE_SIZE = 1000;
+
+async function fetchAnalyticsRows(
+  supabase: ReturnType<typeof createSupabaseAdminClient>,
+  since: string | null,
+  pageViewsOnly = false,
+) {
+  const rows: { day: string; event_name: string; path: string; locale: string; event_count: number | string }[] = [];
+  for (let offset = 0; ; offset += ANALYTICS_PAGE_SIZE) {
+    let query = supabase
+      .from('analytics_daily')
+      .select('day, event_name, path, locale, event_count');
+    if (since) query = query.gte('day', since);
+    if (pageViewsOnly) query = query.eq('event_name', 'page_view');
+    const { data, error } = await query
+      .order('day', { ascending: true })
+      .order('event_name', { ascending: true })
+      .order('path', { ascending: true })
+      .order('locale', { ascending: true })
+      .range(offset, offset + ANALYTICS_PAGE_SIZE - 1);
+    if (error) throw error;
+    const batch = (data || []) as typeof rows;
+    rows.push(...batch);
+    if (batch.length < ANALYTICS_PAGE_SIZE) return rows;
+  }
+}
+
+function dateDaysAgo(isoDate: string, count: number) {
+  const date = new Date(`${isoDate}T00:00:00.000Z`);
+  date.setUTCDate(date.getUTCDate() - count);
+  return date.toISOString().slice(0, 10);
 }
 
 export async function POST(request: NextRequest) {

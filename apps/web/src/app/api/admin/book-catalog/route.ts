@@ -58,16 +58,20 @@ export async function PUT(request: Request) {
     }
     const title = value.title as UpcomingBookRecord['title'];
     const description = value.description as UpcomingBookRecord['description'];
+    if (value.isPublished !== undefined && typeof value.isPublished !== 'boolean') {
+      return NextResponse.json({ error: 'Indica si cada próxima aventura está publicada o en borrador.' }, { status: 400 });
+    }
     upcomingBooks.push({
       id: `upcoming-${value.slug}`,
       slug: value.slug,
       title: { es: title.es.trim(), en: title.en.trim() },
       description: { es: description.es.trim(), en: description.en.trim() },
       publicationDate: value.publicationDate as string,
+      isPublished: value.isPublished !== false,
     });
   }
 
-  const upcomingSlugs = new Set(upcomingBooks.map((book) => book.slug));
+  const upcomingSlugs = new Set(upcomingBooks.filter((book) => book.isPublished).map((book) => book.slug));
   const uniqueFeatured = [...new Set(featuredSlugs as string[])];
   if (uniqueFeatured.some((slug) => !validCanonicalSlugs.has(slug) && !upcomingSlugs.has(slug))) {
     return NextResponse.json({ error: 'La portada solo puede mostrar libros existentes en el catálogo.' }, { status: 400 });

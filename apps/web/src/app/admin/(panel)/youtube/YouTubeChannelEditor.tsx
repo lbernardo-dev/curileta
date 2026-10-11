@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Save, Youtube } from 'lucide-react';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
 
 interface ChannelConfig {
   youtubeChannelUrl: string;
@@ -40,6 +41,7 @@ export function YouTubeChannelEditor() {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const [tagDraft, setTagDraft] = useState('');
+  const [pendingUploads, setPendingUploads] = useState(0);
 
   useEffect(() => {
     fetch('/api/admin/youtube-channel', { cache: 'no-store' })
@@ -55,6 +57,12 @@ export function YouTubeChannelEditor() {
   function setLocalized(field: 'youtubeChannelTitle' | 'youtubeChannelDescription', locale: 'es' | 'en', value: string) {
     setSaved(false);
     setConfig((current) => ({ ...current, [field]: { ...current[field], [locale]: value } }));
+  }
+
+  function setImage(field: 'youtubeChannelAvatarUrl' | 'youtubeChannelHeaderUrl', value: string) {
+    setConfig((current) => ({ ...current, [field]: value }));
+    setSaved(false);
+    setError('');
   }
 
   function addTag() {
@@ -111,12 +119,22 @@ export function YouTubeChannelEditor() {
                 <input className={inputClass} type="url" value={config.youtubeChannelUrl} onChange={(event) => { setConfig((current) => ({ ...current, youtubeChannelUrl: event.target.value })); setSaved(false); }} placeholder="https://www.youtube.com/@curileta" />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Avatar del canal · URL" hint="Imagen cuadrada del perfil de YouTube.">
-                  <input className={inputClass} type="url" value={config.youtubeChannelAvatarUrl} onChange={(event) => { setConfig((current) => ({ ...current, youtubeChannelAvatarUrl: event.target.value })); setSaved(false); }} placeholder="https://…" />
-                </Field>
-                <Field label="Imagen de cabecera · URL" hint="Banner panorámico para la página de vídeos.">
-                  <input className={inputClass} type="url" value={config.youtubeChannelHeaderUrl} onChange={(event) => { setConfig((current) => ({ ...current, youtubeChannelHeaderUrl: event.target.value })); setSaved(false); }} placeholder="https://…" />
-                </Field>
+                <ImageUploadField
+                  label="Avatar del canal"
+                  hint="Imagen cuadrada del perfil de YouTube."
+                  target="youtube-avatar"
+                  value={config.youtubeChannelAvatarUrl}
+                  onChange={(value) => setImage('youtubeChannelAvatarUrl', value)}
+                  onUploadingChange={(uploading) => setPendingUploads((count) => Math.max(0, count + (uploading ? 1 : -1)))}
+                />
+                <ImageUploadField
+                  label="Imagen de cabecera"
+                  hint="Banner panorámico para la página de vídeos."
+                  target="youtube-header"
+                  value={config.youtubeChannelHeaderUrl}
+                  onChange={(value) => setImage('youtubeChannelHeaderUrl', value)}
+                  onUploadingChange={(uploading) => setPendingUploads((count) => Math.max(0, count + (uploading ? 1 : -1)))}
+                />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {(['es', 'en'] as const).map((language) => (
@@ -145,7 +163,7 @@ export function YouTubeChannelEditor() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-slate-600 dark:text-slate-300">Los textos se guardan por idioma para mantener la localización de la web.</p>
-              <button type="button" onClick={save} disabled={saving || loading} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
+              <button type="button" onClick={save} disabled={saving || loading || pendingUploads > 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
                 <Save className="h-4 w-4" />{saving ? 'Guardando…' : saved ? 'Cambios guardados' : 'Guardar cambios'}
               </button>
             </div>

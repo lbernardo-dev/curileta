@@ -17,7 +17,10 @@ export async function getBookCatalogSettings(): Promise<BookCatalogSettings> {
       featuredBookSlugs: Array.isArray(data.featured_book_slugs)
         ? data.featured_book_slugs.filter((slug: unknown): slug is string => typeof slug === 'string')
         : [],
-      upcomingBooks: upcomingBooks.filter((book: unknown) => isUpcomingBookRecord(book)),
+      upcomingBooks: upcomingBooks.filter((book: unknown) => isUpcomingBookRecord(book)).map((book) => ({
+        ...book,
+        isPublished: book.isPublished !== false,
+      })),
     };
   } catch {
     return EMPTY_BOOK_CATALOG_SETTINGS;
@@ -32,7 +35,8 @@ function isUpcomingBookRecord(value: unknown): value is BookCatalogSettings['upc
     && typeof (field as Record<string, unknown>).en === 'string');
   return typeof book.id === 'string' && typeof book.slug === 'string'
     && localized(book.title) && localized(book.description)
-    && typeof book.publicationDate === 'string';
+    && typeof book.publicationDate === 'string'
+    && (book.isPublished === undefined || typeof book.isPublished === 'boolean');
 }
 
 export function addManagedUpcomingBooks(books: Book[], settings: BookCatalogSettings): Book[] {

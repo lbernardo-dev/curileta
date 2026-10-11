@@ -49,3 +49,6 @@ test-results/
 # Turborepo / Cache
 .turbo/
 .cache/
+
+# Supabase CLI local state
+supabase/.temp/

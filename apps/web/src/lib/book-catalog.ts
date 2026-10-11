@@ -6,6 +6,7 @@ export interface UpcomingBookRecord {
   title: { es: string; en: string };
   description: { es: string; en: string };
   publicationDate: string;
+  isPublished?: boolean;
 }
 
 export interface BookCatalogSettings {
@@ -45,6 +46,7 @@ export function upcomingBookToBook(record: UpcomingBookRecord): Book {
 export function mergeBookCatalog(books: Book[], settings: BookCatalogSettings): Book[] {
   const existingSlugs = new Set(books.map((book) => book.slug));
   const teasers = settings.upcomingBooks
+    .filter((book) => book.isPublished !== false)
     .filter((book) => !existingSlugs.has(book.slug))
     .map(upcomingBookToBook);
   return [...books, ...teasers];
