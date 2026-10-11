@@ -105,6 +105,23 @@ export interface Location {
   characters?: string[];
   milestones?: NarrativeMilestone[];
   mentionedPlaces?: MentionedCuriosity[];
+  media?: DestinationMedia[];
+  segments?: string[];
+  sortOrder?: number;
+  isPublished?: boolean;
+  showOnHome?: boolean;
+  homeSelectionManaged?: boolean;
+}
+
+export interface DestinationMedia {
+  id: string;
+  kind: 'image' | 'video';
+  url: string;
+  storagePath: string;
+  alt: LocalizedString;
+  caption?: LocalizedString;
+  isCard: boolean;
+  sortOrder: number;
 }
 
 export interface NarrativeMilestone {

@@ -12,6 +12,7 @@ const navigation = [
   { href: '/admin/libros', label: 'Catálogo de libros', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/autoras', label: 'Autoras', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/galeria', label: 'Galería', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/destinos', label: 'Destinos', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/proximo-episodio', label: 'Próximo episodio', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/youtube', label: 'Canal de YouTube', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/forms', label: 'Formularios', roles: ['owner', 'admin'] },

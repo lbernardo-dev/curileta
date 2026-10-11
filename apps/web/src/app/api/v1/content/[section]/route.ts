@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cmsProvider } from '@/lib/cms';
+import { getPublicDestinations } from '@/lib/destinations.server';
 
 export async function GET(
   request: NextRequest,
@@ -33,7 +34,7 @@ export async function GET(
 
       case 'globe':
       case 'locations': {
-        const locations = await cmsProvider.getLocations(locale);
+        const locations = await getPublicDestinations(locale === 'en' ? 'en' : 'es');
         const milestones = await cmsProvider.getNarrativeMilestones(locale);
         return NextResponse.json({
           success: true,
@@ -43,7 +44,7 @@ export async function GET(
       }
 
       case 'radar': {
-        const locations = await cmsProvider.getLocations(locale);
+        const locations = await getPublicDestinations(locale === 'en' ? 'en' : 'es');
         const milestones = await cmsProvider.getNarrativeMilestones(locale);
         return NextResponse.json({
           success: true,
@@ -110,7 +111,7 @@ export async function GET(
           cmsProvider.getCharacters(locale),
           cmsProvider.getBooks(locale),
           cmsProvider.getLetters(locale),
-          cmsProvider.getLocations(locale),
+          getPublicDestinations(locale === 'en' ? 'en' : 'es'),
           cmsProvider.getNarrativeMilestones(locale),
           cmsProvider.getTrailWaypoints(locale),
           cmsProvider.getVideos(locale),

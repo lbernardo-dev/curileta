@@ -6,6 +6,7 @@ import { AdventureRadar } from '@/features/home/AdventureRadar';
 import { cmsProvider } from '@/lib/cms';
 import { ShareActions } from '@/components/ShareActions';
 import { CheckCircle2, Sparkles } from 'lucide-react';
+import { getPublicDestinations } from '@/lib/destinations.server';
 
 export async function generateMetadata({
   params,
@@ -37,7 +38,7 @@ export default async function WorldExplorerPage({
   }
 
   const [locations, milestones, books] = await Promise.all([
-    cmsProvider.getLocations(locale as Locale),
+    getPublicDestinations(locale as Locale),
     cmsProvider.getNarrativeMilestones(locale as Locale),
     cmsProvider.getBooks(locale as Locale),
   ]);
