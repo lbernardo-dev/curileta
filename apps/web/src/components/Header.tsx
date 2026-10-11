@@ -17,6 +17,18 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
   const t = getMessages(locale);
   const isEn = locale === 'en';
 
+  const handleBrandClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    setMobileMenuOpen(false);
+
+    if (pathname !== `/${locale}`) return;
+
+    event.preventDefault();
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    window.scrollTo({ top: 0, behavior });
+  };
+
   const navLinks = [
     { href: `/${locale}/curileta`, label: t.navigation.curileta },
     { href: `/${locale}/mundo`, label: t.navigation.world },
@@ -35,6 +47,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
           {/* Logo Brand */}
           <Link
             href={`/${locale}`}
+            onClick={handleBrandClick}
             className="group flex items-center gap-2.5 rounded-xl p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
           >
             <NauticalCompassMark />
