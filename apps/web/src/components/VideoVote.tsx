@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { setBrowserStorageValue, useBrowserStorageValue } from '@/lib/browser-storage';
 
 declare global {
@@ -39,7 +39,7 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const isEn = locale === 'en';
 
-  async function submitVote(token: string) {
+  const submitVote = useCallback(async (token: string) => {
     setSending(true);
     setMessage('');
     try {
@@ -67,10 +67,11 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
     } finally {
       setSending(false);
     }
-  }
+  }, [isEn, locale, slug]);
 
   useEffect(() => {
     if (!showChallenge || !siteKey || !containerRef.current) return;
+    const controller = new AbortController();
     const renderWidget = () => {
       if (!window.turnstile || !containerRef.current || widgetRef.current) return;
       widgetRef.current = window.turnstile.render(containerRef.current, {
@@ -85,24 +86,23 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
     if (window.turnstile) {
       renderWidget();
     } else if (existingScript) {
-      existingScript.addEventListener('load', renderWidget, { once: true });
+      existingScript.addEventListener('load', renderWidget, { once: true, signal: controller.signal });
     } else {
       const script = document.createElement('script');
       script.id = 'curileta-turnstile-script';
       script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
       script.async = true;
       script.defer = true;
-      script.addEventListener('load', renderWidget, { once: true });
+      script.addEventListener('load', renderWidget, { once: true, signal: controller.signal });
       document.head.appendChild(script);
     }
 
     return () => {
+      controller.abort();
       if (widgetRef.current && window.turnstile) window.turnstile.remove(widgetRef.current);
       widgetRef.current = null;
     };
-    // The widget is created once when the challenge opens.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showChallenge, siteKey]);
+  }, [isEn, showChallenge, siteKey, submitVote]);
 
   if (!enabled) return null;
 
