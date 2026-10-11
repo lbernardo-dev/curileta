@@ -24,7 +24,13 @@ export async function POST(request: NextRequest) {
     const auth = await createSupabaseServerClient();
     const { error: signInError } = await auth.auth.signInWithPassword({ email, password });
     if (signInError) {
-      return NextResponse.json({ success: false, error: 'No se pudo validar el acceso.' }, { status: 401 });
+      const status = signInError.status === 429 ? 429 : 401;
+      return NextResponse.json({
+        success: false,
+        error: status === 429
+          ? 'Se han realizado demasiados intentos. Espera antes de volver a probar.'
+          : 'No se pudo validar el acceso.',
+      }, { status });
     }
 
     const { data: { user } } = await auth.auth.getUser();
