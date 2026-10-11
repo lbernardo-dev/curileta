@@ -29,6 +29,7 @@ import { resolveHomepageSections } from '@/lib/homepage-sections';
 import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
 import { getAuthorPages } from '@/lib/author-pages.server';
 import { getRequestTimestamp } from '@/lib/request-time.server';
+import { getPublicDestinations } from '@/lib/destinations.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 
@@ -94,7 +95,7 @@ export default async function HomePage({
     bookCatalogSettings,
     authorPages,
   ] = await Promise.all([
-    cmsProvider.getLocations(locale),
+    getPublicDestinations(locale),
     cmsProvider.getCharacters(locale),
     cmsProvider.getBooks(locale),
     cmsProvider.getLetters(locale),

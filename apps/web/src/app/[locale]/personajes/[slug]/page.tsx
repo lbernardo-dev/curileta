@@ -11,6 +11,7 @@ import { ShareActions } from '@/components/ShareActions';
 import { CharacterFavoriteButton, CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
 import { CharacterPassportSpread } from '@/components/CharacterPassportSpread';
 import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
+import { getPublicDestinations } from '@/lib/destinations.server';
 import {
   Sparkles,
   ArrowLeft,
@@ -68,7 +69,7 @@ export default async function CharacterDetailPage({
 
   const [character, locations, books, videos, milestones, rankings] = await Promise.all([
     cmsProvider.getCharacterBySlug(slug, locale),
-    cmsProvider.getLocations(locale),
+    getPublicDestinations(locale),
     cmsProvider.getBooks(locale),
     cmsProvider.getVideos(locale),
     cmsProvider.getNarrativeMilestones(locale),

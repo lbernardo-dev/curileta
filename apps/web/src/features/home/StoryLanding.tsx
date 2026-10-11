@@ -43,10 +43,14 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
   const routeFromBook = featuredBook?.locations
     ?.map((locationId) => locations.find((location) => location.id === locationId || location.slug === locationId))
     .filter((location): location is Location => Boolean(location));
-  const route = (routeFromBook?.length
+  const legacyRoute = (routeFromBook?.length
     ? routeFromBook
     : locations.filter((location) => !location.slug.includes('regreso'))
   ).slice(0, 3);
+  const homeSelectionManaged = locations.some((location) => location.homeSelectionManaged === true);
+  const route = homeSelectionManaged
+    ? locations.filter((location) => location.isPublished !== false && location.showOnHome === true)
+    : legacyRoute;
 
   return (
     <>
@@ -72,6 +76,7 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
           <div className="relative mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
             {route.map((location, index) => (
               <article key={location.id} className="group relative overflow-hidden rounded-[1.65rem] bg-[#fffdf8] shadow-[0_16px_55px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
+                <Link href={`/${locale}/destinos/${location.slug}`} className="group block h-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
                 <div className="relative aspect-[4/3] overflow-hidden bg-[#e7ece5]">
                   <ContentImage
                     src={location.heroImage.url}
@@ -81,7 +86,7 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#12261f]/65 via-transparent to-transparent" />
                   <span className="absolute left-5 top-5 inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 px-2 text-xs font-semibold text-[#20352c] shadow-sm">
-                    0{index + 1}
+                    {String(index + 1).padStart(2, '0')}
                   </span>
                   <span className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 text-sm font-medium text-white">
                     <MapPin className="h-4 w-4 text-amber-300" />
@@ -97,14 +102,16 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
                       {localized(location.curiosities[0], locale)}
                     </p>
                   )}
+                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-900">{isEn ? 'Open destination' : 'Ver destino'} <ArrowRight className="h-4 w-4" /></span>
                 </div>
+                </Link>
               </article>
             ))}
           </div>
 
           <div className="mt-8 flex justify-center">
-            <Link href={`/${locale}/mundo`} className="inline-flex items-center gap-2 rounded-full border border-[#cbd6c8] px-5 py-3 text-sm font-semibold text-[#254537] transition hover:border-emerald-700 hover:bg-emerald-50">
-              <span>{isEn ? 'Explore the illustrated atlas' : 'Explorar el atlas ilustrado'}</span>
+            <Link href={`/${locale}/destinos`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#cbd6c8] px-5 py-3 text-sm font-semibold text-[#254537] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-emerald-700 hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
+              <span>{isEn ? 'Browse every destination' : 'Ver todos los destinos'}</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

@@ -32,6 +32,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
   const navLinks = [
     { href: `/${locale}/curileta`, label: t.navigation.curileta },
     { href: `/${locale}/mundo`, label: t.navigation.world },
+    { href: `/${locale}/destinos`, label: isEn ? 'Destinations' : 'Destinos' },
     { href: `/${locale}/personajes`, label: t.navigation.characters },
     { href: `/${locale}/libros`, label: t.navigation.books },
     { href: `/${locale}/videos`, label: t.navigation.videos },

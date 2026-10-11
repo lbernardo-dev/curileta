@@ -3,6 +3,7 @@ import { locales } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
 import { getAuthorPages } from '@/lib/author-pages.server';
 import { getGalleryData } from '@/lib/gallery.server';
+import { getPublicDestinations } from '@/lib/destinations.server';
 
 // Keep the sitemap current at runtime, even when a backend is unavailable during build.
 export const revalidate = 3600;
@@ -18,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/libros',
     '/autora',
     '/galeria',
+    '/destinos',
     '/videos',
     '/canciones',
     '/fondos',
@@ -101,6 +103,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/autora/${author.slug}`,
             en: `${baseUrl}/en/autora/${author.slug}`,
+          },
+        },
+      });
+    }
+  }
+
+  const destinations = await getPublicDestinations('es');
+  for (const destination of destinations) {
+    for (const locale of locales) {
+      routes.push({
+        url: `${baseUrl}/${locale}/destinos/${destination.slug}`,
+        changeFrequency: 'monthly',
+        priority: 0.7,
+        alternates: {
+          languages: {
+            es: `${baseUrl}/es/destinos/${destination.slug}`,
+            en: `${baseUrl}/en/destinos/${destination.slug}`,
           },
         },
       });
