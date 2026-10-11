@@ -73,7 +73,9 @@ const cachedSettings = unstable_cache(
 );
 
 function stripSanityFields(document: SanityDocument) {
-  const { _id, _rev, _createdAt, _updatedAt, _type, ...entry } = document;
+  const entry = Object.fromEntries(
+    Object.entries(document).filter(([key]) => !['_id', '_rev', '_createdAt', '_updatedAt', '_type'].includes(key)),
+  );
   return entry;
 }
 
@@ -128,8 +130,16 @@ export class SanityCMSProvider implements CMSProvider {
     return (await this.list<Video>('video')) ?? this.fallback.getVideos(locale);
   }
 
+  async getVideosForMediaCleanup(): Promise<Video[]> {
+    return (await cachedList('video')()).map((document) => mapEntry<Video>(document, 'video'));
+  }
+
   async getSongs(locale?: string): Promise<Song[]> {
     return (await this.list<Song>('song')) ?? this.fallback.getSongs(locale);
+  }
+
+  async getSongsForMediaCleanup(): Promise<Song[]> {
+    return (await cachedList('song')()).map((document) => mapEntry<Song>(document, 'song'));
   }
 
   async getLocations(locale?: string): Promise<Location[]> {

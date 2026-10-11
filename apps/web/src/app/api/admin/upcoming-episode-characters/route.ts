@@ -48,6 +48,9 @@ export async function PUT(request: NextRequest) {
   } catch {
     return NextResponse.json({ success: false, error: 'El formulario no es válido.' }, { status: 400 });
   }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return NextResponse.json({ success: false, error: 'El formulario no es válido.' }, { status: 400 });
+  }
 
   const submitted = body.characterSlugs;
   if (!Array.isArray(submitted) || submitted.length > 100 || submitted.some((slug) => typeof slug !== 'string')) {

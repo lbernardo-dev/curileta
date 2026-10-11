@@ -1,9 +1,11 @@
+@import '@fontsource-variable/geist';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-geist: 'Geist', sans-serif;
+  --font-geist: 'Geist Variable', sans-serif;
   --font-display: var(--font-geist);
 
   /* Brand Primitive Colors */

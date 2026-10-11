@@ -40,6 +40,8 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
               <li><Link href={`/${locale}/mundo`} className={linkClass}>{isEn ? 'The world' : 'El mundo'}</Link></li>
               <li><Link href={`/${locale}/personajes`} className={linkClass}>{isEn ? 'Characters and friends' : 'Personajes y amigos'}</Link></li>
               <li><Link href={`/${locale}/libros`} className={linkClass}>{isEn ? 'Books' : 'Libros'}</Link></li>
+              <li><Link href={`/${locale}/autora`} className={linkClass}>{isEn ? 'Authors' : 'Autoras'}</Link></li>
+              <li><Link href={`/${locale}/galeria`} className={linkClass}>{isEn ? 'Gallery' : 'Galería'}</Link></li>
               <li><Link href={`/${locale}/videos`} className={linkClass}>{isEn ? 'Videos' : 'Vídeos'}</Link></li>
               <li><Link href={`/${locale}/canciones`} className={linkClass}>{isEn ? 'Songs' : 'Canciones'}</Link></li>
               <li><Link href={`/${locale}/fondos`} className={linkClass}>{isEn ? 'Wallpapers' : 'Fondos de pantalla'}</Link></li>

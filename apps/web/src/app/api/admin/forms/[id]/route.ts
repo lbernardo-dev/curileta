@@ -42,8 +42,13 @@ export async function PATCH(
 
   let body: Record<string, unknown>;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > 64_000) return NextResponse.json({ success: false, error: 'El formulario supera el tamaño permitido.' }, { status: 413 });
+    body = JSON.parse(raw) as Record<string, unknown>;
   } catch {
+    return NextResponse.json({ success: false, error: 'La solicitud no tiene un formato válido.' }, { status: 400 });
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return NextResponse.json({ success: false, error: 'La solicitud no tiene un formato válido.' }, { status: 400 });
   }
 

@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/lead-retention",
       "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/site-media-cleanup",
+      "schedule": "0 4 * * 0"
     }
   ]
 }

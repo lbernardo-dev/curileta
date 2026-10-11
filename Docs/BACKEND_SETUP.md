@@ -27,7 +27,7 @@ La clave publicable se usa en las rutas de servidor para validar sesiones. La cl
 
 1. En el panel de Supabase abre `SQL Editor` y crea una consulta.
 2. En Curileta, las cinco migraciones originales del repositorio se ejecutaron manualmente en SQL Editor. Las columnas de privacidad y retención están creadas, el identificador del campo remoto sigue siendo `privacyConsent` para que el sitio publicado no se rompa y el job `contact-submission-retention` está activo. No las vuelvas a ejecutar ahora.
-3. La migración `20261010060000_image_frame_settings.sql` crea la tabla `image_frame_settings` para guardar los encuadres del panel. Se aplicó manualmente en Production y se verificaron RLS y los permisos de lectura. Antes de usar `supabase db push`, reconcilia el historial: las ejecuciones manuales no aparecen en el historial del panel ni en `supabase_migrations.schema_migrations`. En un proyecto nuevo, ejecuta las seis migraciones en orden: [base](../supabase/migrations/20261010010000_backend.sql), [leads](../supabase/migrations/20261010020000_lead_management_and_retention.sql), [analítica](../supabase/migrations/20261010030000_content_share_analytics.sql), [privacidad y retención](../supabase/migrations/20261010040000_privacy_and_lead_retention.sql), [compatibilidad temporal](../supabase/migrations/20261010050000_contact_privacy_compatibility.sql) y [encuadres visuales](../supabase/migrations/20261010060000_image_frame_settings.sql).
+3. La migración `20261010060000_image_frame_settings.sql` crea la tabla `image_frame_settings` para guardar los encuadres del panel. Se aplicó manualmente en Production y se verificaron RLS y los permisos de lectura. Antes de usar `supabase db push`, reconcilia el historial: las ejecuciones manuales no aparecen en el historial del panel ni en `supabase_migrations.schema_migrations`. En un proyecto nuevo, ejecuta primero las seis migraciones base en orden: [base](../supabase/migrations/20261010010000_backend.sql), [leads](../supabase/migrations/20261010020000_lead_management_and_retention.sql), [analítica](../supabase/migrations/20261010030000_content_share_analytics.sql), [privacidad y retención](../supabase/migrations/20261010040000_privacy_and_lead_retention.sql), [compatibilidad temporal](../supabase/migrations/20261010050000_contact_privacy_compatibility.sql) y [encuadres visuales](../supabase/migrations/20261010060000_image_frame_settings.sql). Continúa con las migraciones posteriores enumeradas en la referencia técnica y verifica cada esquema antes de usar la aplicación.
 4. Comprueba que existen `admin_profiles`, `contact_forms`, `contact_submissions`, `analytics_daily` e `image_frame_settings`, las columnas nuevas de retención y el job `contact-submission-retention`. La sexta migración activa RLS, reserva la tabla de encuadres al servidor y valida posiciones y ampliación.
 
 La migración activa RLS y reserva los datos privados al servidor. No ejecutes la aplicación antes de terminar este paso: las rutas de formularios y el panel requieren esas tablas.
@@ -97,7 +97,9 @@ La tarea SQL diaria a las 03:00 UTC elimina consultas `resolved` o `archived` si
 
 ## 7. Variables de producción
 
-Cuando la conexión local esté lista, configura en Vercel estas variables para `Production` y, si corresponde, `Preview`:
+El dominio principal es `curileta.com` y `curileta.es` es secundario. Configura `NEXT_PUBLIC_SITE_URL=https://curileta.com` en Vercel `Production` para que metadatos, sitemap y `robots.txt` publiquen la URL canónica. Conecta ambos dominios al proyecto de Vercel y configura `curileta.es` para redirigir al `.com`; no se ha comprobado todavía DNS, redirección ni dominio activo en Production. Añade ambos dominios al widget de Turnstile y actualiza el webhook de Sanity a `https://curileta.com/api/revalidate` al completar la conexión.
+
+Después configura en Vercel estas variables para `Production` y, si corresponde, `Preview`:
 
 ```text
 NEXT_PUBLIC_SITE_URL
@@ -109,6 +111,7 @@ SANITY_STUDIO_PROJECT_ID
 SANITY_STUDIO_DATASET
 NEXT_PUBLIC_SANITY_STUDIO_URL
 SANITY_READ_TOKEN                  # solo si el dataset es privado
+YOUTUBE_API_KEY                    # opcional; metadatos completos al importar desde /admin/youtube
 SANITY_REVALIDATE_SECRET
 RESEND_API_KEY
 CONTACT_FROM_EMAIL
@@ -119,15 +122,15 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY
 TURNSTILE_SECRET_KEY
 ```
 
-No subas `SANITY_WRITE_TOKEN` a producción. Solo se usa en la importación local. Configura también `SANITY_STUDIO_PROJECT_ID` y `SANITY_STUDIO_DATASET` en el entorno local del Studio.
+No subas `SANITY_WRITE_TOKEN` a producción. Solo se usa en la importación local. Configura también `SANITY_STUDIO_PROJECT_ID` y `SANITY_STUDIO_DATASET` en el entorno local del Studio. La gestión de vídeos y canciones desde `/admin/youtube` guarda ajustes en Supabase y no requiere un token de escritura de Sanity. `YOUTUBE_API_KEY` es opcional: con ella, el panel usa YouTube Data API para completar los datos públicos que expone el vídeo; sin ella, la importación obtiene título, autor y miniatura con oEmbed.
 
 ## 8. Activación gradual
 
 1. Usa los proyectos existentes de Supabase y Sanity; no los vuelvas a crear.
-2. Confirma las cuatro tablas originales, `image_frame_settings`, `character_favorites`, `character_favorite_daily`, `home_character_crew_settings`, `youtube_channel_settings` y `book_catalog_settings`, el perfil `owner`, las columnas de retención y el job diario. Las tablas de encuadres y las cinco tablas nuevas están verificadas en Production con RLS activo y acceso de servidor reservado a `service_role`. Reconcilia el historial de migraciones antes de volver a usar `supabase db push`.
+2. Confirma las cuatro tablas originales, `image_frame_settings`, `character_favorites`, `character_favorite_daily`, `home_character_crew_settings`, `youtube_channel_settings`, `book_catalog_settings`, `youtube_content_overrides`, `author_pages`, `gallery_categories` y `gallery_items`, el perfil `owner`, las columnas de retención y el job diario. Las tablas protegidas tienen RLS activo y acceso de servidor reservado a `service_role`. Las migraciones `20261011030000_youtube_content_management.sql` y `20261011040000_author_gallery_management.sql` se aplicaron en Production con `supabase db query --linked --file` y se verificaron sus tablas, permisos e índice. La lista remota de migraciones sigue vacía aunque existen ejecuciones manuales previas; no uses `supabase db push` hasta reconciliar todo el historial. El código de esas herramientas sigue pendiente de despliegue web.
 3. Publica Sanity Studio y añade `NEXT_PUBLIC_SANITY_STUDIO_URL` a Vercel para habilitar la edición desde `/admin/contenidos`.
 4. Configura Resend y completa la información legal antes de activar formularios públicos. El widget Turnstile y sus claves de Production ya existen.
-5. Inicia la web con `npm run dev` y el Studio con `npm run dev:studio` para trabajar localmente.
+5. Usa Node `>=22.18.0` para el workspace web. Inicia la web con `npm run dev` y el Studio con `npm run dev:studio` para trabajar localmente. La web usa Next.js 16.4.0; ejecuta `npm run typecheck --workspace=apps/web`, `npm run lint --workspace=apps/web` y `npm run build --workspace=apps/web` para revisar el workspace web. El lint se ejecuta con ESLint flat; no uses el antiguo comando `next lint`.
 6. Antes de desplegar, revisa las variables faltantes de Resend, `CRON_SECRET`, privacidad y Studio. La revisión actual no habilita el formulario de producción porque faltan aprobación legal y `PRIVACY_NOTICE_VERSION`; tampoco activa avisos de retención de leads hasta configurar el correo y el cron web.
 
 ## 9. Opciones de alojamiento y coste

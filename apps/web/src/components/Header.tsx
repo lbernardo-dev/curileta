@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Locale, getMessages } from '@curileta/i18n';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from './ThemeToggle';
-import { SkipLink, Button } from '@curileta/design-system';
+import { SkipLink } from '@curileta/design-system';
 import { SeasonalBanner } from './SeasonalBanner';
 import { NauticalCompassMark } from './NauticalCompassMark';
 import { Menu, X, BookOpen, ArrowRight } from 'lucide-react';
@@ -23,6 +23,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
     { href: `/${locale}/personajes`, label: t.navigation.characters },
     { href: `/${locale}/libros`, label: t.navigation.books },
     { href: `/${locale}/videos`, label: t.navigation.videos },
+    { href: `/${locale}/galeria`, label: isEn ? 'Gallery' : 'Galería' },
   ];
 
   return (

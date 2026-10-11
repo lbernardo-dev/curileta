@@ -12,9 +12,9 @@ export async function GET(request: NextRequest) {
       hasActiveEvent: !!activeEvent,
       data: activeEvent,
     });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal error' },
+      { success: false, error: 'Internal error' },
       { status: 500 }
     );
   }

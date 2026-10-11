@@ -34,6 +34,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
     ? eventVideo ?? (baseVideoIndex === null ? undefined : HERO_BASE_VIDEOS[baseVideoIndex])
     : undefined;
   const heroPoster = heroVideo?.poster ?? seasonalVideo?.poster ?? HERO_BASE_VIDEOS[0].poster;
+  const hasBaseVideoIndex = baseVideoIndex !== null;
 
   useEffect(() => {
     if (!seasonalThemeReady || eventVideo) return;
@@ -63,14 +64,14 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
   }, [baseVideoIndex, eventVideo, seasonalThemeReady]);
 
   useEffect(() => {
-    if (!seasonalThemeReady || eventVideo || baseVideoIndex === null || HERO_BASE_VIDEOS.length < 2) return;
+    if (!seasonalThemeReady || eventVideo || !hasBaseVideoIndex || HERO_BASE_VIDEOS.length < 2) return;
 
     const rotationTimer = window.setInterval(() => {
       setBaseVideoIndex((index) => (index === null ? 0 : (index + 1) % HERO_BASE_VIDEOS.length));
     }, HERO_VIDEO_ROTATION_INTERVAL_MS);
 
     return () => window.clearInterval(rotationTimer);
-  }, [baseVideoIndex === null, eventVideo, seasonalThemeReady]);
+  }, [eventVideo, hasBaseVideoIndex, seasonalThemeReady]);
 
   const isEn = locale === 'en';
   const tagline = settings?.heroSubtitle?.[locale] || settings?.heroSubtitle?.es;

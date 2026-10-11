@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface Submission {
   id: string;
@@ -180,7 +181,7 @@ export function SubmissionsTable() {
               )}
               <div className="flex flex-wrap items-center justify-end gap-3">
                 {item.lead_stage ? (
-                  <a href="/admin/leads" className="rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">En seguimiento como oportunidad</a>
+                  <Link href="/admin/leads" className="rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">En seguimiento como oportunidad</Link>
                 ) : (
                   <button type="button" disabled={updatingId === item.id} onClick={() => saveAsLead(item.id)} className="rounded-lg bg-emerald-900 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">{updatingId === item.id ? 'Guardando…' : 'Guardar como oportunidad'}</button>
                 )}

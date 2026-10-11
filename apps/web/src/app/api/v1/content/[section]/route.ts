@@ -149,9 +149,9 @@ export async function GET(
           { status: 404 }
         );
     }
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal error' },
+      { success: false, error: 'Internal error' },
       { status: 500 }
     );
   }

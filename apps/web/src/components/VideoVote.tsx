@@ -37,6 +37,37 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const isEn = locale === 'en';
 
+  async function submitVote(token: string) {
+    setSending(true);
+    setMessage('');
+    try {
+      const path = window.location.pathname;
+      const response = await fetch('/api/admin/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventName: 'video_vote',
+          path,
+          locale,
+          contentType: 'video',
+          contentSlug: slug,
+          turnstileToken: token,
+        }),
+      });
+      if (!response.ok) throw new Error(isEn ? 'Your vote could not be saved.' : 'No se pudo guardar tu voto. Inténtalo de nuevo.');
+      window.localStorage.setItem(`curileta:video-voted:${slug}`, 'true');
+      setVoted(true);
+      setVotes((current) => current + 1);
+      setShowChallenge(false);
+      setMessage(isEn ? 'Vote saved.' : 'Voto guardado.');
+    } catch (cause) {
+      setShowChallenge(false);
+      setMessage(cause instanceof Error ? cause.message : (isEn ? 'Your vote could not be saved.' : 'No se pudo guardar tu voto.'));
+    } finally {
+      setSending(false);
+    }
+  }
+
   useEffect(() => {
     setVoted(window.localStorage.getItem(`curileta:video-voted:${slug}`) === 'true');
   }, [slug]);
@@ -75,37 +106,6 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
     // The widget is created once when the challenge opens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showChallenge, siteKey]);
-
-  async function submitVote(token: string) {
-    setSending(true);
-    setMessage('');
-    try {
-      const path = window.location.pathname;
-      const response = await fetch('/api/admin/analytics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventName: 'video_vote',
-          path,
-          locale,
-          contentType: 'video',
-          contentSlug: slug,
-          turnstileToken: token,
-        }),
-      });
-      if (!response.ok) throw new Error(isEn ? 'Your vote could not be saved.' : 'No se pudo guardar tu voto. Inténtalo de nuevo.');
-      window.localStorage.setItem(`curileta:video-voted:${slug}`, 'true');
-      setVoted(true);
-      setVotes((current) => current + 1);
-      setShowChallenge(false);
-      setMessage(isEn ? 'Vote saved.' : 'Voto guardado.');
-    } catch (cause) {
-      setShowChallenge(false);
-      setMessage(cause instanceof Error ? cause.message : (isEn ? 'Your vote could not be saved.' : 'No se pudo guardar tu voto.'));
-    } finally {
-      setSending(false);
-    }
-  }
 
   if (!enabled) return null;
 

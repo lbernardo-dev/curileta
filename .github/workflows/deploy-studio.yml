@@ -1,0 +1,68 @@
+name: Deploy Sanity Studio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/studio/**'
+      - 'packages/cms/**'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+concurrency:
+  group: sanity-studio-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and deploy editorial Studio
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Guard production branch
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error title=Studio deployment blocked::Production deployments must run from main."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Studio
+        run: npm run build --workspace=apps/studio
+        env:
+          SANITY_STUDIO_PROJECT_ID: l71yzb5e
+          SANITY_STUDIO_DATASET: production
+
+      - name: Check deployment credential
+        shell: bash
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: |
+          if [[ -z "$SANITY_AUTH_TOKEN" ]]; then
+            echo "::error title=Studio deployment blocked::Add the SANITY_AUTH_TOKEN GitHub Actions secret before deploying."
+            exit 1
+          fi
+
+      - name: Deploy hosted Studio
+        run: npm exec --workspace=apps/studio -- sanity deploy --yes
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+          SANITY_STUDIO_PROJECT_ID: l71yzb5e
+          SANITY_STUDIO_DATASET: production

@@ -3,18 +3,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { locales, isValidLocale, type Locale } from '@curileta/i18n';
+import { locales, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
 import { generateBookSchema } from '@curileta/seo';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { ShareActions } from '@/components/ShareActions';
+import { TrackedAnalyticsLink } from '@/components/TrackedAnalyticsLink';
 import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { CURILETA_BOOK_APLUS, CURILETA_BOOK_BACK_COVER, getBookCoverImage } from '@/lib/book-art';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { getImageFrame } from '@/lib/image-frames';
 import { getBookCatalogSettings } from '@/lib/book-catalog.server';
 import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
+import { getAuthorPages } from '@/lib/author-pages.server';
+import { getBookAuthorPage } from '@/lib/author-pages';
 
 export async function generateStaticParams() {
   const [baseBooks, settings] = await Promise.all([cmsProvider.getBooks('es'), getBookCatalogSettings()]);
@@ -71,7 +74,7 @@ export default async function BookDetailPage({
     notFound();
   }
 
-  const [baseBooks, settings] = await Promise.all([cmsProvider.getBooks(locale), getBookCatalogSettings()]);
+  const [baseBooks, settings, authorPages] = await Promise.all([cmsProvider.getBooks(locale), getBookCatalogSettings(), getAuthorPages()]);
   const book = mergeBookCatalog(baseBooks, settings).find((item) => item.slug === slug) || null;
 
   if (!book) {
@@ -85,6 +88,7 @@ export default async function BookDetailPage({
   const amazonCountry = detectAmazonCountryFromHeaders(await headers());
   const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
   const isPublished = isBookPublished(book);
+  const authorPage = getBookAuthorPage(book, authorPages);
   const coverImage = getBookCoverImage(book);
   const imageFrames = isCuriletaBook ? await getImageFrameSettings() : {};
   const detailCoverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'book-detail-cover') : null;
@@ -202,7 +206,9 @@ export default async function BookDetailPage({
             <ShareActions contentType="book" contentSlug={book.slug} title={title} description={desc} locale={locale} />
             {book.author && (
               <p className="text-xs text-slate-400">
-                {locale === 'en' ? 'Author:' : 'Autoría:'} <span className="font-semibold text-slate-200">{book.author}</span>
+                {locale === 'en' ? 'Author:' : 'Autoría:'} {authorPage
+                  ? <Link href={`/${locale}/autora/${authorPage.slug}`} className="font-semibold text-slate-200 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">{authorPage.name[locale] || authorPage.name.es}</Link>
+                  : <span className="font-semibold text-slate-200">{book.author}</span>}
               </p>
             )}
 
@@ -225,16 +231,16 @@ export default async function BookDetailPage({
                 </h2>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                   {book.purchaseLinks.map((store) => (
-                    <a
+                    <TrackedAnalyticsLink
                       key={store.storeName}
                       href={store.url}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      action={{ name: 'book_purchase_click', id: book.slug, label: store.storeName }}
                       className="flex items-center gap-1.5 rounded-xl border border-[#313131] bg-[#000000] px-4 py-2 text-xs font-semibold text-slate-200 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#272727] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
                     >
                       <span>{store.storeName}</span>
                       <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-                    </a>
+                    </TrackedAnalyticsLink>
                   ))}
                 </div>
               </div>

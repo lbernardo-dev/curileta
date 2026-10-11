@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { locales, defaultLocale } from '@curileta/i18n';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
@@ -31,29 +31,23 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Ignorar rutas internas, estáticas, favicon, api, etc.
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/static') ||
-    pathname.includes('.') // archivos como favicon.ico, images, etc.
+    pathname.includes('.')
   ) {
     return NextResponse.next();
   }
 
-  // Verificar si la ruta ya incluye un locale soportado
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  if (pathnameHasLocale) {
-    return NextResponse.next();
-  }
+  if (pathnameHasLocale) return NextResponse.next();
 
-  // Redirigir hacia el locale por defecto (ES) manteniendo la ruta
   const redirectPath = pathname === '/' ? '' : pathname;
-  const newUrl = new URL(`/${defaultLocale}${redirectPath}`, request.url);
-  return NextResponse.redirect(newUrl);
+  return NextResponse.redirect(new URL(`/${defaultLocale}${redirectPath}`, request.url));
 }
 
 export const config = {

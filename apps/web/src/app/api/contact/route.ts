@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import type { ContactFormConfig, ContactSystemField } from '@/lib/forms/types';
-import { localized } from '@/lib/forms/types';
 
 type ContactRequestBody = {
   formSlug?: unknown;

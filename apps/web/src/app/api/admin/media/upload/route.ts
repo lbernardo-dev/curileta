@@ -7,6 +7,10 @@ const maxFileSize = 8 * 1024 * 1024;
 const targets = {
   'youtube-avatar': 'youtube/avatar',
   'youtube-header': 'youtube/header',
+  'youtube-video-thumbnail': 'youtube/content/video-thumbnails',
+  'youtube-song-cover': 'youtube/content/song-covers',
+  'author-portrait': 'authors/portraits',
+  'gallery-image': 'gallery',
 } as const;
 
 export async function POST(request: Request) {
@@ -14,12 +18,14 @@ export async function POST(request: Request) {
 
   let body: unknown;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > 2_000) return NextResponse.json({ error: 'La solicitud supera el tamaño permitido.' }, { status: 413 });
+    body = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: 'La solicitud de subida no tiene un formato válido.' }, { status: 400 });
   }
 
-  if (!body || typeof body !== 'object') {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return NextResponse.json({ error: 'La solicitud de subida no tiene un formato válido.' }, { status: 400 });
   }
 

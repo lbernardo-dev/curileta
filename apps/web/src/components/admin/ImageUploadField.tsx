@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { ImagePlus, Trash2, Upload } from 'lucide-react';
 
@@ -8,7 +8,13 @@ const MAX_SOURCE_BYTES = 24 * 1024 * 1024;
 const MAX_STORED_BYTES = 8 * 1024 * 1024;
 const ACCEPTED_TYPES = 'image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif';
 
-export type AdminImageTarget = 'youtube-avatar' | 'youtube-header';
+export type AdminImageTarget =
+  | 'youtube-avatar'
+  | 'youtube-header'
+  | 'youtube-video-thumbnail'
+  | 'youtube-song-cover'
+  | 'author-portrait'
+  | 'gallery-image';
 
 interface UploadTicket {
   bucket: string;
@@ -25,6 +31,7 @@ interface ImageUploadFieldProps {
   target: AdminImageTarget;
   value: string;
   onChange: (value: string) => void;
+  onPathChange?: (path: string) => void;
   onUploadingChange: (uploading: boolean) => void;
 }
 
@@ -81,17 +88,54 @@ export function ImageUploadField({
   target,
   value,
   onChange,
+  onPathChange,
   onUploadingChange,
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const mountedRef = useRef(false);
+  const lifecycleGenerationRef = useRef(0);
+  const uploadingRef = useRef(false);
+  const recentUploadPathRef = useRef('');
+  const onUploadingChangeRef = useRef(onUploadingChange);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    onUploadingChangeRef.current = onUploadingChange;
+  }, [onUploadingChange]);
+
+  const discardRecentUpload = useCallback((path: string) => {
+    if (!path) return;
+    void fetch('/api/admin/media/discard', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target, path }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, [target]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    const generation = ++lifecycleGenerationRef.current;
+    return () => {
+      mountedRef.current = false;
+      if (lifecycleGenerationRef.current === generation) lifecycleGenerationRef.current += 1;
+      discardRecentUpload(recentUploadPathRef.current);
+      if (uploadingRef.current) {
+        uploadingRef.current = false;
+        onUploadingChangeRef.current(false);
+      }
+    };
+  }, [discardRecentUpload]);
+
   async function upload(file?: File) {
-    if (!file || uploading) return;
+    if (!file || uploadingRef.current) return;
+    const generation = lifecycleGenerationRef.current;
+    uploadingRef.current = true;
     setUploading(true);
-    onUploadingChange(true);
+    onUploadingChangeRef.current(true);
     setError('');
+    let pendingUploadPath = '';
 
     try {
       const image = await convertToWebp(file);
@@ -119,6 +163,7 @@ export function ImageUploadField({
         supabaseUrl: ticketResult.supabaseUrl,
         publishableKey: ticketResult.publishableKey,
       };
+      pendingUploadPath = ticket.path;
 
       const client = createClient(ticket.supabaseUrl, ticket.publishableKey, {
         auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
@@ -129,15 +174,35 @@ export function ImageUploadField({
           cacheControl: '31536000',
           contentType: image.type,
         });
-      if (uploadError) throw new Error('No se pudo subir la imagen. Comprueba la conexión e inténtalo de nuevo.');
+      if (uploadError) {
+        discardRecentUpload(ticket.path);
+        pendingUploadPath = '';
+        throw new Error('No se pudo subir la imagen. Comprueba la conexión e inténtalo de nuevo.');
+      }
 
+      if (!mountedRef.current || lifecycleGenerationRef.current !== generation) {
+        discardRecentUpload(ticket.path);
+        pendingUploadPath = '';
+        return;
+      }
+
+      discardRecentUpload(recentUploadPathRef.current);
+      recentUploadPathRef.current = ticket.path;
+      pendingUploadPath = '';
       onChange(ticket.publicUrl);
+      onPathChange?.(ticket.path);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'No se pudo subir la imagen.');
+      if (pendingUploadPath) discardRecentUpload(pendingUploadPath);
+      if (mountedRef.current) setError(cause instanceof Error ? cause.message : 'No se pudo subir la imagen.');
     } finally {
-      setUploading(false);
-      onUploadingChange(false);
-      if (inputRef.current) inputRef.current.value = '';
+      if (uploadingRef.current && lifecycleGenerationRef.current === generation) {
+        uploadingRef.current = false;
+      }
+      if (mountedRef.current && lifecycleGenerationRef.current === generation) {
+        setUploading(false);
+        onUploadingChangeRef.current(false);
+        if (inputRef.current) inputRef.current.value = '';
+      }
     }
   }
 
@@ -173,7 +238,13 @@ export function ImageUploadField({
         {value && (
           <button
             type="button"
-            onClick={() => { onChange(''); setError(''); }}
+            onClick={() => {
+              onChange('');
+              onPathChange?.('');
+              discardRecentUpload(recentUploadPathRef.current);
+              recentUploadPathRef.current = '';
+              setError('');
+            }}
             disabled={uploading}
             className="inline-flex min-h-10 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]"
           >
@@ -182,6 +253,7 @@ export function ImageUploadField({
         )}
       </div>
       <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">{hint} Se procesa como WebP y se guarda en la biblioteca del sitio. Archivo original de hasta 24 MB; imagen optimizada de hasta 8 MB.</span>
+      <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">Guarda el formulario dentro de 30 días para conservar una imagen que aún no uses.</span>
       {uploading && <p role="status" aria-live="polite" className="text-sm text-slate-600 dark:text-slate-300">Optimizando y subiendo la imagen…</p>}
       {error && <p role="alert" className="text-sm text-rose-700 dark:text-rose-300">{error}</p>}
     </div>

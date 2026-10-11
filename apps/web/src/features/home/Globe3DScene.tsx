@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { Locale } from '@curileta/i18n';
+import { analytics } from '@curileta/analytics';
 import {
   Globe,
   Compass,
@@ -420,21 +421,6 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     focusLocation(locationsList[0], true);
   };
 
-  useEffect(() => {
-    if (!isRoutePlaying) return;
-    const timer = window.setInterval(() => {
-      const index = locationsList.findIndex((location) => location.id === selectedIdRef.current);
-      if (index < 0) {
-        focusLocation(locationsList[0], true);
-      } else if (index >= locationsList.length - 1) {
-        setIsRoutePlaying(false);
-      } else {
-        focusLocation(locationsList[index + 1], true);
-      }
-    }, 15_500);
-    return () => window.clearInterval(timer);
-  }, [isRoutePlaying, locationsList]);
-
   // Referencias para controlar Three.js
   const targetRotationRef = useRef<GlobeRotation>(initialRotation);
   const currentRotationRef = useRef<GlobeRotation>(initialRotation);
@@ -467,7 +453,10 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   };
 
   // Centrar el globo en el destino seleccionado
-  const focusLocation = (loc: Location, keepRoutePlaying = false) => {
+  const focusLocation = useCallback((loc: Location, keepRoutePlaying = false) => {
+    if (!keepRoutePlaying) {
+      analytics.track({ name: 'map_destination_open', properties: { destinationId: loc.id, country: loc.country[locale] || loc.country.es } });
+    }
     if (!keepRoutePlaying) setIsRoutePlaying(false);
     selectedIdRef.current = loc.id;
     isAutoRotatingRef.current = false;
@@ -477,7 +466,22 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const lng = loc.coordinates.lng;
 
     targetRotationRef.current = getGlobeFocusRotation(lat, lng);
-  };
+  }, [locale]);
+
+  useEffect(() => {
+    if (!isRoutePlaying) return;
+    const timer = window.setInterval(() => {
+      const index = locationsList.findIndex((location) => location.id === selectedIdRef.current);
+      if (index < 0) {
+        focusLocation(locationsList[0], true);
+      } else if (index >= locationsList.length - 1) {
+        setIsRoutePlaying(false);
+      } else {
+        focusLocation(locationsList[index + 1], true);
+      }
+    }, 15_500);
+    return () => window.clearInterval(timer);
+  }, [focusLocation, isRoutePlaying, locationsList]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -746,9 +750,9 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         const intersects = raycaster.intersectObjects(monumentsGroup.children, true);
 
         if (intersects.length > 0) {
-          let target = intersects[0].object;
+          let target: THREE.Object3D = intersects[0].object;
           while (target.parent && !target.userData?.locationId) {
-            target = target.parent as any;
+            target = target.parent;
           }
           const locId = target.userData?.locationId;
           if (locId) {
@@ -915,7 +919,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         container.removeChild(domElement);
       }
     };
-  }, [locationsList]);
+  }, [focusLocation, locationsList]);
 
   return (
     <section id="escena-mapa" className="relative z-10 overflow-hidden bg-[#f3f2e8] py-12 text-[#1d392f] transition-colors duration-300 dark:bg-[#071b19] dark:text-white sm:py-24">

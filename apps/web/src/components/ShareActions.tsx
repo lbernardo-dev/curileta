@@ -29,6 +29,7 @@ export function ShareActions({ contentType, contentSlug, title, description, url
       adventure: `/${locale}/libros/${contentSlug}`,
       location: `/${locale}/mundo#lugar-${contentSlug}`,
       wallpaper: `/${locale}/fondos`,
+      gallery: `/${locale}/galeria?imagen=${encodeURIComponent(contentSlug)}`,
       seasonalEvent: `/${locale}/eventos`,
     };
     const target = url || defaultPathByType[contentType];

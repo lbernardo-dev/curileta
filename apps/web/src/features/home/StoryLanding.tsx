@@ -8,6 +8,7 @@ import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
 import { getBookCoverImage } from '@/lib/book-art';
 import { getImageFrame, type ImageFrameMap } from '@/lib/image-frames';
 import { FavoriteLeaderboard } from '@/components/CharacterFavoritesProvider';
+import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import { SectionEmblem } from '@/components/SectionEmblem';
 
 interface StoryLandingProps {
@@ -144,17 +145,19 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
               <ul className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4">
                 {upcomingCharacters.map((character) => (
                   <li key={character.id} className="w-64 shrink-0 snap-start">
-                    <Link href={`/${locale}/personajes/${character.slug}`} className="group block h-full overflow-hidden rounded-3xl bg-[#fbfcf8] p-4 shadow-sm ring-1 ring-[#20352c]/[0.07] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#f3ead8]">
-                        <img
-                          src={character.mainImage.url}
-                          alt={localized(character.mainImage.alt, locale) || character.name}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
-                        />
+                    <Link href={`/${locale}/personajes/${character.slug}`} className="group flex h-full items-center gap-4 rounded-3xl bg-[#fbfcf8] p-4 shadow-sm ring-1 ring-[#20352c]/[0.07] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
+                      <CharacterAvatarImage
+                        slug={character.slug}
+                        name={crewName(character.slug, character.name, locale)}
+                        alt={localized(character.mainImage.alt, locale) || character.name}
+                        fallbackSrc={character.mainImage.url}
+                        size={80}
+                        className="h-20 w-20 border-2 border-[#d7e1d3] bg-[#f3ead8] shadow-sm transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+                      />
+                      <div className="min-w-0">
+                        <h4 className="truncate font-display text-lg font-semibold text-[#20352c]">{crewName(character.slug, character.name, locale)}</h4>
+                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5c6b61]">{localized(character.shortDescription, locale)}</p>
                       </div>
-                      <h4 className="mt-4 truncate font-display text-lg font-semibold text-[#20352c]">{crewName(character.slug, character.name, locale)}</h4>
-                      <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5c6b61]">{localized(character.shortDescription, locale)}</p>
                     </Link>
                   </li>
                 ))}

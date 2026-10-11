@@ -53,7 +53,7 @@ export const SeasonalThemeProvider: React.FC<{
 
   useEffect(() => {
     setMounted(true);
-    if (!activeEvent || !campaignStorageKey) {
+    if (!campaignStorageKey) {
       setDismissedEvent({ id: null, dismissed: false });
       return;
     }

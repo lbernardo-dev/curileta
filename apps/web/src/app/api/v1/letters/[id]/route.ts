@@ -18,9 +18,9 @@ export async function GET(
       );
     }
     return NextResponse.json({ success: true, data: letter });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal error' },
+      { success: false, error: 'Internal error' },
       { status: 500 }
     );
   }

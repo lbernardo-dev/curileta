@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const from = process.env.CONTACT_FROM_EMAIL;
     const to = process.env.CONTACT_TO_EMAIL;
     if (!apiKey || !from || !to) {
-      return NextResponse.json({ success: true, notified: 0, notificationPending: ids.length }, { status: 202 });
+      return NextResponse.json({ success: false, error: 'Falta la configuración de correo para enviar los avisos de conservación.', notificationPending: ids.length }, { status: 503 });
     }
 
     const adminUrl = new URL('/admin/leads', request.nextUrl.origin).toString();

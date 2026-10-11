@@ -158,6 +158,8 @@ export interface Video {
   playlistId?: string;
   votingEnabled?: boolean;
   votePrompt?: LocalizedString;
+  isPublished?: boolean;
+  youtubeMetadata?: YouTubeContentMetadata;
 }
 
 export interface Song {
@@ -168,7 +170,41 @@ export interface Song {
   youtubeId?: string;
   audioUrl?: string;
   lyrics?: LocalizedString;
+  description?: LocalizedString;
   duration?: string;
+  publishedAt?: string;
+  tags?: string[];
+  playlistName?: LocalizedString;
+  playlistId?: string;
+  isPublished?: boolean;
+  youtubeMetadata?: YouTubeContentMetadata;
+}
+
+export interface YouTubeContentMetadata {
+  channelId?: string;
+  channelTitle?: string;
+  categoryId?: string;
+  viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
+  favoriteCount?: string;
+  defaultLanguage?: string;
+  defaultAudioLanguage?: string;
+  liveBroadcastContent?: string;
+  privacyStatus?: string;
+  dimension?: string;
+  definition?: string;
+  caption?: string;
+  licensedContent?: boolean;
+  projection?: string;
+  embeddable?: boolean;
+  license?: string;
+  madeForKids?: boolean;
+  selfDeclaredMadeForKids?: boolean;
+  playlistChannelId?: string;
+  playlistChannelTitle?: string;
+  playlistPublishedAt?: string;
+  thumbnailUrls?: Record<string, string>;
 }
 
 export interface Wallpaper {

@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/supabase/admin';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { cmsProvider } from '@/lib/cms';
+import { getGalleryItemBySlug } from '@/lib/gallery.server';
 
 export async function GET(request: NextRequest) {
   await requireAdmin(['owner', 'admin', 'analyst']);
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
 
     const totals = new Map<string, { event_name: string; path: string; locale: string; event_count: number }>();
     const pageViewsByDay = new Map<string, number>();
+    const countsByEventDay = new Map<string, number>();
     for (const row of periodRows) {
       const key = `${row.event_name}\u0000${row.path}\u0000${row.locale}`;
       const aggregate = totals.get(key) || { event_name: row.event_name, path: row.path, locale: row.locale, event_count: 0 };
@@ -30,11 +32,14 @@ export async function GET(request: NextRequest) {
       if (row.event_name === 'page_view') {
         pageViewsByDay.set(row.day, (pageViewsByDay.get(row.day) || 0) + (Number(row.event_count) || 0));
       }
+      const eventDayKey = `${row.event_name}\u0000${row.day}`;
+      countsByEventDay.set(eventDayKey, (countsByEventDay.get(eventDayKey) || 0) + (Number(row.event_count) || 0));
     }
 
     const totalVisits = (allTimePageViews || periodRows.filter((row) => row.event_name === 'page_view'))
       .reduce((total, row) => total + (Number(row.event_count) || 0), 0);
     const earliestPageView = [...pageViewsByDay.keys()].sort()[0] || null;
+    const earliestActivity = [...new Set(periodRows.map((row) => row.day))].sort()[0] || null;
     return NextResponse.json({
       success: true,
       range,
@@ -42,9 +47,14 @@ export async function GET(request: NextRequest) {
       since,
       today,
       earliestPageView,
+      earliestActivity,
       totalVisits,
       data: [...totals.values()],
       pageViewsByDay: [...pageViewsByDay.entries()].map(([day, event_count]) => ({ day, event_count })).sort((left, right) => left.day.localeCompare(right.day)),
+      eventCountsByDay: [...countsByEventDay.entries()].map(([key, event_count]) => {
+        const [event_name, day] = key.split('\u0000');
+        return { day, event_name, event_count };
+      }).sort((left, right) => left.day.localeCompare(right.day) || left.event_name.localeCompare(right.event_name)),
     }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch {
     return NextResponse.json({ success: false, error: 'No se pudieron cargar las estadísticas.' }, { status: 503 });
@@ -93,18 +103,22 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json({ success: false }, { status: 400 });
   }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return NextResponse.json({ success: false }, { status: 400 });
+  }
 
   const eventName = typeof body.eventName === 'string' ? body.eventName : '';
   const rawPath = typeof body.path === 'string' ? body.path : '';
   const locale = body.locale === 'en' || body.locale === 'es' ? body.locale : '';
   const shareChannels = ['native', 'copy', 'whatsapp', 'telegram', 'email', 'sms', 'facebook', 'linkedin', 'x'];
   const shareEvents = shareChannels.map((channel) => `content_share_${channel}`);
-  const allowedEvents = ['page_view', 'book_view', 'book_purchase_click', 'video_play', 'character_view', 'map_destination_open', 'song_play', 'wallpaper_download', 'video_vote', ...shareEvents];
+  const allowedEvents = ['page_view', 'contact_submit', 'book_view', 'book_purchase_click', 'video_play', 'character_view', 'map_destination_open', 'song_play', 'wallpaper_download', 'gallery_download', 'video_vote', ...shareEvents];
   if (!allowedEvents.includes(eventName) || !locale || !/^\/[a-zA-Z0-9/_-]{0,239}$/.test(rawPath)) {
     return NextResponse.json({ success: false }, { status: 400 });
   }
 
-  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote';
+  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download';
+  if (eventName === 'gallery_download' && body.contentType !== 'gallery') return NextResponse.json({ success: false }, { status: 400 });
   if (eventName === 'video_vote') {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -182,6 +196,9 @@ async function normalizeSharedContentPath(contentType: unknown, contentSlug: unk
     case 'wallpaper':
       exists = (await cmsProvider.getWallpapers(locale)).some((item) => item.slug === contentSlug);
       break;
+    case 'gallery':
+      exists = Boolean(await getGalleryItemBySlug(contentSlug));
+      break;
     case 'seasonalEvent':
       exists = (await cmsProvider.getSeasonalEvents(locale)).some((item) => item.slug === contentSlug);
       break;
@@ -189,7 +206,9 @@ async function normalizeSharedContentPath(contentType: unknown, contentSlug: unk
       return null;
   }
   if (!exists) return null;
-  return `/${locale}/contenido/${contentType}/${contentSlug}`;
+  return contentType === 'gallery'
+    ? `/${locale}/galeria/${contentSlug}`
+    : `/${locale}/contenido/${contentType}/${contentSlug}`;
 }
 
 function normalizeAnalyticsPath(path: string, locale: 'es' | 'en') {
@@ -207,6 +226,8 @@ function normalizeAnalyticsPath(path: string, locale: 'es' | 'en') {
     '/curileta',
     '/eventos',
     '/fondos',
+    '/galeria',
+    '/autora',
     '/legal',
     '/libros',
     '/mundo',
@@ -218,7 +239,7 @@ function normalizeAnalyticsPath(path: string, locale: 'es' | 'en') {
   ]);
   if (staticRoutes.has(route)) return `${prefix}${route === '/' ? '' : route}`;
 
-  const detailRoute = route.match(/^\/(libros|personajes)\/[a-zA-Z0-9_-]{1,100}$/);
+  const detailRoute = route.match(/^\/(libros|personajes|autora)\/[a-zA-Z0-9_-]{1,100}$/);
   if (detailRoute) return `${prefix}/${detailRoute[1]}/detalle`;
   return null;
 }

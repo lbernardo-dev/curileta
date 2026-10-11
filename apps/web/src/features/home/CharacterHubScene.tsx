@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { Character, INITIAL_CHARACTERS } from '@curileta/cms';
+import { analytics } from '@curileta/analytics';
 import { getCharacterImageAspectRatio } from '@/lib/character-image';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import { CharacterFavoriteButton, FavoriteRankBadge } from '@/components/CharacterFavoritesProvider';
@@ -12,15 +13,9 @@ import {
   Sparkles,
   Compass,
   Shield,
-  Zap,
-  BookOpen,
   Briefcase,
   ChevronRight,
-  Heart,
-  Award,
   X,
-  MapPin,
-  Smile,
   Download,
   ZoomIn,
   Eye,
@@ -33,6 +28,8 @@ interface CharacterHubSceneProps {
   characters?: Character[];
   hideHeader?: boolean;
 }
+
+type CharacterFilterCategory = 'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania';
 
 interface CharacterTheme {
   flag: string;
@@ -534,13 +531,12 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   const initialCharacter = charactersList.find((character) => character.id === 'curileta') || charactersList[0];
   const [selectedCharacter, setSelectedCharacter] = useState<Character>(initialCharacter);
   const [activeTab, setActiveTab] = useState<'biografia' | 'mochila' | 'curiosidades'>('biografia');
-  const [filterCategory, setFilterCategory] = useState<
-    'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania'
-  >('todos');
+  const [filterCategory, setFilterCategory] = useState<CharacterFilterCategory>('todos');
   const [lightboxCharacter, setLightboxCharacter] = useState<Character | null>(null);
   const passportPanelRef = useRef<HTMLDivElement>(null);
 
   const openCharacterPassport = (character: Character) => {
+    analytics.track({ name: 'character_view', properties: { characterId: character.id, name: characterName(character, locale) } });
     setSelectedCharacter(character);
     window.requestAnimationFrame(() => {
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -637,7 +633,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
             return (
               <button
                 key={cat.id}
-                onClick={() => setFilterCategory(cat.id as any)}
+                onClick={() => setFilterCategory(cat.id as CharacterFilterCategory)}
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                   isCatActive
                     ? 'bg-emerald-500 text-white dark:bg-emerald-400 dark:text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/20 scale-105 font-black'

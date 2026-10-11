@@ -12,13 +12,16 @@ interface VisitsTrendChartProps {
   start: string | null;
   end: string;
   grouping: Grouping;
+  title?: string;
+  metricLabel?: string;
+  idPrefix?: string;
 }
 
-export function VisitsTrendChart({ data, start, end, grouping }: VisitsTrendChartProps) {
+export function VisitsTrendChart({ data, start, end, grouping, title = 'Evolución de visitas', metricLabel = 'visitas', idPrefix = 'visits' }: VisitsTrendChartProps) {
   const counts = new Map(data.map((item) => [item.day, Number(item.event_count) || 0]));
   const firstDay = start || data[0]?.day;
   if (!firstDay || data.length === 0) {
-    return <p className="px-6 py-10 text-sm text-slate-600 dark:text-slate-300">Todavía no hay visitas registradas para este periodo.</p>;
+    return <p className="px-6 py-10 text-sm text-slate-600 dark:text-slate-300">Todavía no hay {metricLabel} registrados para este periodo.</p>;
   }
 
   const cursor = startOfBucket(new Date(`${firstDay}T00:00:00.000Z`), grouping);
@@ -54,9 +57,9 @@ export function VisitsTrendChart({ data, start, end, grouping }: VisitsTrendChar
 
   return (
     <div className="px-4 pb-5 pt-2 sm:px-6">
-      <svg className="block h-auto w-full overflow-visible text-emerald-700 dark:text-emerald-300" viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="visits-chart-title visits-chart-description">
-        <title id="visits-chart-title">Evolución de visitas</title>
-        <desc id="visits-chart-description">Vistas de página agrupadas por {groupingLabel(grouping)}. El total del periodo se muestra en el resumen.</desc>
+      <svg className="block h-auto w-full overflow-visible text-emerald-700 dark:text-emerald-300" viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={`${idPrefix}-chart-title ${idPrefix}-chart-description`}>
+        <title id={`${idPrefix}-chart-title`}>{title}</title>
+        <desc id={`${idPrefix}-chart-description`}>Recuento de {metricLabel} agrupado por {groupingLabel(grouping)}.</desc>
         {[0, 1, 2, 3].map((step) => {
           const y = top + (plotHeight / 3) * step;
           const value = Math.round(maxValue * (1 - step / 3));
@@ -67,13 +70,13 @@ export function VisitsTrendChart({ data, start, end, grouping }: VisitsTrendChar
         })}
         <path d={line} fill="none" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         {points.length <= 120 && points.map((point) => <circle key={point.key} cx={point.x} cy={point.y} r="3.5" fill="currentColor">
-          <title>{point.label}: {point.count.toLocaleString('es-ES')} visitas</title>
+          <title>{point.label}: {point.count.toLocaleString('es-ES')} {metricLabel}</title>
         </circle>)}
         {points.filter((_, index) => index % labelStride === 0 || index === points.length - 1).map((point) => (
           <text key={point.key} x={point.x} y={height - 12} textAnchor="middle" className="fill-slate-500 dark:fill-slate-400" fontSize="12">{point.label}</text>
         ))}
       </svg>
-      <p className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">Vistas de página registradas. No representa personas únicas.</p>
+      <p className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">Recuento agregado. No representa personas únicas.</p>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { isValidLocale, type Locale } from '@curileta/i18n';
-import { ArrowRight, Image, Mail, Newspaper, Quote, UserRound } from 'lucide-react';
+import { ArrowRight, Image as ImageIcon, Mail, Newspaper, Quote, UserRound } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -19,12 +19,12 @@ export default async function PressPage({ params }: { params: Promise<{ locale: 
   const requests = isEn
     ? [
         { icon: <Newspaper className="h-5 w-5" />, title: 'Editorial information', text: 'Ask for a verified synopsis, publication details or book information.' },
-        { icon: <Image className="h-5 w-5" />, title: 'Image permissions', text: 'Request approved artwork for a specific article, programme or publication.' },
+        { icon: <ImageIcon className="h-5 w-5" />, title: 'Image permissions', text: 'Request approved artwork for a specific article, programme or publication.' },
         { icon: <Quote className="h-5 w-5" />, title: 'Interview or comment', text: 'Send the outlet, subject, deadline and format for your request.' },
       ]
     : [
         { icon: <Newspaper className="h-5 w-5" />, title: 'Información editorial', text: 'Solicita una sinopsis verificada, datos de publicación o información del libro.' },
-        { icon: <Image className="h-5 w-5" />, title: 'Permisos de imagen', text: 'Solicita ilustraciones aprobadas para un artículo, programa o publicación concretos.' },
+        { icon: <ImageIcon className="h-5 w-5" />, title: 'Permisos de imagen', text: 'Solicita ilustraciones aprobadas para un artículo, programa o publicación concretos.' },
         { icon: <Quote className="h-5 w-5" />, title: 'Entrevistas y declaraciones', text: 'Indica el medio, el tema, el plazo y el formato de tu solicitud.' },
       ];
 

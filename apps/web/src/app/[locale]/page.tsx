@@ -25,6 +25,9 @@ import { getLatestBooks, mergeBookCatalog } from '@/lib/book-catalog';
 import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
 import { CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
 import { getUpcomingEpisodeCharacterSlugs } from '@/lib/upcoming-episode-characters.server';
+import { resolveHomepageSections } from '@/lib/homepage-sections';
+import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
+import { getAuthorPages } from '@/lib/author-pages.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
@@ -88,6 +91,7 @@ export default async function HomePage({
     characterRankings,
     upcomingCharacterSlugs,
     bookCatalogSettings,
+    authorPages,
   ] = await Promise.all([
     cmsProvider.getLocations(locale),
     cmsProvider.getCharacters(locale),
@@ -106,6 +110,7 @@ export default async function HomePage({
     getCharacterFavoriteRankings(locale),
     getUpcomingEpisodeCharacterSlugs(),
     getBookCatalogSettings(),
+    getAuthorPages(),
   ]);
 
   const displayBooks = mergeBookCatalog(books, bookCatalogSettings);
@@ -127,21 +132,6 @@ export default async function HomePage({
   ).length;
   const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
 
-  const sections = [
-    { key: 'hero' as const, visible: true, order: 0 },
-    { key: 'seasonalEvent' as const, visible: true, order: 1 },
-    { key: 'story' as const, visible: true, order: 2 },
-    { key: 'globe' as const, visible: true, order: 3 },
-    { key: 'radar' as const, visible: true, order: 4 },
-    { key: 'letters' as const, visible: true, order: 5 },
-    { key: 'characters' as const, visible: true, order: 6 },
-    { key: 'books' as const, visible: true, order: 7 },
-    { key: 'videos' as const, visible: true, order: 8 },
-    { key: 'wallpapers' as const, visible: true, order: 9 },
-    { key: 'roadmap' as const, visible: true, order: 10 },
-    { key: 'collaborations' as const, visible: true, order: 11 },
-    { key: 'closing' as const, visible: true, order: 12 },
-  ];
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
@@ -150,21 +140,20 @@ export default async function HomePage({
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={letters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
-    books: <BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
+    books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={books} /></>,
     videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} voteCounts={videoVoteCounts} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,
     collaborations: <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />,
     closing: <ClosingScene locale={locale as Locale} />,
   };
-  const configuredSections = settings.homepageSections?.length ? settings.homepageSections : sections;
+  const configuredSections = resolveHomepageSections(settings.homepageSections);
 
   return (
     <CharacterFavoritesProvider locale={locale as Locale} initialRankings={characterRankings}>
       <article className="relative flex w-full flex-col">
         {configuredSections
           .filter((section) => section.visible && section.key in sectionComponents)
-          .sort((left, right) => left.order - right.order)
           .map((section) => (
             <div key={section.key} data-home-section={section.key} className="contents">
               {sectionComponents[section.key as keyof typeof sectionComponents]}

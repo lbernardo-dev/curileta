@@ -7,18 +7,12 @@ import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
 import { SectionEmblem } from '@/components/SectionEmblem';
 import {
   Mail,
-  Compass,
   MapPin,
   Stamp,
   Heart,
   ChevronLeft,
   ChevronRight,
-  BookOpen,
-  Sparkles,
-  Award,
-  Send,
   Camera,
-  ExternalLink,
 } from 'lucide-react';
 
 interface LettersSceneProps {
@@ -63,7 +57,6 @@ const PHOTO_TAGS_EN: Record<string, string> = {
 export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = [] }) => {
   const [selectedLetterId, setSelectedLetterId] = useState<string>(letters[0]?.id || 'mexico');
   const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
-  const [isReadModalOpen, setIsReadModalOpen] = useState<boolean>(false);
 
   const activeIndex = letters.findIndex((l) => l.id === selectedLetterId);
   const letter = letters[activeIndex !== -1 ? activeIndex : 0] || letters[0];

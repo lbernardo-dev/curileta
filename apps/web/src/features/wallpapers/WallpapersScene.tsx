@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { Wallpaper } from '@curileta/cms';
+import { analytics } from '@curileta/analytics';
 import { ShareActions } from '@/components/ShareActions';
 import {
   Download,
@@ -17,9 +19,6 @@ import {
   Layers,
   Image as ImageIcon,
   Compass,
-  Heart,
-  ChevronRight,
-  ExternalLink,
 } from 'lucide-react';
 
 interface WallpapersSceneProps {
@@ -28,6 +27,8 @@ interface WallpapersSceneProps {
   embedded?: boolean;
   hideHeader?: boolean;
 }
+
+type WallpaperCategoryFilter = 'all' | 'paisajes' | 'arte';
 
 const WALLPAPER_TAGS_EN: Record<string, string> = {
   'Móvil': 'Mobile', 'Ordenador': 'Desktop',
@@ -59,7 +60,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
 }) => {
   const copy = (es: string, en: string) => locale === 'en' ? en : es;
   const [deviceFilter, setDeviceFilter] = useState<'all' | 'mobile' | 'desktop'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'paisajes' | 'arte'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<WallpaperCategoryFilter>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedWallpaper, setSelectedWallpaper] = useState<Wallpaper | null>(null);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
@@ -111,6 +112,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
 
   const handleDownload = (e: React.MouseEvent, wp: Wallpaper) => {
     e.stopPropagation();
+    analytics.track({ name: 'wallpaper_download', properties: { slug: wp.slug } });
     setDownloadSuccessId(wp.id);
     setTimeout(() => setDownloadSuccessId(null), 3000);
 
@@ -157,6 +159,9 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                   : 'Original expedition scenes for mobile and desktop are being prepared.'
               )}
             </p>
+            <Link href={`/${locale}/galeria`} className="mt-5 inline-flex min-h-11 items-center rounded-full border border-emerald-800 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-emerald-400 dark:text-emerald-200 dark:hover:bg-[#272727]">
+              {copy('Explorar la galería', 'Explore the gallery')}
+            </Link>
           </div>
         )}
 
@@ -241,7 +246,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setCategoryFilter(cat.id as any)}
+                  onClick={() => setCategoryFilter(cat.id as WallpaperCategoryFilter)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                     isActive
                       ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-sm'

@@ -37,8 +37,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: 'Tipo de contenido no reconocido.' }, { status: 400 });
   }
 
-  tags.forEach((tag) => revalidateTag(tag));
+  tags.forEach((tag) => revalidateTag(tag, 'max'));
   revalidatePath('/', 'layout');
+  revalidatePath('/sitemap.xml');
 
   return NextResponse.json({ revalidated: true, tags: [...tags] });
 }

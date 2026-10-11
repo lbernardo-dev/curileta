@@ -30,7 +30,9 @@ export async function PUT(request: Request) {
 
   let body: unknown;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > 4_000) return NextResponse.json({ success: false, error: 'El ajuste supera el tamaño permitido.' }, { status: 413 });
+    body = JSON.parse(raw);
   } catch {
     return NextResponse.json({ success: false, error: 'El ajuste no tiene un formato válido.' }, { status: 400 });
   }

@@ -22,11 +22,40 @@ const periodLabels: Record<string, string> = {
   all: 'todo el histórico',
 };
 
+const eventLabels: Record<string, string> = {
+  page_view: 'Vistas de páginas',
+  contact_submit: 'Envíos de contacto',
+  book_view: 'Vistas de libros',
+  book_purchase_click: 'Clics para comprar libros',
+  video_play: 'Reproducciones de vídeos',
+  character_view: 'Vistas de personajes',
+  map_destination_open: 'Destinos del mapa abiertos',
+  song_play: 'Reproducciones de canciones',
+  wallpaper_download: 'Descargas de fondos',
+  gallery_download: 'Descargas de la galería',
+  video_vote: 'Votos en vídeos',
+  content_share_native: 'Compartir desde el dispositivo',
+  content_share_copy: 'Enlaces copiados',
+  content_share_whatsapp: 'Compartir por WhatsApp',
+  content_share_telegram: 'Compartir por Telegram',
+  content_share_email: 'Compartir por correo',
+  content_share_sms: 'Compartir por SMS',
+  content_share_facebook: 'Compartir por Facebook',
+  content_share_linkedin: 'Compartir por LinkedIn',
+  content_share_x: 'Compartir por X',
+};
+
+function analyticsEventLabel(eventName: string) {
+  return eventLabels[eventName] || eventName.replaceAll('_', ' ');
+}
+
 export default function AdminAnalyticsPage() {
   const [rows, setRows] = useState<AnalyticsRow[]>([]);
   const [pageViewsByDay, setPageViewsByDay] = useState<VisitDay[]>([]);
+  const [eventCountsByDay, setEventCountsByDay] = useState<Array<VisitDay & { event_name: string }>>([]);
   const [range, setRange] = useState('30');
   const [grouping, setGrouping] = useState<Grouping>('day');
+  const [selectedEvent, setSelectedEvent] = useState('page_view');
   const [totalVisits, setTotalVisits] = useState(0);
   const [chartStart, setChartStart] = useState<string | null>(null);
   const [chartEnd, setChartEnd] = useState(new Date().toISOString().slice(0, 10));
@@ -42,6 +71,7 @@ export default function AdminAnalyticsPage() {
         if (!response.ok) throw new Error(result.error || 'No se pudieron cargar las estadísticas.');
         setRows(result.data as AnalyticsRow[]);
         setPageViewsByDay(result.pageViewsByDay as VisitDay[]);
+        setEventCountsByDay(result.eventCountsByDay as Array<VisitDay & { event_name: string }>);
         setTotalVisits(Number(result.totalVisits) || 0);
         setChartStart(result.range === 'all' ? result.earliestPageView : result.since);
         setChartEnd(result.today);
@@ -55,8 +85,7 @@ export default function AdminAnalyticsPage() {
     return () => controller.abort();
   }, [range]);
 
-  const rangeDays = range === 'all' ? null : Number(range);
-  const favoriteDays = rangeDays && rangeDays <= 90 ? rangeDays : 90;
+  const favoriteDays = range === 'all' ? 'all' : Number(range);
   const periodLabel = periodLabels[range];
 
   const pageViews = useMemo(() => rows.filter((row) => row.event_name === 'page_view').reduce((total, row) => total + Number(row.event_count), 0), [rows]);
@@ -65,6 +94,13 @@ export default function AdminAnalyticsPage() {
   const sharesTotal = useMemo(() => shareRows.reduce((total, row) => total + Number(row.event_count), 0), [shareRows]);
   const voteRows = useMemo(() => rows.filter((row) => row.event_name === 'video_vote'), [rows]);
   const votesTotal = useMemo(() => voteRows.reduce((total, row) => total + Number(row.event_count), 0), [voteRows]);
+  const downloadsTotal = useMemo(() => rows.filter((row) => ['wallpaper_download', 'gallery_download'].includes(row.event_name)).reduce((total, row) => total + Number(row.event_count), 0), [rows]);
+  const eventTotals = useMemo(() => {
+    const counts = new Map<string, number>();
+    rows.forEach((row) => counts.set(row.event_name, (counts.get(row.event_name) || 0) + Number(row.event_count)));
+    return [...counts.entries()].sort((left, right) => right[1] - left[1]);
+  }, [rows]);
+  const selectedEventDays = useMemo(() => eventCountsByDay.filter((row) => row.event_name === selectedEvent).map(({ day, event_count }) => ({ day, event_count })), [eventCountsByDay, selectedEvent]);
   const sharesByChannel = useMemo(() => {
     const counts = new Map<string, number>();
     shareRows.forEach((row) => {
@@ -119,6 +155,12 @@ export default function AdminAnalyticsPage() {
               <option value="year">Año</option>
             </select>
           </label>
+          <label className="block space-y-2 text-sm font-semibold">
+            <span>Actividad</span>
+            <select value={selectedEvent} onChange={(event) => setSelectedEvent(event.target.value)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
+              {eventTotals.map(([eventName]) => <option key={eventName} value={eventName}>{analyticsEventLabel(eventName)}</option>)}
+            </select>
+          </label>
         </div>
       </header>
 
@@ -130,7 +172,7 @@ export default function AdminAnalyticsPage() {
         </div>
       ) : (
         <>
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5" aria-label="Totales del periodo">
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6" aria-label="Totales del periodo">
             <article className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#313131] dark:bg-[#1f1f1f]">
               <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Visitas totales</p>
               <p className="mt-3 text-4xl font-bold tabular-nums">{totalVisits.toLocaleString('es-ES')}</p>
@@ -156,6 +198,21 @@ export default function AdminAnalyticsPage() {
               <p className="mt-3 text-4xl font-bold tabular-nums">{votesTotal.toLocaleString('es-ES')}</p>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Recuento agregado en el periodo</p>
             </article>
+            <article className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#313131] dark:bg-[#1f1f1f]">
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Descargas de imágenes</p>
+              <p className="mt-3 text-4xl font-bold tabular-nums">{downloadsTotal.toLocaleString('es-ES')}</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Fondos y galería en el periodo</p>
+            </article>
+          </section>
+
+          <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="activity-trend-heading">
+            <div className="border-b border-slate-200 p-6 dark:border-[#313131]"><h2 id="activity-trend-heading" className="text-xl font-bold">Evolución de {analyticsEventLabel(selectedEvent).toLocaleLowerCase('es')}</h2><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Elige una actividad y una agrupación temporal para consultar el histórico agregado.</p></div>
+            <VisitsTrendChart data={selectedEventDays} start={range === 'all' ? (selectedEventDays[0]?.day || chartStart) : chartStart} end={chartEnd} grouping={grouping} title={`Evolución de ${analyticsEventLabel(selectedEvent).toLocaleLowerCase('es')}`} metricLabel={analyticsEventLabel(selectedEvent).toLocaleLowerCase('es')} idPrefix="activity" />
+          </section>
+
+          <section className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="all-events-heading">
+            <div className="border-b border-slate-200 p-6 dark:border-[#313131]"><h2 id="all-events-heading" className="text-xl font-bold">Todos los eventos registrados</h2><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Conteos por tipo durante {periodLabel}. Los datos se guardan agregados por día, ruta e idioma.</p></div>
+            {eventTotals.length ? <div className="overflow-x-auto"><table className="w-full min-w-[32rem] text-left text-sm"><thead className="bg-slate-50 text-slate-600 dark:bg-[#181818] dark:text-slate-300"><tr><th scope="col" className="px-6 py-3 font-semibold">Actividad</th><th scope="col" className="px-6 py-3 text-right font-semibold">Total</th></tr></thead><tbody className="divide-y divide-slate-200 dark:divide-[#313131]">{eventTotals.map(([eventName, count]) => <tr key={eventName}><th scope="row" className="px-6 py-3 font-medium">{analyticsEventLabel(eventName)}</th><td className="px-6 py-3 text-right font-semibold tabular-nums">{count.toLocaleString('es-ES')}</td></tr>)}</tbody></table></div> : <p className="px-6 py-8 text-sm text-slate-600 dark:text-slate-300">No hay eventos registrados para este periodo.</p>}
           </section>
 
           <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="visits-trend-heading">
@@ -163,7 +220,7 @@ export default function AdminAnalyticsPage() {
               <h2 id="visits-trend-heading" className="text-xl font-bold">Evolución de visitas</h2>
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Vistas de página durante {periodLabel}, agrupadas por {groupingLabel(grouping)}.</p>
             </div>
-            <VisitsTrendChart data={pageViewsByDay} start={chartStart} end={chartEnd} grouping={grouping} />
+            <VisitsTrendChart data={pageViewsByDay} start={chartStart} end={chartEnd} grouping={grouping} idPrefix="page-views" />
           </section>
 
           <CharacterFavoriteStats days={favoriteDays} />

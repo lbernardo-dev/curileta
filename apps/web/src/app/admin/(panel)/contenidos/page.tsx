@@ -60,6 +60,8 @@ export default async function AdminContentPage() {
   const canManageOperations = identity.role === 'owner' || identity.role === 'admin';
   const studioUrl = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL;
   const deployedStudioUrl = studioUrl?.startsWith('https://') ? studioUrl : undefined;
+  const emailNotificationsReady = Boolean(process.env.RESEND_API_KEY && process.env.CONTACT_FROM_EMAIL && process.env.CONTACT_TO_EMAIL);
+  const retentionAutomationReady = Boolean(process.env.CRON_SECRET && emailNotificationsReady);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -92,9 +94,9 @@ export default async function AdminContentPage() {
             description="El proyecto Sanity tiene 114 documentos en el conjunto de datos production. Puedes crear, editar y retirar personajes, libros, aventuras, vídeos, canciones, lugares, eventos y más."
             detail={deployedStudioUrl
               ? 'Desde Sanity Studio puedes crear, editar y retirar documentos. Al publicar, un aviso firmado actualiza el contenido de la web.'
-              : 'El Studio aún no tiene una dirección pública. El enlace de abajo abre la configuración del proyecto, no el editor de documentos. Para editar desde cualquier equipo hay que desplegar el Studio.'}
+              : 'El Studio aún no está publicado. El despliegue automático ya está preparado y publicará curileta-cms.sanity.studio cuando se configure el secreto SANITY_AUTH_TOKEN en GitHub Actions.'}
             href={deployedStudioUrl || sanityProjectUrl}
-            actionLabel={deployedStudioUrl ? 'Abrir Sanity Studio' : 'Abrir configuración del proyecto'}
+            actionLabel={deployedStudioUrl ? 'Abrir Sanity Studio' : 'Abrir proyecto Sanity'}
           />
           <ModuleCard
             title="Portada y canal de YouTube"
@@ -103,6 +105,22 @@ export default async function AdminContentPage() {
             detail="El avatar y los textos configurados se muestran en la sección de YouTube de la portada y en la página de vídeos."
             href="/admin/youtube"
             actionLabel="Configurar canal"
+          />
+          <ModuleCard
+            title="Perfiles de autoras"
+            status="Disponible"
+            description="Crea perfiles bilingües con biografía, retrato y enlaces públicos. Los libros se conectan por el nombre de autora."
+            detail="El equipo puede ordenar, editar, ocultar y publicar cada perfil desde el panel."
+            href="/admin/autoras"
+            actionLabel="Gestionar autoras"
+          />
+          <ModuleCard
+            title="Galería de imágenes"
+            status="Disponible"
+            description="Organiza imágenes por categoría con título, descripción y texto alternativo en español e inglés."
+            detail="Las imágenes se cargan desde el ordenador, se optimizan y se guardan en la biblioteca del sitio."
+            href="/admin/galeria"
+            actionLabel="Gestionar galería"
           />
           <ModuleCard
             title="Eventos y temas"
@@ -128,8 +146,9 @@ export default async function AdminContentPage() {
           <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">Estas herramientas viven en el panel privado y usan Supabase para guardar su información.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <ModuleCard title="Formularios" status="Disponible" description="Configura campos, textos, obligatoriedad y destinatarios del formulario de contacto." detail="Los envíos se guardan en Supabase. La entrega de correo requiere configurar Resend." href="/admin/forms" />
+          <ModuleCard title="Formularios" status={emailNotificationsReady ? 'Avisos preparados' : 'Avisos pendientes'} tone={emailNotificationsReady ? 'ready' : 'pending'} description="Configura campos, textos, obligatoriedad y destinatarios del formulario de contacto." detail={emailNotificationsReady ? 'La aplicación tiene las variables de Resend necesarias. Los envíos también quedan guardados en Supabase.' : 'Los envíos quedan guardados en Supabase, pero falta configurar RESEND_API_KEY y las direcciones CONTACT_FROM_EMAIL y CONTACT_TO_EMAIL en Vercel para recibir avisos.'} href="/admin/forms" />
           <ModuleCard title="Consultas y oportunidades" status="Disponible" description="Revisa mensajes, estado de atención, fase comercial y notas de seguimiento." detail="Las consultas cerradas sin seguimiento se eliminan tras 30 días." href="/admin/consultas" />
+          <ModuleCard title="Avisos de conservación" status={retentionAutomationReady ? 'Configuración completa' : 'Requiere configuración'} tone={retentionAutomationReady ? 'ready' : 'pending'} description="La tarea diaria avisa antes de programar el borrado de oportunidades inactivas." detail={retentionAutomationReady ? 'Las variables de cron y correo están configuradas. La política SQL también limpia consultas cerradas según el plazo establecido.' : 'La rutina de Supabase sigue limpiando consultas cerradas. Los avisos y el plazo de conservación de oportunidades requieren CRON_SECRET y las variables de Resend en Vercel.'} href="/admin/leads" actionLabel="Revisar oportunidades" />
           <ModuleCard title="Estadísticas" status="Disponible" description="Consulta recuentos agregados de visitas y eventos del sitio." detail="No se crean perfiles individuales de visitantes." href="/admin/estadisticas" />
           <ModuleCard title="Boletín y lista de espera" status="Próximamente" tone="pending" description="Estamos preparando la gestión de suscripciones y solicitudes de novedades." detail="Todavía no se recopilan estos datos ni se envían campañas." />
           <ModuleCard title="Encuestas" status="Próximamente" tone="pending" description="El módulo permitirá crear encuestas independientes y revisar sus resultados." detail="La votación agregada por vídeo ya está disponible al activar cada ficha en Sanity; las encuestas independientes aún no tienen almacenamiento ni API." />
@@ -139,9 +158,12 @@ export default async function AdminContentPage() {
       {!deployedStudioUrl && (
         <aside className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#313131] dark:bg-[#1f1f1f]" aria-label="Siguiente paso de configuración">
           <h2 className="text-xl font-bold">Siguiente paso</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-5 text-slate-600 dark:text-slate-300">
-            Publicar Sanity Studio y registrar su URL en <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-[#272727]">NEXT_PUBLIC_SANITY_STUDIO_URL</code>. El CLI de Sanity no puede escribir su configuración de autenticación en este entorno, así que aún no puedo desplegarlo desde aquí.
-          </p>
+          <ol className="mt-3 max-w-3xl list-decimal space-y-2 pl-5 text-sm leading-5 text-slate-600 dark:text-slate-300">
+            <li>Crea un token de despliegue de Sanity para el proyecto y guárdalo como secreto <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-[#272727]">SANITY_AUTH_TOKEN</code> en GitHub Actions. No lo pongas en el repositorio.</li>
+            <li>El workflow publicará el editor en <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-[#272727]">https://curileta-cms.sanity.studio</code> al cambiar el esquema o ejecutar el workflow manualmente.</li>
+            <li>Añade esa dirección a <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-[#272727]">NEXT_PUBLIC_SANITY_STUDIO_URL</code> en Vercel para abrirlo desde este panel.</li>
+          </ol>
+          <p className="mt-3 text-sm leading-5 text-slate-600 dark:text-slate-300">El editor requiere iniciar sesión en Sanity. Publicarlo no da acceso a los documentos a personas sin permisos en el proyecto.</p>
           <Link href="/admin" className="mt-4 inline-flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">
             Volver al resumen
           </Link>

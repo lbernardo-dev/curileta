@@ -13,8 +13,13 @@ export async function PATCH(
   const { id } = await params;
   let body: { status?: unknown; leadStage?: unknown; leadNotes?: unknown; reviewLead?: unknown };
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > 8_000) return NextResponse.json({ success: false, error: 'La solicitud supera el tamaño permitido.' }, { status: 413 });
+    body = JSON.parse(raw) as typeof body;
   } catch {
+    return NextResponse.json({ success: false, error: 'La solicitud no tiene un formato válido.' }, { status: 400 });
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return NextResponse.json({ success: false, error: 'La solicitud no tiene un formato válido.' }, { status: 400 });
   }
 

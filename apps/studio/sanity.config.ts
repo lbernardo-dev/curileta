@@ -3,10 +3,9 @@ import { structureTool } from 'sanity/structure';
 
 import { schemaTypes } from './schemas';
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
-if (!projectId || projectId === 'curileta-demo') {
-  throw new Error('Configura SANITY_STUDIO_PROJECT_ID en apps/studio/.env.local para abrir el Studio.');
-}
+// Sanity project IDs are public identifiers. The environment variable can still
+// select another project for a local or staging Studio build.
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'l71yzb5e';
 
 export default defineConfig({
   name: 'curileta-studio',

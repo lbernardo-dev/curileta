@@ -17,9 +17,6 @@ import {
   BookOpen,
   Briefcase,
   Lightbulb,
-  Shield,
-  Zap,
-  MapPin,
 } from 'lucide-react';
 
 export async function generateStaticParams() {

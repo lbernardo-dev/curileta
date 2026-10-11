@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useMemo, useState } from 'react';
 import type { Locale } from '@curileta/i18n';
+import { analytics } from '@curileta/analytics';
 import { ExternalLink } from 'lucide-react';
 import {
   AMAZON_MARKETPLACES,
@@ -54,6 +55,7 @@ export function AmazonMarketplaceLink({
     <div className={`flex flex-col gap-2 ${compact ? 'items-start' : 'items-start sm:flex-row sm:items-center'}`}>
       <a
         href={getAmazonBookUrl(country, identifier)}
+        onClick={() => analytics.track({ name: 'book_purchase_click', properties: { bookId: identifier, storeName: 'Amazon' } })}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#ffcf65] px-5 py-3 text-sm font-bold text-[#20352c] shadow-md transition hover:-translate-y-0.5 hover:bg-[#ffd980] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"

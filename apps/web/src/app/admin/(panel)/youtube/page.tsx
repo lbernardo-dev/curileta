@@ -1,7 +1,7 @@
 import { requireAdmin } from '@/lib/supabase/admin';
-import { YouTubeChannelEditor } from './YouTubeChannelEditor';
+import { YouTubeAdmin } from './YouTubeAdmin';
 
 export default async function YouTubeChannelAdminPage() {
   await requireAdmin(['owner', 'admin', 'editor']);
-  return <YouTubeChannelEditor />;
+  return <YouTubeAdmin />;
 }

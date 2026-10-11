@@ -7,6 +7,7 @@ export type AnalyticsEvent =
   | { name: 'character_view'; properties: { characterId: string; name: string } }
   | { name: 'map_destination_open'; properties: { destinationId: string; country: string } }
   | { name: 'song_play'; properties: { songId: string; title: string } }
+  | { name: 'wallpaper_download'; properties: { slug: string } }
   | { name: 'collaboration_form_submit'; properties: { category: string } }
   | { name: 'newsletter_subscribe'; properties: { audience: 'adult' } }
   | { name: 'language_change'; properties: { fromLocale: string; toLocale: string } };
@@ -16,7 +17,7 @@ export interface AnalyticsProvider {
 }
 
 export type ContentShareChannel = 'native' | 'copy' | 'whatsapp' | 'telegram' | 'email' | 'sms' | 'facebook' | 'linkedin' | 'x';
-export type ShareableContentType = 'video' | 'book' | 'character' | 'song' | 'adventure' | 'location' | 'wallpaper' | 'seasonalEvent';
+export type ShareableContentType = 'video' | 'book' | 'character' | 'song' | 'adventure' | 'location' | 'wallpaper' | 'gallery' | 'seasonalEvent';
 
 export async function recordContentShare(
   channel: ContentShareChannel,
@@ -61,6 +62,7 @@ class PrivacySafeAnalytics implements AnalyticsProvider {
       'character_view',
       'map_destination_open',
       'song_play',
+      'wallpaper_download',
     ]);
     if (!supportedEvents.has(event.name)) return;
 

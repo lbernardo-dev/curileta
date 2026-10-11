@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { CharacterFavoriteDailyRow, CharacterFavoriteRanking } from '@/lib/character-favorites';
 
-export function CharacterFavoriteStats({ days }: { days: number }) {
+export function CharacterFavoriteStats({ days }: { days: number | 'all' }) {
   const [rankings, setRankings] = useState<CharacterFavoriteRanking[]>([]);
   const [events, setEvents] = useState<CharacterFavoriteDailyRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,12 +41,13 @@ export function CharacterFavoriteStats({ days }: { days: number }) {
   const addedTotal = events.filter((row) => row.action === 'added').reduce((total, row) => total + Number(row.event_count), 0);
   const removedTotal = events.filter((row) => row.action === 'removed').reduce((total, row) => total + Number(row.event_count), 0);
   const currentTotal = rankings.reduce((total, item) => total + item.count, 0);
+  const largestAction = Math.max(1, ...byCharacter.flatMap(([, counts]) => [counts.added, counts.removed]));
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="character-favorite-stats">
       <div className="border-b border-slate-200 p-6 dark:border-[#313131]">
         <h2 id="character-favorite-stats" className="text-xl font-bold">Favoritos de personajes</h2>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Ranking actual y cambios agregados durante los últimos {days} días. No se guardan nombres ni datos de cuenta de quienes votan.</p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Ranking actual y cambios agregados {days === 'all' ? 'desde que empezó el registro' : `durante los últimos ${days} días`}. No se guardan nombres ni datos de cuenta de quienes votan.</p>
       </div>
       {loading ? <div role="status" className="h-40 animate-pulse bg-slate-50 dark:bg-[#181818]" /> : error ? (
         <p role="alert" className="m-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-[#272727] dark:text-amber-200">{error}</p>
@@ -78,8 +79,7 @@ export function CharacterFavoriteStats({ days }: { days: number }) {
                 <ul className="mt-3 divide-y divide-slate-200 dark:divide-[#313131]">
                   {byCharacter.map(([slug, counts]) => (
                     <li key={slug} className="flex items-center justify-between gap-4 py-3 text-sm">
-                      <span className="truncate">{rankings.find((item) => item.slug === slug)?.name || slug}</span>
-                      <span className="shrink-0 text-right tabular-nums"><span className="font-semibold text-emerald-700 dark:text-emerald-300">+{counts.added}</span><span className="mx-2 text-slate-400">·</span><span className="text-rose-700 dark:text-rose-300">−{counts.removed}</span></span>
+                      <div className="min-w-0 flex-1"><span className="block truncate">{rankings.find((item) => item.slug === slug)?.name || slug}</span><div className="mt-2 grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-x-3 gap-y-1 text-xs"><span className="text-emerald-800 dark:text-emerald-300">Añadidos {counts.added}</span><div role="img" aria-label={`${counts.added} favoritos añadidos`} className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-[#272727]"><span className="block h-full rounded-full bg-emerald-600 dark:bg-emerald-400" style={{ width: `${(counts.added / largestAction) * 100}%` }} /></div><span className="text-rose-800 dark:text-rose-300">Retirados {counts.removed}</span><div role="img" aria-label={`${counts.removed} favoritos retirados`} className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-[#272727]"><span className="block h-full rounded-full bg-rose-600 dark:bg-rose-400" style={{ width: `${(counts.removed / largestAction) * 100}%` }} /></div></div></div>
                     </li>
                   ))}
                 </ul>

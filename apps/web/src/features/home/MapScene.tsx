@@ -1,69 +1,69 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Locale } from '@curileta/i18n';
-import { MapPin, Globe, Sparkles, Navigation, Mountain, Compass } from 'lucide-react';
+import type { Locale } from '@curileta/i18n';
+import { Globe, Compass } from 'lucide-react';
+
+type LocalizedText = Record<Locale, string>;
 
 interface Destination {
   id: string;
-  name: string;
-  country: string;
-  theme: string;
-  color: string;
-  description: string;
+  name: LocalizedText;
+  country: LocalizedText;
+  theme: LocalizedText;
+  description: LocalizedText;
   coordinates: { x: number; y: number };
 }
+
+const localized = (es: string, en: string): LocalizedText => ({ es, en });
 
 const DESTINATIONS: Destination[] = [
   {
     id: 'mexico',
-    name: 'Teotihuacán y Selvas',
-    country: 'México',
-    theme: 'Misterio de las pirámides y el vuelo del Quetzal',
-    color: 'from-amber-500 to-orange-600',
-    description: 'Donde los antiguos templos tocan el cielo y el canto de las aves guía el sendero.',
+    name: localized('Teotihuacán y selvas', 'Teotihuacan and the rainforest'),
+    country: localized('México', 'Mexico'),
+    theme: localized('El misterio de las pirámides y el vuelo del quetzal', 'Pyramid mysteries and the quetzal’s flight'),
+    description: localized('Templos antiguos rozan el cielo y el canto de las aves guía el camino.', 'Ancient temples reach for the sky while birdsong guides the way.'),
     coordinates: { x: 25, y: 48 },
   },
   {
     id: 'peru',
-    name: 'Machu Picchu',
-    country: 'Perú',
-    theme: 'Montañas sagradas y senderos entre nubes',
-    color: 'from-emerald-600 to-teal-700',
-    description: 'Murallas de piedra en las alturas de los Andes custodiadas por cóndores.',
+    name: localized('Machu Picchu', 'Machu Picchu'),
+    country: localized('Perú', 'Peru'),
+    theme: localized('Montañas sagradas y caminos entre las nubes', 'Sacred mountains and trails above the clouds'),
+    description: localized('Cóndores vigilan las murallas de piedra en las alturas de los Andes.', 'Condors circle the stone walls high in the Andes.'),
     coordinates: { x: 30, y: 65 },
   },
   {
     id: 'egipto',
-    name: 'El Nilo y Pirámides',
-    country: 'Egipto',
-    theme: 'Arenas doradas y acertijos del pasado',
-    color: 'from-yellow-500 to-amber-700',
-    description: 'Ríos legendarios bajo el sol del desierto y secretos jeroglíficos.',
+    name: localized('El Nilo y las pirámides', 'The Nile and the pyramids'),
+    country: localized('Egipto', 'Egypt'),
+    theme: localized('Arenas doradas y enigmas del pasado', 'Golden sands and puzzles from the past'),
+    description: localized('El río legendario atraviesa el desierto y guarda secretos entre jeroglíficos.', 'A legendary river crosses the desert, with secrets hidden in hieroglyphs.'),
     coordinates: { x: 55, y: 45 },
   },
   {
     id: 'islandia',
-    name: 'Auroras y Géiseres',
-    country: 'Islandia',
-    theme: 'Fuego y hielo en el confín ártico',
-    color: 'from-cyan-400 to-blue-600',
-    description: 'Cascadas cristalinas, glaciares milenarios y luces danzantes en la noche.',
+    name: localized('Auroras y géiseres', 'Auroras and geysers'),
+    country: localized('Islandia', 'Iceland'),
+    theme: localized('Fuego y hielo en el borde del Ártico', 'Fire and ice at the edge of the Arctic'),
+    description: localized('Cascadas, glaciares antiguos y luces que danzan en la noche.', 'Waterfalls, ancient glaciers and lights dancing across the night sky.'),
     coordinates: { x: 45, y: 22 },
   },
   {
     id: 'japon',
-    name: 'Monte Fuji y Cerezos',
-    country: 'Japón',
-    theme: 'Jardines zen, templos y linternas rojas',
-    color: 'from-rose-500 to-red-600',
-    description: 'El equilibrio entre tradición ancestral, cerezos en flor y tecnología.',
+    name: localized('Monte Fuji y cerezos', 'Mount Fuji and cherry blossoms'),
+    country: localized('Japón', 'Japan'),
+    theme: localized('Jardines zen, templos y faroles rojos', 'Zen gardens, temples and red lanterns'),
+    description: localized('La tradición, los cerezos en flor y la tecnología conviven en equilibrio.', 'Tradition, cherry blossoms and technology meet in balance.'),
     coordinates: { x: 82, y: 42 },
   },
 ];
 
 export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
-  const [selectedDest, setSelectedDest] = useState<Destination>(DESTINATIONS[0]);
+  const [selectedDestId, setSelectedDestId] = useState(DESTINATIONS[0].id);
+  const selectedDest = DESTINATIONS.find(({ id }) => id === selectedDestId) || DESTINATIONS[0];
+  const isEnglish = locale === 'en';
 
   return (
     <section id="escena-mapa" className="relative py-28 bg-slate-950 text-white overflow-hidden">
@@ -74,13 +74,15 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4">
             <Globe className="w-3.5 h-3.5 text-amber-400" />
-            <span>Escena 02 — El Mapa Cobra Vida</span>
+            <span>{isEnglish ? 'Scene 02 — The map comes alive' : 'Escena 02 — El mapa cobra vida'}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-            El mapa se ilumina. La Tierra te llama.
+            {isEnglish ? 'The map lights up. The world is calling.' : 'El mapa se ilumina. La Tierra te llama.'}
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-300">
-            A medida que avanzamos, la tinta del pergamino despierta. Cada punto es un país real, una cultura viva y un episodio de descubrimiento.
+            {isEnglish
+              ? 'As we travel, the map awakens. Every point leads to a real place, a living culture and a new discovery.'
+              : 'A medida que avanzamos, la tinta del pergamino despierta. Cada punto es un país real, una cultura viva y un episodio de descubrimiento.'}
           </p>
         </div>
 
@@ -116,15 +118,15 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
               return (
                 <button
                   key={dest.id}
-                  onClick={() => setSelectedDest(dest)}
+                  onClick={() => setSelectedDestId(dest.id)}
                   style={{
                     left: `${dest.coordinates.x}%`,
                     top: `${dest.coordinates.y}%`,
                   }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 p-2 rounded-full transition-all duration-300 group cursor-pointer ${
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 p-2 rounded-full transition-all duration-300 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
                     isSelected ? 'scale-125 z-20' : 'hover:scale-110 z-10'
                   }`}
-                  aria-label={`Explorar destino: ${dest.country}`}
+                  aria-label={isEnglish ? `Explore destination: ${dest.country[locale]}` : `Explorar destino: ${dest.country[locale]}`}
                 >
                   <div
                     className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg transition-transform ${
@@ -136,7 +138,7 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
                     <Compass className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-45 transition-transform" />
                   </div>
                   <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-slate-950/90 border border-slate-700 text-[10px] sm:text-xs font-bold text-white whitespace-nowrap shadow">
-                    {dest.country}
+                    {dest.country[locale]}
                   </span>
                 </button>
               );
@@ -148,19 +150,19 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
             <div className="md:col-span-2 space-y-2">
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400 text-slate-950">
-                  {selectedDest.country}
+                  {selectedDest.country[locale]}
                 </span>
-                <span className="text-xs text-slate-400 font-semibold">{selectedDest.theme}</span>
+                <span className="text-xs text-slate-400 font-semibold">{selectedDest.theme[locale]}</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white">{selectedDest.name}</h3>
-              <p className="text-sm text-slate-300 leading-relaxed">{selectedDest.description}</p>
+              <h3 className="text-xl sm:text-2xl font-black text-white">{selectedDest.name[locale]}</h3>
+              <p className="text-sm text-slate-300 leading-relaxed">{selectedDest.description[locale]}</p>
             </div>
             <div className="flex justify-end">
               <a
                 href="#escena-amigos"
                 className="w-full md:w-auto text-center px-6 py-3 rounded-full font-bold text-sm bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-900/30 transition-all cursor-pointer"
               >
-                Conocer a los guías locales
+                {isEnglish ? 'Meet the local guides' : 'Conocer a los guías locales'}
               </a>
             </div>
           </div>

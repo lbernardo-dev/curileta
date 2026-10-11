@@ -6,6 +6,7 @@ import { isValidLocale, type Locale } from '@curileta/i18n';
 import { ArrowRight, Disc3, Music2, Youtube } from 'lucide-react';
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 import { ShareActions } from '@/components/ShareActions';
+import { TrackedAnalyticsLink } from '@/components/TrackedAnalyticsLink';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -36,13 +37,14 @@ export default async function SongsPage({ params }: { params: Promise<{ locale: 
         <div className="grid gap-5 md:grid-cols-2">
           {availableSongs.map((song) => (
             <SitePageCard key={song.id} className="flex items-center gap-5">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)]"><Disc3 className="h-8 w-8" /></div>
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)]">{song.coverImage ? <img src={song.coverImage} alt="" className="h-full w-full object-cover" /> : <Disc3 className="h-8 w-8" />}</div>
               <div className="min-w-0 flex-1">
                 <h2 className="font-display text-xl font-semibold">{song.title[locale] || song.title.es}</h2>
                 {song.duration && <p className="mt-1 text-sm text-[var(--text-secondary)]">{song.duration}</p>}
+                {song.description?.[locale] && <p className="mt-2 line-clamp-2 text-sm leading-5 text-[var(--text-secondary)]">{song.description[locale]}</p>}
                 <div className="mt-3 flex flex-wrap gap-3">
-                  {song.audioUrl && <a href={song.audioUrl} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]">{isEn ? 'Listen' : 'Escuchar'}<ArrowRight className="h-4 w-4" /></a>}
-                  {song.youtubeId && <a href={'https://www.youtube.com/watch?v=' + song.youtubeId} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]"><Youtube className="h-4 w-4" />YouTube</a>}
+                  {song.audioUrl && <TrackedAnalyticsLink href={song.audioUrl} action={{ name: 'song_play', id: song.slug, label: song.title[locale] || song.title.es }} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]">{isEn ? 'Listen' : 'Escuchar'}<ArrowRight className="h-4 w-4" /></TrackedAnalyticsLink>}
+                  {song.youtubeId && <TrackedAnalyticsLink href={'https://www.youtube.com/watch?v=' + song.youtubeId} target="_blank" action={{ name: 'song_play', id: song.slug, label: song.title[locale] || song.title.es }} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]"><Youtube className="h-4 w-4" />YouTube</TrackedAnalyticsLink>}
                 </div>
                 <ShareActions
                   contentType="song"

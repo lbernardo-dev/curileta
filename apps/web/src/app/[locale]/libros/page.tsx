@@ -13,6 +13,8 @@ import { getImageFrame } from '@/lib/image-frames';
 import { BookCoverPanel } from '@/components/BookCoverPanel';
 import { getBookCatalogSettings } from '@/lib/book-catalog.server';
 import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
+import { getAuthorPages } from '@/lib/author-pages.server';
+import { getBookAuthorPage } from '@/lib/author-pages';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -24,11 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BooksPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
-  const [baseBooks, requestHeaders, imageFrames, catalogSettings] = await Promise.all([
+  const [baseBooks, requestHeaders, imageFrames, catalogSettings, authorPages] = await Promise.all([
     cmsProvider.getBooks(locale),
     headers(),
     getImageFrameSettings(),
     getBookCatalogSettings(),
+    getAuthorPages(),
   ]);
   const books = mergeBookCatalog(baseBooks, catalogSettings);
   const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
@@ -63,6 +66,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
             const coverImage = getBookCoverImage(book);
             const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
             const coverFrame = isCuriletaBook ? getImageFrame(imageFrames, 'catalog-book-cover') : null;
+            const authorPage = getBookAuthorPage(book, authorPages);
             const formattedDate = book.publicationDate
               ? new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(`${book.publicationDate}T12:00:00Z`))
               : (isEn ? 'To be announced' : 'Fecha por anunciar');
@@ -88,7 +92,9 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
                     {book.ageRange && <span className="rounded-full bg-[#f1f3eb] px-2.5 py-1">{book.ageRange}</span>}
                     {book.pageCount && <span>{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
                     {format && <span>{format}</span>}
-                    {book.author && <span>{isEn ? `By ${book.author}` : `De ${book.author}`}</span>}
+                    {book.author && <span>{isEn ? 'By ' : 'De '}{authorPage
+                      ? <Link href={`/${locale}/autora/${authorPage.slug}`} className="font-semibold text-emerald-800 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">{authorPage.name[locale] || authorPage.name.es}</Link>
+                      : book.author}</span>}
                   </div>
                   <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">{title}</h2>
                   {subtitle && <p className="mt-2 text-sm font-medium text-emerald-800">{subtitle}</p>}

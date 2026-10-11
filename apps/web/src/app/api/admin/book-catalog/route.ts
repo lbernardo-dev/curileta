@@ -38,6 +38,9 @@ export async function PUT(request: Request) {
   } catch {
     return NextResponse.json({ error: 'El formulario no tiene un formato válido.' }, { status: 400 });
   }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return NextResponse.json({ error: 'El formulario no tiene un formato válido.' }, { status: 400 });
+  }
 
   const featuredSlugs = Array.isArray(body.featuredBookSlugs) ? body.featuredBookSlugs : [];
   const incomingBooks = Array.isArray(body.upcomingBooks) ? body.upcomingBooks : [];

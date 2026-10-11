@@ -39,6 +39,8 @@ export default async function AdminOverviewPage() {
   const shortcuts = canReadInbox
     ? [
         { href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' },
+        { href: '/admin/autoras', title: 'Páginas de autoras', description: 'Perfiles públicos, libros asociados y orden de aparición' },
+        { href: '/admin/galeria', title: 'Galería', description: 'Categorías, imágenes descargables y opciones para compartir' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
         { href: '/admin/forms', title: 'Formularios', description: 'Campos y configuración de contacto' },
         { href: '/admin/consultas', title: 'Consultas', description: 'Mensajes recibidos y estado de atención' },
@@ -48,6 +50,8 @@ export default async function AdminOverviewPage() {
     : identity.role === 'editor'
       ? [
         { href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' },
+        { href: '/admin/autoras', title: 'Páginas de autoras', description: 'Perfiles públicos, libros asociados y orden de aparición' },
+        { href: '/admin/galeria', title: 'Galería', description: 'Categorías, imágenes descargables y opciones para compartir' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
       ]
       : [{ href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' }];
