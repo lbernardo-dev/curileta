@@ -39,13 +39,17 @@ export default async function AdminOverviewPage() {
   const shortcuts = canReadInbox
     ? [
         { href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' },
+        { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
         { href: '/admin/forms', title: 'Formularios', description: 'Campos y configuración de contacto' },
         { href: '/admin/consultas', title: 'Consultas', description: 'Mensajes recibidos y estado de atención' },
         { href: '/admin/leads', title: 'Oportunidades', description: 'Fases y notas de seguimiento' },
         { href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' },
       ]
     : identity.role === 'editor'
-      ? [{ href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' }]
+      ? [
+        { href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' },
+        { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
+      ]
       : [{ href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' }];
 
   return (

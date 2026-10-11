@@ -2,19 +2,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Book, Character, Location } from '@curileta/cms';
 import type { Locale } from '@curileta/i18n';
-import { ArrowRight, BookOpen, Compass, Heart, MapPin, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Compass, Heart, MapPin } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
 import { getBookCoverImage } from '@/lib/book-art';
 import { getImageFrame, type ImageFrameMap } from '@/lib/image-frames';
-import { FavoriteLeaderboard, FavoriteRankBadge } from '@/components/CharacterFavoritesProvider';
+import { FavoriteLeaderboard } from '@/components/CharacterFavoritesProvider';
 import { SectionEmblem } from '@/components/SectionEmblem';
 
 interface StoryLandingProps {
   locale: Locale;
   locations: Location[];
   characters: Character[];
-  featuredCrew: Character[];
+  upcomingCharacters: Character[];
   books: Book[];
   amazonCountry: string | null;
   imageFrames: ImageFrameMap;
@@ -29,9 +29,8 @@ const crewName = (slug: string, name: string, locale: Locale) => {
   return name;
 };
 
-export function StoryLanding({ locale, locations, characters, books, featuredCrew, amazonCountry, imageFrames }: StoryLandingProps) {
+export function StoryLanding({ locale, locations, characters, books, upcomingCharacters, amazonCountry, imageFrames }: StoryLandingProps) {
   const isEn = locale === 'en';
-  const crew = featuredCrew;
   const today = Date.now();
   const publishedBooks = books.filter((book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= today);
   const featuredBook = publishedBooks[0] || books[0];
@@ -132,32 +131,42 @@ export function StoryLanding({ locale, locations, characters, books, featuredCre
             characters={characters.map((character) => ({ slug: character.slug, name: crewName(character.slug, character.name, locale), image: character.mainImage.url }))}
           />
 
-          {crew.length > 0 ? (
-            <div className="mx-auto mt-8 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {crew.map((character, index) => (
-                <Link key={character.id} href={`/${locale}/personajes/${character.slug}`} className="group overflow-hidden rounded-[1.6rem] bg-[#fbfcf8] p-5 text-center shadow-sm ring-1 ring-[#20352c]/[0.07] transition hover:-translate-y-1 hover:shadow-xl">
-                  <div className="relative mx-auto flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-[1.15rem] bg-[#f3ead8]">
-                    <img
-                      src={character.mainImage.url}
-                      alt={localized(character.mainImage.alt, locale) || character.name}
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-                    />
-                    <span className="absolute left-3 top-3 rounded-full border border-white/80 bg-white/95 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-emerald-950 shadow-sm">0{index + 1}</span>
-                    <FavoriteRankBadge slug={character.slug} locale={locale} className="absolute bottom-3 right-3" />
-                  </div>
-                  <h3 className="mt-5 font-display text-xl font-semibold">{crewName(character.slug, character.name, locale)}</h3>
-                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5c6b61]">{localized(character.shortDescription, locale)}</p>
-                </Link>
-              ))}
+          <section aria-labelledby="next-episode-title" className="mx-auto mt-10 max-w-5xl">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">{isEn ? 'Coming up' : 'En preparación'}</p>
+                <h3 id="next-episode-title" className="mt-1 text-xl font-bold text-[#20352c]">{isEn ? 'Characters in the next episode' : 'Personajes del próximo episodio'}</h3>
+              </div>
+              {upcomingCharacters.length > 1 && <span className="text-xs text-[#5c6b61]">{isEn ? 'Swipe to meet everyone' : 'Desliza para ver a todos'}</span>}
             </div>
-          ) : (
-            <p className="mx-auto mt-8 max-w-2xl rounded-2xl border border-[#d7e1d3] bg-[#fbfcf8] px-6 py-5 text-center text-sm leading-6 text-[#52655a]">
-              {isEn
-                ? 'The latest published story has no characters linked yet. Once they are selected in the CMS, they will appear here.'
-                : 'La historia publicada más reciente aún no tiene personajes vinculados. Cuando se seleccionen en el CMS, aparecerán aquí.'}
-            </p>
-          )}
+
+            {upcomingCharacters.length > 0 ? (
+              <ul className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4">
+                {upcomingCharacters.map((character) => (
+                  <li key={character.id} className="w-64 shrink-0 snap-start">
+                    <Link href={`/${locale}/personajes/${character.slug}`} className="group block h-full overflow-hidden rounded-3xl bg-[#fbfcf8] p-4 shadow-sm ring-1 ring-[#20352c]/[0.07] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#f3ead8]">
+                        <img
+                          src={character.mainImage.url}
+                          alt={localized(character.mainImage.alt, locale) || character.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
+                        />
+                      </div>
+                      <h4 className="mt-4 truncate font-display text-lg font-semibold text-[#20352c]">{crewName(character.slug, character.name, locale)}</h4>
+                      <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5c6b61]">{localized(character.shortDescription, locale)}</p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="rounded-2xl border border-[#d7e1d3] bg-[#fbfcf8] px-6 py-5 text-sm leading-6 text-[#52655a]">
+                {isEn
+                  ? 'The next episode is being prepared. Its characters will appear here soon.'
+                  : 'Estamos preparando el próximo episodio. Sus personajes aparecerán aquí pronto.'}
+              </p>
+            )}
+          </section>
           <div className="mt-9 text-center">
             <Link href={`/${locale}/personajes`} className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-900 underline decoration-emerald-700/40 underline-offset-4 hover:decoration-emerald-800">
               {isEn ? 'Meet the whole crew' : 'Conocer a toda la tripulación'} <ArrowRight className="h-4 w-4" />
@@ -215,7 +224,6 @@ export function StoryLanding({ locale, locations, characters, books, featuredCre
       )}
 
       <section className="bg-[#f2f0e6] px-5 py-20 text-[#20352c] sm:px-8 sm:py-24 lg:px-12">
-        <SectionEmblem icon={Sparkles} tone="blue" label={isEn ? 'Your next stop' : 'Tu próxima parada'} />
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-7 rounded-[1.75rem] border border-[#dbe1d4] bg-[#fbfcf8] p-7 sm:p-10 md:flex-row md:items-center">
           <div className="max-w-2xl">
             <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">

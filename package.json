@@ -21,6 +21,7 @@
     "clean": "find . -type f -name '._*' -delete && find . -type f -name '*.log' -delete && dot_clean -m ."
   },
   "devDependencies": {
+    "supabase": "2.120.0",
     "typescript": "^5.7.3"
   }
 }

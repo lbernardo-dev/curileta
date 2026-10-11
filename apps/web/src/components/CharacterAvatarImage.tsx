@@ -1,39 +1,12 @@
 import Image from 'next/image';
-
-const CHARACTER_AVATARS: Readonly<Record<string, string>> = {
-  bao: 'bao',
-  basset: 'basset',
-  'canguro-bebe': 'canguro-bebe',
-  'canguro-mama': 'canguro-mama',
-  'bebe-canguro': 'canguro-bebe',
-  'mama-canguro': 'canguro-mama',
-  cobaya: 'cobaya',
-  cuy: 'cobaya',
-  curileta: 'curileta',
-  emi: 'emi',
-  emu: 'emu',
-  gino: 'gino',
-  joey: 'joey',
-  'joey-canguro': 'joey',
-  'joey-peluche': 'joey',
-  kiki: 'kiki',
-  lola: 'lola',
-  lulu: 'lulu',
-  barnaby: 'basset',
-  glub: 'pez-volador',
-  ornitorrinco: 'ornitorrinco',
-  'pez-volador': 'pez-volador',
-  picu: 'picu',
-  pompon: 'pompon',
-  quetzal: 'quetzal',
-  'zipi-bot': 'zipi-bot',
-};
+import { getCharacterAvatarUrl } from '@/lib/character-avatar';
 
 interface CharacterAvatarImageProps {
   slug: string;
   name: string;
   size?: number;
   alt?: string;
+  fallbackSrc?: string;
   className?: string;
 }
 
@@ -42,14 +15,28 @@ export function CharacterAvatarImage({
   name,
   size = 40,
   alt,
+  fallbackSrc,
   className = '',
 }: CharacterAvatarImageProps) {
-  const avatar = CHARACTER_AVATARS[slug];
-  if (!avatar) return null;
+  const avatarUrl = getCharacterAvatarUrl(slug, fallbackSrc);
+  if (!avatarUrl) return null;
+  if (avatarUrl === fallbackSrc) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={alt ?? `Retrato de ${name}`}
+        width={size}
+        height={size}
+        className={`shrink-0 rounded-full object-cover ${className}`}
+        loading="lazy"
+        decoding="async"
+      />
+    );
+  }
 
   return (
     <Image
-      src={`/images/characters/avatars/${avatar}.webp`}
+      src={avatarUrl}
       alt={alt ?? `Retrato de ${name}`}
       width={size}
       height={size}

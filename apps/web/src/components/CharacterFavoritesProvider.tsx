@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import type { Locale } from '@curileta/i18n';
 import { Heart } from 'lucide-react';
 import { CHARACTER_FAVORITE_VISITOR_KEY, type CharacterFavoriteRanking } from '@/lib/character-favorites';
+import { getCharacterAvatarUrl } from '@/lib/character-avatar';
 
 interface FavoritesContextValue {
   rankings: CharacterFavoriteRanking[];
@@ -154,44 +155,72 @@ export function FavoriteLeaderboard({
   characters,
   locale,
 }: {
-  characters: Array<{ slug: string; name: string; image: string }>;
+  characters: Array<{ slug: string; name: string; image?: string }>;
   locale: Locale;
 }) {
   const { rankings } = useCharacterFavorites();
   const isEn = locale === 'en';
-  const leaders = rankings.filter((item) => item.rank !== null).slice(0, 3);
+  const leaders = rankings.filter((item) => item.count > 0).slice(0, 3);
+  const podium = [
+    { place: 2, leader: leaders[1], height: 'h-16 sm:h-20', colors: 'border-slate-300 bg-slate-300 text-[#20352c]' },
+    { place: 1, leader: leaders[0], height: 'h-24 sm:h-28', colors: 'border-amber-300 bg-amber-300 text-[#20352c]' },
+    { place: 3, leader: leaders[2], height: 'h-12 sm:h-16', colors: 'border-amber-700 bg-amber-700 text-white' },
+  ];
 
   return (
-    <section className="mx-auto mt-8 max-w-5xl rounded-3xl border border-amber-200 bg-[#fffdf7] p-5 shadow-[0_14px_40px_rgba(55,47,22,0.08)] dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-6" aria-labelledby="favorite-leaders-title">
+    <section className="mx-auto mt-8 max-w-5xl rounded-3xl border border-[#313131] bg-[#181818] p-5 text-white shadow-[0_14px_40px_rgba(16,35,29,0.16)] sm:p-6" aria-labelledby="favorite-leaders-title">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-800 dark:text-amber-200">{isEn ? 'Readers’ choice' : 'Los favoritos de la comunidad'}</p>
-          <h2 id="favorite-leaders-title" className="mt-1 text-xl font-bold text-[#20352c] dark:text-white">{isEn ? 'Most loved explorers' : 'Los exploradores más queridos'}</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-200">{isEn ? 'Readers’ choice' : 'Los favoritos de la comunidad'}</p>
+          <h2 id="favorite-leaders-title" className="mt-1 text-xl font-bold text-white">{isEn ? 'Most loved explorers' : 'Los exploradores más queridos'}</h2>
         </div>
-        <span className="text-xs text-slate-600 dark:text-slate-300">{isEn ? 'Anonymous browser votes' : 'Votos anónimos desde el navegador'}</span>
+        <span className="text-xs text-slate-300">{isEn ? 'Anonymous browser votes' : 'Votos anónimos desde el navegador'}</span>
       </div>
-      {leaders.length ? (
-        <ol className="mt-5 grid gap-3 sm:grid-cols-3">
-          {leaders.map((leader) => {
-            const character = characters.find((item) => item.slug === leader.slug);
-            if (!character) return null;
-            const medal = leader.rank === 1 ? '🥇' : leader.rank === 2 ? '🥈' : '🥉';
+      <ol aria-label={isEn ? 'Top three favorite explorers' : 'Tres personajes favoritos'} className="mt-6 grid grid-cols-3 items-end gap-2 sm:gap-5">
+          {podium.map(({ place, leader, height, colors }, index) => {
+            const character = leader ? characters.find((item) => item.slug === leader.slug) : undefined;
             return (
-              <li key={leader.slug}>
-                <a href={`/${locale}/personajes/${leader.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 dark:border-[#313131] dark:bg-[#181818]">
-                  <img src={character.image} alt="" className="h-14 w-14 rounded-xl object-cover" loading="lazy" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-[#20352c] dark:text-white">{medal} {character.name}</span>
-                    <span className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{leader.count.toLocaleString(isEn ? 'en-US' : 'es-ES')} {isEn ? 'favorites' : 'favoritos'}</span>
-                  </span>
-                </a>
+              <li key={place} className="podium-enter flex min-w-0 flex-col" style={{ animationDelay: `${index * 110}ms` }}>
+                <div className="mb-3 flex min-h-32 flex-col items-center justify-end gap-1 text-center sm:min-h-36">
+                  {leader && character ? (
+                    <a
+                      href={`/${locale}/personajes/${leader.slug}`}
+                      aria-label={isEn
+                        ? `${character.name}, place ${place}, ${leader.count} favorites`
+                        : `${character.name}, puesto ${place}, ${leader.count} favoritos`}
+                      className="group flex min-w-0 flex-col items-center rounded-xl px-1 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                    >
+                      <span className="mb-1 text-lg" aria-hidden="true">{place === 1 ? '🥇' : place === 2 ? '🥈' : '🥉'}</span>
+                      <img
+                        src={getCharacterAvatarUrl(character.slug, character.image) || undefined}
+                        alt={character.name}
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
+                        className="mb-0 h-14 w-14 rounded-full border-2 border-white/80 object-cover shadow-lg transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 sm:h-20 sm:w-20"
+                      />
+                      <span className="mt-2 block w-full truncate text-xs font-bold text-white sm:text-sm">{character.name}</span>
+                      <span className="mt-0.5 block text-[10px] text-slate-300 sm:text-xs">
+                        {leader.count.toLocaleString(isEn ? 'en-US' : 'es-ES')} {isEn
+                          ? leader.count === 1 ? 'favorite' : 'favorites'
+                          : leader.count === 1 ? 'favorito' : 'favoritos'}
+                      </span>
+                    </a>
+                  ) : (
+                    <div role="img" aria-label={isEn ? `No votes for place ${place} yet` : `Aún no hay votos para el puesto ${place}`} className="flex flex-col items-center gap-2">
+                      <span className="podium-mystery flex h-14 w-14 items-center justify-center rounded-full border border-sky-300/70 bg-[#272727] text-3xl font-semibold text-sky-300 shadow-[0_0_24px_rgba(125,211,252,0.18)] sm:h-16 sm:w-16">?</span>
+                      <span className="text-[10px] font-medium text-slate-300 sm:text-xs">{isEn ? 'Waiting for votes' : 'Aún sin votos'}</span>
+                    </div>
+                  )}
+                </div>
+                <div aria-hidden="true" className={`${height} flex flex-col items-center justify-center rounded-2xl border text-2xl font-bold shadow-inner sm:text-3xl ${colors}`}>
+                  0{place}
+                </div>
               </li>
             );
           })}
-        </ol>
-      ) : (
-        <p className="mt-4 rounded-xl bg-white px-4 py-3 text-sm text-slate-600 dark:bg-[#181818] dark:text-slate-300">{isEn ? 'Be the first to choose a favorite explorer.' : 'Sé la primera persona en elegir a su explorador favorito.'}</p>
-      )}
+      </ol>
     </section>
   );
 }

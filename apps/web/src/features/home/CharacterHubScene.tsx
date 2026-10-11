@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
 import { Character, INITIAL_CHARACTERS } from '@curileta/cms';
@@ -387,16 +387,9 @@ const TiltCharacterCard: React.FC<{
   return (
     <div
       onClick={onSelect}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onSelect();
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      aria-pressed={isSelected}
-      className={`group relative rounded-[1.65rem] p-4 sm:p-5 cursor-pointer border transition-all duration-300 flex flex-col justify-between focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
+      role="group"
+      aria-label={copy(locale, `Pasaporte de ${characterName(character, locale)}`, `${characterName(character, locale)} passport`)}
+      className={`group relative rounded-[1.65rem] p-4 sm:p-5 cursor-pointer border transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col justify-between ${
         isSelected
           ? 'bg-[#fff9ed] dark:bg-slate-900 border-amber-400 shadow-[0_14px_36px_rgba(104,75,22,0.14)] ring-1 ring-amber-300/70 text-slate-900 dark:text-white -translate-y-1'
           : 'bg-[#fffdf8] dark:bg-slate-900/80 border-[#e8e1d5] dark:border-slate-800 hover:border-emerald-700/45 hover:bg-white dark:hover:bg-slate-900 shadow-[0_10px_30px_rgba(24,54,41,0.06)] text-slate-800 dark:text-white hover:-translate-y-1'
@@ -503,8 +496,14 @@ const TiltCharacterCard: React.FC<{
         )}
 
         <div className="text-center pt-1">
-          <span
-            className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider py-2.5 px-4 rounded-2xl transition-all w-full justify-center ${
+          <button
+            type="button"
+            aria-pressed={isSelected}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect();
+            }}
+            className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider py-2.5 px-4 rounded-2xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] w-full justify-center cursor-pointer active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
               isSelected
                 ? 'bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 font-black border-b-4 border-amber-600 shadow-[0_4px_12px_rgba(245,158,11,0.4)]'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b-4 border-slate-300 dark:border-slate-700 group-hover:bg-gradient-to-b group-hover:from-amber-300 group-hover:via-amber-400 group-hover:to-amber-500 group-hover:text-slate-950 group-hover:border-amber-600 shadow-sm'
@@ -512,7 +511,7 @@ const TiltCharacterCard: React.FC<{
           >
             <span>{isSelected ? copy(locale, '★ Pasaporte abierto', '★ Passport open') : copy(locale, 'Abrir pasaporte', 'Open passport')}</span>
             <ChevronRight className="w-3.5 h-3.5" />
-          </span>
+          </button>
         </div>
       </div>
     </div>
@@ -539,6 +538,18 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
     'todos' | 'protagonistas' | 'america-africa' | 'europa' | 'asia-oceania'
   >('todos');
   const [lightboxCharacter, setLightboxCharacter] = useState<Character | null>(null);
+  const passportPanelRef = useRef<HTMLDivElement>(null);
+
+  const openCharacterPassport = (character: Character) => {
+    setSelectedCharacter(character);
+    window.requestAnimationFrame(() => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      passportPanelRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+  };
 
   // Escuchar tecla Escape para cerrar modal
   useEffect(() => {
@@ -647,14 +658,17 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               character={character}
               locale={locale}
               isSelected={selectedCharacter.id === character.id}
-              onSelect={() => setSelectedCharacter(character)}
+              onSelect={() => openCharacterPassport(character)}
               onOpenZoom={(c) => setLightboxCharacter(c)}
             />
           ))}
         </div>
 
         {/* Panel Detallado: Ficha de Expedicionario / Pasaporte Oficial */}
-        <div className="bg-[#fffdf8] dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-[#e7e1d5] dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_18px_55px_rgba(24,54,41,0.09)] relative overflow-hidden">
+        <div
+          ref={passportPanelRef}
+          className="scroll-mt-24 bg-[#fffdf8] dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-[#e7e1d5] dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_18px_55px_rgba(24,54,41,0.09)] relative overflow-hidden"
+        >
           {/* Sello de agua del Pasaporte */}
           <div className="absolute right-6 -bottom-10 opacity-5 pointer-events-none font-black text-9xl text-amber-500 select-none">
             {copy(locale, 'PASAPORTE', 'PASSPORT')}

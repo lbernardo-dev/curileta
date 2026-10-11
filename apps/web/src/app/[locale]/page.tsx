@@ -24,8 +24,7 @@ import { getBookCatalogSettings } from '@/lib/book-catalog.server';
 import { getLatestBooks, mergeBookCatalog } from '@/lib/book-catalog';
 import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
 import { CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
-import { getHomeCharacterCrewSelection } from '@/lib/home-character-crew.server';
-import { getLatestStorySource, resolveHomeCrew } from '@/lib/home-character-crew';
+import { getUpcomingEpisodeCharacterSlugs } from '@/lib/upcoming-episode-characters.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curileta.com';
 
@@ -87,7 +86,7 @@ export default async function HomePage({
     imageFrames,
     requestHeaders,
     characterRankings,
-    configuredCrew,
+    upcomingCharacterSlugs,
     bookCatalogSettings,
   ] = await Promise.all([
     cmsProvider.getLocations(locale),
@@ -105,7 +104,7 @@ export default async function HomePage({
     getImageFrameSettings(),
     headers(),
     getCharacterFavoriteRankings(locale),
-    getHomeCharacterCrewSelection(),
+    getUpcomingEpisodeCharacterSlugs(),
     getBookCatalogSettings(),
   ]);
 
@@ -119,17 +118,9 @@ export default async function HomePage({
   const orderedLocations = locations.slice().sort((left, right) => routeIndex(left) - routeIndex(right));
 
   const resolvedChannelSettings = await resolveYouTubeChannelSettings(settings);
-  const latestStory = getLatestStorySource(videos, books);
-  const latestEpisode = latestStory?.kind === 'episode' ? videos.find((video) => video.slug === latestStory.slug) : null;
-  const latestBook = latestStory?.kind === 'book' ? books.find((book) => book.slug === latestStory.slug) : null;
-  const featuredCrew = resolveHomeCrew(
-    characters,
-    latestStory,
-    configuredCrew?.chapter_slug,
-    configuredCrew?.character_slugs,
-    latestEpisode,
-    latestBook,
-  );
+  const upcomingCharacters = upcomingCharacterSlugs
+    .map((slug) => characters.find((character) => character.slug === slug))
+    .filter((character): character is (typeof characters)[number] => Boolean(character));
 
   const publishedBooksCount = books.filter(
     (book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= Date.now()
@@ -154,7 +145,7 @@ export default async function HomePage({
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
-    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} featuredCrew={featuredCrew} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
+    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} />,
     globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={letters} />,
