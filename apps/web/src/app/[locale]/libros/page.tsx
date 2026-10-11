@@ -16,6 +16,7 @@ import { isBookPublished, mergeBookCatalog } from '@/lib/book-catalog';
 import { getAuthorPages } from '@/lib/author-pages.server';
 import { getBookAuthorPage } from '@/lib/author-pages';
 import { getRequestTimestamp } from '@/lib/request-time.server';
+import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -118,6 +119,13 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
           })}
         </div>
       </div>
+      <AuthorLandingFeature
+        locale={locale as Locale}
+        authors={authorPages}
+        books={books}
+        headingId="books-authors-heading"
+        showEmptyState
+      />
     </div>
   );
 }

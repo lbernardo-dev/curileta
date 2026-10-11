@@ -19,6 +19,7 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
   if (!isValidLocale(locale)) notFound();
   const isEn = locale === 'en';
   const event = await cmsProvider.getActiveEvent(locale);
+  const specialChapter = event?.specialChapter;
   const dateLocale = isEn ? 'en-GB' : 'es-ES';
   const formatDate = (value: string) => new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(value));
 
@@ -36,7 +37,7 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
         <SitePageCard className="overflow-hidden !p-0">
           <div className="relative overflow-hidden bg-[var(--background-secondary)]">
             <div className="absolute inset-0 opacity-20" style={{ background: 'radial-gradient(ellipse at 78% 16%, ' + event.ambientDecorations.glowColor + ', transparent 50%)' }} />
-            <div className="relative grid gap-8 p-6 sm:p-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+            <div className={`relative grid gap-8 p-6 sm:p-10 ${specialChapter ? 'md:grid-cols-[1.2fr_0.8fr] md:items-center' : ''}`}>
               <div>
                 <p className="inline-flex items-center gap-2 rounded-full bg-[var(--background-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--seasonal-accent-strong)] ring-1 ring-[var(--border-subtle)]">
                   <Sparkles className="h-3.5 w-3.5" />{isEn ? 'Now in the Curileta world' : 'Ahora en el mundo de Curileta'}
@@ -52,21 +53,21 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
                 />
                 <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-secondary)]">
                   <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{formatDate(event.startDate)} – {formatDate(event.endDate)}</span>
-                  <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{event.specialChapter.status === 'published' ? (isEn ? 'Available now' : 'Disponible') : (isEn ? 'Coming soon' : 'Próximamente')}</span>
+                  {specialChapter && <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{specialChapter.status === 'published' ? (isEn ? 'Available now' : 'Disponible') : (isEn ? 'Coming soon' : 'Próximamente')}</span>}
                 </div>
               </div>
-              <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--background-primary)] p-6 shadow-sm">
+              {specialChapter && <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--background-primary)] p-6 shadow-sm">
                 <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--seasonal-accent-strong)]">{isEn ? 'Seasonal chapter' : 'Capítulo de temporada'}</span>
-                <h3 className="mt-3 font-display text-2xl font-semibold">{event.specialChapter.title[locale] || event.specialChapter.title.es}</h3>
-                <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{event.specialChapter.synopsis[locale] || event.specialChapter.synopsis.es}</p>
-                <p className="mt-4 text-sm font-medium text-[var(--text-secondary)]">{isEn ? 'Release date' : 'Fecha prevista'}: {formatDate(event.specialChapter.releaseDate)}</p>
-                <Link href={event.specialChapter.status === 'published' && event.specialChapter.youtubeId ? '/' + locale + '/videos' : '/' + locale + (event.themeKey === 'halloween' ? '#evento-halloween' : '')} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]">
-                  {event.specialChapter.status === 'published' && event.specialChapter.youtubeId
+                <h3 className="mt-3 font-display text-2xl font-semibold">{specialChapter.title[locale] || specialChapter.title.es}</h3>
+                <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{specialChapter.synopsis[locale] || specialChapter.synopsis.es}</p>
+                <p className="mt-4 text-sm font-medium text-[var(--text-secondary)]">{isEn ? 'Release date' : 'Fecha prevista'}: {formatDate(specialChapter.releaseDate)}</p>
+                <Link href={specialChapter.status === 'published' && specialChapter.youtubeId ? '/' + locale + '/videos' : '/' + locale + (event.themeKey === 'halloween' ? '#evento-halloween' : '')} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]">
+                  {specialChapter.status === 'published' && specialChapter.youtubeId
                     ? (isEn ? 'Watch the special' : 'Ver el especial')
                     : (isEn ? 'Explore the seasonal feature' : 'Ver la experiencia de temporada')}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </div>
+              </div>}
             </div>
           </div>
         </SitePageCard>

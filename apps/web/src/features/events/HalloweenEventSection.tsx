@@ -26,7 +26,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
 
   // Derive the premiere date from CMS content so the campaign can be reused next year.
   useEffect(() => {
-    const releaseDate = event?.specialChapter.releaseDate || '2026-10-31';
+    const releaseDate = event?.specialChapter?.releaseDate || '2026-10-31';
     const targetDate = new Date(`${releaseDate}T18:00:00Z`).getTime();
 
     const updateCountdown = () => {
@@ -45,7 +45,7 @@ export const HalloweenEventSection: React.FC<HalloweenEventSectionProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [event?.specialChapter.releaseDate]);
+  }, [event?.specialChapter?.releaseDate]);
 
   // Si el tema estacional está desactivado o el evento no está activo, no renderizar
   if (!event || !event.active || !isSeasonalActive || event.themeKey !== 'halloween') {
