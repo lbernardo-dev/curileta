@@ -1,6 +1,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { getDatabase, seedDatabase, DatabaseCMSProvider } from '../../packages/cms/src/index.ts';
+import { getDatabase } from '../../packages/cms/src/db/database.ts';
+import { seedDatabase } from '../../packages/cms/src/db/seed.ts';
+import { DatabaseCMSProvider } from '../../packages/cms/src/db/DatabaseCMSProvider.ts';
 
 describe('Base de Datos Persistente & Backend CMS (@curileta/cms)', async () => {
   const db = getDatabase();

@@ -20,7 +20,8 @@ import type {
   Video,
   Wallpaper,
 } from '@curileta/cms';
-import { DatabaseCMSProvider, INITIAL_SETTINGS, isSeasonalEventActive } from '@curileta/cms';
+import { INITIAL_SETTINGS, isSeasonalEventActive } from '@curileta/cms';
+import { DatabaseCMSProvider } from '@curileta/cms/server';
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production';

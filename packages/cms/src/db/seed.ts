@@ -382,10 +382,10 @@ export function seedDatabase(force: boolean = false): void {
   console.log('[Seed] Database populated successfully with all entities!');
 }
 
-// Auto-run if executed directly via node/tsx
+// Auto-run if executed directly via node/tsx. This package is ESM, so
+// CommonJS `require.main === module` checks are not valid here.
 const isDirectRun =
-  (typeof process !== 'undefined' && process.argv[1] && process.argv[1].includes('seed')) ||
-  (typeof require !== 'undefined' && require.main === module);
+  typeof process !== 'undefined' && Boolean(process.argv[1]?.includes('seed'));
 
 if (isDirectRun) {
   seedDatabase(true);

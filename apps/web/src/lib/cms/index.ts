@@ -1,6 +1,7 @@
 import 'server-only';
 
-import { DatabaseCMSProvider, type CMSProvider } from '@curileta/cms';
+import type { CMSProvider } from '@curileta/cms';
+import { DatabaseCMSProvider } from '@curileta/cms/server';
 import { getPublicManagedSongs, getPublicManagedVideos } from '@/lib/youtube-content.server';
 import { SanityCMSProvider } from './sanity-provider';
 
