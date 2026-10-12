@@ -5,9 +5,9 @@ Fecha de revisión: 12 de octubre de 2026. Esta referencia describe la arquitect
 ## 1. Estado de esta versión
 
 - El código de la iniciativa de administración Supabase está en la rama de trabajo de la PR asociada. No se considera activo en Production hasta verificar su despliegue.
-- La migración de contenido administrado asociada a la iniciativa se comprobó aplicada en Supabase Production el 12 de octubre de 2026.
-- El CI pasó para el commit funcional anterior a esta actualización documental. La actualización de documentos crea un commit nuevo: verifica CI para ese commit antes de integrar.
-- La parte de analítica de reproducción usa la tabla analytics_daily y no requiere una migración nueva.
+- Las migraciones 20261012020000_managed_editorial_content.sql y 20261012030000_seed_public_youtube_videos.sql se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. La segunda deja disponibles los dos vídeos que ya estaban publicados en el canal.
+- La migración de vídeo es idempotente y no reemplaza fichas que ya se hayan editado desde el panel.
+- La analítica de reproducción usa analytics_daily y no requiere una migración de métricas. El código web de esta PR sigue pendiente de despliegue en Production hasta verificarlo.
 - No se describe ningún dato, permiso, secreto o servicio como activo si no se comprobó en su entorno.
 
 ## 2. Arquitectura y responsabilidades
@@ -44,7 +44,7 @@ El contenido editorial gestionado por la aplicación tiene a Supabase como fuent
 
 ### Modelo
 
-supabase/migrations/20261012020000_managed_editorial_content.sql crea managed_content_entries y admin_audit_log e incorpora el conjunto editorial inicial. El registro administrado contiene:
+supabase/migrations/20261012020000_managed_editorial_content.sql crea managed_content_entries y admin_audit_log e incorpora el conjunto editorial inicial. La migración aditiva supabase/migrations/20261012030000_seed_public_youtube_videos.sql conserva el capítulo y el Short publicados en el canal al cambiar a Supabase; inserta solo los identificadores que falten. Estas fichas ya se verificaron en Production y se pueden editar desde Contenidos en /admin. El registro administrado contiene:
 
 - content_type y content_id como tipo e identificador estable;
 - slug opcional para la ruta pública;
@@ -74,6 +74,7 @@ Un conflicto de ruta devuelve un error de validación. La API usa códigos HTTP 
 - apps/web/src/app/api/admin/content/route.ts: listado, creación, edición, retirada y recuperación.
 - apps/web/src/features/home/YouTubeScene.tsx: interfaz del reproductor y presentación modal.
 - supabase/migrations/20261012020000_managed_editorial_content.sql: esquema, permisos, auditoría y contenido inicial.
+- supabase/migrations/20261012030000_seed_public_youtube_videos.sql: fichas públicas iniciales de vídeo, con inserción segura si todavía no existen.
 
 Las secciones operativas que usan modelos propios pueden conservar tablas o rutas especializadas. Consulta la migración correspondiente antes de cambiarles el formato; no presupongas que todos esos ajustes viven en managed_content_entries.
 
@@ -143,7 +144,7 @@ Las claves privadas se usan solo en servidor. No añadas valores al repositorio,
 - Integra el código después de verificar CI para el commit actual; comprueba una vista previa y luego las rutas públicas y /admin en Production.
 - Documenta por separado el resultado del despliegue web y el resultado de migración de datos.
 
-La migración de contenido administrado estaba aplicada y comprobada en Supabase Production el 12 de octubre de 2026. El código web de la rama de esta PR no se considera desplegado hasta confirmar el despliegue correspondiente. La documentación no reemplaza una comprobación de estado remoto.
+Las migraciones de contenido administrado y de conservación de los dos vídeos se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. Las tablas site_events, site_theme_settings y site_theme_control, además del bucket público curileta-site-media con su límite de 100 MB y formatos multimedia permitidos, también se verificaron en Production. El código web de esta PR no se considera desplegado hasta confirmar el despliegue correspondiente. La documentación no reemplaza una comprobación del estado remoto.
 
 ## 10. Verificación y diagnóstico
 
