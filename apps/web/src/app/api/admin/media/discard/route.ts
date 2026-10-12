@@ -11,6 +11,7 @@ const targets = {
   'youtube-song-cover': { prefix: 'youtube/content/song-covers', kind: 'youtube' },
   'author-portrait': { prefix: 'authors/portraits', kind: 'author' },
   'gallery-image': { prefix: 'gallery', kind: 'gallery' },
+  'letter-photo': { prefix: 'letters/photos', kind: 'letter' },
 } as const;
 
 export async function DELETE(request: Request) {
@@ -43,7 +44,7 @@ export async function DELETE(request: Request) {
     const { data } = createSupabaseAdminClient().storage.from('curileta-site-media').getPublicUrl(value.path);
     await removeUnreferencedYouTubeMedia([data.publicUrl]);
   } else {
-    await removeSiteMediaAsset(value.path, target.kind === 'author' ? 'authors/portraits' : 'gallery');
+    await removeSiteMediaAsset(value.path, target.kind === 'author' ? 'authors/portraits' : target.kind === 'letter' ? 'letters/photos' : 'gallery');
   }
 
   return new NextResponse(null, { status: 204, headers: { 'Cache-Control': 'private, no-store' } });

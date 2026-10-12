@@ -1,12 +1,12 @@
 'use client';
 
 import { ContentImage } from '@/components/ContentImage';
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Locale } from '@curileta/i18n';
 import type { SiteSettings, Video } from '@curileta/cms';
-import { analytics } from '@curileta/analytics';
 import { ShareActions } from '@/components/ShareActions';
 import { VideoVote } from '@/components/VideoVote';
+import { YouTubeTrackedPlayer } from '@/components/YouTubeTrackedPlayer';
 import { SectionEmblem } from '@/components/SectionEmblem';
 import { setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 import {
@@ -18,7 +18,7 @@ import {
   Film,
   Music,
   Smartphone,
-  Bell,
+  Heart,
   X,
   Clapperboard,
 } from 'lucide-react';
@@ -47,8 +47,12 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
     );
   }, [propVideos]);
 
-  const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'song' | 'short' | 'favoritos'>('todos');
+  const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'trailer' | 'song' | 'short' | 'favoritos'>('todos');
   const [activeModalVideo, setActiveModalVideo] = useState<Video | null>(null);
+  const [favoriteStorageUnavailable, setFavoriteStorageUnavailable] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const favoriteStorageValue = useBrowserStorageValue('local', 'curileta:favorite-videos', '[]');
   const favoriteSlugs = useMemo(() => {
     try {
@@ -68,18 +72,54 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
   function toggleFavorite(slug: string) {
     const next = favoriteSet.has(slug) ? favoriteSlugs.filter((item) => item !== slug) : [...favoriteSlugs, slug];
-    setBrowserStorageValue('local', 'curileta:favorite-videos', JSON.stringify(next));
+    const saved = setBrowserStorageValue('local', 'curileta:favorite-videos', JSON.stringify(next));
+    setFavoriteStorageUnavailable(!saved);
   }
 
   function openVideo(video: Video) {
-    analytics.track({ name: 'video_play', properties: { videoId: video.id, title: video.title[locale] || video.title.es } });
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setActiveModalVideo(video);
   }
+
+  useEffect(() => {
+    if (!activeModalVideo) return;
+    dialogCloseButtonRef.current?.focus();
+
+    const handleDialogKeys = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setActiveModalVideo(null);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleDialogKeys);
+    return () => {
+      document.removeEventListener('keydown', handleDialogKeys);
+      if (previousFocusRef.current?.isConnected) previousFocusRef.current.focus();
+    };
+  }, [activeModalVideo]);
 
   const counts = useMemo(() => {
     return {
       todos: realVideos.length,
       episode: realVideos.filter((v) => v.type === 'episode').length,
+      trailer: realVideos.filter((v) => v.type === 'trailer').length,
       song: realVideos.filter((v) => v.type === 'song').length,
       short: realVideos.filter((v) => v.type === 'short').length,
       favoritos: realVideos.filter((v) => favoriteSet.has(v.slug)).length,
@@ -231,6 +271,17 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 <span>{isEn ? `All Videos (${counts.todos})` : `Todos los Vídeos (${counts.todos})`}</span>
               </button>
 
+              {counts.trailer > 0 && (
+                <button
+                  onClick={() => setSelectedCategory('trailer')}
+                  aria-pressed={selectedCategory === 'trailer'}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'trailer' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
+                >
+                  <Clapperboard className="h-3.5 w-3.5" />
+                  <span>{isEn ? `Trailers (${counts.trailer})` : `Tráilers (${counts.trailer})`}</span>
+                </button>
+              )}
+
               <button
                 onClick={() => setSelectedCategory('favoritos')}
                 disabled={!favoritesReady}
@@ -282,6 +333,11 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 </button>
               )}
             </div>
+            {favoriteStorageUnavailable && (
+              <p role="status" className="mx-auto -mt-8 mb-8 max-w-2xl text-center text-sm text-amber-800 dark:text-amber-200">
+                {isEn ? 'This browser could not save favorites. Check its storage settings and try again.' : 'El navegador no pudo guardar los favoritos. Revisa sus ajustes de almacenamiento e inténtalo de nuevo.'}
+              </p>
+            )}
 
             {/* Vídeos Horizontales 16:9 */}
             {filteredVideos.filter((v) => v.type !== 'short').length > 0 && (
@@ -313,14 +369,20 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                                 className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${
                                   video.type === 'episode'
                                     ? 'bg-sky-500/90 text-slate-950 font-black'
-                                    : 'bg-emerald-500/90 text-slate-950 font-black'
+                                    : video.type === 'trailer'
+                                      ? 'bg-amber-400/90 text-slate-950 font-black'
+                                      : 'bg-emerald-500/90 text-slate-950 font-black'
                                 }`}
                               >
                                 {video.type === 'episode'
                                   ? video.episodeNumber
                                     ? `Capítulo ${video.episodeNumber}`
                                     : 'Serie Animada'
-                                  : 'Vídeo Musical'}
+                                  : video.type === 'trailer'
+                                    ? (isEn ? 'Trailer' : 'Tráiler')
+                                    : video.type === 'song'
+                                      ? (isEn ? 'Music video' : 'Vídeo musical')
+                                      : (isEn ? 'Video' : 'Vídeo')}
                               </span>
                               {tag && (
                                 <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/70 text-amber-300 border border-amber-500/30 backdrop-blur-md">
@@ -328,6 +390,19 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                                 </span>
                               )}
                             </div>
+
+                            <button
+                              type="button"
+                              onClick={() => toggleFavorite(video.slug)}
+                              disabled={!favoritesReady}
+                              aria-label={favoriteSet.has(video.slug)
+                                ? (isEn ? `Remove ${title} from favorites on this device` : `Quitar ${title} de favoritos en este dispositivo`)
+                                : (isEn ? `Save ${title} to favorites on this device` : `Guardar ${title} en favoritos en este dispositivo`)}
+                              aria-pressed={favoriteSet.has(video.slug)}
+                              className="absolute right-3 top-3 z-10 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-black/75 text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            >
+                              <Heart className={`h-5 w-5 ${favoriteSet.has(video.slug) ? 'fill-current text-rose-300' : ''}`} />
+                            </button>
 
                             <button
                               onClick={() => openVideo(video)}
@@ -369,7 +444,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                               <a
                                 href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                                 target="_blank"
-                                rel="noopener noreferrer"
+                                rel="noopener"
                                 className="p-2 rounded-full bg-slate-100 hover:bg-red-600 text-slate-500 hover:text-white dark:bg-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors"
                                 aria-label="Abrir en YouTube"
                               >
@@ -412,8 +487,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                       return (
                         <div
                           key={video.id}
-                          onClick={() => openVideo(video)}
-                          className="group cursor-pointer rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-500 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col relative"
+                          className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-500 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col relative"
                         >
                           <div className="relative aspect-[9/16] w-full bg-slate-950 overflow-hidden">
                             <ContentImage
@@ -429,9 +503,27 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                               <span>Short</span>
                             </div>
 
-                            <div className="absolute inset-0 m-auto w-10 h-10 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg group-hover:scale-125 transition-transform duration-300">
+                            <button
+                              type="button"
+                              onClick={() => openVideo(video)}
+                              aria-label={`${isEn ? 'Play short' : 'Reproducir short'}: ${title}`}
+                              className="absolute inset-0 m-auto z-0 flex h-10 w-10 items-center justify-center rounded-full bg-red-600/90 text-white shadow-lg transition-transform duration-300 group-hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            >
                               <Play className="w-4 h-4 fill-current ml-0.5" />
-                            </div>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => toggleFavorite(video.slug)}
+                              disabled={!favoritesReady}
+                              aria-label={favoriteSet.has(video.slug)
+                                ? (isEn ? `Remove ${title} from favorites on this device` : `Quitar ${title} de favoritos en este dispositivo`)
+                                : (isEn ? `Save ${title} to favorites on this device` : `Guardar ${title} en favoritos en este dispositivo`)}
+                              aria-pressed={favoriteSet.has(video.slug)}
+                              className="absolute right-2 top-2 z-10 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-black/75 text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            >
+                              <Heart className={`h-5 w-5 ${favoriteSet.has(video.slug) ? 'fill-current text-rose-300' : ''}`} />
+                            </button>
 
                             <div className="absolute bottom-0 inset-x-0 p-2.5 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent">
                               <p className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-tight">
@@ -454,7 +546,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
             {selectedCategory === 'favoritos' && favoritesReady && filteredVideos.length === 0 && (
               <section className="mx-auto max-w-2xl rounded-xl border border-slate-200 bg-white px-6 py-10 text-center dark:border-[#313131] dark:bg-[#1f1f1f]">
                 <h3 className="text-xl font-bold">{isEn ? 'No saved videos yet' : 'Aún no has guardado vídeos'}</h3>
-                <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">{isEn ? 'Open a video and save it to your favorites on this device.' : 'Abre un vídeo y guárdalo en favoritos en este dispositivo.'}</p>
+                <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">{isEn ? 'Use the heart on a video card to save it on this device.' : 'Pulsa el corazón de una tarjeta para guardarlo en este dispositivo.'}</p>
               </section>
             )}
           </>
@@ -463,7 +555,14 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
         {/* Modal de Reproducción (Solo si hay un vídeo activo válido) */}
         {activeModalVideo && activeModalVideo.youtubeId !== 'dQw4w9WgXcQ' && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
-            <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+            <div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="youtube-modal-title"
+              tabIndex={-1}
+              className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl"
+            >
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80">
                 <div className="flex items-center gap-2">
                   <span
@@ -472,6 +571,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                         ? 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/40'
                         : activeModalVideo.type === 'song'
                         ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40'
+                        : activeModalVideo.type === 'trailer'
+                        ? 'bg-amber-500/20 text-amber-800 dark:text-amber-200 border border-amber-500/40'
                         : 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40'
                     }`}
                   >
@@ -479,6 +580,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                       ? 'Capítulo'
                       : activeModalVideo.type === 'song'
                       ? 'Canción'
+                      : activeModalVideo.type === 'trailer'
+                      ? (isEn ? 'Trailer' : 'Tráiler')
                       : 'Short'}
                   </span>
                   <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
@@ -487,30 +590,36 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 </div>
 
                 <button
+                  ref={dialogCloseButtonRef}
                   onClick={() => setActiveModalVideo(null)}
                   className="p-2 rounded-full bg-slate-200 hover:bg-red-600 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
-                  aria-label="Cerrar reproductor"
+                  aria-label={isEn ? 'Close video player' : 'Cerrar reproductor'}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div
-                className={`relative w-full bg-black ${
+                className={`relative min-h-52 w-full bg-black ${
                   activeModalVideo.type === 'short' ? 'aspect-[9/16] max-h-[70vh] mx-auto' : 'aspect-video'
                 }`}
               >
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${activeModalVideo.youtubeId}?autoplay=1`}
+                <YouTubeTrackedPlayer
+                  key={activeModalVideo.id}
+                  videoId={activeModalVideo.youtubeId}
+                  videoSlug={activeModalVideo.slug}
                   title={activeModalVideo.title[locale] || activeModalVideo.title.es}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+                  locale={locale}
                 />
               </div>
+              <p className="px-4 py-2 text-center text-xs text-slate-500 dark:bg-[#181818] dark:text-slate-400">
+                {isEn
+                  ? 'Curileta counts a playback start when the player begins. YouTube decides separately whether it qualifies as a view.'
+                  : 'Curileta cuenta el inicio cuando el reproductor comienza. YouTube decide por separado si cuenta como una visualización.'}
+              </p>
 
               <div className="p-6 bg-slate-50 dark:bg-slate-950">
-                <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                <h3 id="youtube-modal-title" className="text-xl font-black text-slate-900 dark:text-white">
                   {activeModalVideo.title[locale] || activeModalVideo.title.es}
                 </h3>
                 {activeModalVideo.description && (
@@ -533,13 +642,19 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 <button
                   type="button"
                   onClick={() => toggleFavorite(activeModalVideo.slug)}
+                  disabled={!favoritesReady}
                   aria-pressed={favoriteSet.has(activeModalVideo.slug)}
-                  className="mt-4 min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]"
+                  className="mt-4 min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]"
                 >
                   {favoriteSet.has(activeModalVideo.slug)
                     ? (isEn ? 'Remove from favorites on this device' : 'Quitar de favoritos en este dispositivo')
                     : (isEn ? 'Save to favorites on this device' : 'Guardar en favoritos en este dispositivo')}
                 </button>
+                {favoriteStorageUnavailable && (
+                  <p role="status" className="mt-2 text-sm text-amber-800 dark:text-amber-200">
+                    {isEn ? 'This browser could not save the favorite.' : 'El navegador no pudo guardar el favorito.'}
+                  </p>
+                )}
 
                 <ShareActions
                   contentType="video"
@@ -558,30 +673,26 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                     initialVotes={voteCounts[activeModalVideo.slug] || 0}
                     locale={locale}
                   />
-                ) : (
-                  <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 dark:bg-[#181818] dark:text-slate-300">
-                    {isEn ? 'Voting is coming soon for this video.' : 'La votación estará disponible próximamente para este vídeo.'}
-                  </p>
-                )}
+                ) : null}
 
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
                   <a
                     href={`https://www.youtube.com/watch?v=${activeModalVideo.youtubeId}`}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="inline-flex items-center gap-1.5 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>{isEn ? 'Watch on YouTube' : 'Ver en YouTube'}</span>
+                    <span>{isEn ? 'Like on YouTube' : 'Dar Me gusta en YouTube'}</span>
                   </a>
 
                   <a
                     href={subscribeUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-black"
                   >
-                    <Bell className="w-3.5 h-3.5" />
+                    <Youtube className="w-3.5 h-3.5" />
                     <span>{isEn ? 'Subscribe' : 'Suscribirse al Canal'}</span>
                   </a>
                 </div>
@@ -618,10 +729,10 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
           <a
             href={subscribeUrl}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             className="px-8 py-4 rounded-2xl font-black text-base bg-red-600 hover:bg-red-500 text-white shadow-xl shadow-red-600/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 whitespace-nowrap cursor-pointer"
           >
-            <Bell className="w-5 h-5 animate-bounce" />
+            <Youtube className="w-5 h-5" />
             <span>{isEn ? 'Subscribe to Channel' : 'Suscribirme al Canal'}</span>
           </a>
         </div>

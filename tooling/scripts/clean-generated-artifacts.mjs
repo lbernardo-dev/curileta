@@ -25,7 +25,17 @@ export async function cleanGeneratedArtifacts({
     if (!absolutePath.startsWith(`${root}${sep}`)) {
       throw new Error(`Refusing to clean a path outside the repository: ${relativePath}`);
     }
-    const realParentDirectory = await realpath(dirname(absolutePath));
+    let realParentDirectory;
+    try {
+      realParentDirectory = await realpath(dirname(absolutePath));
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error
+        && (error.code === 'ENOENT' || error.code === 'ENOTDIR')) {
+        log(`[clean] Skipped ${relativePath} because its parent directory is missing`);
+        continue;
+      }
+      throw error;
+    }
     if (realParentDirectory !== root
       && !realParentDirectory.startsWith(`${root}${sep}`)) {
       throw new Error(`Refusing to clean through a symlink outside the repository: ${relativePath}`);

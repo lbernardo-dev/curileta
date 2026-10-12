@@ -34,6 +34,13 @@ function fieldInitialValue(field: ContactFormField) {
   return field.type === 'checkbox' ? false : field.type === 'select' ? field.options?.[0]?.value || '' : '';
 }
 
+class ContactFormConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ContactFormConfigError';
+  }
+}
+
 export default function ContactPage({ params }: ContactPageProps) {
   const { locale } = use(params);
   const isEn = locale === 'en';
@@ -52,10 +59,14 @@ export default function ContactPage({ params }: ContactPageProps) {
 
   useEffect(() => {
     const controller = new AbortController();
+    const fallback = isEn
+      ? 'The contact form is not connected yet. Please try again later.'
+      : 'El formulario de contacto todavía no está conectado. Inténtalo más tarde.';
+
     fetch(`/api/forms/contact?locale=${locale}`, { signal: controller.signal })
       .then(async (response) => {
         const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'No se pudo cargar el formulario.');
+        if (!response.ok) throw new ContactFormConfigError(result.error || fallback);
         const nextConfig = result.data as ContactFormConfig;
         setConfig(nextConfig);
         setAnswers(Object.fromEntries(nextConfig.fields.map((field) => [field.key, fieldInitialValue(field)])));
@@ -63,7 +74,8 @@ export default function ContactPage({ params }: ContactPageProps) {
       })
       .catch((cause: unknown) => {
         if (cause instanceof Error && cause.name === 'AbortError') return;
-        setError(isEn ? 'The contact form is not connected yet. Please try again later.' : 'El formulario de contacto todavía no está conectado. Inténtalo más tarde.');
+        const message = cause instanceof ContactFormConfigError ? cause.message : fallback;
+        setError(message);
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoadedLocale(locale);

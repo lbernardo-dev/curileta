@@ -58,9 +58,13 @@ Roles disponibles: `owner`, `admin`, `editor` y `analyst`. Los roles `owner` y `
 5. Para importar el contenido SQLite existente, crea temporalmente un token de Sanity con permiso de edición y añádelo a `SANITY_WRITE_TOKEN` en `apps/web/.env.local`.
 6. Ejecuta primero `npm run sanity:import:dry-run`. Si los recuentos son razonables, ejecuta `npm run sanity:import` para copiar los documentos. El importador usa IDs estables sin puntos y elimina los IDs del formato anterior cuando existen.
 7. Si el dataset ya contiene documentos importados con IDs como `contentEntry.character.curileta` o `siteSettings.singleton`, ejecuta `npm run sanity:migrate-public-ids:dry-run` y luego `npm run sanity:migrate-public-ids`. La migración conserva los campos, elimina los documentos antiguos y deja disponibles las versiones publicadas para consultas anónimas.
-8. Revoca el token temporal y retira `SANITY_WRITE_TOKEN` de `.env.local` después de importar o migrar. Para un dataset privado, configura además `SANITY_READ_TOKEN` con permiso de lectura y guárdalo solo en el servidor.
+8. Para un dataset privado, configura `SANITY_READ_TOKEN` con permiso de lectura y guárdalo solo en el servidor. Si el equipo usará `/admin/cartas`, conserva un token de escritura dedicado en `SANITY_WRITE_TOKEN`, tanto en el entorno local como en el entorno de servidor correspondiente; no lo expongas al navegador. Si solo se usó para importar contenido y no se administrarán cartas desde la web, revócalo y retíralo.
 
 El Studio permite editar los documentos y la configuración `siteSettings`, incluida la visibilidad y el orden de las secciones de la portada y la información del canal de YouTube. La web consulta Sanity; si una consulta falla, conserva el respaldo de desarrollo y deja un aviso en el log del servidor. Curileta aún no tiene Studio publicado: el acceso de edición desde cualquier equipo requiere desplegar `apps/studio` y establecer `NEXT_PUBLIC_SANITY_STUDIO_URL` en Vercel. El proyecto y los documentos existen aunque ese acceso no esté publicado.
+
+`/admin/cartas` administra las fichas editoriales directamente desde el panel protegido. Usa `SANITY_WRITE_TOKEN` solo en el servidor para crear, actualizar y eliminar documentos de tipo `contentEntry` y `contentType: letter`. Las imágenes se cargan desde el formulario del navegador con permisos firmados de Supabase Storage y se guardan en `letters/photos/` dentro del bucket existente `curileta-site-media`. Para usar el módulo en Production hay que añadir `SANITY_WRITE_TOKEN` al entorno Production de Vercel y desplegar la web; la presencia actual de esa variable no está verificada. La falta del token deja el listado en modo de consulta y las escrituras responden con error visible.
+
+Cada carta usa `public`, `censored` o `unpublished`. Una carta censurada muestra el lugar y una hoja clasificada, sin enviar el texto ni las imágenes originales al navegador. Cada foto puede ser pública, censurada u oculta. El enlace al episodio de YouTube es opcional y permite al equipo identificar la carta asociada a un estreno; el cambio de estado se realiza manualmente en `/admin/cartas` después de publicar el episodio. Las fichas históricas sin estado se conservan como públicas. No requiere una migración de Supabase; el cambio de estructura se incorpora al esquema editorial de Sanity.
 
 ## 5. Actualizar el sitio al publicar contenido
 
@@ -87,7 +91,7 @@ El endpoint valida la firma `sanity-webhook-signature`; no acepta secretos en la
 
 1. En Resend crea una API key y verifica el dominio remitente siguiendo sus instrucciones DNS.
 2. Añade `RESEND_API_KEY`, `CONTACT_FROM_EMAIL` y `CONTACT_TO_EMAIL` a `apps/web/.env.local`.
-3. En [Cloudflare Turnstile](https://dash.cloudflare.com/) crea un widget para `curileta-pink.vercel.app`, añade los dominios de desarrollo que uses y copia sus claves a `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`. Cuando conectes un dominio propio, añádelo también al widget.
+3. El widget de Production ya existe para `curileta-pink.vercel.app`. En Cloudflare verifica que también permita `www.curileta.com`, dominio donde se carga el formulario; añade los dominios de desarrollo que uses al widget correspondiente y conserva las claves existentes en `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`. `.es` redirige a la web canónica antes de mostrar el formulario.
 4. Define `PRIVACY_NOTICE_VERSION` solo cuando esté aprobada la versión publicada de la política. El backend deja el formulario de producción desactivado si falta la verificación antispam o esta versión.
 5. El titular ya facilitó el NIF y está incluido en el borrador local. Revisa las decisiones y pendientes de la sección 11 de la [referencia técnica](./BACKEND_TECHNICAL_REFERENCE.md): confirmar bases jurídicas, condiciones y transferencias de proveedores, almacenamiento local y tratamiento de datos de menores. La primera capa informativa ya está en el formulario. No publiques el aviso como versión definitiva ni actives el formulario hasta la revisión final.
 
@@ -97,7 +101,7 @@ La tarea SQL diaria a las 03:00 UTC elimina consultas `resolved` o `archived` si
 
 ## 7. Variables de producción
 
-El dominio canónico es `www.curileta.com`; `curileta.com` redirige allí con estado 308. En Vercel, `www.curileta.com` está asignado a `Production` con configuración válida y `NEXT_PUBLIC_SITE_URL=https://www.curileta.com` está guardada para ese entorno. El despliegue posterior al cambio de URL figura `Ready`. Los DNS públicos resuelven `curileta.com` al A `216.198.79.1` y `www` al CNAME `d951f96d4294a3e6.vercel-dns-017.com`; la petición HTTPS directa confirma la cadena apex 308, ruta localizada 307 y página final 200. Para `.es`, Piensa ya muestra los NS `ns1.vercel-dns.com` y `ns2.vercel-dns.com`, pero 1.1.1.1 y 8.8.8.8 responden `NXDOMAIN` tanto para el apex como para `www`, y Vercel sigue en `Invalid Configuration`; esperar la propagación indicada por Piensa de 12 a 24 horas y, si sigue igual, pedir al registrador que confirme la delegación ante el registro `.es`. La zona anterior no contenía MX. La sesión Safari usada para diagnosticar tampoco pudo resolver `example.com`, y la ruta de proxy de las primeras pruebas devolvió errores; consultar la sección 28 de la [referencia técnica](./BACKEND_TECHNICAL_REFERENCE.md) para el estado verificado y las comprobaciones posteriores. Después revisa los hosts permitidos de Turnstile y la URL del webhook de Sanity (`https://www.curileta.com/api/revalidate`).
+El dominio canónico es `www.curileta.com`; `curileta.com` redirige allí con estado 308. En Vercel, `www.curileta.com` está asignado a `Production` con configuración válida y `NEXT_PUBLIC_SITE_URL=https://www.curileta.com` está guardada para ese entorno. El despliegue posterior al cambio de URL figura `Ready`. Los DNS públicos resuelven `curileta.com` al A `216.198.79.1` y `www` al CNAME `d951f96d4294a3e6.vercel-dns-017.com`; la petición HTTPS directa confirma la cadena apex 308, ruta localizada 307 y página final 200. La comprobación más reciente confirmó que `.es` delega a `ns1.vercel-dns.com` y `ns2.vercel-dns.com`, que `www.curileta.es` resuelve a Vercel, y que ambos hosts `.es` redirigen por HTTPS hasta `https://www.curileta.com/es` con HTTP 200. Las notas anteriores sobre `NXDOMAIN` describen la comprobación previa a la propagación. La zona anterior no contenía MX. Consultar la sección 28 de la [referencia técnica](./BACKEND_TECHNICAL_REFERENCE.md) para el historial y el estado verificado. Quedan por verificar los hosts permitidos del widget Turnstile y la URL del webhook de Sanity (`https://www.curileta.com/api/revalidate`).
 
 Después configura en Vercel estas variables para `Production` y, si corresponde, `Preview`:
 
@@ -111,6 +115,7 @@ SANITY_STUDIO_PROJECT_ID
 SANITY_STUDIO_DATASET
 NEXT_PUBLIC_SANITY_STUDIO_URL
 SANITY_READ_TOKEN                  # solo si el dataset es privado
+SANITY_WRITE_TOKEN                 # servidor web, necesario para guardar cartas desde /admin/cartas
 YOUTUBE_API_KEY                    # opcional; metadatos completos al importar desde /admin/youtube
 SANITY_REVALIDATE_SECRET
 RESEND_API_KEY
@@ -122,7 +127,7 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY
 TURNSTILE_SECRET_KEY
 ```
 
-No subas `SANITY_WRITE_TOKEN` a producción. Solo se usa en la importación local. Configura también `SANITY_STUDIO_PROJECT_ID` y `SANITY_STUDIO_DATASET` en el entorno local del Studio. La gestión de vídeos y canciones desde `/admin/youtube` guarda ajustes en Supabase y no requiere un token de escritura de Sanity. `YOUTUBE_API_KEY` es opcional: con ella, el panel usa YouTube Data API para completar los datos públicos que expone el vídeo; sin ella, la importación obtiene título, autor y miniatura con oEmbed.
+`SANITY_WRITE_TOKEN` es un secreto de servidor: no lo declares como variable pública, no lo envíes al navegador ni lo guardes en el repositorio. `/admin/cartas` lo necesita para modificar Sanity; el importador también lo usa cuando se ejecuta localmente. Configura además `SANITY_STUDIO_PROJECT_ID` y `SANITY_STUDIO_DATASET` en el entorno local del Studio. La gestión de vídeos y canciones desde `/admin/youtube` guarda ajustes en Supabase y no requiere el token. `YOUTUBE_API_KEY` es opcional: con ella, el panel usa YouTube Data API para completar los datos públicos que expone el vídeo; sin ella, la importación obtiene título, autor y miniatura con oEmbed.
 
 ## 8. Activación gradual
 

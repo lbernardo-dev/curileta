@@ -172,12 +172,13 @@ export class SanityCMSProvider implements CMSProvider {
     return (await this.list<SeasonalEvent>('seasonalEvent')) ?? this.fallback.getSeasonalEvents(locale);
   }
 
-  async getLetters(locale?: string): Promise<LetterItem[]> {
-    return (await this.list<LetterItem>('letter')) ?? this.fallback.getLetters(locale);
+  async getLetters(): Promise<LetterItem[]> {
+    // Fail closed for letters: local seed content cannot reflect editorial release states.
+    return (await this.list<LetterItem>('letter')) ?? [];
   }
 
-  async getLetterById(id: string, locale?: string): Promise<LetterItem | null> {
-    return (await this.getLetters(locale)).find((item) => item.id === id) || null;
+  async getLetterById(id: string): Promise<LetterItem | null> {
+    return (await this.getLetters()).find((item) => item.id === id) || null;
   }
 
   async getUniverseRoadmap(locale?: string): Promise<UniverseRoadmapItem[]> {

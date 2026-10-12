@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Camera,
+  LockKeyhole,
 } from 'lucide-react';
 
 interface LettersSceneProps {
@@ -59,8 +60,9 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
   const [selectedLetterId, setSelectedLetterId] = useState<string>(letters[0]?.id || 'mexico');
   const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
 
-  const activeIndex = letters.findIndex((l) => l.id === selectedLetterId);
-  const letter = letters[activeIndex !== -1 ? activeIndex : 0] || letters[0];
+  const selectedIndex = letters.findIndex((l) => l.id === selectedLetterId);
+  const activeIndex = selectedIndex < 0 ? 0 : selectedIndex;
+  const letter = letters[activeIndex] || letters[0];
 
   const handlePrev = () => {
     if (!letters.length) return;
@@ -81,7 +83,10 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
   }
 
   const isEn = locale === 'en';
+  const isCensored = letter.publicationStatus === 'censored';
   const postmark = isEn ? POSTMARKS_EN[letter.id] || letter.postmark : letter.postmark;
+  const activePhoto = letter.photos[activePhotoIndex];
+  const activePhotoIsCensored = isCensored || activePhoto?.visibility === 'censored';
 
   return (
     <section id="escena-cartas" className="relative z-10 py-28 bg-amber-50/40 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
@@ -114,8 +119,10 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
             const isSelected = item.id === selectedLetterId;
             const countryName = item.country[locale] || item.country.es;
             return (
-              <button
+            <button
                 key={item.id}
+                type="button"
+                aria-pressed={isSelected}
                 onClick={() => {
                   setSelectedLetterId(item.id);
                   setActivePhotoIndex(0);
@@ -150,7 +157,13 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
             </div>
 
             {/* Sello Postal Oficial */}
-            <div className="relative z-10 mb-8 flex items-start justify-between pr-16 sm:pr-24">
+            {isCensored && (
+              <div className="absolute left-6 top-6 z-20 inline-flex -rotate-3 items-center gap-2 rounded-md border-2 border-rose-800 bg-[#272727] px-3 py-2 text-xs font-black uppercase tracking-widest text-rose-200 shadow-lg sm:left-10 sm:top-8">
+                <LockKeyhole className="h-4 w-4" />
+                <span>{isEn ? 'Classified document' : 'Documento clasificado'}</span>
+              </div>
+            )}
+            <div className={`relative z-10 mb-8 flex items-start justify-between pr-16 sm:pr-24 ${isCensored ? 'pt-12 sm:pt-16' : ''}`}>
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-amber-100 text-amber-900 border border-amber-300">
                   <MapPin className="w-3 h-3 text-amber-700" />
@@ -172,30 +185,68 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
               </div>
             </div>
 
+            {letter.episodeUrl && (
+              <a href={letter.episodeUrl} target="_blank" rel="noreferrer" className="relative z-10 mb-2 inline-flex min-h-10 w-fit items-center rounded-lg px-3 py-2 text-sm font-semibold text-rose-800 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2">
+                {isEn ? 'Watch the related episode on YouTube' : 'Ver el episodio relacionado en YouTube'}
+              </a>
+            )}
+
             {/* Cuerpo Manuscrito de la Carta */}
             <div className="relative z-10 my-6 border-y border-[#d8c49d] py-6 text-base leading-relaxed text-[#473b2c] sm:text-lg lg:flex-1">
-              <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full opacity-60" preserveAspectRatio="none" viewBox="0 0 800 400">
-                <defs>
-                  <pattern id="letter-paper-rules" width="800" height="36" patternUnits="userSpaceOnUse">
-                    <path d="M0 35.5H800" fill="none" stroke="#bba77e" strokeOpacity=".28" strokeWidth="1" />
-                  </pattern>
-                </defs>
-                <rect width="800" height="400" fill="url(#letter-paper-rules)" />
-                <path d="M36 0V400" fill="none" stroke="#c77b68" strokeOpacity=".22" strokeWidth="1" />
-              </svg>
-              <div className="relative space-y-4 pl-3 sm:pl-6">
-                <p className="font-sans text-lg font-bold text-amber-800">
-                  {letter.greeting[locale] || letter.greeting.es}
-                </p>
-                {(letter.body[locale] || letter.body.es).map((paragraph, pIdx) => (
-                  <p key={pIdx} className="leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-                <p className="pt-2 font-sans text-sm font-bold text-amber-900">
-                  {letter.signOff[locale] || letter.signOff.es}
-                </p>
-              </div>
+              {isCensored ? (
+                <div className="relative flex h-full min-h-72 flex-col justify-between gap-6 overflow-hidden rounded-lg border border-[#858477] bg-[#e7e3d8] p-6 text-[#252a27] shadow-inner sm:p-8" aria-label={isEn ? 'The letter text is classified' : 'El texto de la carta está clasificado'}>
+                  <div aria-hidden="true" className="pointer-events-none absolute inset-2 border border-[#c2bdaf]" />
+                  <div className="relative flex items-center justify-between border-b border-[#a8a394] pb-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#626358]">
+                    <span>{isEn ? 'Expedition archive' : 'Archivo de expedición'}</span>
+                    <span>FOLIO {String(letter.order).padStart(2, '0')}</span>
+                  </div>
+                  <div className="relative flex flex-wrap items-center justify-between gap-5">
+                    <div className="max-w-md">
+                      <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#9a3434]">{isEn ? 'Restricted access · sealed file' : 'Acceso restringido · archivo sellado'}</p>
+                      <h4 className="text-2xl font-black uppercase leading-tight tracking-wide text-[#252a27] sm:text-3xl">{isEn ? 'Classified letter' : 'Carta clasificada'}</h4>
+                      <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#56574e]">{isEn ? 'The full message remains sealed until the expedition reveals its story.' : 'El mensaje completo permanece bajo sello hasta que la expedición revele su historia.'}</p>
+                    </div>
+                    <div aria-hidden="true" className="flex h-24 w-24 rotate-[-9deg] flex-col items-center justify-center rounded-full border-[3px] border-[#a13c36]/75 text-center text-[9px] font-black uppercase leading-tight tracking-[0.15em] text-[#9a3434]">
+                      <LockKeyhole className="mb-1 h-5 w-5" />
+                      <span>{isEn ? 'SEALED' : 'BAJO SELLO'}</span>
+                      <span>{isEn ? 'DO NOT OPEN' : 'NO ABRIR'}</span>
+                    </div>
+                  </div>
+                  <div className="relative space-y-3 border-y border-[#a8a394] py-5" aria-hidden="true">
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Message' : 'Mensaje'}</span><span className="h-3 flex-1 rounded-sm bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Coordinates' : 'Coordenadas'}</span><span className="h-3 w-4/5 rounded-sm bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Discovery' : 'Hallazgo'}</span><span className="h-3 w-11/12 rounded-sm bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Signature' : 'Firma'}</span><span className="h-3 w-2/3 rounded-sm bg-[#252a27]" /></div>
+                  </div>
+                  <div className="relative flex items-center justify-between gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]">
+                    <span>{isEn ? 'Original held in the forest archive' : 'Original custodiado en el archivo del bosque'}</span>
+                    <span className="shrink-0 text-[#9a3434]">{isEn ? 'CLASSIFIED' : 'CLASIFICADO'}</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full opacity-60" preserveAspectRatio="none" viewBox="0 0 800 400">
+                    <defs>
+                      <pattern id="letter-paper-rules" width="800" height="36" patternUnits="userSpaceOnUse">
+                        <path d="M0 35.5H800" fill="none" stroke="#bba77e" strokeOpacity=".28" strokeWidth="1" />
+                      </pattern>
+                    </defs>
+                    <rect width="800" height="400" fill="url(#letter-paper-rules)" />
+                    <path d="M36 0V400" fill="none" stroke="#c77b68" strokeOpacity=".22" strokeWidth="1" />
+                  </svg>
+                  <div className="relative space-y-4 pl-3 sm:pl-6">
+                    <p className="font-sans text-lg font-bold text-amber-800">
+                      {letter.greeting[locale] || letter.greeting.es}
+                    </p>
+                    {(letter.body[locale] || letter.body.es).map((paragraph, pIdx) => (
+                      <p key={pIdx} className="leading-relaxed">{paragraph}</p>
+                    ))}
+                    <p className="pt-2 font-sans text-sm font-bold text-amber-900">
+                      {letter.signOff[locale] || letter.signOff.es}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Controles de Navegación de Cartas */}
@@ -231,15 +282,17 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                   <span>{isEn ? 'Photos Attached in Envelope' : 'Fotos Adjuntas en el Sobre'}</span>
                 </div>
                 <span className="text-xs font-mono text-slate-500">
-                  {letter.photos.length} {isEn ? 'snapshots' : 'polaroids'}
+                  {letter.photos.length} {isCensored ? (isEn ? 'sealed files' : 'archivos sellados') : (isEn ? 'snapshots' : 'polaroids')}
                 </span>
               </div>
 
               {/* Selector de Polaroid */}
               <div className="mt-4 flex gap-2">
-                {letter.photos.map((_, pIdx) => (
+                {letter.photos.map((photo, pIdx) => (
                   <button
                     key={pIdx}
+                    type="button"
+                    aria-pressed={activePhotoIndex === pIdx}
                     onClick={() => setActivePhotoIndex(pIdx)}
                     className={`flex-1 py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
                       activePhotoIndex === pIdx
@@ -247,19 +300,54 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
-                    {isEn ? `Photo #${pIdx + 1}` : `Foto #${pIdx + 1}`}
+                    {isCensored || photo.visibility === 'censored'
+                      ? (isEn ? `Sealed file #${pIdx + 1}` : `Archivo sellado #${pIdx + 1}`)
+                      : (isEn ? `Photo #${pIdx + 1}` : `Foto #${pIdx + 1}`)}
                   </button>
                 ))}
               </div>
 
               {/* Polaroid Activa */}
-              {letter.photos[activePhotoIndex] && (
+              {activePhoto ? (
                 <div className="mt-6 rounded-lg border border-[#e3d7bd] bg-[#fffdf7] p-4 text-slate-900 shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-rotate-1 lg:my-auto">
+                  {activePhotoIsCensored ? (
+                    <>
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md border border-[#39413b] bg-[#77766b] text-[#f1eee5]" aria-label={isEn ? 'Classified, heavily blurred field photo' : 'Foto de campo clasificada y muy difuminada'}>
+                      {activePhoto.imageUrl ? (
+                        <ContentImage src={activePhoto.imageUrl} alt={isEn ? 'Heavily blurred classified field photo' : 'Foto de campo clasificada y muy difuminada'} className="absolute inset-[-8%] h-[116%] w-[116%] scale-110 object-cover blur-2xl saturate-50" />
+                      ) : (
+                        <div aria-hidden="true" className="absolute inset-0 bg-[#77766b]" />
+                      )}
+                      <div aria-hidden="true" className="absolute inset-0 bg-[#20251f]/65" />
+                      <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white/90 sm:inset-x-5 sm:top-5">
+                        <span>{isEn ? 'Recovered field image' : 'Imagen de campo recuperada'}</span>
+                        <span className="rounded-sm border border-white/40 px-2 py-1">{isEn ? 'File sealed' : 'Archivo sellado'}</span>
+                      </div>
+                      <div aria-hidden="true" className="absolute inset-x-[8%] top-[39%] h-3 -rotate-2 rounded-sm bg-[#161a17]/90 shadow-[0_8px_0_rgba(22,26,23,0.82),0_-8px_0_rgba(22,26,23,0.82)]" />
+                      <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 rotate-[-11deg] flex-col items-center justify-center rounded-full border-[3px] border-[#e0b39d]/90 text-center text-[9px] font-black uppercase leading-tight tracking-[0.16em] text-[#ffe3d5] shadow-lg sm:h-28 sm:w-28">
+                        <LockKeyhole className="mb-1 h-5 w-5" />
+                        <span>{isEn ? 'Classified' : 'Clasificado'}</span>
+                        <span>{isEn ? 'Do not disclose' : 'No revelar'}</span>
+                      </div>
+                      <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 sm:inset-x-5 sm:bottom-5">
+                        <div>
+                          <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/75">{isEn ? 'Expedition evidence' : 'Evidencia de expedición'}</p>
+                          <p className="mt-1 text-sm font-black uppercase tracking-[0.08em]">{isEn ? 'Contents withheld' : 'Contenido reservado'}</p>
+                        </div>
+                        <span className="rounded-sm bg-[#a13c36] px-2 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-white">{String(letter.order).padStart(2, '0')} / {String(activePhotoIndex + 1).padStart(2, '0')}</span>
+                      </div>
+                    </div>
+                    <p className="pt-3 text-xs leading-relaxed text-slate-700 sm:text-sm">
+                      {isEn ? 'The blur is only a clue. The original stays sealed until the expedition tells its story.' : 'El desenfoque es solo una pista. El original seguirá bajo sello hasta que la expedición cuente su historia.'}
+                    </p>
+                    </>
+                  ) : (
+                  <>
                   <div className="relative flex aspect-[4/3] w-full flex-col justify-between overflow-hidden rounded-md border border-[#d8c7a5] bg-[#dce8e2] p-4 text-[#344236]">
-                    {letter.photos[activePhotoIndex].imageUrl ? (
+                    {activePhoto.imageUrl ? (
                       <ContentImage
-                        src={letter.photos[activePhotoIndex].imageUrl}
-                        alt={letter.photos[activePhotoIndex].title[locale] || letter.photos[activePhotoIndex].title.es}
+                        src={activePhoto.imageUrl}
+                        alt={activePhoto.title[locale] || activePhoto.title.es}
                         className="absolute inset-0 h-full w-full object-cover"
                       />
                     ) : (
@@ -272,13 +360,13 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                     )}
                     <div className="relative z-10 flex items-start justify-between gap-3">
                       <span className="self-start rounded-full bg-[#fffaf0] px-2 py-1 text-[9px] font-mono font-bold uppercase text-[#4f4634] shadow-sm">
-                        {isEn ? PHOTO_TAGS_EN[letter.photos[activePhotoIndex].tag] || letter.photos[activePhotoIndex].tag : letter.photos[activePhotoIndex].tag}
+                        {isEn ? activePhoto.tagEn || PHOTO_TAGS_EN[activePhoto.tag] || activePhoto.tag : activePhoto.tag}
                       </span>
-                      {!letter.photos[activePhotoIndex].imageUrl && <Camera aria-hidden="true" className="h-5 w-5 text-[#fffaf0] drop-shadow" />}
+                      {!activePhoto.imageUrl && <Camera aria-hidden="true" className="h-5 w-5 text-[#fffaf0] drop-shadow" />}
                     </div>
                     <div className="relative z-10 rounded-md bg-[#fffaf0]/95 px-3 py-2 shadow-sm">
                       <h4 className="text-lg font-bold leading-tight text-[#263b30]">
-                        {letter.photos[activePhotoIndex].title[locale] || letter.photos[activePhotoIndex].title.es}
+                        {activePhoto.title[locale] || activePhoto.title.es}
                       </h4>
                       <p className="mt-1 text-xs font-medium text-[#6d604b]">
                         {isEn ? "Curileta's Secret Field Journal" : 'Cuaderno Secreto de Curileta'}
@@ -287,9 +375,16 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                   </div>
                   <div className="pt-3">
                     <p className="text-xs leading-relaxed text-slate-700 sm:text-sm">
-                      «{letter.photos[activePhotoIndex].fact[locale] || letter.photos[activePhotoIndex].fact.es}»
+                      «{activePhoto.fact[locale] || activePhoto.fact.es}»
                     </p>
                   </div>
+                  </>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-6 flex min-h-64 flex-1 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 p-6 text-center dark:border-[#414141]">
+                  <Camera className="h-8 w-8 text-slate-500" />
+                  <p className="mt-3 text-sm font-semibold">{isEn ? 'No photos are attached' : 'Esta carta todavía no tiene fotos'}</p>
                 </div>
               )}
             </div>

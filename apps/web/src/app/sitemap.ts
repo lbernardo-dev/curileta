@@ -35,12 +35,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/accesibilidad',
   ];
 
+  // CMS records do not expose reliable modification timestamps, so omit lastModified.
   // Rutas estáticas para cada idioma con hreflang
   for (const path of staticPaths) {
     for (const locale of locales) {
       routes.push({
         url: `${baseUrl}/${locale}${path}`,
-        lastModified: new Date(),
         changeFrequency: path === '' ? 'daily' : 'weekly',
         priority: path === '' ? 1.0 : 0.8,
         alternates: {
@@ -59,7 +59,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of locales) {
       routes.push({
         url: `${baseUrl}/${locale}/personajes/${char.slug}`,
-        lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.7,
         alternates: {
@@ -78,7 +77,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of locales) {
       routes.push({
         url: `${baseUrl}/${locale}/libros/${book.slug}`,
-        lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.9,
         alternates: {
@@ -96,7 +94,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of locales) {
       routes.push({
         url: `${baseUrl}/${locale}/autora/${author.slug}`,
-        lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.6,
         alternates: {
@@ -133,7 +130,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const categoryUrl = `${baseUrl}/${locale}/galeria?${query.toString()}`;
       routes.push({
         url: categoryUrl,
-        lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.5,
         alternates: {
@@ -150,7 +146,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of locales) {
       routes.push({
         url: `${baseUrl}/${locale}/galeria?imagen=${encodeURIComponent(item.slug)}`,
-        lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.5,
         alternates: {

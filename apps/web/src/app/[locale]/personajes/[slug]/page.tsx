@@ -11,7 +11,6 @@ import { ShareActions } from '@/components/ShareActions';
 import { CharacterFavoriteButton, CharacterFavoritesProvider } from '@/components/CharacterFavoritesProvider';
 import { CharacterPassportSpread } from '@/components/CharacterPassportSpread';
 import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
-import { getPublicDestinations } from '@/lib/destinations.server';
 import {
   Sparkles,
   ArrowLeft,
@@ -69,7 +68,7 @@ export default async function CharacterDetailPage({
 
   const [character, locations, books, videos, milestones, rankings] = await Promise.all([
     cmsProvider.getCharacterBySlug(slug, locale),
-    getPublicDestinations(locale),
+    cmsProvider.getLocations(locale),
     cmsProvider.getBooks(locale),
     cmsProvider.getVideos(locale),
     cmsProvider.getNarrativeMilestones(locale),
@@ -215,7 +214,7 @@ export default async function CharacterDetailPage({
           {(relatedBooks.length || relatedEpisodes.length || storyMoments.length) ? (
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {relatedBooks.map((book) => <Link key={book.slug} href={`/${locale}/libros/${book.slug}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Book' : 'Libro'}</span><span className="mt-1 block font-semibold text-white">{book.title[locale] || book.title.es}</span>{book.subtitle && <span className="mt-1 block text-sm text-slate-300">{book.subtitle[locale] || book.subtitle.es}</span>}</Link>)}
-              {relatedEpisodes.map((episode) => <a key={episode.slug} href={episode.youtubeId ? `https://www.youtube.com/watch?v=${episode.youtubeId}` : `/${locale}/videos`} target={episode.youtubeId ? '_blank' : undefined} rel={episode.youtubeId ? 'noopener noreferrer' : undefined} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Episode' : 'Episodio'}{episode.episodeNumber ? ` ${episode.episodeNumber}` : ''}</span><span className="mt-1 block font-semibold text-white">{episode.title[locale] || episode.title.es}</span></a>)}
+              {relatedEpisodes.map((episode) => <a key={episode.slug} href={episode.youtubeId ? `https://www.youtube.com/watch?v=${episode.youtubeId}` : `/${locale}/videos`} target={episode.youtubeId ? '_blank' : undefined} rel={episode.youtubeId ? 'noopener' : undefined} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Episode' : 'Episodio'}{episode.episodeNumber ? ` ${episode.episodeNumber}` : ''}</span><span className="mt-1 block font-semibold text-white">{episode.title[locale] || episode.title.es}</span></a>)}
               {storyMoments.slice(0, 6).map((moment) => <article key={`${moment.order}-${moment.place.es}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4"><span className="text-xs font-semibold uppercase tracking-wide text-emerald-300">{locale === 'en' ? `Story moment ${moment.order}` : `Momento ${moment.order} del relato`}</span><h3 className="mt-1 font-semibold text-white">{moment.place[locale] || moment.place.es}</h3><p className="mt-2 text-sm leading-6 text-slate-300">{moment.whatHappens[locale] || moment.whatHappens.es}</p></article>)}
             </div>
           ) : <p className="mt-4 text-sm text-slate-300">{locale === 'en' ? 'Story appearances will appear when this character is linked to a published book or episode.' : 'Las apariciones aparecerán cuando el personaje se vincule a un libro o episodio publicado.'}</p>}

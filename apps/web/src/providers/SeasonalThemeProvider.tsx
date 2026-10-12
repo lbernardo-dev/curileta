@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect } from 'react';
-import { SeasonalEvent } from '@curileta/cms';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import type { SeasonalEvent } from '@curileta/cms';
+import { EVENT_PALETTE_PRESETS } from '@/lib/events';
 import { removeBrowserStorageValue, setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 
 interface SeasonalThemeContextType {
@@ -10,6 +11,17 @@ interface SeasonalThemeContextType {
   isSeasonalActive: boolean;
   isUserDismissed: boolean;
   toggleSeasonalTheme: () => void;
+  canPlayAmbientAudio: boolean;
+  ambientAudioPlaying: boolean;
+  toggleAmbientAudio: () => void;
+  canPlayScareSound: boolean;
+  playScareSound: () => void;
+  canEnableMotion: boolean;
+  motionEnabled: boolean;
+  toggleMotion: () => void;
+  scareEffectsEnabled: boolean;
+  toggleScareEffects: () => void;
+  reducedMotion: boolean;
   themeKey: string | null;
 }
 
@@ -19,6 +31,17 @@ const SeasonalThemeContext = createContext<SeasonalThemeContextType>({
   isSeasonalActive: false,
   isUserDismissed: false,
   toggleSeasonalTheme: () => {},
+  canPlayAmbientAudio: false,
+  ambientAudioPlaying: false,
+  toggleAmbientAudio: () => {},
+  canPlayScareSound: false,
+  playScareSound: () => {},
+  canEnableMotion: false,
+  motionEnabled: false,
+  toggleMotion: () => {},
+  scareEffectsEnabled: false,
+  toggleScareEffects: () => {},
+  reducedMotion: false,
   themeKey: null,
 });
 
@@ -37,71 +60,174 @@ const getCampaignStorageKey = (event: SeasonalEvent, now = new Date()) => {
     currentMonth < endMonth || (currentMonth === endMonth && currentDay <= end.getUTCDate())
   );
   const campaignStartYear = now.getUTCFullYear() - (isInEndPartOfCrossYearCampaign ? 1 : 0);
-
   return `${STORAGE_KEY_PREFIX}${event.id}:${campaignStartYear}`;
 };
 
-export const SeasonalThemeProvider: React.FC<{
-  activeEvent: SeasonalEvent | null;
-  children: React.ReactNode;
-}> = ({ activeEvent, children }) => {
+export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null; children: React.ReactNode }> = ({ activeEvent, children }) => {
   const campaignStorageKey = activeEvent ? getCampaignStorageKey(activeEvent) : null;
   const scopedValue = useBrowserStorageValue('local', campaignStorageKey);
   const legacyValue = useBrowserStorageValue('local', LEGACY_STORAGE_KEY);
+  const motionPreferenceKey = campaignStorageKey ? `${campaignStorageKey}:motion` : null;
+  const scarePreferenceKey = campaignStorageKey ? `${campaignStorageKey}:scares` : null;
+  const motionPreference = useBrowserStorageValue('local', motionPreferenceKey);
+  const scarePreference = useBrowserStorageValue('local', scarePreferenceKey);
   const mounted = useClientHydrated();
+  const reducedMotion = useReducedMotionPreference();
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const scareSoundRef = useRef<HTMLAudioElement>(null);
+  const [playingEventId, setPlayingEventId] = useState('');
 
   useEffect(() => {
     if (!campaignStorageKey || legacyValue === null) return;
-
-    // Migrate the old global preference once, so it only affects its current campaign.
-    if (scopedValue === null && legacyValue === 'true') {
-      setBrowserStorageValue('local', campaignStorageKey, 'true');
-    }
+    if (scopedValue === null && legacyValue === 'true') setBrowserStorageValue('local', campaignStorageKey, 'true');
     removeBrowserStorageValue('local', LEGACY_STORAGE_KEY);
   }, [campaignStorageKey, legacyValue, scopedValue]);
 
   const isUserDismissed = Boolean(campaignStorageKey && (scopedValue === 'true' || (scopedValue === null && legacyValue === 'true')));
   const isSeasonalActive = Boolean(activeEvent && activeEvent.active && !isUserDismissed);
   const themeKey = isSeasonalActive && activeEvent ? activeEvent.themeKey : null;
-  const isReady = mounted;
+  const canPlayAmbientAudio = Boolean(isSeasonalActive && activeEvent?.effects?.soundEnabled && activeEvent.ambientAudioUrl);
+  const ambientAudioPlaying = Boolean(canPlayAmbientAudio && activeEvent && playingEventId === activeEvent.id);
+  const canPlayScareSound = Boolean(isSeasonalActive && activeEvent?.effects?.scareEffectsEnabled && activeEvent.scareSoundUrl);
+  const canEnableMotion = Boolean(isSeasonalActive && activeEvent?.effects?.decorationsEnabled && activeEvent.effects.motionEnabled !== false && !reducedMotion);
+  const motionEnabled = Boolean(canEnableMotion && motionPreference !== 'false');
+  const scareEffectsEnabled = Boolean(canPlayScareSound && scarePreference === 'true');
 
-  // Sincronizar atributo data-seasonal-theme en <html>
   useEffect(() => {
     if (!mounted) return;
-
     const root = document.documentElement;
+    const properties = [
+      '--seasonal-accent', '--seasonal-accent-strong', '--seasonal-canvas-light', '--seasonal-surface-light', '--seasonal-text-light',
+      '--seasonal-canvas-dark', '--seasonal-surface-dark', '--seasonal-text-dark', '--seasonal-banner-start', '--seasonal-banner-end',
+    ];
     if (isSeasonalActive && themeKey) {
       root.setAttribute('data-seasonal-theme', themeKey);
+      root.setAttribute('data-seasonal-motion', motionEnabled ? 'on' : 'off');
+      const palette = activeEvent?.palette || EVENT_PALETTE_PRESETS[themeKey] || EVENT_PALETTE_PRESETS.custom;
+      root.style.setProperty('--seasonal-accent', palette.accent);
+      root.style.setProperty('--seasonal-accent-strong', palette.accentStrong);
+      root.style.setProperty('--seasonal-canvas-light', palette.canvasLight);
+      root.style.setProperty('--seasonal-surface-light', palette.surfaceLight);
+      root.style.setProperty('--seasonal-text-light', palette.textLight);
+      root.style.setProperty('--seasonal-canvas-dark', palette.canvasDark);
+      root.style.setProperty('--seasonal-surface-dark', palette.surfaceDark);
+      root.style.setProperty('--seasonal-text-dark', palette.textDark);
+      root.style.setProperty('--seasonal-banner-start', palette.accentStrong);
+      root.style.setProperty('--seasonal-banner-end', palette.accent);
     } else {
       root.removeAttribute('data-seasonal-theme');
+      root.removeAttribute('data-seasonal-motion');
     }
-
     return () => {
       root.removeAttribute('data-seasonal-theme');
+      root.removeAttribute('data-seasonal-motion');
+      for (const property of properties) root.style.removeProperty(property);
     };
-  }, [mounted, isSeasonalActive, themeKey]);
+  }, [activeEvent, mounted, isSeasonalActive, motionEnabled, themeKey]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!canPlayAmbientAudio && audio && !audio.paused) audio.pause();
+  }, [activeEvent?.id, activeEvent?.ambientAudioUrl, canPlayAmbientAudio]);
+
+  const toggleAmbientAudio = () => {
+    const audio = audioRef.current;
+    if (!audio || !canPlayAmbientAudio) return;
+    if (audio.paused) {
+      const eventId = activeEvent?.id || '';
+      void audio.play().then(() => setPlayingEventId(eventId)).catch(() => setPlayingEventId(''));
+    } else {
+      audio.pause();
+      setPlayingEventId('');
+    }
+  };
+
+  const playScareSound = () => {
+    const audio = scareSoundRef.current;
+    if (!audio || !scareEffectsEnabled) return;
+    audio.currentTime = 0;
+    void audio.play().catch(() => undefined);
+  };
+
+  const toggleMotion = () => {
+    if (!motionPreferenceKey || !canEnableMotion) return;
+    setBrowserStorageValue('local', motionPreferenceKey, motionEnabled ? 'false' : 'true');
+  };
+
+  const toggleScareEffects = () => {
+    if (!scarePreferenceKey || !canPlayScareSound) return;
+    setBrowserStorageValue('local', scarePreferenceKey, scareEffectsEnabled ? 'false' : 'true');
+  };
 
   const toggleSeasonalTheme = () => {
     if (!campaignStorageKey) return;
-
     if (isUserDismissed) removeBrowserStorageValue('local', campaignStorageKey);
-    else setBrowserStorageValue('local', campaignStorageKey, 'true');
+    else {
+      audioRef.current?.pause();
+      setPlayingEventId('');
+      setBrowserStorageValue('local', campaignStorageKey, 'true');
+    }
   };
 
   return (
-    <SeasonalThemeContext.Provider
-      value={{
-        activeEvent,
-        isReady,
-        isSeasonalActive,
-        isUserDismissed,
-        toggleSeasonalTheme,
-        themeKey,
-      }}
-    >
+    <SeasonalThemeContext.Provider value={{
+      activeEvent,
+      isReady: mounted,
+      isSeasonalActive,
+      isUserDismissed,
+      toggleSeasonalTheme,
+      canPlayAmbientAudio,
+      ambientAudioPlaying,
+      toggleAmbientAudio,
+      canPlayScareSound,
+      playScareSound,
+      canEnableMotion,
+      motionEnabled,
+      toggleMotion,
+      scareEffectsEnabled,
+      toggleScareEffects,
+      reducedMotion,
+      themeKey,
+    }}>
+      {activeEvent?.ambientAudioUrl && <audio
+        ref={audioRef}
+        src={activeEvent.ambientAudioUrl}
+        loop
+        preload="none"
+        aria-hidden="true"
+        className="hidden"
+        onPlay={() => setPlayingEventId(activeEvent.id)}
+        onPause={() => setPlayingEventId((current) => current === activeEvent.id ? '' : current)}
+      />}
+      {canPlayScareSound && <audio ref={scareSoundRef} src={activeEvent?.scareSoundUrl} preload="none" aria-hidden="true" className="hidden" />}
+      <SeasonalDecorations event={activeEvent} active={isSeasonalActive} motionEnabled={motionEnabled} />
       {children}
     </SeasonalThemeContext.Provider>
   );
 };
 
 export const useSeasonalTheme = () => useContext(SeasonalThemeContext);
+
+function SeasonalDecorations({ event, active, motionEnabled }: { event: SeasonalEvent | null; active: boolean; motionEnabled: boolean }) {
+  const effects = event?.effects;
+  const decorations = event?.ambientDecorations.floatingEmojis || [];
+  if (!active || !effects?.decorationsEnabled || !decorations.length || effects.decorationCount <= 0) return null;
+  const count = Math.min(effects.decorationCount, 32);
+  const speed = effects.decorationSpeed === 'quick' ? 15 : effects.decorationSpeed === 'slow' ? 34 : 24;
+  return <div aria-hidden="true" className="seasonal-decoration-layer">{Array.from({ length: count }, (_, index) => <span
+    key={`${decorations[index % decorations.length]}-${index}`}
+    className={motionEnabled ? 'seasonal-decoration' : 'seasonal-decoration-still'}
+    style={{ left: `${(index * 37 + 9) % 100}%`, animationDelay: `${-(index * 3 % speed)}s`, animationDuration: `${speed + (index * 7 % 12)}s`, opacity: effects.decorationOpacity }}
+  >{decorations[index % decorations.length]}</span>)}</div>;
+}
+
+function useReducedMotionPreference() {
+  const subscribe = useCallback((onChange: () => void) => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+  const getSnapshot = useCallback(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
+  const getServerSnapshot = useCallback(() => false, []);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}

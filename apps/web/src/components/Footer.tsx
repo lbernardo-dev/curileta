@@ -6,6 +6,8 @@ import type { Locale } from '@curileta/i18n';
 import { ThemeToggle } from './ThemeToggle';
 import { Youtube, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { NauticalCompassMark } from './NauticalCompassMark';
+import { isGoogleAnalyticsConfigured } from '@curileta/analytics';
+import { openAnalyticsPreferences } from './AnalyticsConsentManager';
 
 export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = ({ locale, youtubeChannelUrl }) => {
   const isEn = locale === 'en';
@@ -71,6 +73,15 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
           <nav aria-label={isEn ? 'Legal information' : 'Información legal'} className="flex flex-wrap gap-x-5 gap-y-2">
             <Link href={`/${locale}/privacidad`} className={linkClass}>{isEn ? 'Privacy' : 'Privacidad'}</Link>
             <Link href={`/${locale}/cookies`} className={linkClass}>{isEn ? 'Cookies' : 'Cookies'}</Link>
+            {isGoogleAnalyticsConfigured() && (
+              <button
+                type="button"
+                onClick={openAnalyticsPreferences}
+                className={`${linkClass} rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300`}
+              >
+                {isEn ? 'Analytics preferences' : 'Preferencias de analítica'}
+              </button>
+            )}
             <Link href={`/${locale}/legal`} className={linkClass}>{isEn ? 'Legal notice' : 'Aviso legal'}</Link>
             <Link href={`/${locale}/accesibilidad`} className={linkClass}>{isEn ? 'Accessibility' : 'Accesibilidad'}</Link>
           </nav>

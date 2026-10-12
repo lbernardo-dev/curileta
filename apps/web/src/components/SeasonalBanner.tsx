@@ -4,6 +4,7 @@ import React from 'react';
 import { Locale } from '@curileta/i18n';
 import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
 import { Calendar, ChevronRight, Eye, Palette, Sparkles } from 'lucide-react';
+import { EventExperienceControls } from '@/features/events/EventExperienceControls';
 
 const EVENT_SYMBOL: Record<string, string> = {
   halloween: '🎃',
@@ -15,7 +16,23 @@ const EVENT_SYMBOL: Record<string, string> = {
 };
 
 export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
-  const { activeEvent, isSeasonalActive, isUserDismissed, toggleSeasonalTheme } = useSeasonalTheme();
+  const {
+    activeEvent,
+    isSeasonalActive,
+    isUserDismissed,
+    toggleSeasonalTheme,
+    canPlayAmbientAudio,
+    ambientAudioPlaying,
+    toggleAmbientAudio,
+    canPlayScareSound,
+    playScareSound,
+    scareEffectsEnabled,
+    toggleScareEffects,
+    canEnableMotion,
+    motionEnabled,
+    toggleMotion,
+    reducedMotion,
+  } = useSeasonalTheme();
 
   if (!activeEvent || !activeEvent.active) return null;
 
@@ -33,7 +50,7 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
     <div
       role="banner"
       aria-label={isEn ? 'Seasonal event announcement' : 'Aviso de evento estacional'}
-      className="relative z-50 w-full border-b border-white/10 bg-[linear-gradient(105deg,var(--seasonal-banner-start),var(--seasonal-banner-end))] px-3 py-2.5 text-white shadow-md sm:px-6"
+      className="relative z-50 w-full border-b border-white/10 bg-[var(--seasonal-accent-strong)] px-3 py-2.5 text-white shadow-md sm:px-6"
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-5 gap-y-2">
         <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
@@ -64,6 +81,25 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
               <ChevronRight className="h-3.5 w-3.5" />
             </a>
           )}
+
+          <EventExperienceControls
+            locale={locale}
+            event={activeEvent}
+            active={isSeasonalActive}
+            dismissed={isUserDismissed}
+            canEnableSound={canPlayAmbientAudio}
+            soundEnabled={ambientAudioPlaying}
+            onToggleSound={toggleAmbientAudio}
+            canEnableMotion={canEnableMotion}
+            motionEnabled={motionEnabled}
+            onToggleMotion={toggleMotion}
+            canEnableScares={canPlayScareSound}
+            scaresEnabled={scareEffectsEnabled}
+            onToggleScares={toggleScareEffects}
+            onPlayScareSound={playScareSound}
+            onToggleTheme={toggleSeasonalTheme}
+            reducedMotion={reducedMotion}
+          />
 
           <button
             type="button"

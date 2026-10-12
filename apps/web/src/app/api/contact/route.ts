@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import type { ContactFormConfig, ContactSystemField } from '@/lib/forms/types';
+import { getContactPrivacyNoticeVersion, hasContactSubmissionConfiguration } from '@/lib/forms/privacy-version';
 
 type ContactRequestBody = {
   formSlug?: unknown;
@@ -80,9 +81,8 @@ export async function POST(request: NextRequest) {
   }
 
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
-  if (process.env.NODE_ENV === 'production'
-    && (!turnstileSecret || !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || !process.env.PRIVACY_NOTICE_VERSION)) {
-    return NextResponse.json({ success: false, error: 'Falta completar la configuración de privacidad y antispam.' }, { status: 503 });
+  if (process.env.NODE_ENV === 'production' && !hasContactSubmissionConfiguration()) {
+    return NextResponse.json({ success: false, error: 'Falta completar la configuración antispam.' }, { status: 503 });
   }
   if (turnstileSecret) {
     const token = typeof body.turnstileToken === 'string' ? body.turnstileToken : '';
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       answers: normalizedAnswers,
       adult_consent: adultConsent,
       privacy_notice_acknowledged: privacyAcknowledgement,
-      privacy_notice_version: process.env.PRIVACY_NOTICE_VERSION || null,
+      privacy_notice_version: getContactPrivacyNoticeVersion(),
     })
     .select('id')
     .single();

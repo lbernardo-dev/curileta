@@ -70,3 +70,13 @@ test('rechaza un directorio padre enlazado fuera del repositorio', async (t) => 
   );
   assert.equal(await exists(join(outside, '.next/generated-output')), true);
 });
+
+test('omite artefactos cuando falta un directorio padre', async (t) => {
+  const root = await mkdtemp(join(tmpdir(), 'curileta-clean-missing-parent-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  await mkdir(join(root, 'apps/web'), { recursive: true });
+  await assert.doesNotReject(
+    cleanGeneratedArtifacts({ repositoryRoot: root, log: () => undefined }),
+  );
+});

@@ -244,18 +244,48 @@ export interface SeasonalEvent {
   id: string;
   slug: string;
   name: LocalizedString;
+  description?: LocalizedString;
   tagline: LocalizedString;
-  themeKey: 'halloween' | 'christmas' | 'spring' | 'summer' | 'easter' | 'valentines';
+  themeKey: string;
   active: boolean;
   startDate: string;
   endDate: string;
   bannerImage: string;
+  managed?: boolean;
+  timeZone?: string;
+  heroVideoUrl?: string;
+  heroVideoPath?: string;
+  ambientAudioUrl?: string;
+  ambientAudioPath?: string;
+  scareSoundUrl?: string;
+  scareSoundPath?: string;
+  palette?: {
+    accent: string;
+    accentStrong: string;
+    canvasLight: string;
+    surfaceLight: string;
+    textLight: string;
+    canvasDark: string;
+    surfaceDark: string;
+    textDark: string;
+  };
+  effects?: {
+    decorationsEnabled: boolean;
+    motionEnabled: boolean;
+    decorations: string[];
+    decorationCount: number;
+    decorationSpeed: 'slow' | 'steady' | 'quick';
+    decorationOpacity: number;
+    soundEnabled: boolean;
+    scareEffectsEnabled: boolean;
+    scareFrequency?: 'rare' | 'regular';
+  };
   ambientDecorations: {
     glowColor: string;
     accentColor: string;
     floatingEmojis: string[];
   };
-  specialChapter: {
+  specialChapter?: {
     id: string;
     title: LocalizedString;
     synopsis: LocalizedString;
@@ -275,15 +305,23 @@ export interface SeasonalEvent {
 }
 
 export interface LetterPhoto {
+  photoId?: string;
   title: LocalizedString;
   fact: LocalizedString;
   tag: string;
+  tagEn?: string;
   imageUrl?: string;
+  storagePath?: string;
+  censoredImageUrl?: string;
+  censoredStoragePath?: string;
+  visibility?: 'public' | 'censored' | 'hidden';
 }
 
 export interface LetterItem {
   id: string;
   order: number;
+  publicationStatus?: 'public' | 'censored' | 'unpublished';
+  episodeUrl?: string;
   country: LocalizedString;
   city: LocalizedString;
   postmark: string;
