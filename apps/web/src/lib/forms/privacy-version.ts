@@ -4,7 +4,7 @@ import 'server-only';
 const DEFAULT_CONTACT_PRIVACY_NOTICE_VERSION = 'contact-form-privacy-v2';
 
 export function getContactPrivacyNoticeVersion() {
-  return process.env.PRIVACY_NOTICE_VERSION?.trim() || DEFAULT_CONTACT_PRIVACY_NOTICE_VERSION;
+  return DEFAULT_CONTACT_PRIVACY_NOTICE_VERSION;
 }
 
 export function hasContactSubmissionConfiguration() {

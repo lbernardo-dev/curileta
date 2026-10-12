@@ -38,8 +38,8 @@ Define solo las variables necesarias para las funciones que vayas a habilitar. L
 
 - YOUTUBE_API_KEY: completa metadatos al importar vídeos desde el panel.
 - RESEND_API_KEY, CONTACT_FROM_EMAIL y CONTACT_TO_EMAIL: notificaciones de formularios y avisos operativos.
-- PRIVACY_NOTICE_VERSION: versión opcional del aviso de privacidad del formulario.
-- CRON_SECRET: protege la ruta programada de retención.
+- `PRIVACY_NOTICE_VERSION` está obsoleta: el servidor fija la versión del aviso en código junto al texto, para que una variable antigua no invalide la constancia.
+- CRON_SECRET: protege las rutas programadas de retención y limpieza multimedia. No aparece configurada en Vercel Production al 12 de octubre de 2026; las tareas de Vercel no podrán autenticarse hasta añadirla y volver a desplegar.
 - NEXT_PUBLIC_TURNSTILE_SITE_KEY y TURNSTILE_SECRET_KEY: validación del formulario público con Turnstile.
 
 Configura las credenciales privadas en el gestor de secretos de cada entorno de servidor. No las añadas al repositorio ni a variables públicas del cliente. Los valores se guardan únicamente en el proveedor correspondiente y no en esta guía.
