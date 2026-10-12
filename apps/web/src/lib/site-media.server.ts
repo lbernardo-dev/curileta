@@ -6,17 +6,13 @@ import { removeUnreferencedYouTubeMedia } from './youtube-media.server';
 
 export const SITE_MEDIA_BUCKET = 'curileta-site-media';
 
-type SiteMediaAssetPrefix = 'authors/portraits' | 'gallery' | 'letters/photos' | 'destinations' | 'books/upcoming';
+type SiteMediaPrefix = 'authors/portraits' | 'gallery' | 'letters/photos' | 'books/upcoming' | 'editorial/content';
 
-function siteMediaPathPattern(prefix: SiteMediaAssetPrefix) {
-  if (prefix === 'letters/photos' || prefix === 'books/upcoming') return new RegExp(`^${prefix}/[0-9a-f-]{36}\\.(webp|jpg)$`, 'i');
-  if (prefix === 'destinations') return /^destinations\/[0-9a-f-]{36}\.(webp|jpg|mp4|webm)$/i;
-  return new RegExp(`^${prefix}/[a-z0-9-]+\\.(webp|jpg)$`, 'i');
-}
-
-export function isSiteMediaAsset(urlValue: unknown, pathValue: unknown, prefix: SiteMediaAssetPrefix) {
+export function isSiteMediaAsset(urlValue: unknown, pathValue: unknown, prefix: SiteMediaPrefix) {
   if (typeof urlValue !== 'string' || typeof pathValue !== 'string') return false;
-  const pathPattern = siteMediaPathPattern(prefix);
+  const pathPattern = prefix === 'letters/photos' || prefix === 'books/upcoming' || prefix === 'editorial/content'
+    ? new RegExp(`^${prefix}/[0-9a-f-]{36}\\.(webp|jpg)$`, 'i')
+    : new RegExp(`^${prefix}/[a-z0-9-]+\\.(webp|jpg)$`, 'i');
   if (!pathPattern.test(pathValue)) return false;
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -32,12 +28,28 @@ export function isSiteMediaAsset(urlValue: unknown, pathValue: unknown, prefix: 
   }
 }
 
-export async function removeSiteMediaAsset(path: string, prefix: SiteMediaAssetPrefix) {
-  const pathPattern = siteMediaPathPattern(prefix);
+export async function removeSiteMediaAsset(path: string, prefix: SiteMediaPrefix) {
+  const pathPattern = prefix === 'letters/photos' || prefix === 'books/upcoming' || prefix === 'editorial/content'
+    ? new RegExp(`^${prefix}/[0-9a-f-]{36}\\.(webp|jpg)$`, 'i')
+    : new RegExp(`^${prefix}/[a-z0-9-]+\\.(webp|jpg)$`, 'i');
   if (!pathPattern.test(path)) return false;
-  if (prefix === 'destinations') return removeUnreferencedDestinationMedia(path);
   const { createSupabaseAdminClient } = await import('@/lib/supabase/server');
   const admin = createSupabaseAdminClient();
+  if (prefix === 'letters/photos') {
+    try {
+      if (await (await import('@/lib/letters-admin.server')).isLetterPhotoReferenced(path)) return false;
+    } catch {
+      return false;
+    }
+    const { error } = await admin.storage.from(SITE_MEDIA_BUCKET).remove([path]);
+    return !error;
+  }
+  if (prefix === 'editorial/content') {
+    const { data, error } = await admin.from('managed_content_entries').select('payload');
+    if (error || (data || []).some((row) => containsMediaReference(row.payload, path))) return false;
+    const { error: removeError } = await admin.storage.from(SITE_MEDIA_BUCKET).remove([path]);
+    return !removeError;
+  }
   if (prefix === 'books/upcoming') {
     const { data, error } = await admin.from('book_catalog_settings')
       .select('upcoming_books')
@@ -50,15 +62,6 @@ export async function removeSiteMediaAsset(path: string, prefix: SiteMediaAssetP
     const { error: removeError } = await admin.storage.from(SITE_MEDIA_BUCKET).remove([path]);
     return !removeError;
   }
-  if (prefix === 'letters/photos') {
-    try {
-      if (await (await import('@/lib/letters-admin.server')).isLetterPhotoReferenced(path)) return false;
-    } catch {
-      return false;
-    }
-    const { error } = await admin.storage.from(SITE_MEDIA_BUCKET).remove([path]);
-    return !error;
-  }
   const reference = prefix === 'gallery'
     ? await admin.from('gallery_items').select('id').eq('storage_path', path).limit(1).maybeSingle()
     : await admin.from('author_pages').select('slug').eq('portrait_path', path).limit(1).maybeSingle();
@@ -67,10 +70,17 @@ export async function removeSiteMediaAsset(path: string, prefix: SiteMediaAssetP
   return !error;
 }
 
+function containsMediaReference(value: unknown, path: string): boolean {
+  if (typeof value === 'string') return value === path || value.endsWith(`/${path}`);
+  if (Array.isArray(value)) return value.some((entry) => containsMediaReference(entry, path));
+  if (!value || typeof value !== 'object') return false;
+  return Object.values(value).some((entry) => containsMediaReference(entry, path));
+}
+
 export async function cleanupUnreferencedSiteMedia(now = new Date()) {
   const { createSupabaseAdminClient } = await import('@/lib/supabase/server');
   const admin = createSupabaseAdminClient();
-  const [authorsCheck, galleryCheck, channelCheck, contentCheck, eventsCheck, destinationsCheck, booksCheck] = await Promise.all([
+  const [authorsCheck, galleryCheck, channelCheck, contentCheck, eventsCheck, destinationsCheck, booksCheck, editorialCheck] = await Promise.all([
     admin.from('author_pages').select('slug').limit(1),
     admin.from('gallery_items').select('id').limit(1),
     admin.from('youtube_channel_settings').select('setting_key').limit(1),
@@ -78,8 +88,9 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
     admin.from('site_events').select('id').limit(1),
     admin.from('managed_destinations').select('slug').limit(1),
     admin.from('book_catalog_settings').select('setting_key').limit(1),
+    admin.from('managed_content_entries').select('id').limit(1),
   ]);
-  if (authorsCheck.error || galleryCheck.error || channelCheck.error || contentCheck.error || eventsCheck.error || destinationsCheck.error || booksCheck.error) {
+  if (authorsCheck.error || galleryCheck.error || channelCheck.error || contentCheck.error || eventsCheck.error || destinationsCheck.error || booksCheck.error || editorialCheck.error) {
     throw new Error('No se pueden comprobar todas las referencias de medios administrados.');
   }
 
@@ -91,9 +102,10 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
     { prefix: 'authors/portraits', pattern: /^authors\/portraits\/[0-9a-f-]{36}\.(webp|jpg)$/i },
     { prefix: 'gallery', pattern: /^gallery\/[0-9a-f-]{36}\.(webp|jpg)$/i },
     { prefix: 'letters/photos', pattern: /^letters\/photos\/[0-9a-f-]{36}\.(webp|jpg)$/i },
+    { prefix: 'books/upcoming', pattern: /^books\/upcoming\/[0-9a-f-]{36}\.(webp|jpg)$/i },
+    { prefix: 'editorial/content', pattern: /^editorial\/content\/[0-9a-f-]{36}\.(webp|jpg)$/i },
     { prefix: 'events', pattern: /^events\/[0-9a-f-]{36}\.(mp4|webm|mp3|m4a|ogg)$/i },
     { prefix: 'destinations', pattern: /^destinations\/[0-9a-f-]{36}\.(webp|jpg|mp4|webm)$/i },
-    { prefix: 'books/upcoming', pattern: /^books\/upcoming\/[0-9a-f-]{36}\.(webp|jpg)$/i },
   ] as const;
   const cutoff = now.getTime() - 30 * 24 * 60 * 60 * 1000;
   const pageSize = 100;
@@ -147,8 +159,8 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
   for (const candidate of selected.filter((entry) => entry.prefix === 'destinations')) {
     if (await removeUnreferencedDestinationMedia(candidate.path)) deleted += 1;
   }
-  for (const candidate of selected.filter((entry) => entry.prefix === 'gallery' || entry.prefix === 'authors/portraits' || entry.prefix === 'letters/photos' || entry.prefix === 'books/upcoming')) {
-    const prefix = candidate.prefix === 'gallery' ? 'gallery' : candidate.prefix === 'authors/portraits' ? 'authors/portraits' : candidate.prefix === 'letters/photos' ? 'letters/photos' : 'books/upcoming';
+  for (const candidate of selected.filter((entry) => entry.prefix === 'gallery' || entry.prefix === 'authors/portraits' || entry.prefix === 'letters/photos' || entry.prefix === 'books/upcoming' || entry.prefix === 'editorial/content')) {
+    const prefix = candidate.prefix === 'gallery' ? 'gallery' : candidate.prefix === 'authors/portraits' ? 'authors/portraits' : candidate.prefix === 'letters/photos' ? 'letters/photos' : candidate.prefix === 'books/upcoming' ? 'books/upcoming' : 'editorial/content';
     if (await removeSiteMediaAsset(candidate.path, prefix)) deleted += 1;
   }
 

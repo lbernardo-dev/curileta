@@ -2,7 +2,7 @@ export type AnalyticsEvent =
   | { name: 'page_view'; properties: { path: string; locale: string } }
   | { name: 'book_view'; properties: { bookId: string; slug: string } }
   | { name: 'book_purchase_click'; properties: { bookId: string; storeName: string } }
-  | { name: 'video_play'; properties: { videoId: string; videoSlug: string; title: string } }
+  | { name: 'video_play'; properties: { videoId: string; title: string } }
   | { name: 'youtube_channel_click'; properties: { source: string } }
   | { name: 'character_view'; properties: { characterId: string; name: string } }
   | { name: 'map_destination_open'; properties: { destinationId: string; country: string } }
@@ -245,14 +245,11 @@ class PrivacySafeAnalytics implements AnalyticsProvider {
 
     const path = window.location.pathname;
     const locale = path.split('/')[1] === 'en' ? 'en' : 'es';
-    const contentProperties = event.name === 'video_play'
-      ? { contentType: 'video', contentSlug: event.properties.videoSlug }
-      : {};
     trackGoogleAnalyticsEvent(event);
     void fetch('/api/admin/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ eventName: event.name, path, locale, ...contentProperties }),
+      body: JSON.stringify({ eventName: event.name, path, locale }),
       keepalive: true,
     }).catch(() => undefined);
   }

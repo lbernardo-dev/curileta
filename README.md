@@ -9,12 +9,12 @@ Plataforma oficial del universo transmedia de **Las Aventuras de Curileta**. Con
 ```text
 curileta-web/
 ├── apps/
-│   ├── web/                    # Next.js 15+ App Router, Server Components & Tailwind
-│   └── studio/                 # Sanity Studio v3 (Headless CMS desacoplado)
+│   ├── web/                    # Next.js App Router, panel /admin y API
+│   └── studio/                 # Herramienta de migración histórica, fuera del runtime web
 ├── packages/
 │   ├── design-system/          # Tokens, CSS variables, componentes base accesibles
 │   ├── motion/                 # MotionSceneEngine (Full, Adaptive, Reduced Motion)
-│   ├── cms/                    # Cliente GROQ, modelos TypeScript y CMSProvider
+│   ├── cms/                    # Modelos TypeScript, proveedores Supabase y datos locales
 │   ├── i18n/                   # Localización next-intl (ES / EN) y diccionarios
 │   ├── analytics/              # Telemetría de negocio sin PII (privacidad infantil)
 │   ├── seo/                    # Generadores de Schema.org JSON-LD
@@ -28,7 +28,7 @@ curileta-web/
 ## 🚀 Inicio Rápido
 
 ### Requisitos previos
-- **Node.js**: v22.18+ (necesario para el SDK de Supabase y la importación local de contenido a Sanity)
+- **Node.js**: v22.18+
 - **npm**: v10+
 
 ### Instalación de dependencias
@@ -40,15 +40,9 @@ npm install
 ```bash
 # Iniciar la aplicación web principal
 npm run dev
-
-# Iniciar Sanity Studio
-npm run dev:studio
-
-# Iniciar todos los entornos a la vez
-npm run dev:all
 ```
 
-La aplicación web estará disponible en [http://localhost:3000](http://localhost:3000) y Sanity Studio en [http://localhost:3333](http://localhost:3333).
+La aplicación web estará disponible en [http://localhost:3000](http://localhost:3000). El contenido editorial se lee y administra desde Supabase a través del panel protegido `/admin`; Sanity no forma parte del runtime de la web. El comando opcional `npm run dev:all` también inicia el Studio histórico de Sanity y no es necesario para trabajar con la web.
 
 ---
 

@@ -1,7 +1,5 @@
 import 'server-only';
 
-import { createClient } from '@sanity/client';
-import { unstable_cache } from 'next/cache';
 import type { CMSProvider } from '@curileta/cms';
 import type {
   Adventure,
@@ -20,19 +18,9 @@ import type {
   Video,
   Wallpaper,
 } from '@curileta/cms';
-import { INITIAL_SETTINGS, isSeasonalEventActive } from '@curileta/cms';
+import { INITIAL_SETTINGS } from '@curileta/cms';
 import { DatabaseCMSProvider } from '@curileta/cms/server';
-
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
-const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
-
-const client = createClient({
-  projectId: projectId || 'curileta-demo',
-  dataset,
-  apiVersion: '2025-02-19',
-  useCdn: !process.env.SANITY_READ_TOKEN,
-  token: process.env.SANITY_READ_TOKEN,
-});
+import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 type ContentType =
   | 'character'
@@ -48,61 +36,51 @@ type ContentType =
   | 'seasonalEvent'
   | 'letter'
   | 'universeRoadmapItem'
-  | 'collaboration';
+  | 'collaboration'
+  | 'siteSettings';
 
-type SanityDocument = Record<string, unknown> & { _id: string };
-
-const cachedList = (contentType: ContentType) => unstable_cache(
-  async () => client.fetch<SanityDocument[]>(
-    '*[_type == "contentEntry" && contentType == $contentType && !(_id in path("drafts.**"))] | order(orderIndex asc, stepNumber asc, order asc, id asc)',
-    { contentType },
-  ),
-  ['sanity-content', projectId || 'unconfigured', dataset, contentType],
-  { revalidate: 300, tags: [`sanity:${contentType}`] },
-);
-
-const cachedSettings = unstable_cache(
-  async () => client.fetch<SanityDocument | null>(
-    `*[_type == "siteSettings"][0] {
-      ...,
-      "youtubeChannelAvatarUrl": youtubeChannelAvatar.asset->url,
-      "youtubeChannelHeaderUrl": youtubeChannelHeader.asset->url
-    }`,
-  ),
-  ['sanity-site-settings', projectId || 'unconfigured', dataset],
-  { revalidate: 300, tags: ['sanity:siteSettings'] },
-);
-
-function stripSanityFields(document: SanityDocument) {
-  const entry = Object.fromEntries(
-    Object.entries(document).filter(([key]) => !['_id', '_rev', '_createdAt', '_updatedAt', '_type'].includes(key)),
-  );
-  return entry;
+interface ManagedContentRow {
+  content_type: ContentType;
+  content_id: string;
+  payload: Record<string, unknown>;
+  sort_order: number;
+  is_published: boolean;
+  is_deleted: boolean;
 }
 
-function mapEntry<T>(document: SanityDocument, contentType: ContentType): T {
-  const entry = stripSanityFields(document);
-  if (contentType === 'character' && !entry.name && entry.characterName) {
+function normalizeEntry<T>(row: ManagedContentRow): T {
+  const entry = { ...row.payload };
+  if (row.content_type === 'character' && !entry.name && entry.characterName) {
     entry.name = entry.characterName;
     delete entry.characterName;
   }
-  if (contentType === 'book' && !entry.coverImage && entry.cover) {
+  if (row.content_type === 'book' && !entry.coverImage && entry.cover) {
     entry.coverImage = entry.cover;
     delete entry.cover;
   }
   return entry as T;
 }
 
-export class SanityCMSProvider implements CMSProvider {
+export class SupabaseCMSProvider implements CMSProvider {
   private readonly fallback = new DatabaseCMSProvider();
 
   private async list<T>(contentType: ContentType): Promise<T[] | null> {
     try {
-      const documents = await cachedList(contentType)();
-      if (documents.length === 0) return [];
-      return documents.map((document) => mapEntry<T>(document, contentType));
+      const { data, error } = await createSupabaseAdminClient()
+        .from('managed_content_entries')
+        .select('content_type, content_id, payload, sort_order, is_published, is_deleted')
+        .eq('content_type', contentType)
+        .eq('is_published', true)
+        .eq('is_deleted', false)
+        .order('sort_order', { ascending: true })
+        .order('content_id', { ascending: true });
+      if (error) throw error;
+      return ((data || []) as ManagedContentRow[]).map((row) => normalizeEntry<T>(row));
     } catch (error) {
-      console.error(`[SanityCMSProvider] Error al leer ${contentType}; se usa el contenido local.`, error);
+      console.error('[SupabaseCMSProvider] No se pudo leer contenido editorial.', {
+        contentType,
+        error,
+      });
       return null;
     }
   }
@@ -132,7 +110,7 @@ export class SanityCMSProvider implements CMSProvider {
   }
 
   async getVideosForMediaCleanup(): Promise<Video[]> {
-    return (await cachedList('video')()).map((document) => mapEntry<Video>(document, 'video'));
+    return (await this.list<Video>('video')) ?? this.fallback.getVideos();
   }
 
   async getSongs(locale?: string): Promise<Song[]> {
@@ -140,7 +118,7 @@ export class SanityCMSProvider implements CMSProvider {
   }
 
   async getSongsForMediaCleanup(): Promise<Song[]> {
-    return (await cachedList('song')()).map((document) => mapEntry<Song>(document, 'song'));
+    return (await this.list<Song>('song')) ?? this.fallback.getSongs();
   }
 
   async getLocations(locale?: string): Promise<Location[]> {
@@ -165,7 +143,12 @@ export class SanityCMSProvider implements CMSProvider {
 
   async getActiveEvent(locale?: string, referenceDate = new Date()): Promise<SeasonalEvent | null> {
     const events = await this.getSeasonalEvents(locale);
-    return events.find((event) => isSeasonalEventActive(event, referenceDate)) || null;
+    return events.find((event) => {
+      const start = Date.parse(event.startDate);
+      const end = Date.parse(event.endDate);
+      return event.active && Number.isFinite(start) && Number.isFinite(end)
+        && referenceDate.getTime() >= start && referenceDate.getTime() <= end;
+    }) || null;
   }
 
   async getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]> {
@@ -173,8 +156,16 @@ export class SanityCMSProvider implements CMSProvider {
   }
 
   async getLetters(): Promise<LetterItem[]> {
-    // Fail closed for letters: local seed content cannot reflect editorial release states.
-    return (await this.list<LetterItem>('letter')) ?? [];
+    const letters = await this.list<LetterItem>('letter');
+    if (!letters) return [];
+    return letters.map((letter) => ({
+      ...letter,
+      publicationStatus: letter.publicationStatus || 'public',
+      photos: (letter.photos || []).map((photo) => ({
+        ...photo,
+        visibility: photo.visibility || 'public',
+      })),
+    }));
   }
 
   async getLetterById(id: string): Promise<LetterItem | null> {
@@ -190,13 +181,8 @@ export class SanityCMSProvider implements CMSProvider {
   }
 
   async getSiteSettings(locale?: string): Promise<SiteSettings> {
-    try {
-      const document = await cachedSettings();
-      if (!document) return this.fallback.getSiteSettings(locale);
-      return { ...INITIAL_SETTINGS, ...stripSanityFields(document) } as SiteSettings;
-    } catch (error) {
-      console.error('[SanityCMSProvider] Error al leer ajustes; se usan los valores locales.', error);
-      return this.fallback.getSiteSettings(locale);
-    }
+    const rows = await this.list<Record<string, unknown>>('siteSettings');
+    if (!rows?.length) return this.fallback.getSiteSettings(locale);
+    return { ...INITIAL_SETTINGS, ...rows[0] } as SiteSettings;
   }
 }

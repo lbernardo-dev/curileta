@@ -1,14 +1,14 @@
 # 🗺️ Guía Maestra de Operación, Contenido y Despliegue de Curileta
 
-Esta guía contiene toda la información necesaria para alimentar la web con recursos multimedia de alta fidelidad, administrar la base de datos y el backend dinámico, y sincronizar los cambios en la versión publicada en producción en **Vercel** (`https://curileta-pink.vercel.app`).
+Esta guía describe cómo operar la web de Curileta. La fuente vigente de contenido y configuración es Supabase; el equipo gestiona el sitio desde `/admin`, y Vercel publica la aplicación.
 
 ---
 
 ## 📑 Tabla de Contenidos
 1. [Inventario de Recursos Requeridos y Rutas de Directorio](#1-inventario-de-recursos-requeridos-y-rutas-de-directorio)
-2. [Flujo de Actualización y Despliegue en Vercel](#2-flujo-de-actualización-y-despliegue-en-vercel)
-3. [Administración del Backend y Base de Datos (SQLite + REST API)](#3-administración-del-backend-y-base-de-datos)
-4. [Gestión de Eventos Estacionales (Halloween y Próximos Eventos)](#4-gestión-de-eventos-estacionales)
+2. [Flujo de actualización y despliegue](#2-flujo-de-actualización-y-despliegue)
+3. [Administración del Backend y Base de Datos (Supabase + REST API)](#3-administración-del-backend-y-base-de-datos)
+4. [Gestión de eventos estacionales](#4-gestión-de-eventos-estacionales)
 5. [Endpoints REST API Activos para Integraciones](#5-endpoints-rest-api-activos)
 
 ---
@@ -129,128 +129,43 @@ apps/web/public/
 
 ---
 
-## 2. Flujo de Actualización y Despliegue en Vercel
+## 2. Flujo de actualización y despliegue
 
-Tu proyecto está configurado con **Integración Continua (CI/CD)** automática en Vercel. Cada vez que confirmas cambios en Git y los envías a la rama `main` en GitHub, Vercel compila y publica una nueva versión en cuestión de 60 a 90 segundos.
+Los cambios de contenido se guardan desde el módulo correspondiente de `/admin` y quedan disponibles en Supabase sin publicar una nueva versión de código. Las imágenes cargadas desde el panel se guardan en el bucket `curileta-site-media`.
 
-### Paso a Paso para Publicar Mejoras:
+Los cambios de código se integran mediante una rama y un pull request. Antes de integrar, se revisan el diff, la build y las comprobaciones de CI; después se confirma que Vercel haya terminado el despliegue Production. No uses `git add .`, no subas cambios directamente a `main` ni incluyas archivos generados o secretos.
 
-1. **Abrir la terminal en la raíz del proyecto:**
-   ```bash
-   cd "/Volumes/SSD Externo/DESARROLLO/WEB/curileta"
-   ```
+Los cambios de esquema se preparan como archivos SQL en `supabase/migrations`. Production conserva cambios manuales y un historial de migraciones pendiente de reconciliación: revisa el estado de las tablas antes de cada aplicación y no ejecutes `supabase db push` hasta reconciliarlo. El procedimiento operativo y las verificaciones están en [Docs/BACKEND_SETUP.md](./Docs/BACKEND_SETUP.md).
 
-2. **Verificar los archivos modificados o agregados:**
-   ```bash
-   git status
-   ```
+## 3. Administración del backend y base de datos
 
-3. **Verificar que el código compila y pasa las pruebas antes de subirlo:**
-   ```bash
-   npm run typecheck
-   npm test
-   ```
+La aplicación publicada usa Supabase Auth, PostgreSQL y Storage. `/admin` es la interfaz de gestión y Supabase es la fuente de los datos editoriales y de configuración. Sanity Studio, el sembrador SQLite y los archivos locales ya no forman parte del flujo de operación del sitio.
 
-4. **Añadir los archivos a Git:**
-   ```bash
-   git add .
-   ```
+### Secciones de administración
 
-5. **Crear el commit descriptivo del cambio:**
-   ```bash
-   git commit -m "feat: nuevo hero cinematografico y recursos de alta fidelidad"
-   ```
+- `/admin/contenidos`: personajes, libros editoriales, lugares narrativos, hitos, curiosidades, fondos, colaboraciones, hoja de ruta y ajustes de portada.
+- `/admin/cartas` y `/admin/destinos`: edición, publicación, orden y retirada reversible de cartas y destinos, con sus imágenes.
+- `/admin/eventos`: campañas estacionales, fechas, temas y medios.
+- `/admin/youtube`: identidad del canal, vídeos, Shorts, videoclips y fichas musicales.
+- `/admin/libros`: selección de portada y próximas aventuras con cubierta.
+- `/admin/autoras`, `/admin/galeria`, `/admin/encuadres` y `/admin/personajes-destacados`: gestión de los módulos editoriales asociados.
+- `/admin/forms`, `/admin/consultas` y `/admin/leads`: formularios, solicitudes y oportunidades.
+- `/admin/estadisticas` y `/admin/sistema`: métricas agregadas, estado operativo y últimas acciones registradas.
+- `/admin/equipo`: altas de perfiles existentes de Supabase Auth, roles y revocación de acceso; no envía invitaciones.
 
-6. **Enviar a GitHub (esto dispara el despliegue automático en Vercel):**
-   ```bash
-   git push origin main
-   ```
+El acceso se controla con Supabase Auth y los perfiles `owner`, `admin`, `editor` y `analyst`. La API vuelve a comprobar permisos en el servidor. La interfaz oculta opciones según el rol, pero la seguridad no depende de esa ocultación.
 
-7. **Monitorear la publicación:**
-   * Abre tu panel en [vercel.com](https://vercel.com).
-   * Verás un despliegue en curso con una esfera azul girando.
-   * Cuando cambie a verde (en ~1 minuto), tu web en `https://curileta-pink.vercel.app/es` estará actualizada con los últimos cambios.
+### Contenido, recuperación y archivos
 
-> 💡 **Nota sobre Caché:** Next.js optimiza las imágenes y páginas estáticas. Si subes una imagen con el mismo nombre y no ves el cambio inmediatamente en el navegador, recarga con `Cmd + Shift + R` (Mac) o `Ctrl + Shift + R` (Windows) para vaciar la memoria caché del navegador.
+El editor editorial permite crear, traducir, editar, ordenar, publicar, ocultar, retirar y recuperar registros. Los borrados del contenido nuevo son marcas reversibles; las imágenes referenciadas se conservan. La tabla `admin_audit_log` registra las modificaciones del editor editorial y del equipo; los módulos con tablas propias no se deben considerar auditados hasta que registren sus acciones en ese log.
 
----
+Las imágenes se seleccionan desde el ordenador. La aplicación optimiza a WebP y usa JPEG si el navegador no puede codificar WebP. Los archivos se suben al bucket `curileta-site-media` mediante permisos firmados de un solo objeto y se validan en el servidor antes de guardar la referencia. Las imágenes de destinos, eventos, autoras, galería, cartas, canal, libros y contenido editorial usan rutas permitidas por módulo.
 
-## 3. Administración del Backend y Base de Datos
+Para variables, acceso inicial, migraciones y comprobaciones de Production, sigue [Docs/BACKEND_SETUP.md](./Docs/BACKEND_SETUP.md) y la [referencia técnica](./Docs/BACKEND_TECHNICAL_REFERENCE.md). No edites Production mediante un cliente SQLite ni añadas credenciales al repositorio.
 
-La aplicación cuenta con una **base de datos relacional SQLite persistente y de alto rendimiento** ubicada en:
-👉 `packages/cms/data/curileta.db`
+## 4. Gestión de eventos estacionales
 
-Esta base de datos almacena toda la información del sitio: personajes, libros, cartas a Pompón, puntos de expedición, eventos y configuración general.
-
-### Estructura de Tablas en la Base de Datos:
-* `characters`: Biografía, citas, insignias, paleta de colores y atributos de los 19 personajes.
-* `books`: Libros físicos, sinopsis, ISBN, fecha de edición y enlaces.
-* `letters`: Cartas y postales enviadas a la casita del árbol de Pompón.
-* `locations`: Países, monumentos y coordenadas para el globo y el mapa de expedición.
-* `trail_waypoints`: Puntos del sendero narrativo que une todas las escenas.
-* `seasonal_events`: Configuración de eventos temporales como Halloween y Navidad.
-* `universe_roadmap`: Hitos pasados, presentes y futuros del universo Curileta.
-* `collaborations`: Categorías para editoriales, colegios y marcas afines.
-* `site_settings`: Estadísticas globales, lema principal y configuración general.
-
----
-
-### ¿Cómo Administrar o Modificar los Datos?
-
-Tienes **3 opciones** para modificar la información:
-
-#### Opción 1: Modificar el Script Maestro de Datos y Ejecutar el Sembrador (Recomendado)
-1. Edita el archivo `packages/cms/src/db/seed.ts` con los nuevos textos, personajes o libros.
-2. Ejecuta el comando de sembrado forzado en la terminal:
-   ```bash
-   npm run seed:db -- --force
-   ```
-3. Esto actualizará `curileta.db` con toda la nueva información en milisegundos.
-4. Haz `git add .`, `git commit -m "data: actualizar catálogo"` y `git push origin main` para que Vercel lo aplique en la web.
-
-#### Opción 2: Usar un Visualizador Visual de Base de Datos (GUI)
-Puedes abrir directamente el archivo `packages/cms/data/curileta.db` con cualquiera de estos programas gratuitos:
-* **TablePlus** (Mac / Windows): Interfaz moderna y rápida.
-* **DB Browser for SQLite** (Gratis y de código abierto): Muy fácil de usar para editar filas como una hoja de Excel.
-* **Extensión SQLite Viewer en VS Code / Cursor**: Te permite editar tablas directamente desde el editor de código.
-
-#### Opción 3: Conectar Sanity Studio (Para Edición Visual Web)
-El proyecto incluye un paquete listo de **Sanity Studio** en `apps/studio`.  
-Si deseas que redactores o ilustradores agreguen contenido desde una interfaz web sin tocar Git ni bases de datos locales:
-1. Regístrate gratuitamente en [sanity.io](https://sanity.io).
-2. Obtén tu `projectId` y colócalo en `apps/studio/sanity.config.ts`.
-3. Inicia el panel con `npm run dev --workspace=studio`.
-
----
-
-## 4. Gestión de Eventos Estacionales (Halloween y Próximos Eventos)
-
-El evento de Halloween está programado en la base de datos con un mecanismo de **reversión temporal automática**:
-* **Ventana activa (UTC):** Del `1 de octubre a las 00:00` al `5 de noviembre a las 23:59:59`.
-* **Comportamiento automático:**
-  * Mientras la fecha actual esté dentro de ese rango, la web muestra la ambientación del Bosque Encantado, los acentos calabaza y las actividades especiales.
-  * Al llegar el **6 de noviembre a las 00:00 UTC**, la web detecta el fin de temporada y **regresa automáticamente al tema original de Curileta** (verde esmeralda y oro aventurero) sin que tengas que cambiar una sola línea de código. El banner conserva la fecha de campaña en UTC para que no cambie según el país del visitante.
-
-### ¿Cómo Cambiar las Fechas o Crear un Nuevo Evento (ej. Especial de Navidad)?
-Los temas disponibles se declaran en `SeasonalEvent.themeKey` (`halloween`, `christmas`, `spring`, `summer`, `easter` y `valentines`). La capa visual global vive en `apps/web/src/app/globals.css`; el tema conserva la preferencia claro/oscuro, se activa durante el rango del CMS y la opción de volver al tema habitual se guarda por campaña y año, sin apagar la siguiente temporada.
-
-En `packages/cms/src/localProvider.ts` o en la tabla `seasonal_events` del CMS:
-```typescript
-{
-  id: 'event-navidad',
-  slug: 'navidad-bosque-nevado',
-  name: { es: 'Navidad en el Bosque Nevado', en: 'Winter Wonderland Expedition' },
-  themeKey: 'christmas', // Debe coincidir con una clave de SeasonalEvent.themeKey
-  active: true,
-  startDate: '2026-12-01T00:00:00Z',
-  endDate: '2027-01-06T23:59:59Z',
-  // Completar también tagline, bannerImage, ambientDecorations y specialChapter.
-}
-```
-
-Los eventos que atraviesan diciembre y enero también se repiten anualmente. El banner y la ambientación son genéricos; cada campaña necesita además su sección editorial e imágenes propias antes de publicarse para evitar mostrar contenido de otra festividad.
-
----
+Usa `/admin/eventos` para crear o editar una campaña, elegir su tema, definir su zona horaria y programar inicio y fin. Añade los recursos visuales desde el formulario de medios y publica después de revisar la vista pública. No edites eventos en el proveedor local ni en tablas de Production directamente.
 
 ## 5. Endpoints REST API Activos
 
@@ -271,24 +186,24 @@ La web ya cuenta con una API REST viva lista para ser consumida por apps móvile
 
 ---
 
-## 6. Resumen de Comandos Frecuentes
+## 6. Comandos de desarrollo
 
 ```bash
-# Iniciar servidor de desarrollo local
+# Instalar las dependencias
+npm install
+
+# Iniciar la aplicación web
 npm run dev
 
-# Ejecutar verificación de tipos TypeScript
-npm run typecheck
+# Revisar tipos y lint del workspace web
+npm run typecheck --workspace=apps/web
+npm run lint --workspace=apps/web
 
-# Ejecutar suite de pruebas unitarias
-npm test
-
-# Actualizar y re-sembrar la base de datos SQLite
-npm run seed:db -- --force
-
-# Compilar para producción localmente
-npm run build
+# Compilar la aplicación web
+npm run build --workspace=apps/web
 ```
 
+Para desarrollo y operación del backend, variables y procedimientos de migración, consulta [Docs/BACKEND_SETUP.md](./Docs/BACKEND_SETUP.md). No se usa un sembrador SQLite para publicar contenido.
+
 ---
-*Documento preparado para el equipo de desarrollo de Curileta • Versión 1.2 • Octubre 2026*
+*Guía de operación • Octubre de 2026*

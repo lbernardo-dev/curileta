@@ -189,7 +189,7 @@ export default function BookCatalogEditor() {
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">Gestión editorial</p>
           <div className="mt-2 flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-900 dark:bg-[#272727] dark:text-emerald-200"><BookOpen className="h-5 w-5" /></span><h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Catálogo de libros</h1></div>
-          <p className="mt-3 max-w-3xl text-base leading-6 text-slate-600 dark:text-slate-300">Elige los tres libros de la portada y gestiona los anuncios de próximas aventuras. Los libros editoriales publicados conservan su ficha completa en Sanity.</p>
+          <p className="mt-3 max-w-3xl text-base leading-6 text-slate-600 dark:text-slate-300">Elige los libros de la portada y gestiona los anuncios de próximas aventuras. Edita las fichas, sus imágenes y su publicación desde Contenidos.</p>
         </div>
         {!loading && <button type="button" onClick={save} disabled={!canSave || !hasChanges} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-emerald-800 px-5 py-2.5 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"><Save className="h-4 w-4" />{saving ? 'Guardando…' : 'Guardar catálogo'}</button>}
       </header>

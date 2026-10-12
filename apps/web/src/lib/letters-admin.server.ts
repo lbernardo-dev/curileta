@@ -1,35 +1,17 @@
 import 'server-only';
 
-import { createHash, randomUUID } from 'node:crypto';
-import { createClient } from '@sanity/client';
 import type { LetterItem, LetterPhoto } from '@curileta/cms';
+import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
-export type ManagedLetter = LetterItem & { documentId: string };
+export type ManagedLetter = LetterItem & { documentId: string; updatedAt: string; isDeleted: boolean };
 
-function getProjectId() {
-  return process.env.SANITY_STUDIO_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+interface LetterRow {
+  id: string;
+  content_id: string;
+  payload: LetterItem;
+  updated_at: string;
+  is_deleted: boolean;
 }
-
-function getDataset() {
-  return process.env.SANITY_STUDIO_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-}
-
-function getSanityClient(write = false) {
-  const projectId = getProjectId();
-  const token = write ? process.env.SANITY_WRITE_TOKEN : (process.env.SANITY_READ_TOKEN || process.env.SANITY_WRITE_TOKEN);
-  if (!projectId || projectId === 'curileta-demo') throw new Error('Falta configurar el proyecto editorial de Sanity.');
-  if (write && !token) throw new Error('Falta configurar SANITY_WRITE_TOKEN para guardar las cartas.');
-  return createClient({
-    projectId,
-    dataset: getDataset(),
-    apiVersion: '2025-02-19',
-    useCdn: false,
-    token,
-  });
-}
-
-const LETTERS_QUERY = `*[_type == "contentEntry" && contentType == "letter" && !(_id in path("drafts.**"))]
-  | order(order asc, id asc) { ..., "documentId": _id }`;
 
 function normalizePhotos(photos: unknown): LetterPhoto[] {
   if (!Array.isArray(photos)) return [];
@@ -39,75 +21,128 @@ function normalizePhotos(photos: unknown): LetterPhoto[] {
   });
 }
 
-export async function listManagedLetters(): Promise<ManagedLetter[]> {
-  const rows = await getSanityClient().fetch<Array<Record<string, unknown>>>(LETTERS_QUERY);
-  return rows.map((row) => ({
-    ...row,
-    publicationStatus: (row.publicationStatus as LetterItem['publicationStatus']) || 'public',
-    photos: normalizePhotos(row.photos),
-  } as ManagedLetter));
+function mapLetter(row: LetterRow): ManagedLetter {
+  return {
+    ...row.payload,
+    publicationStatus: row.payload.publicationStatus || 'public',
+    photos: normalizePhotos(row.payload.photos),
+    documentId: row.content_id,
+    updatedAt: row.updated_at,
+    isDeleted: row.is_deleted,
+  };
 }
 
-function documentIdForLetter(id: string) {
-  const digest = createHash('sha256').update(`letter\0${id}`).digest('hex').slice(0, 20);
-  return `contentEntry-letter-${digest}`;
+export async function listManagedLetters(includeDeleted = false): Promise<ManagedLetter[]> {
+  let query = createSupabaseAdminClient()
+    .from('managed_content_entries')
+    .select('id, content_id, payload, updated_at, is_deleted')
+    .eq('content_type', 'letter')
+    .order('sort_order', { ascending: true })
+    .order('content_id', { ascending: true });
+  if (!includeDeleted) query = query.eq('is_deleted', false);
+  const { data, error } = await query;
+  if (error) throw error;
+  return ((data || []) as unknown as LetterRow[]).map(mapLetter);
 }
 
-export async function saveManagedLetter(letter: LetterItem, previousId?: string) {
-  const client = getSanityClient(true);
-  let documentId = previousId
-    ? await client.fetch<string | null>(
-      '*[_type == "contentEntry" && contentType == "letter" && id == $id && !(_id in path("drafts.**"))][0]._id',
-      { id: previousId },
-    )
-    : null;
+export async function saveManagedLetter(letter: LetterItem, userId: string, previousId?: string) {
+  const client = createSupabaseAdminClient();
+  if (previousId) {
+    const { data: current, error: readError } = await client.from('managed_content_entries')
+      .select('id, content_id, is_deleted')
+      .eq('content_type', 'letter')
+      .eq('content_id', previousId)
+      .maybeSingle();
+    if (readError) throw readError;
+    if (!current || current.is_deleted) throw new Error('La carta ya no existe. Actualiza la lista e inténtalo de nuevo.');
 
-  if (previousId && !documentId) throw new Error('La carta ya no existe. Actualiza la lista e inténtalo de nuevo.');
-  if (previousId && letter.id !== previousId) {
-    const collision = await client.fetch<string | null>(
-      '*[_type == "contentEntry" && contentType == "letter" && id == $id && _id != $documentId && !(_id in path("drafts.**"))][0]._id',
-      { id: letter.id, documentId },
-    );
-    if (collision) throw new Error('Ya existe una carta con ese identificador.');
+    if (letter.id !== previousId) {
+      const { data: collision, error: collisionError } = await client.from('managed_content_entries')
+        .select('content_id, is_deleted')
+        .eq('content_type', 'letter')
+        .eq('content_id', letter.id)
+        .maybeSingle();
+      if (collisionError) throw collisionError;
+      if (collision && !collision.is_deleted) throw new Error('Ya existe una carta con ese identificador.');
+    }
+
+    const { error } = await client.from('managed_content_entries')
+      .update({
+        content_id: letter.id,
+        slug: null,
+        payload: letter,
+        sort_order: letter.order,
+        is_published: true,
+        is_deleted: false,
+        updated_by: userId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', current.id);
+    if (error) throw error;
+    return;
   }
-  if (!previousId) {
-    const exists = await client.fetch<string | null>(
-      '*[_type == "contentEntry" && contentType == "letter" && id == $id && !(_id in path("drafts.**"))][0]._id',
-      { id: letter.id },
-    );
-    if (exists) throw new Error('Ya existe una carta con ese identificador.');
-    documentId = documentIdForLetter(letter.id);
-  }
-  if (!documentId) throw new Error('La carta no tiene un identificador editorial válido.');
 
-  const photos = letter.photos.map((photo) => ({
-    ...photo,
-    _key: photo.photoId || randomUUID(),
-  }));
-  await client.createOrReplace({
-    _id: documentId,
-    _type: 'contentEntry',
-    contentType: 'letter',
-    ...letter,
-    photos,
-  });
+  const { data: current, error: readError } = await client.from('managed_content_entries')
+    .select('id, is_deleted')
+    .eq('content_type', 'letter')
+    .eq('content_id', letter.id)
+    .maybeSingle();
+  if (readError) throw readError;
+  if (current && !current.is_deleted) throw new Error('Ya existe una carta con ese identificador.');
+
+  const { error } = await client.from('managed_content_entries').upsert({
+    content_type: 'letter',
+    content_id: letter.id,
+    slug: null,
+    payload: letter,
+    sort_order: letter.order,
+    is_published: true,
+    is_deleted: false,
+    updated_by: userId,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'content_type,content_id' });
+  if (error) throw error;
 }
 
-export async function deleteManagedLetter(id: string) {
-  const client = getSanityClient(true);
-  const documentId = await client.fetch<string | null>(
-    '*[_type == "contentEntry" && contentType == "letter" && id == $id && !(_id in path("drafts.**"))][0]._id',
-    { id },
-  );
-  if (!documentId) return false;
-  await client.delete(documentId);
-  return true;
+export async function deleteManagedLetter(id: string, userId: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from('managed_content_entries')
+    .update({ is_deleted: true, updated_by: userId, updated_at: new Date().toISOString() })
+    .eq('content_type', 'letter')
+    .eq('content_id', id)
+    .eq('is_deleted', false)
+    .select('content_id')
+    .maybeSingle();
+  if (error) throw error;
+  return Boolean(data);
+}
+
+export async function restoreManagedLetter(id: string, userId: string) {
+  const { data, error } = await createSupabaseAdminClient()
+    .from('managed_content_entries')
+    .update({ is_deleted: false, updated_by: userId, updated_at: new Date().toISOString() })
+    .eq('content_type', 'letter')
+    .eq('content_id', id)
+    .eq('is_deleted', true)
+    .select('content_id')
+    .maybeSingle();
+  if (error) throw error;
+  return Boolean(data);
 }
 
 export async function isLetterPhotoReferenced(path: string) {
-  const client = getSanityClient();
-  return client.fetch<boolean>(
-    'count(*[_type == "contentEntry" && contentType == "letter" && !(_id in path("drafts.**")) && ($path in photos[].storagePath || $path in photos[].censoredStoragePath)]) > 0',
-    { path },
-  );
+  const { data, error } = await createSupabaseAdminClient()
+    .from('managed_content_entries')
+    .select('payload')
+    .eq('content_type', 'letter');
+  if (error) throw error;
+  return (data || []).some((row) => {
+    const payload = row.payload && typeof row.payload === 'object' ? row.payload as Record<string, unknown> : {};
+    const photos = Array.isArray(payload.photos) ? payload.photos : [];
+    return photos.some((photo) => {
+      if (!photo || typeof photo !== 'object') return false;
+      const item = photo as Record<string, unknown>;
+      return item.storagePath === path || item.censoredStoragePath === path;
+    });
+  });
 }

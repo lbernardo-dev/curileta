@@ -118,9 +118,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false }, { status: 400 });
   }
 
-  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download' || eventName === 'video_play';
+  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download';
   if (eventName === 'gallery_download' && body.contentType !== 'gallery') return NextResponse.json({ success: false }, { status: 400 });
-  if (eventName === 'video_play' && body.contentType !== 'video') return NextResponse.json({ success: false }, { status: 400 });
   if (eventName === 'video_vote') {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
