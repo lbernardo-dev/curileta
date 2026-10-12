@@ -1,34 +1,18 @@
 import 'server-only';
 
 import type { CMSProvider } from '@curileta/cms';
-import { DatabaseCMSProvider } from '@curileta/cms/server';
 import { getPublicManagedSongs, getPublicManagedVideos } from '@/lib/youtube-content.server';
 import { getManagedEventState, listManagedEvents, toSeasonalEvent } from '@/lib/events.server';
-import { SanityCMSProvider } from './sanity-provider';
+import { SupabaseCMSProvider } from './supabase-provider';
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
-const hasSanityConfig = Boolean(projectId && projectId !== 'curileta-demo');
-
-if (process.env.NODE_ENV === 'production' && !hasSanityConfig) {
-  console.warn('[CMS] Sanity no está configurado; el contenido se sirve desde el respaldo local.');
-}
-
-const cmsContentSourceInstance: CMSProvider = hasSanityConfig
-  ? new SanityCMSProvider()
-  : new DatabaseCMSProvider();
-
-export const cmsContentSource = cmsContentSourceInstance;
+const cmsContentSourceInstance = new SupabaseCMSProvider();
+export const cmsContentSource: CMSProvider = cmsContentSourceInstance;
 
 export async function getYouTubeSourceItemsForMediaCleanup() {
-  const [videos, songs] = cmsContentSourceInstance instanceof SanityCMSProvider
-    ? await Promise.all([
-      cmsContentSourceInstance.getVideosForMediaCleanup(),
-      cmsContentSourceInstance.getSongsForMediaCleanup(),
-    ])
-    : await Promise.all([
-      cmsContentSourceInstance.getVideos('es'),
-      cmsContentSourceInstance.getSongs('es'),
-    ]);
+  const [videos, songs] = await Promise.all([
+    cmsContentSourceInstance.getVideosForMediaCleanup(),
+    cmsContentSourceInstance.getSongsForMediaCleanup(),
+  ]);
   return [...videos, ...songs];
 }
 
@@ -58,12 +42,6 @@ export const cmsProvider = new Proxy(cmsContentSource, {
     }
     if (property === 'getSongs') {
       return async (locale?: string) => getPublicManagedSongs(await target.getSongs(locale));
-    }
-    if (property === 'getLetters') {
-      return async (locale?: string) => {
-        if (process.env.NODE_ENV === 'production' && !hasSanityConfig) return [];
-        return target.getLetters(locale);
-      };
     }
 
     const value = Reflect.get(target, property, target);

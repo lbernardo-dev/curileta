@@ -80,6 +80,9 @@ export async function getManagedEventState(referenceDate = new Date()): Promise<
     const events = await listManagedEvents();
     const control = await getThemeControlState();
     if (control.mode === 'base') return { configured: true, hasManagedEvents: true, event: null };
+    if (control.mode === 'automatic' && events.length === 0) {
+      return { configured: true, hasManagedEvents: false, event: null };
+    }
     let active = control.mode === 'event' ? events.find((event) => event.id === control.eventId && event.enabled) : undefined;
     const forceActive = Boolean(active && control.mode === 'event');
     if (!active && control.mode === 'automatic') {

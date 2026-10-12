@@ -13,6 +13,7 @@ const targets = {
   'gallery-image': { prefix: 'gallery', kind: 'gallery' },
   'upcoming-book-cover': { prefix: 'books/upcoming', kind: 'book' },
   'letter-photo': { prefix: 'letters/photos', kind: 'letter' },
+  'editorial-image': { prefix: 'editorial/content', kind: 'editorial' },
 } as const;
 
 export async function DELETE(request: Request) {
@@ -45,7 +46,8 @@ export async function DELETE(request: Request) {
     const { data } = createSupabaseAdminClient().storage.from('curileta-site-media').getPublicUrl(value.path);
     await removeUnreferencedYouTubeMedia([data.publicUrl]);
   } else {
-    const prefix = target.kind === 'author' ? 'authors/portraits'
+    const prefix = target.kind === 'editorial' ? 'editorial/content'
+      : target.kind === 'author' ? 'authors/portraits'
       : target.kind === 'letter' ? 'letters/photos'
         : target.kind === 'book' ? 'books/upcoming' : 'gallery';
     await removeSiteMediaAsset(value.path, prefix);

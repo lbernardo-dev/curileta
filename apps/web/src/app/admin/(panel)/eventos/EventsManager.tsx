@@ -498,3 +498,4 @@ function TextField({ label, value, onChange, type = 'text', maxLength, min, max,
 function TextAreaField({ label, value, onChange, maxLength, required }: { label: string; value: string; onChange: (value: string) => void; maxLength: number; required?: boolean }) {
   return <label className="block text-sm font-semibold">{label}<textarea value={value} onChange={(event) => onChange(event.target.value)} maxLength={maxLength} required={required} rows={3} className={`${fieldClass} resize-y`} /></label>;
 }
+

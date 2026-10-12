@@ -27,7 +27,7 @@ const eventLabels: Record<string, string> = {
   contact_submit: 'Envíos de contacto',
   book_view: 'Vistas de libros',
   book_purchase_click: 'Clics para comprar libros',
-  video_play: 'Reproducciones de vídeos',
+  video_play: 'Inicios de reproducción en vídeos',
   character_view: 'Vistas de personajes',
   map_destination_open: 'Destinos del mapa abiertos',
   song_play: 'Reproducciones de canciones',
@@ -97,10 +97,12 @@ export default function AdminAnalyticsPage() {
   const voteRows = useMemo(() => rows.filter((row) => row.event_name === 'video_vote'), [rows]);
   const votesTotal = useMemo(() => voteRows.reduce((total, row) => total + Number(row.event_count), 0), [voteRows]);
   const videoPlayRows = useMemo(() => rows.filter((row) => row.event_name === 'video_play'), [rows]);
-  const videoPlaysTotal = useMemo(() => videoPlayRows.reduce((total, row) => total + Number(row.event_count), 0), [videoPlayRows]);
-  const videoPlaysByVideo = useMemo(() => {
+  const mostPlayedVideos = useMemo(() => {
     const counts = new Map<string, number>();
-    videoPlayRows.forEach((row) => counts.set(row.path, (counts.get(row.path) || 0) + Number(row.event_count)));
+    videoPlayRows.forEach((row) => {
+      const match = row.path.match(/^\/(?:es|en)\/contenido\/video\/([a-zA-Z0-9_-]+)$/);
+      if (match) counts.set(match[1], (counts.get(match[1]) || 0) + Number(row.event_count));
+    });
     return [...counts.entries()].sort((left, right) => right[1] - left[1]).slice(0, 10);
   }, [videoPlayRows]);
   const downloadsTotal = useMemo(() => rows.filter((row) => ['wallpaper_download', 'gallery_download'].includes(row.event_name)).reduce((total, row) => total + Number(row.event_count), 0), [rows]);
@@ -232,25 +234,6 @@ export default function AdminAnalyticsPage() {
             <VisitsTrendChart data={pageViewsByDay} start={chartStart} end={chartEnd} grouping={grouping} idPrefix="page-views" />
           </section>
 
-          <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="video-starts-heading">
-            <div className="border-b border-slate-200 p-6 dark:border-[#313131]">
-              <h2 id="video-starts-heading" className="text-xl font-bold">Reproducciones iniciadas en Curileta</h2>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{videoPlaysTotal.toLocaleString('es-ES')} inicios durante {periodLabel}. El registro se activa cuando el reproductor empieza; no equivale a las visualizaciones oficiales de YouTube ni a personas únicas.</p>
-            </div>
-            {videoPlaysByVideo.length ? (
-              <ol className="divide-y divide-slate-200 dark:divide-[#313131]">
-                {videoPlaysByVideo.map(([path, count]) => (
-                  <li key={path} className="flex items-center justify-between gap-4 px-6 py-4 text-sm">
-                    <a href={path} target="_blank" rel="noreferrer" className="break-all font-mono text-emerald-800 underline underline-offset-4 dark:text-emerald-300">{path}</a>
-                    <span className="shrink-0 font-semibold tabular-nums">{count.toLocaleString('es-ES')}</span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="px-6 py-8 text-sm text-slate-600 dark:text-slate-300">Aún no hay inicios de reproducción registrados en este periodo.</p>
-            )}
-          </section>
-
           <CharacterFavoriteStats days={favoriteDays} />
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -295,8 +278,27 @@ export default function AdminAnalyticsPage() {
 
           <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]">
             <div className="border-b border-slate-200 p-6 dark:border-[#313131]">
+              <h2 className="text-xl font-bold">Inicios de reproducción por vídeo</h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Cuenta cuando el reproductor de Curileta confirma que el vídeo ha empezado. YouTube calcula sus visualizaciones oficiales por separado.</p>
+            </div>
+            {mostPlayedVideos.length ? (
+              <ol className="divide-y divide-slate-200 dark:divide-[#313131]">
+                {mostPlayedVideos.map(([slug, count]) => (
+                  <li key={slug} className="flex items-center justify-between gap-4 px-6 py-4 text-sm">
+                    <code className="break-all font-mono text-slate-700 dark:text-slate-200">{slug}</code>
+                    <span className="shrink-0 font-semibold tabular-nums">{count.toLocaleString('es-ES')}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="px-6 py-8 text-sm text-slate-600 dark:text-slate-300">Cuando un vídeo se reproduzca en Curileta, su inicio aparecerá aquí.</p>
+            )}
+          </section>
+
+          <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]">
+            <div className="border-b border-slate-200 p-6 dark:border-[#313131]">
               <h2 className="text-xl font-bold">Votos por vídeo</h2>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Solo aparecen vídeos cuya votación está activada en el sistema editorial Sanity.</p>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Solo aparecen vídeos cuya votación está activada en la gestión editorial.</p>
             </div>
             {votesByVideo.length ? (
               <ol className="divide-y divide-slate-200 dark:divide-[#313131]">

@@ -26,6 +26,11 @@ export default async function AdminOverviewPage() {
     supabase.from('contact_forms').select('id', { count: 'exact', head: true }).eq('enabled', true),
     supabase.from('analytics_daily').select('event_name, event_count').eq('day', today),
   ]);
+  const [publishedContent, draftContent, weeklyAdminChanges] = await Promise.all([
+    supabase.from('managed_content_entries').select('id', { count: 'exact', head: true }).eq('is_deleted', false).eq('is_published', true),
+    supabase.from('managed_content_entries').select('id', { count: 'exact', head: true }).eq('is_deleted', false).eq('is_published', false),
+    supabase.from('admin_audit_log').select('id', { count: 'exact', head: true }).gte('created_at', since),
+  ]);
   const activeLeads = canReadInbox
     ? await supabase.from('contact_submissions').select('id', { count: 'exact', head: true }).not('lead_stage', 'is', null)
     : { count: 0, error: null };
@@ -33,7 +38,7 @@ export default async function AdminOverviewPage() {
     ? await supabase.from('contact_submissions').select('id, name, email, category, status, created_at').order('created_at', { ascending: false }).limit(5)
     : { data: [], error: null };
 
-  const queryError = newSubmissions.error || weeklySubmissions.error || activeForms.error || todayActivity.error || activeLeads.error || recent.error;
+  const queryError = newSubmissions.error || weeklySubmissions.error || activeForms.error || todayActivity.error || publishedContent.error || draftContent.error || weeklyAdminChanges.error || activeLeads.error || recent.error;
   const pageViewsToday = (todayActivity.data || []).filter((row) => row.event_name === 'page_view').reduce((total, row) => total + Number(row.event_count || 0), 0);
   const shareActionsToday = (todayActivity.data || []).filter((row) => row.event_name.startsWith('content_share_')).reduce((total, row) => total + Number(row.event_count || 0), 0);
   const videoVotesToday = (todayActivity.data || []).filter((row) => row.event_name === 'video_vote').reduce((total, row) => total + Number(row.event_count || 0), 0);
@@ -50,6 +55,7 @@ export default async function AdminOverviewPage() {
         { href: '/admin/consultas', title: 'Consultas', description: 'Mensajes recibidos y estado de atención' },
         { href: '/admin/leads', title: 'Oportunidades', description: 'Fases y notas de seguimiento' },
         { href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' },
+        { href: '/admin/sistema', title: 'Estado del sistema', description: 'Conexiones, biblioteca de imágenes e historial administrativo' },
       ]
     : identity.role === 'editor'
       ? [
@@ -61,6 +67,7 @@ export default async function AdminOverviewPage() {
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
       ]
       : [{ href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' }];
+  if (identity.role === 'owner') shortcuts.push({ href: '/admin/equipo', title: 'Equipo', description: 'Permisos por función y accesos administrativos' });
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -85,6 +92,9 @@ export default async function AdminOverviewPage() {
             <MetricCard label="Visitas de hoy" value={pageViewsToday} detail="Recuento agregado por página" />
             <MetricCard label="Acciones para compartir hoy" value={shareActionsToday} detail="Inicio de una opción para compartir" />
             <MetricCard label="Votos en vídeos hoy" value={videoVotesToday} detail="Recuento agregado" />
+            <MetricCard label="Fichas publicadas" value={publishedContent.count || 0} detail="Contenido editorial visible" />
+            <MetricCard label="Borradores editoriales" value={draftContent.count || 0} detail="Fichas guardadas y ocultas" />
+            <MetricCard label="Cambios administrativos" value={weeklyAdminChanges.count || 0} detail="Últimos siete días" />
             {canReadInbox && <MetricCard label="Oportunidades" value={activeLeads.count || 0} detail="En seguimiento" />}
           </section>
 

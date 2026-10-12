@@ -10,7 +10,7 @@ function canOptimizeImageSource(src: ImageProps['src']) {
 
   try {
     const url = new URL(src);
-    if (['cdn.sanity.io', 'i.ytimg.com', 'images.unsplash.com'].includes(url.hostname)) return true;
+    if (['i.ytimg.com', 'images.unsplash.com'].includes(url.hostname)) return true;
     return Boolean(
       process.env.NEXT_PUBLIC_SUPABASE_IMAGE_HOST
       && url.hostname === process.env.NEXT_PUBLIC_SUPABASE_IMAGE_HOST

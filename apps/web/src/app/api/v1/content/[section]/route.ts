@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cmsProvider } from '@/lib/cms';
 import { getPublicDestinations } from '@/lib/destinations.server';
+import { getLandingLetters } from '@/lib/letters';
 
 export async function GET(
   request: NextRequest,
@@ -28,7 +29,7 @@ export async function GET(
       }
 
       case 'letters': {
-        const letters = await cmsProvider.getLetters(locale);
+        const letters = getLandingLetters(await cmsProvider.getLetters(locale));
         return NextResponse.json({ success: true, section: 'letters', total: letters.length, data: letters });
       }
 
@@ -110,7 +111,7 @@ export async function GET(
           cmsProvider.getSiteSettings(locale),
           cmsProvider.getCharacters(locale),
           cmsProvider.getBooks(locale),
-          cmsProvider.getLetters(locale),
+          cmsProvider.getLetters(locale).then(getLandingLetters),
           getPublicDestinations(locale === 'en' ? 'en' : 'es'),
           cmsProvider.getNarrativeMilestones(locale),
           cmsProvider.getTrailWaypoints(locale),

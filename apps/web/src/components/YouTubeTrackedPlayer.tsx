@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { analytics } from '@curileta/analytics';
+import { ContentImage } from '@/components/ContentImage';
 
 interface YouTubePlayerEvent {
   data: number;
@@ -60,7 +61,7 @@ function loadYouTubeIframeAPI(): Promise<YouTubeIframeAPI> {
       if (settled) return;
       settled = true;
       window.clearTimeout(timeout);
-      script?.remove();
+      if (script?.id === scriptId && script.dataset.curiletaOwned === 'true') script.remove();
       window.onYouTubeIframeAPIReady = previousCallback;
       reject(new Error('YouTube player API unavailable'));
     };
@@ -75,6 +76,7 @@ function loadYouTubeIframeAPI(): Promise<YouTubeIframeAPI> {
     if (!script) {
       script = document.createElement('script');
       script.id = scriptId;
+      script.dataset.curiletaOwned = 'true';
       script.src = 'https://www.youtube.com/iframe_api';
       script.async = true;
       document.head.appendChild(script);
@@ -93,50 +95,73 @@ interface YouTubeTrackedPlayerProps {
   videoId: string;
   videoSlug: string;
   title: string;
+  thumbnail: string;
+  youtubeUrl: string;
   locale: 'es' | 'en';
 }
 
-export function YouTubeTrackedPlayer({ videoId, videoSlug, title, locale }: YouTubeTrackedPlayerProps) {
+export function YouTubeTrackedPlayer({
+  videoId,
+  videoSlug,
+  title,
+  thumbnail,
+  youtubeUrl,
+  locale,
+}: YouTubeTrackedPlayerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const reportedStartRef = useRef(false);
   const [playerReady, setPlayerReady] = useState(false);
   const [trackingUnavailable, setTrackingUnavailable] = useState(false);
   const [playbackError, setPlaybackError] = useState(false);
+  const [thumbnailIndex, setThumbnailIndex] = useState(0);
   const invalidVideoId = !/^[A-Za-z0-9_-]{11}$/.test(videoId);
+  const youtubeThumbnails = invalidVideoId
+    ? []
+    : [
+        'https://i.ytimg.com/vi/' + encodeURIComponent(videoId) + '/hqdefault.jpg',
+        'https://i.ytimg.com/vi/' + encodeURIComponent(videoId) + '/mqdefault.jpg',
+      ];
+  const thumbnailSources = [...new Set([thumbnail.trim(), ...youtubeThumbnails].filter(Boolean))];
+  const fallbackThumbnail = thumbnailSources[thumbnailIndex] || '';
+
+  useEffect(() => setThumbnailIndex(0), [thumbnail, videoId]);
+
+  function useNextThumbnail() {
+    setThumbnailIndex((current) => Math.min(current + 1, thumbnailSources.length));
+  }
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host || invalidVideoId) return;
 
     reportedStartRef.current = false;
-
     let cancelled = false;
     let iframe: HTMLIFrameElement | null = null;
     let player: YouTubePlayerInstance | null = null;
     let playerReadyTimeout = 0;
-    let playerReady = false;
+    let hasPlayerReady = false;
 
     void loadYouTubeIframeAPI()
       .then((api) => {
         if (cancelled || !host.isConnected) return;
 
         iframe = document.createElement('iframe');
-        const origin = encodeURIComponent(window.location.origin);
-        iframe.src =
-          'https://www.youtube-nocookie.com/embed/' +
-          encodeURIComponent(videoId) +
-          '?enablejsapi=1&origin=' +
-          origin;
+        const embedUrl = new URL('https://www.youtube-nocookie.com/embed/' + encodeURIComponent(videoId));
+        embedUrl.searchParams.set('enablejsapi', '1');
+        embedUrl.searchParams.set('origin', window.location.origin);
+        embedUrl.searchParams.set('playsinline', '1');
+        iframe.src = embedUrl.toString();
         iframe.title = title;
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
         iframe.className = 'absolute inset-0 h-full w-full border-0';
-        iframe.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
         iframe.allowFullscreen = true;
         host.replaceChildren(iframe);
 
         player = new api.Player(iframe, {
           events: {
             onReady: () => {
-              playerReady = true;
+              hasPlayerReady = true;
               window.clearTimeout(playerReadyTimeout);
               if (!cancelled) setPlayerReady(true);
             },
@@ -155,7 +180,7 @@ export function YouTubeTrackedPlayer({ videoId, videoSlug, title, locale }: YouT
           },
         });
         playerReadyTimeout = window.setTimeout(() => {
-          if (!cancelled && !playerReady) setPlaybackError(true);
+          if (!cancelled && !hasPlayerReady) setPlaybackError(true);
         }, 15000);
       })
       .catch(() => {
@@ -170,31 +195,40 @@ export function YouTubeTrackedPlayer({ videoId, videoSlug, title, locale }: YouT
     };
   }, [invalidVideoId, videoId, videoSlug, title]);
 
+  const fallbackMessage = trackingUnavailable
+    ? locale === 'en' ? 'The player could not load here.' : 'No se pudo cargar el reproductor aquí.'
+    : locale === 'en' ? 'This video cannot be played here.' : 'Este vídeo no se puede reproducir aquí.';
+
   return (
     <>
       <div ref={hostRef} className="absolute inset-0 h-full w-full bg-[#181818]" />
       {!playerReady && !trackingUnavailable && !playbackError && !invalidVideoId && (
         <div className="absolute inset-0 z-10 grid place-items-center bg-[#181818]" role="status" aria-live="polite">
-          <span className="text-sm text-slate-300">
+          {fallbackThumbnail ? (
+            <ContentImage src={fallbackThumbnail} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" loading="eager" onError={useNextThumbnail} />
+          ) : null}
+          <span className="relative rounded-full bg-black/75 px-4 py-2 text-sm text-white">
             {locale === 'en' ? 'Loading video player' : 'Cargando reproductor de vídeo'}
           </span>
         </div>
       )}
       {(trackingUnavailable || playbackError || invalidVideoId) && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#181818] p-6 text-center text-white" role="alert">
-          <p className="text-sm">
-            {playbackError || invalidVideoId
-              ? locale === 'en' ? 'YouTube could not play this video here.' : 'YouTube no pudo reproducir este vídeo aquí.'
-              : locale === 'en' ? 'The player could not load.' : 'No se pudo cargar el reproductor.'}
-          </p>
-          <a
-            href={'https://www.youtube.com/watch?v=' + encodeURIComponent(videoId)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            {locale === 'en' ? 'Open on YouTube' : 'Abrir en YouTube'}
-          </a>
+        <div className="absolute inset-0 z-10 overflow-hidden bg-[#181818] text-white" role="alert">
+          {fallbackThumbnail ? (
+            <ContentImage src={fallbackThumbnail} alt="" className="absolute inset-0 h-full w-full object-cover opacity-65" loading="eager" onError={useNextThumbnail} />
+          ) : null}
+          <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
+          <div className="relative flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+            <p className="text-sm">{fallbackMessage}</p>
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              {locale === 'en' ? 'Watch on YouTube' : 'Ver en YouTube'}
+            </a>
+          </div>
         </div>
       )}
     </>

@@ -11,7 +11,7 @@ type LetterDraft = Omit<LetterItem, 'body' | 'photos'> & {
   body: { es: string; en: string };
   photos: Array<LetterPhoto & { photoId: string; imageUrl: string; storagePath: string; censoredImageUrl: string; censoredStoragePath: string; visibility: PhotoVisibility }>;
 };
-type ManagedLetter = LetterItem & { documentId: string };
+type ManagedLetter = LetterItem & { documentId: string; isDeleted: boolean };
 
 const fieldClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#272727] dark:text-white';
 const labelClass = 'mb-1 block text-sm font-semibold text-slate-700 dark:text-slate-200';
@@ -77,29 +77,27 @@ export default function LettersManager() {
   const [draft, setDraft] = useState<LetterDraft | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [writable, setWritable] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(0);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [confirmDelete, setConfirmDelete] = useState('');
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const refresh = useCallback(async () => {
-    const response = await fetch('/api/admin/letters', { cache: 'no-store' });
+    const response = await fetch(`/api/admin/letters${showDeleted ? '?includeDeleted=true' : ''}`, { cache: 'no-store' });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'No se pudieron cargar las cartas.');
     setLetters(result.letters as ManagedLetter[]);
-    setWritable(Boolean(result.writable));
-  }, []);
+  }, [showDeleted]);
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/api/admin/letters', { cache: 'no-store', signal: controller.signal })
+    fetch(`/api/admin/letters${showDeleted ? '?includeDeleted=true' : ''}`, { cache: 'no-store', signal: controller.signal })
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'No se pudieron cargar las cartas.');
         setLetters(result.letters as ManagedLetter[]);
-        setWritable(Boolean(result.writable));
         setError('');
       })
       .catch((cause: unknown) => {
@@ -110,7 +108,7 @@ export default function LettersManager() {
         if (!controller.signal.aborted) setLoaded(true);
       });
     return () => controller.abort();
-  }, []);
+  }, [refresh, showDeleted]);
 
   function beginCreate() {
     setEditingId(null);
@@ -207,6 +205,19 @@ export default function LettersManager() {
     }
   }
 
+  async function restoreLetter(letter: ManagedLetter) {
+    setError('');
+    try {
+      const response = await fetch(`/api/admin/letters/${encodeURIComponent(letter.id)}`, { method: 'PATCH' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo recuperar la carta.');
+      await refresh();
+      setMessage('Carta recuperada.');
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo recuperar la carta.');
+    }
+  }
+
   function movePhoto(index: number, direction: -1 | 1) {
     setDraft((current) => {
       if (!current) return current;
@@ -235,16 +246,11 @@ export default function LettersManager() {
             Relaciona cada carta con su episodio y decide cuándo se muestra completa, censurada o se retira.
           </p>
         </div>
-        <button type="button" onClick={beginCreate} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
+        <button type="button" onClick={beginCreate} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
           <Plus className="h-4 w-4" /> Nueva carta
         </button>
       </header>
 
-      {!writable && (
-        <section className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm leading-5 text-amber-950 dark:border-amber-900 dark:bg-[#272727] dark:text-amber-200" role="status">
-          La lista se puede consultar, pero falta configurar <code>SANITY_WRITE_TOKEN</code> en el servidor para guardar cambios.
-        </section>
-      )}
       {error && <p className="rounded-lg border border-rose-300 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-900 dark:bg-[#272727] dark:text-rose-200" role="alert">{error}</p>}
       {message && <p className="rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-[#272727] dark:text-emerald-200" role="status">{message}</p>}
 
@@ -254,6 +260,7 @@ export default function LettersManager() {
             <h2 className="text-xl font-bold">Cartas guardadas</h2>
             <span className="text-sm text-slate-600 dark:text-slate-300">{letters.length} en total</span>
           </div>
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200"><input type="checkbox" checked={showDeleted} onChange={(event) => setShowDeleted(event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />Mostrar cartas retiradas</label>
           {letters.length ? (
             <ul className="space-y-3">
               {letters.map((letter) => {
@@ -266,14 +273,16 @@ export default function LettersManager() {
                         <p className="truncate text-base font-semibold">{letter.country.es || 'Carta sin título'}</p>
                         <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{letter.city.es} · #{letter.order}</p>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(status)}`}>{statusLabel(status)}</span>
+                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(status)}`}>{letter.isDeleted ? 'Eliminada' : statusLabel(status)}</span>
                     </div>
                     <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{letter.photos?.length || 0} fotos{letter.episodeUrl ? ' · episodio vinculado' : ''}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <button type="button" onClick={() => beginEdit(letter)} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]">Editar</button>
-                      <button type="button" onClick={() => void deleteLetter(letter)} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">
-                        {confirmDelete === letter.id ? 'Confirmar retirada' : 'Eliminar'}
-                      </button>
+                      {letter.isDeleted ? <button type="button" onClick={() => void restoreLetter(letter)} className="rounded-lg border border-emerald-700 px-3 py-2 text-sm font-semibold text-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200">Recuperar carta</button> : <>
+                        <button type="button" onClick={() => beginEdit(letter)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]">Editar</button>
+                        <button type="button" onClick={() => void deleteLetter(letter)} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">
+                          {confirmDelete === letter.id ? 'Confirmar retirada' : 'Eliminar'}
+                        </button>
+                      </>}
                     </div>
                   </li>
                 );
@@ -293,7 +302,7 @@ export default function LettersManager() {
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 pb-4 dark:border-[#313131]">
               <div>
                 <h2 className="text-xl font-bold">{editingId ? 'Editar carta' : 'Crear carta'}</h2>
-                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">El contenido se guarda en Sanity. Las fotos se guardan en la biblioteca del sitio.</p>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Las cartas y sus fotos se administran desde este panel y se guardan en la biblioteca del sitio.</p>
               </div>
               <button type="button" onClick={closeEditor} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Cerrar</button>
             </div>
@@ -375,7 +384,7 @@ export default function LettersManager() {
 
             <div className="flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 pt-4 dark:border-[#313131]">
               <button type="button" onClick={closeEditor} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Cancelar</button>
-              <button type="submit" disabled={saving || uploadingPhotos > 0 || !writable} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"><Save className="h-4 w-4" />{saving ? 'Guardando…' : uploadingPhotos > 0 ? 'Esperando las fotos…' : 'Guardar carta'}</button>
+              <button type="submit" disabled={saving || uploadingPhotos > 0} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"><Save className="h-4 w-4" />{saving ? 'Guardando…' : uploadingPhotos > 0 ? 'Esperando las fotos…' : 'Guardar carta'}</button>
             </div>
           </form>
         ) : (
@@ -383,7 +392,7 @@ export default function LettersManager() {
             <FileText className="h-10 w-10 text-slate-500" />
             <h2 className="mt-4 text-xl font-bold">Administra la salida de cada carta</h2>
             <p className="mt-2 max-w-md text-sm leading-5 text-slate-600 dark:text-slate-300">Después del episodio puedes publicar la carta completa. A mitad de semana puedes cambiarla a censurada y mostrar el documento clasificado.</p>
-            <button type="button" onClick={beginCreate} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="mt-5 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">Crear carta</button>
+            <button type="button" onClick={beginCreate} className="mt-5 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">Crear carta</button>
           </div>
         )}
       </section>

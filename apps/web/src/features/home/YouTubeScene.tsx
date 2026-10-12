@@ -2,6 +2,7 @@
 
 import { ContentImage } from '@/components/ContentImage';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Locale } from '@curileta/i18n';
 import type { SiteSettings, Video } from '@curileta/cms';
 import { ShareActions } from '@/components/ShareActions';
@@ -32,6 +33,13 @@ interface YouTubeSceneProps {
 }
 
 const DEFAULT_VIDEOS: Video[] = [];
+
+function youtubeUrlForVideo(video: Video) {
+  const videoId = encodeURIComponent(video.youtubeId);
+  return video.type === 'short'
+    ? 'https://www.youtube.com/shorts/' + videoId
+    : 'https://www.youtube.com/watch?v=' + videoId;
+}
 
 export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   locale,
@@ -112,6 +120,41 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
     return () => {
       document.removeEventListener('keydown', handleDialogKeys);
       if (previousFocusRef.current?.isConnected) previousFocusRef.current.focus();
+    };
+  }, [activeModalVideo]);
+
+  useEffect(() => {
+    if (!activeModalVideo) return;
+
+    const scrollY = window.scrollY;
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+      overflow: body.style.overflow,
+      paddingRight: body.style.paddingRight,
+    };
+    const scrollbarWidth = Math.max(0, window.innerWidth - root.clientWidth);
+    const bodyPaddingRight = Number.parseFloat(window.getComputedStyle(body).paddingRight) || 0;
+
+    root.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = '-' + scrollY + 'px';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    if (scrollbarWidth) body.style.paddingRight = bodyPaddingRight + scrollbarWidth + 'px';
+
+    return () => {
+      root.style.overflow = previousRootOverflow;
+      body.style.position = previousBodyStyles.position;
+      body.style.top = previousBodyStyles.top;
+      body.style.width = previousBodyStyles.width;
+      body.style.overflow = previousBodyStyles.overflow;
+      body.style.paddingRight = previousBodyStyles.paddingRight;
+      window.scrollTo(0, scrollY);
     };
   }, [activeModalVideo]);
 
@@ -553,15 +596,15 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
         )}
 
         {/* Modal de Reproducción (Solo si hay un vídeo activo válido) */}
-        {activeModalVideo && activeModalVideo.youtubeId !== 'dQw4w9WgXcQ' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
+        {activeModalVideo && activeModalVideo.youtubeId !== 'dQw4w9WgXcQ' && typeof document !== 'undefined' && createPortal(
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto overscroll-contain bg-slate-950/90 p-2 backdrop-blur-xl animate-in fade-in duration-200 sm:p-4">
             <div
               ref={dialogRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="youtube-modal-title"
               tabIndex={-1}
-              className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl"
+              className="relative max-h-[calc(100dvh-1rem)] w-full max-w-4xl overflow-y-auto overscroll-contain rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 sm:max-h-[calc(100dvh-2rem)]"
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80">
                 <div className="flex items-center gap-2">
@@ -600,8 +643,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
               </div>
 
               <div
-                className={`relative min-h-52 w-full bg-black ${
-                  activeModalVideo.type === 'short' ? 'aspect-[9/16] max-h-[70vh] mx-auto' : 'aspect-video'
+                className={`relative shrink-0 bg-black ${
+                  activeModalVideo.type === 'short' ? 'mx-auto h-[65vh] max-h-[42rem] w-auto max-w-full aspect-[9/16]' : 'aspect-video w-full'
                 }`}
               >
                 <YouTubeTrackedPlayer
@@ -609,13 +652,15 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   videoId={activeModalVideo.youtubeId}
                   videoSlug={activeModalVideo.slug}
                   title={activeModalVideo.title[locale] || activeModalVideo.title.es}
+                  thumbnail={activeModalVideo.thumbnail}
+                  youtubeUrl={youtubeUrlForVideo(activeModalVideo)}
                   locale={locale}
                 />
               </div>
               <p className="px-4 py-2 text-center text-xs text-slate-500 dark:bg-[#181818] dark:text-slate-400">
                 {isEn
-                  ? 'Curileta counts a playback start when the player begins. YouTube decides separately whether it qualifies as a view.'
-                  : 'Curileta cuenta el inicio cuando el reproductor comienza. YouTube decide por separado si cuenta como una visualización.'}
+                  ? 'Curileta records a video specific playback start. YouTube calculates its official views separately.'
+                  : 'Curileta registra el inicio de reproducción de cada vídeo. YouTube calcula sus visualizaciones oficiales por separado.'}
               </p>
 
               <div className="p-6 bg-slate-50 dark:bg-slate-950">
@@ -698,7 +743,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body,
         )}
 
         {/* Banner Oficial de Suscripción al Canal de YouTube */}

@@ -21,6 +21,8 @@ const navigation = [
   { href: '/admin/consultas', label: 'Consultas', roles: ['owner', 'admin'] },
   { href: '/admin/leads', label: 'Oportunidades', roles: ['owner', 'admin'] },
   { href: '/admin/estadisticas', label: 'Estadísticas', roles: ['owner', 'admin', 'analyst'] },
+  { href: '/admin/equipo', label: 'Equipo', roles: ['owner'] },
+  { href: '/admin/sistema', label: 'Estado del sistema', roles: ['owner', 'admin'] },
 ];
 
 export function AdminShell({ identity, children }: { identity: AdminIdentity; children: React.ReactNode }) {

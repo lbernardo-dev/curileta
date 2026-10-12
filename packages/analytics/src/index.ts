@@ -245,14 +245,16 @@ class PrivacySafeAnalytics implements AnalyticsProvider {
 
     const path = window.location.pathname;
     const locale = path.split('/')[1] === 'en' ? 'en' : 'es';
-    const contentProperties = event.name === 'video_play'
-      ? { contentType: 'video', contentSlug: event.properties.videoSlug }
-      : {};
     trackGoogleAnalyticsEvent(event);
     void fetch('/api/admin/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ eventName: event.name, path, locale, ...contentProperties }),
+      body: JSON.stringify({
+        eventName: event.name,
+        path,
+        locale,
+        ...(event.name === 'video_play' ? { contentType: 'video', contentSlug: event.properties.videoSlug } : {}),
+      }),
       keepalive: true,
     }).catch(() => undefined);
   }
