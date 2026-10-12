@@ -40,7 +40,7 @@ El 10 de octubre de 2026 se comprobó el estado remoto: Supabase está saludable
 | Base de datos y autenticación | Perfiles internos, formularios, consultas, analítica y sesiones | Supabase PostgreSQL y Supabase Auth |
 | Correo transaccional | Avisos de nuevos envíos | Resend, llamado por `/api/contact` |
 | Protección del formulario | Verificación antispam en servidor | Cloudflare Turnstile |
-| Publicación web | Variables y despliegue del sitio | Vercel Free/Hobby sigue en Production; el commit `6010290` está `Ready` y CI pasó el 12 de octubre de 2026. `www.curileta.com` responde HTTPS 200 y los dominios `.com` y `.es` redirigen a la web canónica; ver secciones 28 y 44 |
+| Publicación web | Variables y despliegue del sitio | Vercel Free/Hobby sigue en Production; el commit `6010290` está `Ready` y CI pasó el 12 de octubre de 2026. `www.curileta.com` responde HTTPS 200; `curileta.com`, `curileta.es` y `www.curileta.es` redirigen a la URL canónica; ver secciones 28 y 44 |
 
 ```mermaid
 flowchart LR
