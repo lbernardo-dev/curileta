@@ -8,6 +8,8 @@ Fecha de revisión: 12 de octubre de 2026. Esta referencia describe la arquitect
 - Las migraciones 20261012020000_managed_editorial_content.sql y 20261012030000_seed_public_youtube_videos.sql se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. La segunda deja disponibles los dos vídeos que ya estaban publicados en el canal.
 - La migración de vídeo es idempotente y no reemplaza fichas que ya se hayan editado desde el panel.
 - La analítica de reproducción usa analytics_daily y no requiere una migración de métricas. La versión vigente incluye la deduplicación por youtubeId entre el CMS y las sobreescrituras de YouTube. Production muestra un capítulo y un Short, una sola vez cada uno; ambos modales también se comprobaron con el fallback de YouTube.
+- El pack de 16 campañas se integró mediante el PR #18 (commit 0dc2fe1) y Vercel confirmó Ready el 12 de octubre de 2026. Supabase Production devolvió 16 eventos con arte; solo Halloween estaba habilitada y el modo de control global era automático.
+- La conciliación completa del historial remoto de migraciones sigue pendiente: solo constaban 20261012020000 y 20261012040000. La migración 20261012040000 se ejecutó manualmente y su fila se añadió con statements NULL; no se debe ejecutar db push hasta auditar las migraciones no registradas.
 - No se describe ningún dato, permiso, secreto o servicio como activo si no se comprobó en su entorno.
 
 ## 2. Arquitectura y responsabilidades
@@ -108,7 +110,7 @@ video_play es analítica propia de Curileta y cuenta un inicio confirmado por el
 
 El pack inicial contiene 16 campañas bilingües, inactivas salvo Halloween durante su ventana actual, con paleta, ilustración original, calendario de referencia y decoraciones preconfiguradas. Las ventanas pueden solaparse; el servidor elige la mayor prioridad y luego la fecha de inicio. Halloween enlaza el MP4 local `apps/web/public/videos/hero/events/halloween/curileta-halloween.mp4`. Las demás campañas usan SVG originales locales; se pueden sustituir desde el editor con una imagen WebP/JPEG optimizada. Los vídeos y sonidos se cargan por las rutas multimedia existentes. Las campañas seed tienen estado y fechas preservados en conflictos; la migración solo completa recursos o textos vacíos.
 
-`20261012040000_event_theme_pack_and_artwork.sql` añade artwork a `site_events`, permite el identificador local autorizado del vídeo Halloween y crea el pack idempotente. Código y SQL están en la rama de trabajo; antes de verificar CI, Production y aplicación SQL, esta migración y los recursos administrados se consideran pendientes, no desplegados. La carga de arte usa el rol `owner`, `admin` o `editor`, bucket `curileta-site-media`, ruta `events/artwork/`, WebP/JPEG de hasta 8 MB y comprobación de referencias antes del borrado. No añade variables de entorno.
+`20261012040000_event_theme_pack_and_artwork.sql` añade artwork a `site_events`, permite el identificador local autorizado del vídeo Halloween y crea el pack idempotente. Se ejecutó en Supabase Production el 12 de octubre de 2026 y se verificaron 16 campañas, 16 recursos de arte, solo Halloween habilitada y control en modo automático. El PR #18 quedó integrado en `main` con 0dc2fe1 y Vercel confirmó Ready. La migración se aplicó manualmente y luego se registró en el historial con `statements = NULL`; esa fila no valida todas las demás migraciones. La conciliación del historial remoto sigue pendiente y no se debe hacer un db push general. La carga de arte usa los roles `owner`, `admin` o `editor`, el bucket `curileta-site-media`, la ruta `events/artwork/`, WebP/JPEG de hasta 8 MB y comprobación de referencias antes del borrado. No añade variables de entorno.
 
 | Tabla o servicio | Uso |
 |---|---|
@@ -132,6 +134,7 @@ La aplicación de servidor admite los nombres siguientes. Esta documentación de
 - SUPABASE_SERVICE_ROLE_KEY como compatibilidad privada heredada
 - NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY como alias heredados
 - NEXT_PUBLIC_SITE_URL
+- NEXT_PUBLIC_GOOGLE_ANALYTICS_ENABLED: solo el valor true junto a un identificador habilita Google Analytics; no existe consentimiento predeterminado.
 - NEXT_PUBLIC_GA_MEASUREMENT_ID
 - YOUTUBE_API_KEY, opcional para importar metadatos
 - RESEND_API_KEY, CONTACT_FROM_EMAIL y CONTACT_TO_EMAIL
@@ -140,6 +143,8 @@ La aplicación de servidor admite los nombres siguientes. Esta documentación de
 - NEXT_PUBLIC_TURNSTILE_SITE_KEY y TURNSTILE_SECRET_KEY
 - SUPABASE_JWKS_URL está declarada para compatibilidad, pero no interviene en la validación actual de sesión de Supabase Auth
 
+Google Analytics permanece desactivado por defecto. Para habilitarlo se requieren ambos nombres de variable y revisión previa de audiencia, base jurídica, consentimiento, proveedores y mercados. El panel pide una elección expresa y respeta DNT/GPC; no funciona como verificación de edad ni conserva una copia de consentimiento en servidor.
+
 Las claves privadas se usan solo en servidor. No añadas valores al repositorio, a la referencia técnica, al HTML ni a variables de entorno públicas.
 
 ## 9. Operación de esquema y publicación
@@ -147,14 +152,28 @@ Las claves privadas se usan solo en servidor. No añadas valores al repositorio,
 - Mantén los cambios de esquema en supabase/migrations.
 - Antes de aplicar una migración, compara el esquema y el historial remoto con los archivos locales. Las aplicaciones manuales pueden no estar registradas en el historial.
 - No ejecutes una sincronización general de migraciones hasta reconciliar el historial y revisar qué SQL se aplicará.
-- Aplica de forma ordenada las migraciones revisadas y verifica tablas, funciones, RLS y permisos.
+- Aplica de forma ordenada las migraciones revisadas y verifica tablas, funciones, RLS y permisos. El historial Production tenía migraciones aplicadas manualmente sin entrada: compara cada archivo y no uses db push hasta reconciliarlo.
 - Configura variables por entorno en el proveedor de despliegue.
 - Integra el código después de verificar CI para el commit actual; comprueba una vista previa y luego las rutas públicas y /admin en Production.
 - Documenta por separado el resultado del despliegue web y el resultado de migración de datos.
 
 Las migraciones de contenido administrado y de conservación de los dos vídeos se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. Las tablas site_events, site_theme_settings y site_theme_control, además del bucket público curileta-site-media con su límite de 100 MB y formatos multimedia permitidos, también se verificaron en Production. El reproductor y la analítica del PR #15 siguen en la versión de Production y la deduplicación del PR #16 está desplegada desde main en be6bd94. El 12 de octubre de 2026 se comprobó www.curileta.com/es/videos: el catálogo muestra 2 piezas en total, un capítulo y un Short; al abrir cada una, YouTube bloquea la reproducción insertada y el modal ofrece el enlace directo correcto (watch para el capítulo y shorts para el Short). La medición propia solo registra el inicio cuando la API comunica PLAYING; no altera la métrica oficial de YouTube. No hizo falta una migración de datos para deduplicar. La documentación no reemplaza una comprobación del estado remoto.
 
-## 10. Verificación y diagnóstico
+## 10. Cookies, privacidad y métricas
+
+El aviso de cookies y la política de privacidad se sirven en /[locale]/cookies y /[locale]/privacidad; el resumen por capas del formulario está en /[locale]/contacto. Sus textos siguen en el código y su actualización es un cambio editorial revisado y desplegado, no un ajuste de /admin.
+
+La elección de Google Analytics solo puede activarse con `NEXT_PUBLIC_GOOGLE_ANALYTICS_ENABLED=true` y `NEXT_PUBLIC_GA_MEASUREMENT_ID`; el valor predeterminado es desactivado. Cuando la función no está habilitada o el navegador indica DNT/GPC, el cliente limpia la elección antigua y las cookies _ga accesibles, y las rutas públicas omiten los eventos estadísticos agregados. La API también rechaza la escritura agregada ante las cabeceras DNT o Sec-GPC. Un voto de vídeo elegido por el visitante sigue registrándose porque es la acción funcional solicitada, no una métrica pasiva.
+
+Turnstile de contacto solo carga al empezar a usar el formulario; Turnstile de votos solo carga al elegir votar. Cloudflare declara actuar como encargado en la comprobación de bots y como responsable independiente al reutilizar las señales para mejorar Turnstile. La API y el reproductor de YouTube cargan al abrir un vídeo. Las miniaturas del catálogo se sirven por el optimizador de imágenes de Next/Vercel a partir de i.ytimg.com. Los enlaces sociales y Amazon solo navegan a terceros al elegirlos. La versión del resumen de privacidad del formulario es contact-form-privacy-v2.
+
+La analítica diaria no tiene retención automática configurada. El identificador aleatorio de favoritos se guarda en localStorage y su hash permanece en `character_favorites`; no hay vencimiento automático. El responsable debe decidir y documentar un plazo de conservación adecuado y comprobar las opciones de eliminación. El formulario de contacto declara una edad adulta, pero una casilla no verifica edad ni consentimiento parental. Google Analytics debe seguir desactivado mientras no se complete la revisión del público infantil y de las obligaciones aplicables.
+
+La política enumera los proveedores del código (Vercel, Supabase, Cloudflare Turnstile y Resend), pero sus regiones efectivas, funciones contractuales y garantías para transferencias internacionales dependen de la configuración y los acuerdos del titular. El titular también debe documentar la evaluación de interés legítimo para consultas generales y revisar el uso de señales por Cloudflare como responsable independiente. No se pueden inferir del código. La política identifica expresamente esta verificación pendiente y enlaza los avisos de los proveedores. El correo de Resend no incluye el contenido de la consulta según la ruta actual.
+
+El cambio de consentimiento no modifica tablas ni funciones SQL; no requiere una migración de base de datos. Esta nota describe el código local de la auditoría; el estado de PR y Production se actualizará tras las verificaciones de integración. La [auditoría de privacidad](./PRIVACY_COMPLIANCE_AUDIT.md) enumera el alcance, las medidas técnicas, los hallazgos y las decisiones del titular que faltan.
+
+## 11. Verificación y diagnóstico
 
 Comandos habituales para la aplicación web:
 
@@ -174,13 +193,13 @@ En CI confirma que todos corresponden al mismo commit. Para una vista previa com
 
 Un HTTP 503 en administración suele indicar variables privadas ausentes, tabla o migración no aplicada, o fallo de Supabase. Revisa logs del servidor sin copiar secretos ni datos personales a incidencias públicas.
 
-## 11. Límites y cobertura pendiente
+## 12. Límites y cobertura pendiente
 
 - El panel central administra los tipos listados en esta referencia; algunos tipos tienen restricciones de alta o edición por diseño del formulario.
 - Las secciones especializadas pueden depender de sus propias tablas y permisos.
 - La presencia de una página administrativa no significa que toda la aplicación sea editable: textos de interfaz, traducciones, contenido legal y valores predeterminados pueden seguir dentro del código. La cobertura debe auditarse módulo por módulo antes de prometer administración completa.
 - No guardes identificadores de proyectos, URLs privadas, detalles de DNS o despliegues, credenciales, datos personales ni trazas con datos de visitantes en esta referencia.
 
-## 12. Mantenimiento documental
+## 13. Mantenimiento documental
 
 Cuando cambie un flujo, API, rol, tabla, permiso, almacenamiento, entorno, política de datos o despliegue, actualiza esta referencia y BACKEND_SETUP.md en el mismo cambio. Distingue el código existente de las migraciones aplicadas y los despliegues verificados. El README enlaza a ambas guías en Docs.

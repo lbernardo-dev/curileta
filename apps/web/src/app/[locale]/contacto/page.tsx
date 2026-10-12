@@ -48,6 +48,7 @@ export default function ContactPage({ params }: ContactPageProps) {
   const [answers, setAnswers] = useState<Record<string, string | boolean>>({});
   const [honeypot, setHoneypot] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileRequested, setTurnstileRequested] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [notificationPending, setNotificationPending] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -85,7 +86,7 @@ export default function ContactPage({ params }: ContactPageProps) {
   }, [locale, isEn]);
 
   useEffect(() => {
-    if (!config || !turnstileSiteKey || !captchaContainer.current) return;
+    if (!turnstileRequested || !config || !turnstileSiteKey || !captchaContainer.current) return;
     let disposed = false;
     let timeoutId: number | undefined;
     let attempts = 0;
@@ -131,7 +132,7 @@ export default function ContactPage({ params }: ContactPageProps) {
       }
       setTurnstileToken('');
     };
-  }, [config, isEn]);
+  }, [config, isEn, turnstileRequested]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -145,10 +146,12 @@ export default function ContactPage({ params }: ContactPageProps) {
     setError('');
 
     try {
+      const privacyNavigator = navigator as Navigator & { globalPrivacyControl?: boolean };
+      const privacyOptOut = navigator.doNotTrack === '1' || privacyNavigator.globalPrivacyControl === true;
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formSlug: config.slug, locale, answers, honeypot, turnstileToken }),
+        body: JSON.stringify({ formSlug: config.slug, locale, answers, honeypot, turnstileToken, privacyOptOut }),
       });
       const result = await response.json();
       if (!response.ok) {
@@ -276,9 +279,9 @@ export default function ContactPage({ params }: ContactPageProps) {
           <h2 id="contact-privacy-summary" className="font-semibold text-slate-900 dark:text-white">{isEn ? 'Privacy information' : 'Información básica de privacidad'}</h2>
           <dl className="mt-3 grid gap-3 sm:grid-cols-2">
             <div><dt className="font-semibold">{isEn ? 'Controller' : 'Responsable'}</dt><dd>Lester Romero Bernardo · <a className="underline underline-offset-2" href="mailto:lasaventurasdecurileta@gmail.com">lasaventurasdecurileta@gmail.com</a></dd></div>
-            <div><dt className="font-semibold">{isEn ? 'Purpose and legal basis' : 'Finalidad y base jurídica'}</dt><dd>{isEn ? 'Answer your enquiry and handle any offer you request. General enquiries are answered on the basis of legitimate interest; requested offers use pre-contractual steps.' : 'Responder a tu consulta y tramitar las propuestas que solicites. Las consultas generales se atienden por interés legítimo; las propuestas solicitadas, mediante medidas precontractuales.'}</dd></div>
-            <div><dt className="font-semibold">{isEn ? 'Recipients' : 'Destinatarios'}</dt><dd>{isEn ? 'Vercel, Supabase and Cloudflare provide hosting, database and spam protection. Resend sends an alert without message content. Some providers may process data outside the EEA under applicable safeguards.' : 'Vercel, Supabase y Cloudflare prestan alojamiento, base de datos y protección antispam. Resend envía un aviso sin el contenido del mensaje. Algunos proveedores pueden tratar datos fuera del EEE con las garantías aplicables.'}</dd></div>
-            <div><dt className="font-semibold">{isEn ? 'Retention and rights' : 'Conservación y derechos'}</dt><dd>{isEn ? 'Closed enquiries are deleted after 30 days. Leads are reviewed after 12 months of inactivity and deleted 30 days after notice unless followed up. You can exercise your rights by email.' : 'Las consultas cerradas se eliminan a los 30 días. Las oportunidades se revisan tras 12 meses sin actividad y se eliminan 30 días después del aviso, salvo que se reanude su seguimiento. Puedes ejercer tus derechos por correo.'}</dd></div>
+            <div><dt className="font-semibold">{isEn ? 'Purpose and legal basis' : 'Finalidad y base jurídica'}</dt><dd>{isEn ? 'Answer your enquiry and handle any offer you request. General enquiries use the controller’s legitimate interests, subject to its assessment of your rights; requested offers use pre-contractual steps.' : 'Responder a tu consulta y tramitar las propuestas que solicites. Las consultas generales se atienden por interés legítimo, sujeto a que el responsable evalúe tus derechos; las propuestas solicitadas, mediante medidas precontractuales.'}</dd></div>
+            <div><dt className="font-semibold">{isEn ? 'Recipients' : 'Destinatarios'}</dt><dd>{isEn ? 'Vercel hosts the site, Supabase stores enquiries, Cloudflare checks for spam when you use the form, and Resend can send an alert without message content. Provider processing regions and transfer safeguards still need confirmation by the site owner; see the full policy for provider notices.' : 'Vercel aloja la web, Supabase guarda las consultas, Cloudflare comprueba el correo no deseado cuando usas el formulario y Resend puede enviar un aviso sin el contenido del mensaje. El titular aún debe confirmar las regiones de tratamiento y las garantías de transferencia de cada proveedor; consulta sus avisos en la política completa.'}</dd></div>
+            <div><dt className="font-semibold">{isEn ? 'Retention and rights' : 'Conservación y derechos'}</dt><dd>{isEn ? 'Closed enquiries are scheduled for deletion after 30 days. Leads are reviewed after 12 months of inactivity and scheduled for deletion 30 days after notice unless followed up. You can exercise your rights by email.' : 'Las consultas cerradas se programan para su eliminación a los 30 días. Las oportunidades se revisan tras 12 meses sin actividad y se programan para su eliminación 30 días después del aviso, salvo que se reanude su seguimiento. Puedes ejercer tus derechos por correo.'}</dd></div>
           </dl>
           <Link href={`/${locale}/privacidad`} className="mt-3 inline-block font-semibold text-emerald-800 underline underline-offset-4 dark:text-emerald-300">{isEn ? 'Full privacy policy' : 'Política de privacidad completa'}</Link>
         </section>
@@ -293,7 +296,13 @@ export default function ContactPage({ params }: ContactPageProps) {
             </p>
           </section>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-8">
+          <form
+            onSubmit={handleSubmit}
+            onFocusCapture={() => {
+              if (turnstileSiteKey) setTurnstileRequested(true);
+            }}
+            className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-8"
+          >
             {error && (
               <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-[#272727] dark:text-red-200">
                 {error}
@@ -328,7 +337,15 @@ export default function ContactPage({ params }: ContactPageProps) {
                 )}
                 {turnstileSiteKey && (
                   <div className="space-y-2">
-                    <div ref={captchaContainer} aria-label={isEn ? 'Spam verification' : 'Verificación antispam'} />
+                    {turnstileRequested ? (
+                      <div ref={captchaContainer} aria-label={isEn ? 'Spam verification' : 'Verificación antispam'} />
+                    ) : (
+                      <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
+                        {isEn
+                          ? 'The spam check loads when you start using this form. Cloudflare may receive network and browser signals for this check.'
+                          : 'La comprobación antispam se carga cuando empiezas a usar este formulario. Cloudflare puede recibir señales de red y del navegador para realizarla.'}
+                      </p>
+                    )}
                   </div>
                 )}
                 <button
