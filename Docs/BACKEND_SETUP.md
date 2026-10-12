@@ -1,159 +1,101 @@
-# Configuración del backend de Curileta
+# Configuración y operación del backend de Curileta
 
-El backend se compone de Supabase para usuarios internos, formularios, mensajes y estadísticas; Sanity para el contenido editorial; Resend para los avisos de correo; y Cloudflare Turnstile para proteger el formulario público. El sitio puede ejecutarse sin estos servicios, pero el backend no estará conectado hasta configurar sus proyectos y credenciales.
+Fecha de revisión: 12 de octubre de 2026. Esta guía describe el backend basado en Supabase y el panel de administración. La referencia complementaria está en [BACKEND_TECHNICAL_REFERENCE.md](./BACKEND_TECHNICAL_REFERENCE.md).
 
-Para Curileta, los proyectos de Supabase y Sanity ya existen. Supabase tiene la base inicial, el perfil de administración y la tarea de retención. Sanity tiene el proyecto `Curileta CMS`, el conjunto de datos `production`, 114 documentos y el webhook activo. No vuelvas a crearlos; completa los pasos pendientes indicados abajo. Esta guía conserva los pasos de creación para entornos nuevos.
+## Arquitectura
 
-No pegues claves secretas en el chat ni las añadas a archivos versionados. Los archivos `apps/web/.env.local` y `apps/studio/.env.local` están ignorados por Git y contienen la plantilla local.
+- Supabase Auth identifica al equipo y Supabase PostgreSQL guarda el contenido administrado, la configuración de módulos, formularios y métricas.
+- La web Next.js sirve la lectura pública y procesa las escrituras administrativas desde rutas de servidor protegidas.
+- Supabase Storage conserva imágenes públicas. Resend envía avisos de formularios; Cloudflare Turnstile protege el formulario público.
+- Sanity Studio no es una dependencia del runtime editorial actual. El contenido administrado por este panel se guarda en Supabase.
 
-## 1. Proyecto de Supabase
+## Entorno local
 
-1. En el proyecto Curileta existente, abre [Supabase](https://supabase.com/dashboard) y revisa su estado. Para un entorno nuevo, crea un proyecto dentro de tu organización.
-2. Para visitantes principalmente en España, elige la región específica `West EU (Paris)` (`eu-west-3`). Evita la región general `Europe` si necesitas que los datos principales estén dentro de la Unión Europea: puede asignar el proyecto a Londres o Zúrich. La región queda vinculada al proyecto y cambiarla después exige migrar a otro proyecto.
-3. Genera una contraseña segura para Postgres y guárdala en tu gestor de contraseñas.
-4. Cuando el proyecto esté disponible, abre `Connect` o `Settings > API Keys` y copia el URL, la clave publicable y una clave secreta.
-5. Añade los valores a `apps/web/.env.local`:
+Requisitos: Node.js 22 o posterior y npm 10 o posterior.
 
-```dotenv
-SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-SUPABASE_SECRET_KEY=sb_secret_...
-SUPABASE_JWKS_URL=https://tu-proyecto.supabase.co/auth/v1/.well-known/jwks.json
-```
+    npm install
+    npm run dev
 
-La clave publicable se usa en las rutas de servidor para validar sesiones. La clave secreta solo se usa en el servidor y omite RLS; nunca la publiques ni la guardes en Git. La aplicación también acepta los nombres antiguos `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, además de `SUPABASE_SERVICE_ROLE_KEY` para proyectos que aún usen la clave heredada. `SUPABASE_JWKS_URL` queda registrada para integración futura; la app obtiene y valida sesiones mediante Supabase Auth.
+La web se ejecuta en localhost:3000. El monorepo puede incluir herramientas históricas que no son necesarias para arrancar el panel.
 
-## 2. Tablas, formularios y analítica
+## Variables de configuración
 
-1. En el panel de Supabase abre `SQL Editor` y crea una consulta.
-2. En Curileta, las cinco migraciones originales del repositorio se ejecutaron manualmente en SQL Editor. Las columnas de privacidad y retención están creadas, el identificador del campo remoto sigue siendo `privacyConsent` para que el sitio publicado no se rompa y el job `contact-submission-retention` está activo. No las vuelvas a ejecutar ahora.
-3. La migración `20261010060000_image_frame_settings.sql` crea la tabla `image_frame_settings` para guardar los encuadres del panel. Se aplicó manualmente en Production y se verificaron RLS y los permisos de lectura. Antes de usar `supabase db push`, reconcilia el historial: las ejecuciones manuales no aparecen en el historial del panel ni en `supabase_migrations.schema_migrations`. En un proyecto nuevo, ejecuta primero las seis migraciones base en orden: [base](../supabase/migrations/20261010010000_backend.sql), [leads](../supabase/migrations/20261010020000_lead_management_and_retention.sql), [analítica](../supabase/migrations/20261010030000_content_share_analytics.sql), [privacidad y retención](../supabase/migrations/20261010040000_privacy_and_lead_retention.sql), [compatibilidad temporal](../supabase/migrations/20261010050000_contact_privacy_compatibility.sql) y [encuadres visuales](../supabase/migrations/20261010060000_image_frame_settings.sql). Continúa con las migraciones posteriores enumeradas en la referencia técnica y verifica cada esquema antes de usar la aplicación.
-4. Comprueba que existen `admin_profiles`, `contact_forms`, `contact_submissions`, `analytics_daily` e `image_frame_settings`, las columnas nuevas de retención y el job `contact-submission-retention`. La sexta migración activa RLS, reserva la tabla de encuadres al servidor y valida posiciones y ampliación.
+Define solo las variables necesarias para las funciones que vayas a habilitar. Los nombres siguientes no incluyen valores.
 
-La migración activa RLS y reserva los datos privados al servidor. No ejecutes la aplicación antes de terminar este paso: las rutas de formularios y el panel requieren esas tablas.
+### Web, analítica y Supabase
 
-## 3. Crear el primer usuario del panel
+- NEXT_PUBLIC_SITE_URL: URL pública canónica usada por metadatos y sitemap.
+- NEXT_PUBLIC_GA_MEASUREMENT_ID: medición de Google Analytics, si se utiliza.
+- SUPABASE_URL: URL del proyecto Supabase.
+- SUPABASE_PUBLISHABLE_KEY: clave publicable para validar las sesiones de usuario.
+- SUPABASE_SECRET_KEY: credencial privada de servidor. Nunca debe llevar el prefijo NEXT_PUBLIC ni llegar al navegador.
+- SUPABASE_SERVICE_ROLE_KEY: compatibilidad con entornos que todavía usen la clave privada heredada; mantenla solo en servidor.
+- NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: alias heredados aceptados por el código.
+- SUPABASE_JWKS_URL: declarada como configuración compatible, pero no es necesaria para el flujo actual de sesión de Supabase Auth.
 
-1. En Supabase abre `Authentication > Users` y crea el usuario que administrará el sitio. Usa un correo al que tengas acceso.
-2. Copia su UUID desde la lista de usuarios.
-3. En `SQL Editor`, ejecuta una consulta como esta y sustituye ambos valores:
+### Funciones opcionales
 
-```sql
-insert into public.admin_profiles (user_id, display_name, role)
-values ('UUID_DEL_USUARIO', 'Nombre del equipo', 'owner')
-on conflict (user_id) do update
-set display_name = excluded.display_name,
-    role = excluded.role,
-    updated_at = now();
-```
+- YOUTUBE_API_KEY: completa metadatos al importar vídeos desde el panel.
+- RESEND_API_KEY, CONTACT_FROM_EMAIL y CONTACT_TO_EMAIL: notificaciones de formularios y avisos operativos.
+- PRIVACY_NOTICE_VERSION: versión opcional del aviso de privacidad del formulario.
+- CRON_SECRET: protege la ruta programada de retención.
+- NEXT_PUBLIC_TURNSTILE_SITE_KEY y TURNSTILE_SECRET_KEY: validación del formulario público con Turnstile.
 
-Roles disponibles: `owner`, `admin`, `editor` y `analyst`. Los roles `owner` y `admin` pueden revisar y eliminar consultas. `analyst` solo ve estadísticas agregadas. `editor` no accede a mensajes.
+Configura las credenciales privadas en el gestor de secretos de cada entorno de servidor. No las añadas al repositorio ni a variables públicas del cliente. Los valores se guardan únicamente en el proveedor correspondiente y no en esta guía.
 
-## 4. Proyecto y edición con Sanity
+## Base de datos y permisos
 
-1. Inicia sesión en [Sanity](https://www.sanity.io/manage) y abre el proyecto `Curileta CMS` existente. Solo crea otro para un entorno separado.
-2. Selecciona el dataset existente `production`. Como el dataset contiene textos e imágenes públicas del sitio, configúralo como público; así la web no necesita una clave de lectura. En Sanity, los documentos consultables sin token deben tener IDs sin puntos.
-3. Copia el ID del proyecto a `SANITY_STUDIO_PROJECT_ID` en `apps/studio/.env.local` y `apps/web/.env.local`. Deja `SANITY_STUDIO_DATASET=production` en ambos.
-4. Abre el Studio con `npm run dev:studio` e inicia sesión con tu cuenta de Sanity.
-5. Para importar el contenido SQLite existente, crea temporalmente un token de Sanity con permiso de edición y añádelo a `SANITY_WRITE_TOKEN` en `apps/web/.env.local`.
-6. Ejecuta primero `npm run sanity:import:dry-run`. Si los recuentos son razonables, ejecuta `npm run sanity:import` para copiar los documentos. El importador usa IDs estables sin puntos y elimina los IDs del formato anterior cuando existen.
-7. Si el dataset ya contiene documentos importados con IDs como `contentEntry.character.curileta` o `siteSettings.singleton`, ejecuta `npm run sanity:migrate-public-ids:dry-run` y luego `npm run sanity:migrate-public-ids`. La migración conserva los campos, elimina los documentos antiguos y deja disponibles las versiones publicadas para consultas anónimas.
-8. Para un dataset privado, configura `SANITY_READ_TOKEN` con permiso de lectura y guárdalo solo en el servidor. Si el equipo usará `/admin/cartas`, conserva un token de escritura dedicado en `SANITY_WRITE_TOKEN`, tanto en el entorno local como en el entorno de servidor correspondiente; no lo expongas al navegador. Si solo se usó para importar contenido y no se administrarán cartas desde la web, revócalo y retíralo.
+La definición de tablas, funciones y datos iniciales se mantiene en supabase/migrations. Revisa cada migración y su estado remoto antes de aplicarla. Si las migraciones se aplicaron manualmente en el pasado, reconcilia primero el historial con el esquema remoto. No ejecutes una sincronización general hasta haber comprobado individualmente los cambios pendientes.
 
-El Studio permite editar los documentos y la configuración `siteSettings`, incluida la visibilidad y el orden de las secciones de la portada y la información del canal de YouTube. La web consulta Sanity; si una consulta falla, conserva el respaldo de desarrollo y deja un aviso en el log del servidor. Curileta aún no tiene Studio publicado: el acceso de edición desde cualquier equipo requiere desplegar `apps/studio` y establecer `NEXT_PUBLIC_SANITY_STUDIO_URL` en Vercel. El proyecto y los documentos existen aunque ese acceso no esté publicado.
+La tabla managed_content_entries y el registro admin_audit_log tienen RLS activa y conceden acceso de base de datos al rol de servidor. Las rutas públicas leen desde servidor y devuelven solo el contenido publicado; las operaciones de escritura deben pasar por la autenticación y comprobación de rol del panel.
 
-`/admin/cartas` administra las fichas editoriales directamente desde el panel protegido. Usa `SANITY_WRITE_TOKEN` solo en el servidor para crear, actualizar y eliminar documentos de tipo `contentEntry` y `contentType: letter`. Las imágenes se cargan desde el formulario del navegador con permisos firmados de Supabase Storage y se guardan en `letters/photos/` dentro del bucket existente `curileta-site-media`. Para usar el módulo en Production hay que añadir `SANITY_WRITE_TOKEN` al entorno Production de Vercel y desplegar la web; la presencia actual de esa variable no está verificada. La falta del token deja el listado en modo de consulta y las escrituras responden con error visible.
+Para el flujo de equipo:
 
-Cada carta usa `public`, `censored` o `unpublished`. Una carta censurada muestra el lugar y una hoja clasificada, sin enviar el texto ni las imágenes originales al navegador. Cada foto puede ser pública, censurada u oculta. El enlace al episodio de YouTube es opcional y permite al equipo identificar la carta asociada a un estreno; el cambio de estado se realiza manualmente en `/admin/cartas` después de publicar el episodio. Las fichas históricas sin estado se conservan como públicas. No requiere una migración de Supabase; el cambio de estructura se incorpora al esquema editorial de Sanity.
+1. Crea o verifica la cuenta en Supabase Auth.
+2. Una persona con rol owner añade esa cuenta desde la sección Equipo de /admin y asigna el rol.
+3. La operación no envía invitaciones de correo. El usuario debe existir antes de añadirlo al panel.
+4. Conserva al menos una cuenta owner activa.
 
-## 5. Actualizar el sitio al publicar contenido
+Roles reconocidos por el panel: owner, admin, editor y analyst. Las personas editoras administran contenido; analyst accede a estadísticas; owner controla el equipo y el resto de módulos conforme a las comprobaciones de cada ruta. La API comprueba rol en servidor, aunque use una clave privada de Supabase.
 
-1. El webhook de Curileta ya está creado y activo. Si lo renuevas o configuras un entorno nuevo, genera un secreto aleatorio y guárdalo como `SANITY_REVALIDATE_SECRET` en `apps/web/.env.local`.
-2. Para el entorno actual apunta a `https://curileta-pink.vercel.app/api/revalidate`; para otro dominio, crea un webhook de tipo documento con método `POST`, eventos de creación, actualización y eliminación, y la firma activada con el mismo secreto.
-3. Usa este filtro para limitar los avisos a documentos del sitio:
+## Contenido e imágenes
 
-```groq
-after()._type in ["contentEntry", "siteSettings"] || before()._type in ["contentEntry", "siteSettings"]
-```
+La sección Contenidos administra registros editoriales bilingües almacenados en managed_content_entries. Cada registro incluye tipo, identificador, ruta pública opcional, payload JSON, orden, publicación, borrado lógico y marcas de autoría. La edición y publicación invalidan las cachés de páginas afectadas. El contenido retirado se puede recuperar desde el panel cuando el módulo ofrece esa acción.
 
-4. Usa esta proyección para enviar el tipo de contenido también al borrar documentos:
+Las secciones especializadas pueden conservar tablas propias, por ejemplo analítica, consultas, encuadres o ajustes del catálogo. Consulta la referencia técnica antes de cambiar su esquema.
 
-```groq
-{
-  "_type": coalesce(after()._type, before()._type),
-  "contentType": coalesce(after().contentType, before().contentType)
-}
-```
+La API de carga requiere una sesión de owner, admin o editor. Emite una URL de subida firmada para un objeto del bucket público curileta-site-media. Acepta WebP y JPEG de hasta 8 MB y restringe cada carga a carpetas autorizadas. El navegador intenta convertir imágenes a WebP y dispone de alternativa JPEG. El archivo no debe contener datos personales que no deban hacerse públicos.
 
-El endpoint valida la firma `sanity-webhook-signature`; no acepta secretos en la URL.
+## Analítica y vídeo
 
-## 6. Conectar el envío de formularios
+La ruta de analítica registra interacciones válidas en analytics_daily. El reproductor registra un inicio interno cuando la API de YouTube confirma el estado PLAYING. La ficha se identifica por su ruta pública; /admin/estadisticas agrupa estos inicios por vídeo.
 
-1. En Resend crea una API key y verifica el dominio remitente siguiendo sus instrucciones DNS.
-2. Añade `RESEND_API_KEY`, `CONTACT_FROM_EMAIL` y `CONTACT_TO_EMAIL` a `apps/web/.env.local`.
-3. El widget de Production ya existe para `curileta-pink.vercel.app`. En Cloudflare verifica que también permita `www.curileta.com`, dominio donde se carga el formulario; añade los dominios de desarrollo que uses al widget correspondiente y conserva las claves existentes en `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`. `.es` redirige a la web canónica antes de mostrar el formulario.
-4. Define `PRIVACY_NOTICE_VERSION` solo cuando esté aprobada la versión publicada de la política. El backend deja el formulario de producción desactivado si falta la verificación antispam o esta versión.
-5. El titular ya facilitó el NIF y está incluido en el borrador local. Revisa las decisiones y pendientes de la sección 11 de la [referencia técnica](./BACKEND_TECHNICAL_REFERENCE.md): confirmar bases jurídicas, condiciones y transferencias de proveedores, almacenamiento local y tratamiento de datos de menores. La primera capa informativa ya está en el formulario. No publiques el aviso como versión definitiva ni actives el formulario hasta la revisión final.
+Ese contador es una métrica propia del sitio y no confirma ni modifica las visualizaciones oficiales de YouTube. Si la inserción falla, el reproductor muestra una miniatura disponible y ofrece un enlace directo al vídeo en YouTube.
 
-Los envíos se guardan en Supabase antes del correo. Resend recibe un aviso genérico con un enlace al panel, sin datos personales ni contenido del mensaje. Si Resend falla, el mensaje permanece en Supabase y el aviso queda pendiente. Desde Consultas se puede marcar una oportunidad como lead y seguir su fase y notas internas desde Leads.
+## Migraciones, publicación y verificación
 
-La tarea SQL diaria a las 03:00 UTC elimina consultas `resolved` o `archived` sin lead que lleven cerradas más de 30 días. Los leads sin actividad durante 12 meses quedan pendientes de revisión; la ruta web programada `/api/cron/lead-retention` debe enviar un aviso genérico al equipo y, después de confirmar el envío, empieza un plazo de 30 días antes de eliminarlos si nadie reanuda la actividad. Si Resend falla o no está configurado, no programa el borrado del lead. Para activar estos avisos hacen falta `CRON_SECRET`, `RESEND_API_KEY`, `CONTACT_FROM_EMAIL` y `CONTACT_TO_EMAIL`, además de desplegar el código. El borrado de Supabase no elimina copias de emails en el buzón receptor.
+Antes de publicar un cambio de backend:
 
-## 7. Variables de producción
+1. Revisa el SQL, permisos, políticas RLS, copias de seguridad y compatibilidad con el código activo.
+2. Comprueba el historial local y remoto de migraciones. Aplica únicamente migraciones revisadas y registra el resultado.
+3. Configura en el entorno correspondiente las variables privadas necesarias, sin exponerlas al cliente.
+4. Espera a CI para el commit exacto y comprueba la vista previa.
+5. Verifica rutas públicas y del panel con roles autorizados, carga de imágenes, cachés y errores de permisos.
+6. Publica la migración antes del código que dependa de ella, si todavía no está aplicada; después despliega la web y comprueba las rutas públicas y /admin en Production.
 
-El dominio canónico es `www.curileta.com`; `curileta.com` redirige allí con estado 308. En Vercel, `www.curileta.com` está asignado a `Production` con configuración válida y `NEXT_PUBLIC_SITE_URL=https://www.curileta.com` está guardada para ese entorno. El despliegue posterior al cambio de URL figura `Ready`. Los DNS públicos resuelven `curileta.com` al A `216.198.79.1` y `www` al CNAME `d951f96d4294a3e6.vercel-dns-017.com`; la petición HTTPS directa confirma la cadena apex 308, ruta localizada 307 y página final 200. La comprobación más reciente confirmó que `.es` delega a `ns1.vercel-dns.com` y `ns2.vercel-dns.com`, que `www.curileta.es` resuelve a Vercel, y que ambos hosts `.es` redirigen por HTTPS hasta `https://www.curileta.com/es` con HTTP 200. Las notas anteriores sobre `NXDOMAIN` describen la comprobación previa a la propagación. La zona anterior no contenía MX. Consultar la sección 28 de la [referencia técnica](./BACKEND_TECHNICAL_REFERENCE.md) para el historial y el estado verificado. Quedan por verificar los hosts permitidos del widget Turnstile y la URL del webhook de Sanity (`https://www.curileta.com/api/revalidate`).
+Estado comprobado al 12 de octubre de 2026: la migración de contenido editorial administrado de esta iniciativa estaba aplicada y verificada en Supabase Production. El código web de la rama que acompaña esta actualización documental requiere su propio despliegue; no se describe aquí como activo en Production. La actualización de analítica de reproducción reutiliza analytics_daily y no añade una migración.
 
-Después configura en Vercel estas variables para `Production` y, si corresponde, `Preview`:
+Comprobaciones habituales del repositorio:
 
-```text
-NEXT_PUBLIC_SITE_URL
-SUPABASE_URL
-SUPABASE_PUBLISHABLE_KEY
-SUPABASE_SECRET_KEY
-SUPABASE_JWKS_URL
-SANITY_STUDIO_PROJECT_ID
-SANITY_STUDIO_DATASET
-NEXT_PUBLIC_SANITY_STUDIO_URL
-SANITY_READ_TOKEN                  # solo si el dataset es privado
-SANITY_WRITE_TOKEN                 # servidor web, necesario para guardar cartas desde /admin/cartas
-YOUTUBE_API_KEY                    # opcional; metadatos completos al importar desde /admin/youtube
-SANITY_REVALIDATE_SECRET
-RESEND_API_KEY
-CONTACT_FROM_EMAIL
-CONTACT_TO_EMAIL
-PRIVACY_NOTICE_VERSION
-CRON_SECRET
-NEXT_PUBLIC_TURNSTILE_SITE_KEY
-TURNSTILE_SECRET_KEY
-```
+    npm run lint --workspace=web
+    npm run typecheck --workspace=web
+    npm run build --workspace=web
 
-`SANITY_WRITE_TOKEN` es un secreto de servidor: no lo declares como variable pública, no lo envíes al navegador ni lo guardes en el repositorio. `/admin/cartas` lo necesita para modificar Sanity; el importador también lo usa cuando se ejecuta localmente. Configura además `SANITY_STUDIO_PROJECT_ID` y `SANITY_STUDIO_DATASET` en el entorno local del Studio. La gestión de vídeos y canciones desde `/admin/youtube` guarda ajustes en Supabase y no requiere el token. `YOUTUBE_API_KEY` es opcional: con ella, el panel usa YouTube Data API para completar los datos públicos que expone el vídeo; sin ella, la importación obtiene título, autor y miniatura con oEmbed.
+Estas comprobaciones deben corresponder al commit que se vaya a desplegar. Comprueba el resultado de CI y el despliegue en el proveedor; una build local o una migración remota no demuestran por sí solas que la web ya esté publicada.
 
-## 8. Activación gradual
+## Limitaciones conocidas
 
-1. Usa los proyectos existentes de Supabase y Sanity; no los vuelvas a crear.
-2. Confirma las cuatro tablas originales, `image_frame_settings`, `character_favorites`, `character_favorite_daily`, `home_character_crew_settings`, `youtube_channel_settings`, `book_catalog_settings`, `youtube_content_overrides`, `author_pages`, `gallery_categories` y `gallery_items`, el perfil `owner`, las columnas de retención y el job diario. Las tablas protegidas tienen RLS activo y acceso de servidor reservado a `service_role`. Las migraciones `20261011030000_youtube_content_management.sql` y `20261011040000_author_gallery_management.sql` se aplicaron en Production con `supabase db query --linked --file` y se verificaron sus tablas, permisos e índice. La lista remota de migraciones sigue vacía aunque existen ejecuciones manuales previas; no uses `supabase db push` hasta reconciliar todo el historial. El código está en `main` (`6484687`) y Vercel marca su despliegue Production como `Ready`. Las rutas `/es/galeria` y `/es/autora` responden HTTP 200 en `curileta-pink.vercel.app`; los dominios propios siguen en `Invalid Configuration` por DNS.
-3. Publica Sanity Studio y añade `NEXT_PUBLIC_SANITY_STUDIO_URL` a Vercel para habilitar la edición desde `/admin/contenidos`.
-4. Configura Resend y completa la información legal antes de activar formularios públicos. El widget Turnstile y sus claves de Production ya existen.
-5. Usa Node `>=22.18.0` para el workspace web. Inicia la web con `npm run dev` y el Studio con `npm run dev:studio` para trabajar localmente. La web usa Next.js 16.4.0; ejecuta `npm run typecheck --workspace=apps/web`, `npm run lint --workspace=apps/web` y `npm run build --workspace=apps/web` para revisar el workspace web. El lint se ejecuta con ESLint flat; no uses el antiguo comando `next lint`.
-6. Antes de desplegar, revisa las variables faltantes de Resend, `CRON_SECRET`, privacidad y Studio. La revisión actual no habilita el formulario de producción porque faltan aprobación legal y `PRIVACY_NOTICE_VERSION`; tampoco activa avisos de retención de leads hasta configurar el correo y el cron web.
-
-## 9. Opciones de alojamiento y coste
-
-Precios públicos consultados el 10 de octubre de 2026, en USD/EUR antes de impuestos. El coste del alojamiento web no incluye Supabase, Sanity, correo, dominio ni operación.
-
-| Opción | Coste del frontend | Adecuación para Curileta | Riesgo o trabajo |
-|---|---:|---|---|
-| Netlify Free | $0/mes, 300 créditos | Soporta Next.js App Router, SSR e ISR. Útil para una validación de bajo tráfico. | Al agotar el límite los proyectos se pausan hasta el siguiente ciclo. Las funciones usan Ohio por defecto y elegir región exige Pro o Enterprise; no es mi recomendación para formularios con datos personales de residentes en la UE. |
-| Cloudflare Workers Paid | Desde $5/mes por cuenta | Next.js funciona mediante el adaptador OpenNext; incluye cuotas iniciales y no cobra ancho de banda. Es la alternativa gestionada de menor coste que consideraría para producción tras validar el runtime. | Requiere adaptar/desplegar y probar en `workerd`, verificar caché, imágenes, sesiones, rutas API y cron. No se debe dar por hecha la residencia exclusiva en la UE. |
-| Hetzner CX23 | €6,53/mes, sin IPv4 ni IVA | VPS en Alemania/Finlandia con coste mensual predecible. | Operación propia: Docker/Node, actualizaciones, TLS, firewall, copias verificadas, supervisión y recuperación. La base Supabase se factura aparte; autogestionar PostgreSQL/Auth para ahorrar exige una migración adicional y más riesgo operativo. |
-| Vercel Pro | $20/mes, incluye $20 de crédito de uso | Menor cambio técnico porque el proyecto ya usa Next.js y Vercel. | Suma al coste de Supabase y está sujeto a consumo y condiciones de uso; revisar el uso medido antes de cambiar. |
-| Vercel Hobby | $0/mes | Técnicamente mantiene el alojamiento actual. | Vercel lo limita a uso personal y no comercial; no es una opción adecuada para Curileta como producto comercial. |
-
-Supabase está ahora en Free. Ese plan limita cada base a 500 MB, no incluye copias automáticas y puede pausarla tras una semana sin actividad. Supabase Pro cuesta desde $25/mes y evita la pausa e incluye siete días de copias diarias. Por tanto, para conservar leads de forma fiable, presupuestaría al menos la base de datos: alrededor de **$25/mes** con Netlify Free, **$30/mes** con Cloudflare Workers Paid o **$25/mes más €6,53/mes** con Hetzner y Supabase Pro. Son estimaciones antes de impuestos y otros servicios.
-
-**Recomendación:** para validar gastando lo mínimo, mantener Supabase Free mientras se prueba internamente y evaluar Netlify Free solo con datos ficticios, sabiendo que puede pausarse. Para operar con leads reales, primero pasar Supabase a Pro o elegir una base administrada con copias y región aprobada; luego probar Cloudflare Workers Paid en un dominio de prueba antes de mover tráfico. Hetzner puede costar poco en infraestructura, pero no es la opción más barata en tiempo de operación. No cambiaré el hosting ni el plan sin que elijas una ruta.
-
-Fuentes oficiales: [Vercel pricing](https://vercel.com/pricing), [Netlify pricing](https://www.netlify.com/pricing/), [soporte Next.js de Netlify](https://docs.netlify.com/build/frameworks/overview/), [regiones de funciones Netlify](https://docs.netlify.com/build/functions/configuration/), [Cloudflare Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/), [Next.js en Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/), [Supabase pricing](https://supabase.com/pricing), [Hetzner pricing adjustment](https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/).
-
-Las claves `sb_publishable_...` identifican la parte pública de la aplicación y `sb_secret_...` solo se usan en servidores. La guía oficial de Supabase explica sus permisos y cómo copiarlas desde el panel.
+- El contador de reproducción del sitio mide inicios confirmados por el reproductor, no las vistas oficiales de YouTube.
+- Algunas áreas operativas conservan tablas especializadas además del CMS administrado.
+- La gestión del contenido de la web no implica que todos los textos de interfaz, documentos legales, traducciones de navegación o valores predeterminados de la aplicación sean editables desde /admin. Confirma esa cobertura antes de describirla como completa.
+- No guardes aquí identificadores de proyectos, URLs privadas, tokens, contraseñas, datos del titular ni estados operativos detallados.
