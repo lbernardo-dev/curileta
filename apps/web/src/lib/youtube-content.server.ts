@@ -34,6 +34,16 @@ export function makeYouTubeItemKey(kind: YouTubeManagedKind, id: string) {
   return `${kind}:${Buffer.from(id, 'utf8').toString('base64url')}`;
 }
 
+function getContentIdentity(item: { id?: unknown; youtubeId?: unknown }): string | null {
+  if (typeof item.youtubeId === 'string' && item.youtubeId.trim()) {
+    return `youtube:${item.youtubeId.trim()}`;
+  }
+  if (typeof item.id === 'string' && item.id.trim()) {
+    return `id:${item.id.trim()}`;
+  }
+  return null;
+}
+
 function mergeItems<T extends Video | Song>(
   kind: YouTubeManagedKind,
   source: T[],
@@ -42,11 +52,29 @@ function mergeItems<T extends Video | Song>(
 ): Array<(T & { itemKey: string; inherited: boolean; isPublished: boolean })> {
   const matchingRows = overrides.filter((row) => row.content_type === kind);
   const byKey = new Map(matchingRows.map((row) => [row.item_key, row]));
+  const byIdentity = new Map<string, YouTubeContentOverride>();
+  for (const row of matchingRows) {
+    const identity = getContentIdentity(row.payload);
+    if (identity && !byIdentity.has(identity)) byIdentity.set(identity, row);
+  }
+
+  // The editorial catalogue can use a slug as id while a YouTube override uses
+  // the YouTube video id. Collapse both representations by their shared video id.
+  const sourceItems: T[] = [];
+  const sourceIdentities = new Set<string>();
+  for (const item of source) {
+    const identity = getContentIdentity(item);
+    if (identity && sourceIdentities.has(identity)) continue;
+    if (identity) sourceIdentities.add(identity);
+    sourceItems.push(item);
+  }
+
   const sourceKeys = new Set<string>();
-  const merged = source.map((item) => {
+  const merged = sourceItems.map((item) => {
     const itemKey = makeYouTubeItemKey(kind, item.id);
+    const identity = getContentIdentity(item);
     sourceKeys.add(itemKey);
-    const override = byKey.get(itemKey);
+    const override = byKey.get(itemKey) || (identity ? byIdentity.get(identity) : undefined);
     if (!override) {
       return {
         ...item,
@@ -55,11 +83,12 @@ function mergeItems<T extends Video | Song>(
         isPublished: item.isPublished !== false,
       };
     }
+    sourceKeys.add(override.item_key);
     if (override.is_deleted) return null;
     return {
       ...item,
       ...override.payload,
-      itemKey,
+      itemKey: override.item_key,
       inherited: true,
       isPublished: override.payload.isPublished !== false,
     } as T & { itemKey: string; inherited: boolean; isPublished: boolean };
@@ -67,6 +96,10 @@ function mergeItems<T extends Video | Song>(
 
   const additions = matchingRows
     .filter((row) => !sourceKeys.has(row.item_key) && !row.is_deleted)
+    .filter((row) => {
+      const identity = getContentIdentity(row.payload);
+      return !identity || !sourceIdentities.has(identity);
+    })
     .map((row) => ({
       ...row.payload,
       itemKey: row.item_key,
