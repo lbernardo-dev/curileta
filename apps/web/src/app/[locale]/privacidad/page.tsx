@@ -61,11 +61,6 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
         </p>
         <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
           {isEn
-            ? 'Video playback starts are recorded only after the embedded player enters its playing state and are grouped by video, day and language. They are not unique viewers or YouTube’s official view count. Video favorites stay in this browser and do not send a rating to YouTube.'
-            : 'Los inicios de reproducción se registran solo cuando el reproductor integrado empieza y se agrupan por vídeo, día e idioma. No representan personas únicas ni las visualizaciones oficiales de YouTube. Los favoritos de vídeo permanecen en este navegador y no envían una valoración a YouTube.'}
-        </p>
-        <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
-          {isEn
             ? 'Optional Google Analytics runs only after an adult accepts and does not run when a visitor has not chosen, rejects analytics, or sends Do Not Track or Global Privacy Control. It receives the page path without query parameters, language and allowlisted content event names. Form values, names, child identifiers, User IDs and advertising signals are excluded. The analytics tag uses first party cookies for up to 180 days; preferences can be changed in the cookie notice.'
             : 'Google Analytics, de uso opcional, solo funciona cuando una persona adulta lo acepta. No funciona si la persona no ha elegido, rechaza la analítica o el navegador envía Do Not Track o Global Privacy Control. Recibe la ruta de la página sin parámetros de consulta, el idioma y los nombres de una lista cerrada de eventos de contenido. Se excluyen respuestas de formularios, nombres, identificadores de menores, User ID y señales publicitarias. La etiqueta usa cookies propias durante un máximo de 180 días; la elección puede cambiarse en el aviso de cookies.'}{' '}
           <Link href={`/${locale}/cookies`} className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">
