@@ -2,7 +2,7 @@ export type AnalyticsEvent =
   | { name: 'page_view'; properties: { path: string; locale: string } }
   | { name: 'book_view'; properties: { bookId: string; slug: string } }
   | { name: 'book_purchase_click'; properties: { bookId: string; storeName: string } }
-  | { name: 'video_play'; properties: { videoId: string; title: string } }
+  | { name: 'video_play'; properties: { videoId: string; videoSlug?: string; title: string } }
   | { name: 'youtube_channel_click'; properties: { source: string } }
   | { name: 'character_view'; properties: { characterId: string; name: string } }
   | { name: 'map_destination_open'; properties: { destinationId: string; country: string } }
