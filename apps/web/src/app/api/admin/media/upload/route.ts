@@ -4,6 +4,10 @@ import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 const bucket = 'curileta-site-media';
 const maxFileSize = 8 * 1024 * 1024;
+const acceptedImageTypes = {
+  'image/webp': 'webp',
+  'image/jpeg': 'jpg',
+} as const;
 const targets = {
   'youtube-avatar': 'youtube/avatar',
   'youtube-header': 'youtube/header',
@@ -11,6 +15,7 @@ const targets = {
   'youtube-song-cover': 'youtube/content/song-covers',
   'author-portrait': 'authors/portraits',
   'gallery-image': 'gallery',
+  'upcoming-book-cover': 'books/upcoming',
   'letter-photo': 'letters/photos',
 } as const;
 
@@ -35,17 +40,21 @@ export async function POST(request: Request) {
   if (typeof target !== 'string' || !Object.prototype.hasOwnProperty.call(targets, target)) {
     return NextResponse.json({ error: 'Selecciona un campo de imagen válido.' }, { status: 400 });
   }
-  if (value.contentType !== 'image/webp'
+  const contentType = typeof value.contentType === 'string' && Object.prototype.hasOwnProperty.call(acceptedImageTypes, value.contentType)
+    ? value.contentType as keyof typeof acceptedImageTypes
+    : null;
+  if (!contentType
     || typeof value.fileSize !== 'number'
     || !Number.isInteger(value.fileSize)
     || value.fileSize < 1
     || value.fileSize > maxFileSize) {
-    return NextResponse.json({ error: 'La imagen debe ser WebP y pesar 8 MB o menos.' }, { status: 400 });
+    return NextResponse.json({ error: 'La imagen debe ser WebP o JPEG y pesar 8 MB o menos.' }, { status: 400 });
   }
 
   try {
     const admin = createSupabaseAdminClient();
-    const path = `${targets[target as keyof typeof targets]}/${crypto.randomUUID()}.webp`;
+    const extension = acceptedImageTypes[contentType];
+    const path = `${targets[target as keyof typeof targets]}/${crypto.randomUUID()}.${extension}`;
     const { data, error } = await admin.storage.from(bucket).createSignedUploadUrl(path);
     if (error || !data?.token) throw error || new Error('Supabase no devolvió un permiso de subida.');
 
@@ -61,6 +70,7 @@ export async function POST(request: Request) {
       publicUrl: publicData.publicUrl,
       supabaseUrl,
       publishableKey,
+      contentType,
     }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch {
     return NextResponse.json({ error: 'No se pudo preparar la subida. Comprueba que la biblioteca de imágenes está configurada.' }, { status: 503 });

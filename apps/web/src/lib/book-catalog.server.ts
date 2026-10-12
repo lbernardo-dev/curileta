@@ -36,6 +36,8 @@ function isUpcomingBookRecord(value: unknown): value is BookCatalogSettings['upc
   return typeof book.id === 'string' && typeof book.slug === 'string'
     && localized(book.title) && localized(book.description)
     && typeof book.publicationDate === 'string'
+    && (book.coverImageUrl === undefined || typeof book.coverImageUrl === 'string')
+    && (book.coverImagePath === undefined || typeof book.coverImagePath === 'string')
     && (book.isPublished === undefined || typeof book.isPublished === 'boolean');
 }
 

@@ -11,6 +11,7 @@ const targets = {
   'youtube-song-cover': { prefix: 'youtube/content/song-covers', kind: 'youtube' },
   'author-portrait': { prefix: 'authors/portraits', kind: 'author' },
   'gallery-image': { prefix: 'gallery', kind: 'gallery' },
+  'upcoming-book-cover': { prefix: 'books/upcoming', kind: 'book' },
   'letter-photo': { prefix: 'letters/photos', kind: 'letter' },
 } as const;
 
@@ -36,7 +37,7 @@ export async function DELETE(request: Request) {
   }
 
   const target = targets[value.target as keyof typeof targets];
-  if (!new RegExp(`^${target.prefix}/[0-9a-f-]{36}\\.webp$`).test(value.path)) {
+  if (!new RegExp(`^${target.prefix}/[0-9a-f-]{36}\\.(webp|jpg)$`, 'i').test(value.path)) {
     return NextResponse.json({ error: 'La imagen no pertenece a la carpeta seleccionada.' }, { status: 400 });
   }
 
@@ -44,7 +45,10 @@ export async function DELETE(request: Request) {
     const { data } = createSupabaseAdminClient().storage.from('curileta-site-media').getPublicUrl(value.path);
     await removeUnreferencedYouTubeMedia([data.publicUrl]);
   } else {
-    await removeSiteMediaAsset(value.path, target.kind === 'author' ? 'authors/portraits' : target.kind === 'letter' ? 'letters/photos' : 'gallery');
+    const prefix = target.kind === 'author' ? 'authors/portraits'
+      : target.kind === 'letter' ? 'letters/photos'
+        : target.kind === 'book' ? 'books/upcoming' : 'gallery';
+    await removeSiteMediaAsset(value.path, prefix);
   }
 
   return new NextResponse(null, { status: 204, headers: { 'Cache-Control': 'private, no-store' } });

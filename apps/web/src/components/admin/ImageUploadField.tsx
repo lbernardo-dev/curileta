@@ -4,6 +4,7 @@ import { ContentImage } from '@/components/ContentImage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { ImagePlus, Trash2, Upload } from 'lucide-react';
+import { encodeAdminImage, type EncodedAdminImage } from '@/lib/admin-image-encoding';
 
 const MAX_SOURCE_BYTES = 24 * 1024 * 1024;
 const MAX_STORED_BYTES = 8 * 1024 * 1024;
@@ -16,6 +17,7 @@ export type AdminImageTarget =
   | 'youtube-song-cover'
   | 'author-portrait'
   | 'gallery-image'
+  | 'upcoming-book-cover'
   | 'letter-photo';
 
 interface UploadTicket {
@@ -25,6 +27,7 @@ interface UploadTicket {
   publicUrl: string;
   supabaseUrl: string;
   publishableKey: string;
+  contentType: string;
 }
 
 interface ImageUploadFieldProps {
@@ -38,7 +41,7 @@ interface ImageUploadFieldProps {
   onUploadingChange: (uploading: boolean) => void;
 }
 
-async function convertToWebp(file: File): Promise<Blob> {
+async function convertAdminImage(file: File): Promise<EncodedAdminImage> {
   if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
     throw new Error('Elige un archivo de imagen compatible.');
   }
@@ -66,17 +69,9 @@ async function convertToWebp(file: File): Promise<Blob> {
     if (!context) throw new Error('No se pudo procesar la imagen.');
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
 
-    const converted = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (!blob || blob.type !== 'image/webp') {
-          reject(new Error('Este navegador no puede convertir la imagen a WebP.'));
-          return;
-        }
-        resolve(blob);
-      }, 'image/webp', 0.88);
-    });
+    const converted = await encodeAdminImage(canvas, 0.88);
 
-    if (converted.size > MAX_STORED_BYTES) {
+    if (converted.blob.size > MAX_STORED_BYTES) {
       throw new Error('La imagen optimizada supera el límite de 8 MB. Elige una imagen más pequeña.');
     }
     return converted;
@@ -85,7 +80,7 @@ async function convertToWebp(file: File): Promise<Blob> {
   }
 }
 
-async function createCensoredPreview(file: File): Promise<Blob> {
+async function createCensoredPreview(file: File): Promise<EncodedAdminImage> {
   const bitmap = await createImageBitmap(file);
   try {
     const longestSide = Math.max(bitmap.width, bitmap.height);
@@ -100,19 +95,11 @@ async function createCensoredPreview(file: File): Promise<Blob> {
     context.filter = 'blur(18px) saturate(0.35)';
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     context.filter = 'none';
-    return await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (!blob || blob.type !== 'image/webp') {
-          reject(new Error('Este navegador no pudo crear la vista previa censurada.'));
-          return;
-        }
-        if (blob.size > MAX_STORED_BYTES) {
-          reject(new Error('La vista previa censurada supera el límite de 8 MB.'));
-          return;
-        }
-        resolve(blob);
-      }, 'image/webp', 0.52);
-    });
+    const converted = await encodeAdminImage(canvas, 0.52);
+    if (converted.blob.size > MAX_STORED_BYTES) {
+      throw new Error('La vista previa censurada supera el límite de 8 MB.');
+    }
+    return converted;
   } finally {
     bitmap.close();
   }
@@ -176,7 +163,7 @@ export function ImageUploadField({
     const pendingUploadPaths: string[] = [];
 
     try {
-      const original = await convertToWebp(file);
+      const original = await convertAdminImage(file);
       const images = target === 'letter-photo'
         ? [original, await createCensoredPreview(file)]
         : [original];
@@ -186,7 +173,7 @@ export function ImageUploadField({
         const ticketResponse = await fetch('/api/admin/media/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ target, contentType: image.type, fileSize: image.size }),
+          body: JSON.stringify({ target, contentType: image.contentType, fileSize: image.blob.size }),
         });
         const ticketResult = await ticketResponse.json().catch(() => null) as (Partial<UploadTicket> & { error?: unknown }) | null;
         if (!ticketResponse.ok
@@ -196,7 +183,8 @@ export function ImageUploadField({
           || typeof ticketResult.token !== 'string'
           || typeof ticketResult.publicUrl !== 'string'
           || typeof ticketResult.supabaseUrl !== 'string'
-          || typeof ticketResult.publishableKey !== 'string') {
+          || typeof ticketResult.publishableKey !== 'string'
+          || ticketResult.contentType !== image.contentType) {
           throw new Error(typeof ticketResult?.error === 'string' ? ticketResult.error : 'No se pudo preparar la subida.');
         }
         const ticket: UploadTicket = {
@@ -206,6 +194,7 @@ export function ImageUploadField({
           publicUrl: ticketResult.publicUrl,
           supabaseUrl: ticketResult.supabaseUrl,
           publishableKey: ticketResult.publishableKey,
+          contentType: ticketResult.contentType,
         };
         pendingUploadPaths.push(ticket.path);
 
@@ -214,9 +203,9 @@ export function ImageUploadField({
         });
         const { error: uploadError } = await client.storage
           .from(ticket.bucket)
-          .uploadToSignedUrl(ticket.path, ticket.token, image, {
+          .uploadToSignedUrl(ticket.path, ticket.token, image.blob, {
             cacheControl: '31536000',
-            contentType: image.type,
+            contentType: ticket.contentType,
           });
         if (uploadError) throw new Error('No se pudo subir la imagen. Comprueba la conexión e inténtalo de nuevo.');
         uploaded.push(ticket);
@@ -298,7 +287,7 @@ export function ImageUploadField({
           </button>
         )}
       </div>
-      <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">{hint} Se procesa como WebP y se guarda en la biblioteca del sitio. Archivo original de hasta 24 MB; imagen optimizada de hasta 8 MB.</span>
+      <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">{hint} Se guarda como WebP o JPEG según el navegador. Archivo original de hasta 24 MB; imagen optimizada de hasta 8 MB.</span>
       <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">Guarda el formulario dentro de 30 días para conservar una imagen que aún no uses.</span>
       {uploading && <p role="status" aria-live="polite" className="text-sm text-slate-600 dark:text-slate-300">Optimizando y subiendo la imagen…</p>}
       {error && <p role="alert" className="text-sm text-rose-700 dark:text-rose-300">{error}</p>}
