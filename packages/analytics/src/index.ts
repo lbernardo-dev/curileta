@@ -18,13 +18,15 @@ export interface AnalyticsProvider {
 
 export type GoogleAnalyticsConsentChoice = 'accepted' | 'rejected';
 
-const GOOGLE_ANALYTICS_CONSENT_KEY = 'curileta-analytics-consent-v1';
+const GOOGLE_ANALYTICS_CONSENT_KEY = 'curileta-analytics-consent-v2';
+const LEGACY_GOOGLE_ANALYTICS_CONSENT_KEY = 'curileta-analytics-consent-v1';
 export const GOOGLE_ANALYTICS_CONSENT_CHANGE_EVENT = 'curileta:analytics-consent-change';
 const GOOGLE_ANALYTICS_CONSENT_MAX_AGE = 180 * 24 * 60 * 60 * 1000;
 const GOOGLE_ANALYTICS_COOKIE_MAX_AGE = 180 * 24 * 60 * 60;
 
 type StoredAnalyticsConsent = {
   choice: GoogleAnalyticsConsentChoice;
+  adultConfirmed: boolean;
   recordedAt: number;
 };
 
@@ -57,6 +59,7 @@ export function getGoogleAnalyticsConsent(): GoogleAnalyticsConsentChoice | null
     const consent = JSON.parse(raw) as Partial<StoredAnalyticsConsent>;
     const age = Date.now() - Number(consent.recordedAt);
     if ((consent.choice !== 'accepted' && consent.choice !== 'rejected')
+      || (consent.choice === 'accepted' && consent.adultConfirmed !== true)
       || !Number.isFinite(age) || age < 0 || age >= GOOGLE_ANALYTICS_CONSENT_MAX_AGE) {
       window.localStorage.removeItem(GOOGLE_ANALYTICS_CONSENT_KEY);
       return null;
@@ -144,11 +147,29 @@ function removeGoogleAnalyticsCookies(): void {
   }
 }
 
+export function clearGoogleAnalyticsCookies(): void {
+  if (typeof window === 'undefined') return;
+  removeGoogleAnalyticsCookies();
+}
+
+export function clearLegacyGoogleAnalyticsConsent(): void {
+  if (typeof window === 'undefined') return;
+  let hadLegacyChoice = false;
+  try {
+    hadLegacyChoice = window.localStorage.getItem(LEGACY_GOOGLE_ANALYTICS_CONSENT_KEY) !== null;
+    window.localStorage.removeItem(LEGACY_GOOGLE_ANALYTICS_CONSENT_KEY);
+  } catch {
+    // The current consent version still prevents the legacy choice from enabling analytics.
+  }
+  if (hadLegacyChoice) removeGoogleAnalyticsCookies();
+}
+
 export function clearGoogleAnalyticsConsent(): void {
   if (typeof window === 'undefined') return;
   window.__curiletaAnalyticsConsent = null;
   try {
     window.localStorage.removeItem(GOOGLE_ANALYTICS_CONSENT_KEY);
+    window.localStorage.removeItem(LEGACY_GOOGLE_ANALYTICS_CONSENT_KEY);
   } catch {
     // Privacy signals still block analytics when browser storage is unavailable.
   }
@@ -164,8 +185,9 @@ export function clearGoogleAnalyticsConsent(): void {
   window.dispatchEvent(new Event(GOOGLE_ANALYTICS_CONSENT_CHANGE_EVENT));
 }
 
-export function saveGoogleAnalyticsConsent(choice: GoogleAnalyticsConsentChoice): void {
+export function saveGoogleAnalyticsConsent(choice: GoogleAnalyticsConsentChoice, adultConfirmed = false): void {
   if (typeof window === 'undefined') return;
+  if (choice === 'accepted' && adultConfirmed !== true) return;
   const effectiveChoice = choice === 'accepted'
     && isGoogleAnalyticsConfigured()
     && !isAnalyticsDoNotTrackEnabled()
@@ -174,7 +196,11 @@ export function saveGoogleAnalyticsConsent(choice: GoogleAnalyticsConsentChoice)
   const previousChoice = window.__curiletaAnalyticsConsent ?? getGoogleAnalyticsConsent();
   window.__curiletaAnalyticsConsent = effectiveChoice;
   try {
-    window.localStorage.setItem(GOOGLE_ANALYTICS_CONSENT_KEY, JSON.stringify({ choice: effectiveChoice, recordedAt: Date.now() }));
+    window.localStorage.setItem(GOOGLE_ANALYTICS_CONSENT_KEY, JSON.stringify({
+      choice: effectiveChoice,
+      adultConfirmed: effectiveChoice === 'accepted' && adultConfirmed,
+      recordedAt: Date.now(),
+    }));
   } catch {
     // The current page still honors an explicit choice if storage is unavailable.
   }
