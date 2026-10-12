@@ -4,10 +4,10 @@ Fecha de revisión: 12 de octubre de 2026. Esta referencia describe la arquitect
 
 ## 1. Estado de esta versión
 
-- El PR #15 se integró en main y el reproductor y la analítica se desplegaron en Vercel Production con el commit 605314d. El estado Production figuraba como Ready y www.curileta.com estaba asignado. La página pública confirmó el fallback del capítulo y del Short el 12 de octubre de 2026.
+- El reproductor y la analítica se integraron mediante el PR #15 y se desplegaron primero en Production con 605314d. La corrección de duplicados del catálogo se integró mediante el PR #16 y se desplegó con be6bd94; Vercel confirmó Ready y www.curileta.com sirvió esa versión el 12 de octubre de 2026.
 - Las migraciones 20261012020000_managed_editorial_content.sql y 20261012030000_seed_public_youtube_videos.sql se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. La segunda deja disponibles los dos vídeos que ya estaban publicados en el canal.
 - La migración de vídeo es idempotente y no reemplaza fichas que ya se hayan editado desde el panel.
-- La analítica de reproducción usa analytics_daily y no requiere una migración de métricas. La versión 605314d está desplegada y verificada en la página pública. En esa revisión se detectaron fichas repetidas cuando una misma pieza aparece en el CMS y en las sobreescrituras de YouTube; la rama codex/dedupe-youtube-catalogue añade deduplicación por youtubeId y aún no se considera activa hasta desplegarla.
+- La analítica de reproducción usa analytics_daily y no requiere una migración de métricas. La versión vigente incluye la deduplicación por youtubeId entre el CMS y las sobreescrituras de YouTube. Production muestra un capítulo y un Short, una sola vez cada uno; ambos modales también se comprobaron con el fallback de YouTube.
 - No se describe ningún dato, permiso, secreto o servicio como activo si no se comprobó en su entorno.
 
 ## 2. Arquitectura y responsabilidades
@@ -144,7 +144,7 @@ Las claves privadas se usan solo en servidor. No añadas valores al repositorio,
 - Integra el código después de verificar CI para el commit actual; comprueba una vista previa y luego las rutas públicas y /admin en Production.
 - Documenta por separado el resultado del despliegue web y el resultado de migración de datos.
 
-Las migraciones de contenido administrado y de conservación de los dos vídeos se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. Las tablas site_events, site_theme_settings y site_theme_control, además del bucket público curileta-site-media con su límite de 100 MB y formatos multimedia permitidos, también se verificaron en Production. El código del PR #15 (reproductor, fallback y analítica) está desplegado desde main, commit 605314d, y se comprobó en www.curileta.com/es/videos: ambos vídeos cargan su modal y, cuando YouTube prohíbe el embed, muestran la miniatura y el enlace directo. El catálogo mostró duplicados; la deduplicación por youtubeId está en la rama codex/dedupe-youtube-catalogue y queda pendiente de su propio despliegue y comprobación. La documentación no reemplaza una comprobación del estado remoto.
+Las migraciones de contenido administrado y de conservación de los dos vídeos se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. Las tablas site_events, site_theme_settings y site_theme_control, además del bucket público curileta-site-media con su límite de 100 MB y formatos multimedia permitidos, también se verificaron en Production. El reproductor y la analítica del PR #15 siguen en la versión de Production y la deduplicación del PR #16 está desplegada desde main en be6bd94. El 12 de octubre de 2026 se comprobó www.curileta.com/es/videos: el catálogo muestra 2 piezas en total, un capítulo y un Short; al abrir cada una, YouTube bloquea la reproducción insertada y el modal ofrece el enlace directo correcto (watch para el capítulo y shorts para el Short). La medición propia solo registra el inicio cuando la API comunica PLAYING; no altera la métrica oficial de YouTube. No hizo falta una migración de datos para deduplicar. La documentación no reemplaza una comprobación del estado remoto.
 
 ## 10. Verificación y diagnóstico
 
