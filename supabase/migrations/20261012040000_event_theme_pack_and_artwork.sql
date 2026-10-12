@@ -1,5 +1,9 @@
 begin;
 
+-- Several world events overlap; selection is deterministic through descending priority.
+alter table public.site_events
+  drop constraint if exists site_events_scheduled_window_excl;
+
 alter table public.site_events
   add column if not exists artwork_url text not null default '',
   add column if not exists artwork_path text not null default '';
