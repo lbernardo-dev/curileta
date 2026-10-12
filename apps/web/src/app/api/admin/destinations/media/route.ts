@@ -5,6 +5,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 const uploadTypes = {
   'image/webp': { extension: 'webp', kind: 'image', maxBytes: 8 * 1024 * 1024 },
+  'image/jpeg': { extension: 'jpg', kind: 'image', maxBytes: 8 * 1024 * 1024 },
   'video/mp4': { extension: 'mp4', kind: 'video', maxBytes: 100 * 1024 * 1024 },
   'video/webm': { extension: 'webm', kind: 'video', maxBytes: 100 * 1024 * 1024 },
 } as const;
@@ -70,7 +71,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Selecciona un archivo administrado válido.' }, { status: 400 });
   }
   const path = (body as Record<string, unknown>).path as string;
-  const kind = path.endsWith('.webp') ? 'image' : 'video';
+  const kind = /\.(webp|jpg)$/i.test(path) ? 'image' : 'video';
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const url = supabaseUrl ? createSupabaseAdminClient().storage.from(DESTINATION_MEDIA_BUCKET).getPublicUrl(path).data.publicUrl : '';
   if (!isDestinationMediaAsset(url, path, kind)) {

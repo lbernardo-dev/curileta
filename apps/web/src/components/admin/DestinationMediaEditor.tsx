@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { DestinationMedia } from '@curileta/cms';
 import { ArrowDown, ArrowUp, ImagePlus, Trash2, Upload } from 'lucide-react';
 import { ContentImage } from '@/components/ContentImage';
+import { encodeAdminImage } from '@/lib/admin-image-encoding';
 
 const fieldClass = 'mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
 
@@ -80,15 +81,16 @@ export function DestinationMediaEditor({
         if (file.size < 1 || file.size > (kind === 'image' ? 24 : 100) * 1024 * 1024) {
           throw new Error(`«${file.name}» supera el límite permitido de ${kind === 'image' ? '24' : '100'} MB.`);
         }
-        const prepared = kind === 'image' ? await convertToWebp(file) : file;
-        const contentType = kind === 'image' ? 'image/webp' : file.type;
+        const prepared = kind === 'image'
+          ? await convertDestinationImage(file)
+          : { blob: file, contentType: file.type };
         const maxBytes = kind === 'image' ? 8 * 1024 * 1024 : 100 * 1024 * 1024;
-        if (prepared.size > maxBytes) throw new Error(`«${file.name}» supera el límite de ${kind === 'image' ? '8' : '100'} MB después de prepararlo.`);
+        if (prepared.blob.size > maxBytes) throw new Error(`«${file.name}» supera el límite de ${kind === 'image' ? '8' : '100'} MB después de prepararlo.`);
 
         const ticketResponse = await fetch('/api/admin/destinations/media', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ kind, contentType, fileSize: prepared.size }),
+          body: JSON.stringify({ kind, contentType: prepared.contentType, fileSize: prepared.blob.size }),
         });
         const ticketResult = await ticketResponse.json().catch(() => null) as (Partial<UploadTicket> & { error?: unknown }) | null;
         if (!ticketResponse.ok || !ticketResult || typeof ticketResult.bucket !== 'string' || typeof ticketResult.path !== 'string'
@@ -102,7 +104,7 @@ export function DestinationMediaEditor({
         const client = createClient(ticket.supabaseUrl, ticket.publishableKey, {
           auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
         });
-        const { error: uploadError } = await client.storage.from(ticket.bucket).uploadToSignedUrl(ticket.path, ticket.token, prepared, {
+        const { error: uploadError } = await client.storage.from(ticket.bucket).uploadToSignedUrl(ticket.path, ticket.token, prepared.blob, {
           cacheControl: '31536000',
           contentType: ticket.contentType,
         });
@@ -158,7 +160,7 @@ export function DestinationMediaEditor({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 id="destination-media-heading" className="text-base font-bold">Fotos y escenas de vídeo</h3>
-          <p className="mt-1 max-w-2xl text-sm leading-5 text-slate-600 dark:text-slate-300">Carga varias piezas desde el ordenador. Las fotos se optimizan a WebP; puedes elegir una para la tarjeta de la portada.</p>
+          <p className="mt-1 max-w-2xl text-sm leading-5 text-slate-600 dark:text-slate-300">Carga varias piezas desde el ordenador. Las fotos se optimizan a WebP o JPEG según el navegador; puedes elegir una para la tarjeta de portada.</p>
         </div>
         <input ref={inputRef} type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm" className="sr-only" aria-label="Seleccionar fotos y vídeos" disabled={uploading} onChange={(event) => { void uploadFiles(event.target.files); }} />
         <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
@@ -199,7 +201,7 @@ export function DestinationMediaEditor({
   );
 }
 
-async function convertToWebp(file: File): Promise<Blob> {
+async function convertDestinationImage(file: File): Promise<{ blob: Blob; contentType: 'image/webp' | 'image/jpeg' }> {
   if (typeof createImageBitmap !== 'function') throw new Error('Este navegador no puede procesar la imagen. Prueba con otro navegador.');
   let bitmap: ImageBitmap;
   try {
@@ -215,9 +217,8 @@ async function convertToWebp(file: File): Promise<Blob> {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('No se pudo procesar la imagen.');
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((blob) => blob?.type === 'image/webp' ? resolve(blob) : reject(new Error('Este navegador no puede convertir la imagen a WebP.')), 'image/webp', 0.88);
-    });
+
+    return await encodeAdminImage(canvas, 0.88);
   } finally {
     bitmap.close();
   }

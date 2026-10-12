@@ -3,7 +3,7 @@ import 'server-only';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 const mediaBucket = 'curileta-site-media';
-const managedMediaPathPattern = /^youtube\/(?:avatar|header|content\/(?:video-thumbnails|song-covers))\/[0-9a-f-]{36}\.webp$/;
+const managedMediaPathPattern = /^youtube\/(?:avatar|header|content\/(?:video-thumbnails|song-covers))\/[0-9a-f-]{36}\.(webp|jpg)$/i;
 
 export function getManagedYouTubeMediaPath(value: unknown) {
   if (typeof value !== 'string' || !value) return null;

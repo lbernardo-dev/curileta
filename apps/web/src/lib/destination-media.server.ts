@@ -2,12 +2,12 @@ import 'server-only';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 export const DESTINATION_MEDIA_BUCKET = 'curileta-site-media';
-const mediaPathPattern = /^destinations\/[0-9a-f-]{36}\.(webp|mp4|webm)$/i;
+const mediaPathPattern = /^destinations\/[0-9a-f-]{36}\.(webp|jpg|mp4|webm)$/i;
 
 export function isDestinationMediaAsset(urlValue: unknown, pathValue: unknown, kind: 'image' | 'video') {
   if (typeof urlValue !== 'string' || typeof pathValue !== 'string' || !mediaPathPattern.test(pathValue)) return false;
   const extension = pathValue.split('.').at(-1)?.toLowerCase();
-  if (kind === 'image' && extension !== 'webp') return false;
+  if (kind === 'image' && extension !== 'webp' && extension !== 'jpg') return false;
   if (kind === 'video' && extension !== 'mp4' && extension !== 'webm') return false;
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;

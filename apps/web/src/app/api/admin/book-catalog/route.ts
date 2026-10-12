@@ -5,6 +5,7 @@ import { requireAdmin } from '@/lib/supabase/admin';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { getBookCatalogSettings } from '@/lib/book-catalog.server';
 import type { UpcomingBookRecord } from '@/lib/book-catalog';
+import { isSiteMediaAsset, removeSiteMediaAsset } from '@/lib/site-media.server';
 
 const localized = (value: unknown, required: boolean) => Boolean(value && typeof value === 'object'
   && ['es', 'en'].every((language) => typeof (value as Record<string, unknown>)[language] === 'string'
@@ -64,6 +65,15 @@ export async function PUT(request: Request) {
     if (value.isPublished !== undefined && typeof value.isPublished !== 'boolean') {
       return NextResponse.json({ error: 'Indica si cada próxima aventura está publicada o en borrador.' }, { status: 400 });
     }
+    const coverImageUrl = value.coverImageUrl === undefined ? '' : value.coverImageUrl;
+    const coverImagePath = value.coverImagePath === undefined ? '' : value.coverImagePath;
+    const hasCoverImage = typeof coverImageUrl === 'string' && coverImageUrl.length > 0;
+    if (typeof coverImageUrl !== 'string' || coverImageUrl.length > 2_048
+      || typeof coverImagePath !== 'string' || coverImagePath.length > 240
+      || Boolean(coverImageUrl) !== Boolean(coverImagePath)
+      || (hasCoverImage && !isSiteMediaAsset(coverImageUrl, coverImagePath, 'books/upcoming'))) {
+      return NextResponse.json({ error: 'La cubierta debe pertenecer a la biblioteca de imágenes del sitio.' }, { status: 400 });
+    }
     upcomingBooks.push({
       id: `upcoming-${value.slug}`,
       slug: value.slug,
@@ -71,6 +81,8 @@ export async function PUT(request: Request) {
       description: { es: description.es.trim(), en: description.en.trim() },
       publicationDate: value.publicationDate as string,
       isPublished: value.isPublished !== false,
+      coverImageUrl,
+      coverImagePath,
     });
   }
 
@@ -85,7 +97,22 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const { error } = await createSupabaseAdminClient().from('book_catalog_settings').upsert({
+    const admin = createSupabaseAdminClient();
+    const { data: existingSettings, error: readError } = await admin.from('book_catalog_settings')
+      .select('upcoming_books')
+      .eq('setting_key', 'homepage')
+      .maybeSingle();
+    if (readError) throw readError;
+
+    const previousMediaPaths = Array.isArray(existingSettings?.upcoming_books)
+      ? existingSettings.upcoming_books.flatMap((entry: unknown) => {
+        if (!entry || typeof entry !== 'object') return [];
+        const path = (entry as Record<string, unknown>).coverImagePath;
+        return typeof path === 'string' ? [path] : [];
+      })
+      : [];
+    const nextMediaPaths = new Set(upcomingBooks.map((book) => book.coverImagePath).filter(Boolean));
+    const { error } = await admin.from('book_catalog_settings').upsert({
       setting_key: 'homepage',
       featured_book_slugs: uniqueFeatured,
       upcoming_books: upcomingBooks,
@@ -93,6 +120,9 @@ export async function PUT(request: Request) {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'setting_key' });
     if (error) throw error;
+    await Promise.allSettled(previousMediaPaths
+      .filter((path: string) => !nextMediaPaths.has(path))
+      .map((path: string) => removeSiteMediaAsset(path, 'books/upcoming')));
     revalidatePath('/[locale]', 'page');
     revalidatePath('/[locale]/libros', 'page');
     revalidatePath('/[locale]/libros/[slug]', 'page');

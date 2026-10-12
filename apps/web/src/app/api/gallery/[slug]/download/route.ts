@@ -12,11 +12,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
     const { data, error } = await createSupabaseAdminClient().storage.from('curileta-site-media').download(item.storage_path);
     if (error || !data) return NextResponse.json({ error: 'La imagen no está disponible para descarga.' }, { status: 503 });
     const bytes = new Uint8Array(await data.arrayBuffer());
+    const isJpeg = item.storage_path.toLowerCase().endsWith('.jpg');
+    const extension = isJpeg ? 'jpg' : 'webp';
     return new NextResponse(bytes, {
       headers: {
-        'Content-Type': 'image/webp',
+        'Content-Type': isJpeg ? 'image/jpeg' : 'image/webp',
         'Content-Length': String(bytes.byteLength),
-        'Content-Disposition': `attachment; filename="curileta-${slug}.webp"`,
+        'Content-Disposition': `attachment; filename="curileta-${slug}.${extension}"`,
         'Cache-Control': 'private, no-store',
         'X-Content-Type-Options': 'nosniff',
       },

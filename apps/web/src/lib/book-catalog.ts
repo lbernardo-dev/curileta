@@ -7,6 +7,8 @@ export interface UpcomingBookRecord {
   description: { es: string; en: string };
   publicationDate: string;
   isPublished?: boolean;
+  coverImageUrl?: string;
+  coverImagePath?: string;
 }
 
 export interface BookCatalogSettings {
@@ -34,7 +36,15 @@ export function upcomingBookToBook(record: UpcomingBookRecord): Book {
       es: record.description.es || 'Una nueva aventura de Curileta está tomando forma.',
       en: record.description.en || 'A new Curileta adventure is taking shape.',
     },
-    coverImage: { url: '/images/books/coming-soon-cover.svg', alt: coverAlt },
+    coverImage: record.coverImageUrl
+      ? {
+        url: record.coverImageUrl,
+        alt: {
+          es: `Cubierta de ${record.title.es}`,
+          en: `Cover of ${record.title.en}`,
+        },
+      }
+      : { url: '/images/books/coming-soon-cover.svg', alt: coverAlt },
     publicationDate: record.publicationDate,
     publicationStatus: 'coming-soon',
     languages: ['Español', 'English'],
