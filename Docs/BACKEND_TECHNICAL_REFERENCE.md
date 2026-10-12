@@ -102,6 +102,14 @@ video_play es analítica propia de Curileta y cuenta un inicio confirmado por el
 
 ## 7. Datos y tablas
 
+### Eventos, temas y control del header
+
+`/admin/eventos` administra temporadas y el tema base con las rutas `/api/admin/events`, `/api/admin/events/control` y `/api/admin/events/base-theme`. El control global permite programación automática, fijar una campaña o volver al tema base. El tema base guarda nombre y paleta clara/oscura; al aplicarlo el aviso de temporada desaparece. `SeasonalThemeProvider` vive en el layout localizado público; el layout de `/admin` no lo monta.
+
+El pack inicial contiene 16 campañas bilingües, inactivas salvo Halloween durante su ventana actual, con paleta, ilustración original, calendario de referencia y decoraciones preconfiguradas. Las ventanas pueden solaparse; el servidor elige la mayor prioridad y luego la fecha de inicio. Halloween enlaza el MP4 local `apps/web/public/videos/hero/events/halloween/curileta-halloween.mp4`. Las demás campañas usan SVG originales locales; se pueden sustituir desde el editor con una imagen WebP/JPEG optimizada. Los vídeos y sonidos se cargan por las rutas multimedia existentes. Las campañas seed tienen estado y fechas preservados en conflictos; la migración solo completa recursos o textos vacíos.
+
+`20261012040000_event_theme_pack_and_artwork.sql` añade artwork a `site_events`, permite el identificador local autorizado del vídeo Halloween y crea el pack idempotente. Código y SQL están en la rama de trabajo; antes de verificar CI, Production y aplicación SQL, esta migración y los recursos administrados se consideran pendientes, no desplegados. La carga de arte usa el rol `owner`, `admin` o `editor`, bucket `curileta-site-media`, ruta `events/artwork/`, WebP/JPEG de hasta 8 MB y comprobación de referencias antes del borrado. No añade variables de entorno.
+
 | Tabla o servicio | Uso |
 |---|---|
 | admin_profiles | Relación entre cuentas Auth, nombre mostrado y rol interno. |

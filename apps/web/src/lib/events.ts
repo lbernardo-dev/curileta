@@ -37,6 +37,8 @@ export interface ManagedEvent {
   enabled: boolean;
   manualActive: boolean;
   priority: number;
+  artworkUrl: string;
+  artworkPath: string;
   heroVideoUrl: string;
   heroVideoPath: string;
   ambientAudioUrl: string;
@@ -82,6 +84,17 @@ export const EVENT_DECORATIONS = [
   { key: 'hearts', label: 'Corazones', glyph: '💗' },
   { key: 'flowers', label: 'Flores y pétalos', glyph: '🌸' },
   { key: 'stars', label: 'Estrellas', glyph: '✨' },
+  { key: 'fireworks', label: 'Fuegos artificiales', glyph: '🎆' },
+  { key: 'lanterns', label: 'Faroles', glyph: '🏮' },
+  { key: 'clovers', label: 'Tréboles', glyph: '🍀' },
+  { key: 'rainbows', label: 'Arcoíris', glyph: '🌈' },
+  { key: 'books', label: 'Libros', glyph: '📚' },
+  { key: 'doves', label: 'Palomas', glyph: '🕊️' },
+  { key: 'sunflowers', label: 'Girasoles', glyph: '🌻' },
+  { key: 'ocean', label: 'Océano', glyph: '🌊' },
+  { key: 'butterflies', label: 'Mariposas', glyph: '🦋' },
+  { key: 'acorns', label: 'Bellotas', glyph: '🌰' },
+  { key: 'ribbons', label: 'Cintas', glyph: '🎀' },
 ] as const;
 
 export const EVENT_PALETTE_PRESETS: Record<string, EventPalette> = {
@@ -109,11 +122,41 @@ export const EVENT_PALETTE_PRESETS: Record<string, EventPalette> = {
     accent: '#dc6b87', accentStrong: '#a83f61', canvasLight: '#fdf7f9', surfaceLight: '#f8edf1', textLight: '#2b1b22',
     canvasDark: '#1e0f16', surfaceDark: '#281720', textDark: '#fff4f7',
   },
+  'new-year': { accent: '#d4a846', accentStrong: '#8b681c', canvasLight: '#faf8f1', surfaceLight: '#f1ecdc', textLight: '#242016', canvasDark: '#12110d', surfaceDark: '#211e16', textDark: '#faf5e8' },
+  'lunar-new-year': { accent: '#d63b32', accentStrong: '#9f201b', canvasLight: '#fff8f3', surfaceLight: '#f8e7df', textLight: '#301613', canvasDark: '#1d100e', surfaceDark: '#2b1916', textDark: '#fff3ed' },
+  autumn: { accent: '#b77932', accentStrong: '#754318', canvasLight: '#faf7f0', surfaceLight: '#f1e9dc', textLight: '#2b2116', canvasDark: '#17130f', surfaceDark: '#251e17', textDark: '#f8f0e5' },
+  'earth-day': { accent: '#39875a', accentStrong: '#24613f', canvasLight: '#f6faf5', surfaceLight: '#eaf3e8', textLight: '#17241a', canvasDark: '#0e1710', surfaceDark: '#19251b', textDark: '#f2f7f0' },
+  'world-book-day': { accent: '#5079a4', accentStrong: '#345878', canvasLight: '#f7f8fb', surfaceLight: '#edf0f6', textLight: '#1c2430', canvasDark: '#10141b', surfaceDark: '#1c222d', textDark: '#f3f5fa' },
+  pride: { accent: '#8b65bb', accentStrong: '#60408d', canvasLight: '#faf7fc', surfaceLight: '#f0eaf6', textLight: '#241b2e', canvasDark: '#17111d', surfaceDark: '#241a2d', textDark: '#faf5ff' },
+  'st-patrick': { accent: '#359457', accentStrong: '#22643a', canvasLight: '#f4faf5', surfaceLight: '#e8f3ea', textLight: '#17251b', canvasDark: '#0d1710', surfaceDark: '#18241b', textDark: '#f0f8f1' },
+  'day-of-the-dead': { accent: '#d26888', accentStrong: '#973654', canvasLight: '#fff7f5', surfaceLight: '#f6e8e0', textLight: '#2b1b21', canvasDark: '#1a1017', surfaceDark: '#2a1a24', textDark: '#fff3f4' },
+  'world-childrens-day': { accent: '#458cb8', accentStrong: '#2c668a', canvasLight: '#f5fafe', surfaceLight: '#eaf3f8', textLight: '#18252d', canvasDark: '#0e161c', surfaceDark: '#19232c', textDark: '#f2f8fc' },
+  diwali: { accent: '#d87428', accentStrong: '#98501d', canvasLight: '#fff8ef', surfaceLight: '#f7ead8', textLight: '#2c2015', canvasDark: '#1b120c', surfaceDark: '#2b1e14', textDark: '#fff4e8' },
   custom: {
     accent: '#1b8a44', accentStrong: '#0d5c2c', canvasLight: '#fafdf7', surfaceLight: '#f1f7ee', textLight: '#17231a',
     canvasDark: '#101812', surfaceDark: '#1f1f1f', textDark: '#f4f8f3',
   },
 };
+
+export const EVENT_THEME_OPTIONS = [
+  { key: 'halloween', label: 'Halloween' }, { key: 'christmas', label: 'Navidad' },
+  { key: 'easter', label: 'Pascua' }, { key: 'valentines', label: 'Día del amor' },
+  { key: 'new-year', label: 'Año nuevo' }, { key: 'lunar-new-year', label: 'Año nuevo lunar' },
+  { key: 'spring', label: 'Primavera' }, { key: 'summer', label: 'Verano' }, { key: 'autumn', label: 'Otoño' },
+  { key: 'earth-day', label: 'Día de la Tierra' }, { key: 'world-book-day', label: 'Día del libro' },
+  { key: 'pride', label: 'Orgullo' }, { key: 'st-patrick', label: 'San Patricio' },
+  { key: 'day-of-the-dead', label: 'Día de Muertos' }, { key: 'world-childrens-day', label: 'Día de la infancia' },
+  { key: 'diwali', label: 'Diwali' }, { key: 'custom', label: 'Personalizada' },
+] as const;
+
+export const EVENT_ARTWORK_PRESETS: Record<string, { url: string; path: string }> = Object.fromEntries(
+  EVENT_THEME_OPTIONS.filter(({ key }) => key !== 'custom').map(({ key }) => [
+    key,
+    key === 'halloween'
+      ? { url: '/images/events/halloween-curileta-pompon-wide.webp', path: 'static:theme:halloween' }
+      : { url: `/images/events/themes/${key}.svg`, path: `static:theme:${key}` },
+  ]),
+);
 
 export const DEFAULT_EVENT_EFFECTS: EventEffects = {
   decorationsEnabled: false,

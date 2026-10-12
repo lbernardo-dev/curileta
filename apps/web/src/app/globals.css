@@ -302,6 +302,21 @@ html.dark[data-seasonal-theme] {
   --text-primary: var(--seasonal-text-dark);
 }
 
+
+html[data-site-base-theme] {
+  --background-canvas: var(--seasonal-canvas-light);
+  --background-secondary: var(--seasonal-surface-light);
+  --background-primary: var(--seasonal-canvas-light);
+  --text-primary: var(--seasonal-text-light);
+}
+
+html.dark[data-site-base-theme] {
+  --background-canvas: var(--seasonal-canvas-dark);
+  --background-secondary: var(--seasonal-surface-dark);
+  --background-primary: var(--seasonal-canvas-dark);
+  --text-primary: var(--seasonal-text-dark);
+}
+
 .seasonal-decoration-layer {
   position: fixed;
   inset: 0;

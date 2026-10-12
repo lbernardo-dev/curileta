@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer';
 
 import { cmsProvider } from '@/lib/cms';
 import { SeasonalThemeProvider } from '@/providers/SeasonalThemeProvider';
+import { getManagedBaseTheme, getThemeControlState } from '@/lib/events.server';
 import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';
 
 export async function generateMetadata({
@@ -41,14 +42,15 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const [activeEvent, baseSettings] = await Promise.all([
+  const [activeEvent, baseSettings, baseTheme] = await Promise.all([
     cmsProvider.getActiveEvent(locale),
     cmsProvider.getSiteSettings(locale),
+    getBaseThemeWhenSelected(),
   ]);
   const settings = await resolveYouTubeChannelSettings(baseSettings);
 
   return (
-    <SeasonalThemeProvider activeEvent={activeEvent}>
+    <SeasonalThemeProvider activeEvent={activeEvent} baseTheme={baseTheme}>
       <Header locale={locale as Locale} />
       <main id="main-content" className="flex-grow">
         {children}
@@ -56,4 +58,13 @@ export default async function LocaleLayout({
       <Footer locale={locale as Locale} youtubeChannelUrl={settings.youtubeChannelUrl} />
     </SeasonalThemeProvider>
   );
+}
+
+async function getBaseThemeWhenSelected() {
+  try {
+    const control = await getThemeControlState();
+    return control.mode === 'base' ? await getManagedBaseTheme() : null;
+  } catch {
+    return null;
+  }
 }
