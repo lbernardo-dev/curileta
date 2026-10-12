@@ -135,7 +135,7 @@ Los cambios de contenido se guardan desde el módulo correspondiente de `/admin`
 
 Los cambios de código se integran mediante una rama y un pull request. Antes de integrar, se revisan el diff, la build y las comprobaciones de CI; después se confirma que Vercel haya terminado el despliegue Production. No uses `git add .`, no subas cambios directamente a `main` ni incluyas archivos generados o secretos.
 
-Los cambios de esquema se preparan como archivos SQL en `supabase/migrations`. Production conserva cambios manuales y un historial de migraciones pendiente de reconciliación: revisa el estado de las tablas antes de cada aplicación y no ejecutes `supabase db push` hasta reconciliarlo. El procedimiento operativo y las verificaciones están en [Docs/BACKEND_SETUP.md](./Docs/BACKEND_SETUP.md).
+Los cambios de esquema se preparan como archivos SQL en `supabase/migrations`. Production conserva migraciones manuales: la migración editorial `20261012020000` está aplicada y registrada, pero las 17 versiones locales anteriores aún no tienen entrada remota. No ejecutes `supabase db push` hasta verificar y reconciliar cada una. El procedimiento operativo y las verificaciones están en [Docs/BACKEND_SETUP.md](./Docs/BACKEND_SETUP.md).
 
 ## 3. Administración del backend y base de datos
 
