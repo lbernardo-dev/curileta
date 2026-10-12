@@ -65,3 +65,10 @@ La implementación toma como referencia el RGPD y la directiva ePrivacy de la UE
 - [Preguntas frecuentes de la Agencia de Protección de la Privacidad de California](https://cppa.ca.gov/faq.html)
 - [Anexo de privacidad de Cloudflare Turnstile](https://www.cloudflare.com/turnstile-privacy-policy/)
 - [Guía de representación explícita de Turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/)
+
+
+## Verificación de publicación de consentimiento de cookies
+
+El PR #26 se integró en `main` con el commit `9657b975b18ab0ce47a063ba1d393deca8a63c5b`. El despliegue Production `DnXBw8GxVZgi1edCEFykxvLTAgtz` alcanzó estado Ready el 12 de octubre de 2026 y quedó asignado a `www.curileta.com`. Se comprobaron visualmente `/es/cookies`, `/en/cookies` y `/es/privacidad`; los textos usan “cookies opcionales” y no “analítica” en el mensaje de elección. No hubo cambio de esquema ni migración de base de datos. CI y la vista previa del PR pasaron; los comandos locales de TypeScript para analítica y web pasaron, y ESLint conservó dos avisos preexistentes fuera de este cambio.
+
+En Production no está configurada `NEXT_PUBLIC_GOOGLE_ANALYTICS_ENABLED=true`, por lo que Google Analytics permanece desactivado y el diálogo de elección no se muestra en la landing mientras siga apagado. El consentimiento v2 exige la declaración de persona adulta o progenitor/tutor autorizado, pero es una autodeclaración: no verifica edad ni acredita consentimiento parental verificable. La declaración de regiones UE y revisión contractual de Vercel, Supabase, Cloudflare y Resend es información confirmada por el titular y no una inspección contractual independiente.
