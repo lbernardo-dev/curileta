@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   GOOGLE_ANALYTICS_CONSENT_CHANGE_EVENT,
+  clearGoogleAnalyticsConsent,
   getGoogleAnalyticsConsent,
   isAnalyticsDoNotTrackEnabled,
   isGoogleAnalyticsConfigured,
@@ -35,6 +36,12 @@ export function AnalyticsConsentManager() {
   const mounted = useClientHydrated();
   const consentChoice = useSyncExternalStore(subscribeToConsent, getGoogleAnalyticsConsent, () => null);
   const isEn = pathname === '/en' || pathname.startsWith('/en/');
+
+  useEffect(() => {
+    if (!isGoogleAnalyticsConfigured() || isAnalyticsDoNotTrackEnabled()) {
+      clearGoogleAnalyticsConsent();
+    }
+  }, []);
 
   useEffect(() => {
     const openPreferences = () => {

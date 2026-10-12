@@ -118,6 +118,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false }, { status: 400 });
   }
 
+  const isPrivacyOptOut = request.headers.get('dnt') === '1' || request.headers.get('sec-gpc') === '1';
+  const aggregateOnlyEvents = new Set([
+    'page_view',
+    'contact_submit',
+    'book_view',
+    'book_purchase_click',
+    'video_play',
+    'character_view',
+    'map_destination_open',
+    'song_play',
+    'wallpaper_download',
+    'gallery_download',
+    ...shareEvents,
+  ]);
+  if (isPrivacyOptOut && aggregateOnlyEvents.has(eventName)) return new NextResponse(null, { status: 204 });
+
   const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download' || eventName === 'video_play';
   if (eventName === 'gallery_download' && body.contentType !== 'gallery') return NextResponse.json({ success: false }, { status: 400 });
   if (eventName === 'video_play' && body.contentType !== 'video') return NextResponse.json({ success: false }, { status: 400 });

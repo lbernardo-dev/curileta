@@ -25,7 +25,8 @@ Define solo las variables necesarias para las funciones que vayas a habilitar. L
 ### Web, analítica y Supabase
 
 - NEXT_PUBLIC_SITE_URL: URL pública canónica usada por metadatos y sitemap.
-- NEXT_PUBLIC_GA_MEASUREMENT_ID: medición de Google Analytics, si se utiliza.
+- NEXT_PUBLIC_GOOGLE_ANALYTICS_ENABLED: debe ser true para habilitar Google Analytics; el valor predeterminado es false y requiere revisión legal previa.
+- NEXT_PUBLIC_GA_MEASUREMENT_ID: identificador de medición, solo necesario cuando la función está habilitada.
 - SUPABASE_URL: URL del proyecto Supabase.
 - SUPABASE_PUBLISHABLE_KEY: clave publicable para validar las sesiones de usuario.
 - SUPABASE_SECRET_KEY: credencial privada de servidor. Nunca debe llevar el prefijo NEXT_PUBLIC ni llegar al navegador.
@@ -83,9 +84,11 @@ Antes de publicar un cambio de backend:
 5. Verifica rutas públicas y del panel con roles autorizados, carga de imágenes, cachés y errores de permisos.
 6. Publica la migración antes del código que dependa de ella, si todavía no está aplicada; después despliega la web y comprueba las rutas públicas y /admin en Production.
 
-El pack de eventos `20261012040000_event_theme_pack_and_artwork.sql` amplía `site_events`, elimina la restricción de solapamiento y siembra recursos de temporada. Las campañas coincidentes se resuelven por prioridad. Antes de desplegarlo, confirma que las migraciones anteriores y los controles `site_theme_control` están presentes, aplica solo ese archivo revisado, verifica las 16 campañas y el arte local, y despliega después el commit que contiene el cambio. La migración es idempotente y preserva los estados y fechas existentes; el seed Halloween enlaza el video local solo si el registro todavía no tiene video. El estado de Production debe anotarse después de la comprobación.
+El pack de eventos `20261012040000_event_theme_pack_and_artwork.sql` amplía `site_events`, elimina la restricción de solapamiento y siembra recursos de temporada. La migración se aplicó y verificó en Supabase Production el 12 de octubre de 2026: 16 campañas con ilustración; solo Halloween estaba habilitada y el control global estaba en modo automático. El PR #18 se integró en `main` con el commit `0dc2fe1`; Vercel confirmó Ready. Las campañas coincidentes se resuelven por prioridad. La migración es idempotente y preserva estados y fechas existentes; Halloween enlaza el vídeo local solo si la ficha todavía no tiene uno.
 
-Estado comprobado al 12 de octubre de 2026: las migraciones de contenido editorial administrado y de fichas de vídeo se aplicaron y verificaron en Supabase Production; las dos fichas aparecen en managed_content_entries. También se verificaron las tablas site_events, site_theme_settings y site_theme_control y el bucket público curileta-site-media. El PR #15 (reproductor y analítica) y el PR #16 (deduplicación por youtubeId) están integrados y desplegados en Production; Vercel confirmó Ready para be6bd94. En www.curileta.com/es/videos se verificó un capítulo y un Short sin duplicados. Al abrirlos, YouTube rechaza ambos embeds y el modal ofrece el enlace directo correcto a YouTube. La analítica propia registra el estado PLAYING y no modifica las visualizaciones oficiales. La deduplicación no requiere migración de datos; las métricas reutilizan analytics_daily.
+El historial remoto de migraciones no está reconciliado por completo. Al revisarlo solo aparecían las versiones 20261012020000 y 20261012040000; la versión 20261012030000 y las migraciones históricas aplicadas manualmente no estaban registradas. La entrada 20261012040000 se añadió después con `statements = NULL`; esto no demuestra por sí solo que las demás versiones estén aplicadas ni registradas correctamente. La reparación general de historial quedó pendiente tras un fallo de conectividad de Supabase CLI. No ejecutes `db push` ni marques lotes completos como aplicados hasta comparar cada migración con el esquema remoto. La documentación técnica registra el alcance de esta limitación.
+
+El PR #15 (reproductor y analítica) y el PR #16 (deduplicación por youtubeId) siguen desplegados. En www.curileta.com/es/videos se verificó un capítulo y un Short sin duplicados. Al abrirlos, YouTube rechaza ambos embeds y el modal ofrece el enlace directo correcto. La métrica propia registra el estado PLAYING y no modifica las visualizaciones oficiales. La deduplicación no requiere migración de métricas y reutiliza analytics_daily.
 
 Comprobaciones habituales del repositorio:
 

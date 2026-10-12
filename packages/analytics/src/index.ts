@@ -38,7 +38,8 @@ declare global {
 }
 
 export function isGoogleAnalyticsConfigured(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim());
+  return process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ENABLED?.trim().toLowerCase() === 'true'
+    && Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim());
 }
 
 export function isAnalyticsDoNotTrackEnabled(): boolean {
@@ -68,6 +69,7 @@ export function getGoogleAnalyticsConsent(): GoogleAnalyticsConsentChoice | null
 
 export function isGoogleAnalyticsAllowed(): boolean {
   return typeof window !== 'undefined'
+    && isGoogleAnalyticsConfigured()
     && !isAnalyticsDoNotTrackEnabled()
     && (window.__curiletaAnalyticsConsent ?? getGoogleAnalyticsConsent()) === 'accepted';
 }
@@ -87,7 +89,7 @@ function sanitizedReferrerOrigin(): string {
 
 function ensureGoogleTag(): boolean {
   const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
-  if (!measurementId || typeof window === 'undefined' || !isGoogleAnalyticsAllowed()) return false;
+  if (!measurementId || !isGoogleAnalyticsConfigured() || typeof window === 'undefined' || !isGoogleAnalyticsAllowed()) return false;
 
   window.__curiletaAnalyticsConsent = 'accepted';
   window.dataLayer = window.dataLayer || [];
@@ -142,18 +144,43 @@ function removeGoogleAnalyticsCookies(): void {
   }
 }
 
+export function clearGoogleAnalyticsConsent(): void {
+  if (typeof window === 'undefined') return;
+  window.__curiletaAnalyticsConsent = null;
+  try {
+    window.localStorage.removeItem(GOOGLE_ANALYTICS_CONSENT_KEY);
+  } catch {
+    // Privacy signals still block analytics when browser storage is unavailable.
+  }
+  window.gtag?.('consent', 'update', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+  });
+  document.getElementById('curileta-google-analytics')?.remove();
+  window.__curiletaAnalyticsConfigured = false;
+  removeGoogleAnalyticsCookies();
+  window.dispatchEvent(new Event(GOOGLE_ANALYTICS_CONSENT_CHANGE_EVENT));
+}
+
 export function saveGoogleAnalyticsConsent(choice: GoogleAnalyticsConsentChoice): void {
   if (typeof window === 'undefined') return;
+  const effectiveChoice = choice === 'accepted'
+    && isGoogleAnalyticsConfigured()
+    && !isAnalyticsDoNotTrackEnabled()
+    ? 'accepted'
+    : 'rejected';
   const previousChoice = window.__curiletaAnalyticsConsent ?? getGoogleAnalyticsConsent();
-  window.__curiletaAnalyticsConsent = choice;
+  window.__curiletaAnalyticsConsent = effectiveChoice;
   try {
-    window.localStorage.setItem(GOOGLE_ANALYTICS_CONSENT_KEY, JSON.stringify({ choice, recordedAt: Date.now() }));
+    window.localStorage.setItem(GOOGLE_ANALYTICS_CONSENT_KEY, JSON.stringify({ choice: effectiveChoice, recordedAt: Date.now() }));
   } catch {
     // The current page still honors an explicit choice if storage is unavailable.
   }
   window.dispatchEvent(new Event(GOOGLE_ANALYTICS_CONSENT_CHANGE_EVENT));
 
-  if (choice === 'accepted') {
+  if (effectiveChoice === 'accepted') {
     if (ensureGoogleTag() && previousChoice !== 'accepted') {
       const path = window.location.pathname;
       const locale = path.split('/')[1] === 'en' ? 'en' : 'es';
@@ -201,7 +228,7 @@ export async function recordContentShare(
   contentType: ShareableContentType,
   contentSlug: string,
 ): Promise<boolean> {
-  if (typeof window === 'undefined' || window.navigator.doNotTrack === '1') return false;
+  if (typeof window === 'undefined' || isAnalyticsDoNotTrackEnabled()) return false;
   const path = window.location.pathname;
   const locale = path.split('/')[1] === 'en' ? 'en' : 'es';
   try {
@@ -225,11 +252,11 @@ export async function recordContentShare(
 
 class PrivacySafeAnalytics implements AnalyticsProvider {
   track(event: AnalyticsEvent): void {
+    if (typeof window === 'undefined' || isAnalyticsDoNotTrackEnabled()) return;
+
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Analytics Event - No PII]`, event.name, event.properties);
     }
-
-    if (typeof window === 'undefined' || window.navigator.doNotTrack === '1') return;
 
     const supportedEvents = new Set([
       'page_view',
