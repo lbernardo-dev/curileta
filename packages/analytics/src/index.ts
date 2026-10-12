@@ -154,12 +154,14 @@ export function clearGoogleAnalyticsCookies(): void {
 
 export function clearLegacyGoogleAnalyticsConsent(): void {
   if (typeof window === 'undefined') return;
+  let hadLegacyChoice = false;
   try {
+    hadLegacyChoice = window.localStorage.getItem(LEGACY_GOOGLE_ANALYTICS_CONSENT_KEY) !== null;
     window.localStorage.removeItem(LEGACY_GOOGLE_ANALYTICS_CONSENT_KEY);
   } catch {
     // The current consent version still prevents the legacy choice from enabling analytics.
   }
-  removeGoogleAnalyticsCookies();
+  if (hadLegacyChoice) removeGoogleAnalyticsCookies();
 }
 
 export function clearGoogleAnalyticsConsent(): void {
