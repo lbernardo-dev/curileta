@@ -29,6 +29,7 @@ import { resolveHomepageSections } from '@/lib/homepage-sections';
 import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
 import { getAuthorPages } from '@/lib/author-pages.server';
 import { getRequestTimestamp } from '@/lib/request-time.server';
+import { getLandingLetters } from '@/lib/letters';
 import { getPublicDestinations } from '@/lib/destinations.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
@@ -116,6 +117,7 @@ export default async function HomePage({
   ]);
 
   const displayBooks = mergeBookCatalog(books, bookCatalogSettings);
+  const landingLetters = getLandingLetters(letters);
   const featuredBooks = getLatestBooks(displayBooks, bookCatalogSettings.featuredBookSlugs, 3);
   const storyRoute = books.find((book) => book.slug === 'las-aventuras-de-curileta')?.locations || [];
   const routeIndex = (location: (typeof locations)[number]) => {
@@ -141,7 +143,7 @@ export default async function HomePage({
     story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
     globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
-    letters: <LettersScene locale={locale as Locale} letters={letters} />,
+    letters: <LettersScene locale={locale as Locale} letters={landingLetters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
     books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={books} /></>,
     videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} voteCounts={videoVoteCounts} />,

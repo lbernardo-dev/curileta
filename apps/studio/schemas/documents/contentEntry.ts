@@ -137,6 +137,15 @@ export const contentEntry = defineType({
     stringField('postmark', 'Matasellos', letterTypes),
     stringField('postageColor', 'Color del sello', letterTypes),
     stringField('envelopeColor', 'Color del sobre', letterTypes),
+    stringField('episodeUrl', 'Episodio relacionado de YouTube', letterTypes),
+    defineField({
+      name: 'publicationStatus', title: 'Publicación de la carta', type: 'string',
+      options: { list: [
+        { title: 'Pública', value: 'public' },
+        { title: 'Censurada', value: 'censored' },
+        { title: 'Retirada', value: 'unpublished' },
+      ] }, initialValue: 'unpublished', ...forTypes(...letterTypes),
+    }),
     stringField('iconName', 'Nombre del icono', [...roadmapTypes, ...collaborationTypes]),
     stringField('stampCode', 'Código del sello', waypointTypes),
     stringField('coordinatesText', 'Coordenadas en texto', waypointTypes),
@@ -265,10 +274,20 @@ export const contentEntry = defineType({
       { name: 'en', title: 'Inglés', type: 'array', of: [{ type: 'text' }] },
     ], ...forTypes(...letterTypes) }),
     defineField({ name: 'photos', title: 'Fotos de la carta', type: 'array', of: [{ type: 'object', fields: [
+      { name: 'photoId', title: 'Identificador de foto', type: 'string' },
       { name: 'title', title: 'Título', type: 'localizedString' },
       { name: 'fact', title: 'Dato', type: 'localizedText' },
       { name: 'tag', title: 'Etiqueta', type: 'string' },
+      { name: 'tagEn', title: 'Etiqueta en inglés', type: 'string' },
       { name: 'imageUrl', title: 'Ruta de imagen', type: 'string' },
+      { name: 'storagePath', title: 'Ruta de Storage', type: 'string' },
+      { name: 'censoredImageUrl', title: 'Vista previa censurada', type: 'string' },
+      { name: 'censoredStoragePath', title: 'Ruta de vista previa censurada', type: 'string' },
+      { name: 'visibility', title: 'Visibilidad de la foto', type: 'string', options: { list: [
+        { title: 'Pública', value: 'public' },
+        { title: 'Censurada', value: 'censored' },
+        { title: 'Oculta', value: 'hidden' },
+      ] }, initialValue: 'public' },
     ] }], ...forTypes(...letterTypes) }),
     defineField({ name: 'purchaseLinks', title: 'Enlaces de compra', type: 'array', of: [{ type: 'object', fields: [
       { name: 'storeName', title: 'Tienda', type: 'string' },

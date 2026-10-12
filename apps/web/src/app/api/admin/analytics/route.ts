@@ -4,7 +4,6 @@ import { requireAdmin } from '@/lib/supabase/admin';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { cmsProvider } from '@/lib/cms';
 import { getGalleryItemBySlug } from '@/lib/gallery.server';
-import { getPublicDestinations } from '@/lib/destinations.server';
 
 export async function GET(request: NextRequest) {
   await requireAdmin(['owner', 'admin', 'analyst']);
@@ -118,8 +117,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false }, { status: 400 });
   }
 
-  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download';
+  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download' || eventName === 'video_play';
   if (eventName === 'gallery_download' && body.contentType !== 'gallery') return NextResponse.json({ success: false }, { status: 400 });
+  if (eventName === 'video_play' && body.contentType !== 'video') return NextResponse.json({ success: false }, { status: 400 });
   if (eventName === 'video_vote') {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -192,7 +192,7 @@ async function normalizeSharedContentPath(contentType: unknown, contentSlug: unk
       exists = (await cmsProvider.getAdventures(locale)).some((item) => item.slug === contentSlug);
       break;
     case 'location':
-      exists = (await getPublicDestinations(locale)).some((item) => item.slug === contentSlug);
+      exists = (await cmsProvider.getLocations(locale)).some((item) => item.slug === contentSlug);
       break;
     case 'wallpaper':
       exists = (await cmsProvider.getWallpapers(locale)).some((item) => item.slug === contentSlug);
@@ -225,7 +225,6 @@ function normalizeAnalyticsPath(path: string, locale: 'es' | 'en') {
     '/contacto',
     '/cookies',
     '/curileta',
-    '/destinos',
     '/eventos',
     '/fondos',
     '/galeria',
@@ -241,7 +240,7 @@ function normalizeAnalyticsPath(path: string, locale: 'es' | 'en') {
   ]);
   if (staticRoutes.has(route)) return `${prefix}${route === '/' ? '' : route}`;
 
-  const detailRoute = route.match(/^\/(libros|personajes|autora|destinos)\/[a-zA-Z0-9_-]{1,100}$/);
+  const detailRoute = route.match(/^\/(libros|personajes|autora)\/[a-zA-Z0-9_-]{1,100}$/);
   if (detailRoute) return `${prefix}/${detailRoute[1]}/detalle`;
   return null;
 }

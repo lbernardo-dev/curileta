@@ -21,7 +21,7 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
   const event = await cmsProvider.getActiveEvent(locale);
   const specialChapter = event?.specialChapter;
   const dateLocale = isEn ? 'en-GB' : 'es-ES';
-  const formatDate = (value: string) => new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(value));
+  const formatDate = (value: string) => new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: event?.timeZone || 'UTC' }).format(new Date(value));
 
   return (
     <SitePageLayout

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       success: true,
       hasActiveEvent: !!activeEvent,
       data: activeEvent,
-    });
+    }, { headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' } });
   } catch {
     return NextResponse.json(
       { success: false, error: 'Internal error' },

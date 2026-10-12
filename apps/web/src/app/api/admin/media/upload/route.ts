@@ -11,6 +11,7 @@ const targets = {
   'youtube-song-cover': 'youtube/content/song-covers',
   'author-portrait': 'authors/portraits',
   'gallery-image': 'gallery',
+  'letter-photo': 'letters/photos',
 } as const;
 
 export async function POST(request: Request) {

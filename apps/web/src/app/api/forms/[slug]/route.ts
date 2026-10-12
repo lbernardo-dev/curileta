@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { hasContactSubmissionConfiguration } from '@/lib/forms/privacy-version';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  if (process.env.NODE_ENV === 'production'
-    && (!process.env.TURNSTILE_SECRET_KEY
-      || !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-      || !process.env.PRIVACY_NOTICE_VERSION)) {
+  if (process.env.NODE_ENV === 'production' && !hasContactSubmissionConfiguration()) {
     return NextResponse.json(
       { success: false, error: 'El formulario necesita configuración antispam.' },
       { status: 503, headers: { 'Cache-Control': 'private, no-store' } },

@@ -288,6 +288,60 @@ html[data-seasonal-theme] :focus-visible {
   outline-color: var(--seasonal-accent-strong);
 }
 
+html[data-seasonal-theme] {
+  --background-canvas: var(--seasonal-canvas-light);
+  --background-secondary: var(--seasonal-surface-light);
+  --background-primary: var(--seasonal-canvas-light);
+  --text-primary: var(--seasonal-text-light);
+}
+
+html.dark[data-seasonal-theme] {
+  --background-canvas: var(--seasonal-canvas-dark);
+  --background-secondary: var(--seasonal-surface-dark);
+  --background-primary: var(--seasonal-canvas-dark);
+  --text-primary: var(--seasonal-text-dark);
+}
+
+.seasonal-decoration-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.seasonal-decoration-layer span {
+  position: absolute;
+  top: 104%;
+  font-size: 1.25rem;
+  will-change: transform;
+}
+
+.seasonal-decoration {
+  animation: seasonal-drift linear infinite;
+}
+
+.seasonal-decoration-still {
+  top: auto !important;
+  bottom: 8%;
+  animation: none;
+}
+
+html[data-seasonal-motion="off"] .seasonal-decoration {
+  top: auto;
+  bottom: 8%;
+  animation: none;
+}
+
+@keyframes seasonal-drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(2rem, -115vh, 0) rotate(28deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seasonal-decoration { animation: none; top: auto; bottom: 8%; }
+}
+
 /* ============================================================
    ELEGANT FLOATING & AMBIENT ANIMATIONS
    ============================================================ */

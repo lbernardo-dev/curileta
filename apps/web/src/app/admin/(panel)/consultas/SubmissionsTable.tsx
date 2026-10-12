@@ -15,6 +15,7 @@ interface Submission {
   answers: Record<string, string | boolean>;
   status: 'new' | 'in_progress' | 'resolved' | 'archived';
   email_status: 'pending' | 'sent' | 'failed';
+  email_error: string | null;
   created_at: string;
   lead_stage: 'new' | 'contacted' | 'qualified' | 'won' | 'lost' | null;
 }
@@ -168,6 +169,12 @@ export function SubmissionsTable() {
                 <time dateTime={item.created_at}>{new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}</time>
                 <span>Correo: {item.email_status === 'sent' ? 'enviado' : item.email_status === 'failed' ? 'fallido' : 'pendiente'}</span>
               </div>
+              {item.email_status === 'failed' && (
+                <p role="status" className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-[#272727] dark:text-amber-100">
+                  El mensaje está guardado, pero no se pudo enviar el aviso por correo. Revisa la configuración de Resend.
+                  {item.email_error?.startsWith('Resend returned ') && <span className="ml-1">Respuesta del proveedor: {item.email_error.replace('Resend returned ', 'HTTP ')}.</span>}
+                </p>
+              )}
               {Object.keys(item.answers || {}).some((key) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)) && (
                 <details className="rounded-lg bg-slate-50 p-4 dark:bg-[#181818]">
                   <summary className="cursor-pointer rounded-sm text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Más respuestas</summary>

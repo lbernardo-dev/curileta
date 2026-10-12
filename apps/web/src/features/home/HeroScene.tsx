@@ -24,10 +24,12 @@ interface HeroSceneProps {
 const route = routeData;
 
 export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishedBooksCount }) => {
-  const { isReady: seasonalThemeReady, isSeasonalActive, themeKey } = useSeasonalTheme();
+  const { activeEvent, isReady: seasonalThemeReady, isSeasonalActive, themeKey } = useSeasonalTheme();
   const [baseVideoIndex, setBaseVideoIndex] = useState<number | null>(null);
   const seasonalVideo = isSeasonalActive && themeKey
-    ? HERO_EVENT_VIDEOS[themeKey as SeasonalEvent['themeKey']]
+    ? activeEvent?.heroVideoUrl
+      ? { url: activeEvent.heroVideoUrl, poster: HERO_EVENT_VIDEOS[themeKey as SeasonalEvent['themeKey']]?.poster || HERO_BASE_VIDEOS[0].poster }
+      : HERO_EVENT_VIDEOS[themeKey as SeasonalEvent['themeKey']]
     : undefined;
   const eventVideo = seasonalThemeReady ? seasonalVideo : undefined;
   const heroVideo = seasonalThemeReady
@@ -111,7 +113,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
             poster={heroPoster}
             className="absolute inset-0 h-full w-full object-cover object-[78%_center] motion-reduce:hidden sm:object-center"
           >
-            <source src={heroVideo.url} type="video/mp4" />
+            <source src={heroVideo.url} type={heroVideo.url.split('?')[0].toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
           </video>
         )}
 

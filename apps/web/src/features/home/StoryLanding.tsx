@@ -75,35 +75,35 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
 
           <div className="relative mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
             {route.map((location, index) => (
-              <article key={location.id} className="group relative overflow-hidden rounded-[1.65rem] bg-[#fffdf8] shadow-[0_16px_55px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
+              <article key={location.id} className="relative overflow-hidden rounded-[1.65rem] bg-[#fffdf8] shadow-[0_16px_55px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
                 <Link href={`/${locale}/destinos/${location.slug}`} className="group block h-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
-                <div className="relative aspect-[4/3] overflow-hidden bg-[#e7ece5]">
-                  <ContentImage
-                    src={location.heroImage.url}
-                    alt={localized(location.heroImage.alt, locale) || localized(location.name, locale)}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#12261f]/65 via-transparent to-transparent" />
-                  <span className="absolute left-5 top-5 inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 px-2 text-xs font-semibold text-[#20352c] shadow-sm">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <span className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 text-sm font-medium text-white">
-                    <MapPin className="h-4 w-4 text-amber-300" />
-                    {localized(location.country, locale)}
-                  </span>
-                </div>
-                <div className="p-6 sm:p-7">
-                  <h3 className="font-display text-2xl font-semibold tracking-tight">{localized(location.name, locale)}</h3>
-                  <p className="mt-3 line-clamp-3 text-[15px] leading-6 text-[#4d5f54]">{localized(location.description, locale)}</p>
-                  {location.curiosities?.[0] && (
-                    <p className="mt-5 border-t border-[#e6e9e1] pt-4 text-sm leading-6 text-[#3f594a]">
-                      <span className="font-semibold">{isEn ? 'A little discovery: ' : 'Una pequeña curiosidad: '}</span>
-                      {localized(location.curiosities[0], locale)}
-                    </p>
-                  )}
-                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-900">{isEn ? 'Open destination' : 'Ver destino'} <ArrowRight className="h-4 w-4" /></span>
-                </div>
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[#e7ece5]">
+                    <ContentImage
+                      src={location.heroImage.url}
+                      alt={localized(location.heroImage.alt, locale) || localized(location.name, locale)}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.03]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#12261f]/65 via-transparent to-transparent" />
+                    <span className="absolute left-5 top-5 inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 px-2 text-xs font-semibold text-[#20352c] shadow-sm">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 text-sm font-medium text-white">
+                      <MapPin className="h-4 w-4 text-amber-300" />
+                      {localized(location.country, locale)}
+                    </span>
+                  </div>
+                  <div className="p-6 sm:p-7">
+                    <h3 className="font-display text-2xl font-semibold tracking-tight">{localized(location.name, locale)}</h3>
+                    <p className="mt-3 line-clamp-3 text-[15px] leading-6 text-[#4d5f54]">{localized(location.description, locale)}</p>
+                    {location.curiosities?.[0] && (
+                      <p className="mt-5 border-t border-[#e6e9e1] pt-4 text-sm leading-6 text-[#3f594a]">
+                        <span className="font-semibold">{isEn ? 'A little discovery: ' : 'Una pequeña curiosidad: '}</span>
+                        {localized(location.curiosities[0], locale)}
+                      </p>
+                    )}
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-900">{isEn ? 'Open destination' : 'Ver destino'} <ArrowRight className="h-4 w-4" /></span>
+                  </div>
                 </Link>
               </article>
             ))}

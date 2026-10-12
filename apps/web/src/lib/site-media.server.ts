@@ -1,15 +1,22 @@
 import 'server-only';
 import { getYouTubeSourceItemsForMediaCleanup } from '@/lib/cms';
+import { removeUnreferencedEventMedia } from './event-media.server';
 import { removeUnreferencedDestinationMedia } from './destination-media.server';
 import { removeUnreferencedYouTubeMedia } from './youtube-media.server';
 
 export const SITE_MEDIA_BUCKET = 'curileta-site-media';
 
-export function isSiteMediaAsset(urlValue: unknown, pathValue: unknown, prefix: 'authors/portraits' | 'gallery' | 'destinations') {
+type SiteMediaAssetPrefix = 'authors/portraits' | 'gallery' | 'letters/photos' | 'destinations';
+
+function siteMediaPathPattern(prefix: SiteMediaAssetPrefix) {
+  if (prefix === 'letters/photos') return /^letters\/photos\/[0-9a-f-]{36}\.webp$/i;
+  if (prefix === 'destinations') return /^destinations\/[0-9a-f-]{36}\.(webp|mp4|webm)$/i;
+  return new RegExp(`^${prefix}/[a-z0-9-]+\\.webp$`);
+}
+
+export function isSiteMediaAsset(urlValue: unknown, pathValue: unknown, prefix: SiteMediaAssetPrefix) {
   if (typeof urlValue !== 'string' || typeof pathValue !== 'string') return false;
-  const pathPattern = prefix === 'destinations'
-    ? /^destinations\/[0-9a-f-]{36}\.(webp|mp4|webm)$/i
-    : new RegExp(`^${prefix}/[a-z0-9-]+\\.webp$`);
+  const pathPattern = siteMediaPathPattern(prefix);
   if (!pathPattern.test(pathValue)) return false;
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,14 +32,21 @@ export function isSiteMediaAsset(urlValue: unknown, pathValue: unknown, prefix: 
   }
 }
 
-export async function removeSiteMediaAsset(path: string, prefix: 'authors/portraits' | 'gallery' | 'destinations') {
-  const pathPattern = prefix === 'destinations'
-    ? /^destinations\/[0-9a-f-]{36}\.(webp|mp4|webm)$/i
-    : new RegExp(`^${prefix}/[a-z0-9-]+\\.webp$`);
+export async function removeSiteMediaAsset(path: string, prefix: SiteMediaAssetPrefix) {
+  const pathPattern = siteMediaPathPattern(prefix);
   if (!pathPattern.test(path)) return false;
   if (prefix === 'destinations') return removeUnreferencedDestinationMedia(path);
   const { createSupabaseAdminClient } = await import('@/lib/supabase/server');
   const admin = createSupabaseAdminClient();
+  if (prefix === 'letters/photos') {
+    try {
+      if (await (await import('@/lib/letters-admin.server')).isLetterPhotoReferenced(path)) return false;
+    } catch {
+      return false;
+    }
+    const { error } = await admin.storage.from(SITE_MEDIA_BUCKET).remove([path]);
+    return !error;
+  }
   const reference = prefix === 'gallery'
     ? await admin.from('gallery_items').select('id').eq('storage_path', path).limit(1).maybeSingle()
     : await admin.from('author_pages').select('slug').eq('portrait_path', path).limit(1).maybeSingle();
@@ -44,14 +58,15 @@ export async function removeSiteMediaAsset(path: string, prefix: 'authors/portra
 export async function cleanupUnreferencedSiteMedia(now = new Date()) {
   const { createSupabaseAdminClient } = await import('@/lib/supabase/server');
   const admin = createSupabaseAdminClient();
-  const [authorsCheck, galleryCheck, channelCheck, contentCheck, destinationsCheck] = await Promise.all([
+  const [authorsCheck, galleryCheck, channelCheck, contentCheck, eventsCheck, destinationsCheck] = await Promise.all([
     admin.from('author_pages').select('slug').limit(1),
     admin.from('gallery_items').select('id').limit(1),
     admin.from('youtube_channel_settings').select('setting_key').limit(1),
     admin.from('youtube_content_overrides').select('item_key').limit(1),
+    admin.from('site_events').select('id').limit(1),
     admin.from('managed_destinations').select('slug').limit(1),
   ]);
-  if (authorsCheck.error || galleryCheck.error || channelCheck.error || contentCheck.error || destinationsCheck.error) {
+  if (authorsCheck.error || galleryCheck.error || channelCheck.error || contentCheck.error || eventsCheck.error || destinationsCheck.error) {
     throw new Error('No se pueden comprobar todas las referencias de medios administrados.');
   }
 
@@ -62,6 +77,8 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
     { prefix: 'youtube/content/song-covers', pattern: /^youtube\/content\/song-covers\/[0-9a-f-]{36}\.webp$/ },
     { prefix: 'authors/portraits', pattern: /^authors\/portraits\/[0-9a-f-]{36}\.webp$/ },
     { prefix: 'gallery', pattern: /^gallery\/[0-9a-f-]{36}\.webp$/ },
+    { prefix: 'letters/photos', pattern: /^letters\/photos\/[0-9a-f-]{36}\.webp$/i },
+    { prefix: 'events', pattern: /^events\/[0-9a-f-]{36}\.(mp4|webm|mp3|m4a|ogg)$/i },
     { prefix: 'destinations', pattern: /^destinations\/[0-9a-f-]{36}\.(webp|mp4|webm)$/i },
   ] as const;
   const cutoff = now.getTime() - 30 * 24 * 60 * 60 * 1000;
@@ -110,11 +127,14 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
       admin.storage.from(SITE_MEDIA_BUCKET).getPublicUrl(path).data.publicUrl);
     deleted += await removeUnreferencedYouTubeMedia(publicUrls, sourceItems, { throwOnError: true });
   }
+  for (const candidate of selected.filter((entry) => entry.prefix === 'events')) {
+    if (await removeUnreferencedEventMedia(candidate.path)) deleted += 1;
+  }
   for (const candidate of selected.filter((entry) => entry.prefix === 'destinations')) {
     if (await removeUnreferencedDestinationMedia(candidate.path)) deleted += 1;
   }
-  for (const candidate of selected.filter((entry) => entry.prefix === 'gallery' || entry.prefix === 'authors/portraits')) {
-    const prefix = candidate.prefix === 'gallery' ? 'gallery' : 'authors/portraits';
+  for (const candidate of selected.filter((entry) => entry.prefix === 'gallery' || entry.prefix === 'authors/portraits' || entry.prefix === 'letters/photos')) {
+    const prefix = candidate.prefix === 'gallery' ? 'gallery' : candidate.prefix === 'authors/portraits' ? 'authors/portraits' : 'letters/photos';
     if (await removeSiteMediaAsset(candidate.path, prefix)) deleted += 1;
   }
 

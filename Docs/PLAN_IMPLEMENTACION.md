@@ -2,6 +2,8 @@
 
 Documento de referencia técnica y operativa generado a partir del documento maestro de producto y arquitectura ([Proyecto_Web_Oficial_Las_Aventuras_de_Curileta.md](./Proyecto_Web_Oficial_Las_Aventuras_de_Curileta.md)).
 
+> **Vigencia:** esta es la propuesta de alcance inicial, con fechas estimadas a partir del 15 de octubre de 2026. Sus casillas no se mantuvieron como registro de ejecución y no representan el estado actual del sitio. Antes de tratar un punto como pendiente, compáralo con el código y con la [referencia técnica viva](./BACKEND_TECHNICAL_REFERENCE.md), que registra entregas, verificaciones y bloqueos operativos. La arquitectura implementada ya difiere de este borrador (por ejemplo, Next.js 16 y Sanity Studio 6).
+
 ---
 
 ## 1. Resumen Ejecutivo y Diagnóstico

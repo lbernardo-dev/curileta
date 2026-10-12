@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { AnalyticsRouteTracker } from '@/components/AnalyticsRouteTracker';
+import { AnalyticsConsentManager } from '@/components/AnalyticsConsentManager';
 
 export default function RootLayout({
   children,
@@ -52,6 +53,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-300 selection:text-emerald-950 transition-colors duration-300">
         <ThemeProvider>
+          <AnalyticsConsentManager />
           <AnalyticsRouteTracker />
           {children}
         </ThemeProvider>

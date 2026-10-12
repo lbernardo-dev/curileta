@@ -13,6 +13,8 @@ const navigation = [
   { href: '/admin/autoras', label: 'Autoras', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/galeria', label: 'Galería', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/destinos', label: 'Destinos', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/cartas', label: 'Cartas', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/eventos', label: 'Eventos y ambientes', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/proximo-episodio', label: 'Próximo episodio', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/youtube', label: 'Canal de YouTube', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/forms', label: 'Formularios', roles: ['owner', 'admin'] },

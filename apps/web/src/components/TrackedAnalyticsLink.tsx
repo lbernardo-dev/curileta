@@ -24,5 +24,6 @@ export function TrackedAnalyticsLink({ href, action, children, className, target
     }
   }
 
-  return <a href={href} target={target} rel={target === '_blank' ? 'noopener noreferrer' : undefined} onClick={track} className={className}>{children}</a>;
+  const isYouTubeLink = href.startsWith('https://www.youtube.com/');
+  return <a href={href} target={target} rel={target === '_blank' ? (isYouTubeLink ? 'noopener' : 'noopener noreferrer') : undefined} onClick={track} className={className}>{children}</a>;
 }

@@ -15,7 +15,8 @@ export type AdminImageTarget =
   | 'youtube-video-thumbnail'
   | 'youtube-song-cover'
   | 'author-portrait'
-  | 'gallery-image';
+  | 'gallery-image'
+  | 'letter-photo';
 
 interface UploadTicket {
   bucket: string;
@@ -33,6 +34,7 @@ interface ImageUploadFieldProps {
   value: string;
   onChange: (value: string) => void;
   onPathChange?: (path: string) => void;
+  onCensoredImageChange?: (value: string, path: string) => void;
   onUploadingChange: (uploading: boolean) => void;
 }
 
@@ -83,6 +85,39 @@ async function convertToWebp(file: File): Promise<Blob> {
   }
 }
 
+async function createCensoredPreview(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const longestSide = Math.max(bitmap.width, bitmap.height);
+    const scale = Math.min(1, 128 / longestSide);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('No se pudo preparar la vista previa censurada.');
+    context.fillStyle = '#827f73';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.filter = 'blur(18px) saturate(0.35)';
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    context.filter = 'none';
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob || blob.type !== 'image/webp') {
+          reject(new Error('Este navegador no pudo crear la vista previa censurada.'));
+          return;
+        }
+        if (blob.size > MAX_STORED_BYTES) {
+          reject(new Error('La vista previa censurada supera el límite de 8 MB.'));
+          return;
+        }
+        resolve(blob);
+      }, 'image/webp', 0.52);
+    });
+  } finally {
+    bitmap.close();
+  }
+}
+
 export function ImageUploadField({
   label,
   hint,
@@ -90,13 +125,14 @@ export function ImageUploadField({
   value,
   onChange,
   onPathChange,
+  onCensoredImageChange,
   onUploadingChange,
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(false);
   const lifecycleGenerationRef = useRef(0);
   const uploadingRef = useRef(false);
-  const recentUploadPathRef = useRef('');
+  const recentUploadPathsRef = useRef<string[]>([]);
   const onUploadingChangeRef = useRef(onUploadingChange);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -121,7 +157,8 @@ export function ImageUploadField({
     return () => {
       mountedRef.current = false;
       if (lifecycleGenerationRef.current === generation) lifecycleGenerationRef.current += 1;
-      discardRecentUpload(recentUploadPathRef.current);
+      recentUploadPathsRef.current.forEach(discardRecentUpload);
+      recentUploadPathsRef.current = [];
       if (uploadingRef.current) {
         uploadingRef.current = false;
         onUploadingChangeRef.current(false);
@@ -136,64 +173,71 @@ export function ImageUploadField({
     setUploading(true);
     onUploadingChangeRef.current(true);
     setError('');
-    let pendingUploadPath = '';
+    const pendingUploadPaths: string[] = [];
 
     try {
-      const image = await convertToWebp(file);
-      const ticketResponse = await fetch('/api/admin/media/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target, contentType: image.type, fileSize: image.size }),
-      });
-      const ticketResult = await ticketResponse.json().catch(() => null) as (Partial<UploadTicket> & { error?: unknown }) | null;
-      if (!ticketResponse.ok
-        || !ticketResult
-        || typeof ticketResult.bucket !== 'string'
-        || typeof ticketResult.path !== 'string'
-        || typeof ticketResult.token !== 'string'
-        || typeof ticketResult.publicUrl !== 'string'
-        || typeof ticketResult.supabaseUrl !== 'string'
-        || typeof ticketResult.publishableKey !== 'string') {
-        throw new Error(typeof ticketResult?.error === 'string' ? ticketResult.error : 'No se pudo preparar la subida.');
-      }
-      const ticket: UploadTicket = {
-        bucket: ticketResult.bucket,
-        path: ticketResult.path,
-        token: ticketResult.token,
-        publicUrl: ticketResult.publicUrl,
-        supabaseUrl: ticketResult.supabaseUrl,
-        publishableKey: ticketResult.publishableKey,
-      };
-      pendingUploadPath = ticket.path;
+      const original = await convertToWebp(file);
+      const images = target === 'letter-photo'
+        ? [original, await createCensoredPreview(file)]
+        : [original];
+      const uploaded: UploadTicket[] = [];
 
-      const client = createClient(ticket.supabaseUrl, ticket.publishableKey, {
-        auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
-      });
-      const { error: uploadError } = await client.storage
-        .from(ticket.bucket)
-        .uploadToSignedUrl(ticket.path, ticket.token, image, {
-          cacheControl: '31536000',
-          contentType: image.type,
+      for (const image of images) {
+        const ticketResponse = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target, contentType: image.type, fileSize: image.size }),
         });
-      if (uploadError) {
-        discardRecentUpload(ticket.path);
-        pendingUploadPath = '';
-        throw new Error('No se pudo subir la imagen. Comprueba la conexión e inténtalo de nuevo.');
+        const ticketResult = await ticketResponse.json().catch(() => null) as (Partial<UploadTicket> & { error?: unknown }) | null;
+        if (!ticketResponse.ok
+          || !ticketResult
+          || typeof ticketResult.bucket !== 'string'
+          || typeof ticketResult.path !== 'string'
+          || typeof ticketResult.token !== 'string'
+          || typeof ticketResult.publicUrl !== 'string'
+          || typeof ticketResult.supabaseUrl !== 'string'
+          || typeof ticketResult.publishableKey !== 'string') {
+          throw new Error(typeof ticketResult?.error === 'string' ? ticketResult.error : 'No se pudo preparar la subida.');
+        }
+        const ticket: UploadTicket = {
+          bucket: ticketResult.bucket,
+          path: ticketResult.path,
+          token: ticketResult.token,
+          publicUrl: ticketResult.publicUrl,
+          supabaseUrl: ticketResult.supabaseUrl,
+          publishableKey: ticketResult.publishableKey,
+        };
+        pendingUploadPaths.push(ticket.path);
+
+        const client = createClient(ticket.supabaseUrl, ticket.publishableKey, {
+          auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+        });
+        const { error: uploadError } = await client.storage
+          .from(ticket.bucket)
+          .uploadToSignedUrl(ticket.path, ticket.token, image, {
+            cacheControl: '31536000',
+            contentType: image.type,
+          });
+        if (uploadError) throw new Error('No se pudo subir la imagen. Comprueba la conexión e inténtalo de nuevo.');
+        uploaded.push(ticket);
       }
 
       if (!mountedRef.current || lifecycleGenerationRef.current !== generation) {
-        discardRecentUpload(ticket.path);
-        pendingUploadPath = '';
+        pendingUploadPaths.forEach(discardRecentUpload);
+        pendingUploadPaths.length = 0;
         return;
       }
 
-      discardRecentUpload(recentUploadPathRef.current);
-      recentUploadPathRef.current = ticket.path;
-      pendingUploadPath = '';
-      onChange(ticket.publicUrl);
-      onPathChange?.(ticket.path);
+      recentUploadPathsRef.current.forEach(discardRecentUpload);
+      recentUploadPathsRef.current = pendingUploadPaths;
+      pendingUploadPaths.length = 0;
+      onChange(uploaded[0].publicUrl);
+      onPathChange?.(uploaded[0].path);
+      if (target === 'letter-photo') {
+        onCensoredImageChange?.(uploaded[1].publicUrl, uploaded[1].path);
+      }
     } catch (cause) {
-      if (pendingUploadPath) discardRecentUpload(pendingUploadPath);
+      pendingUploadPaths.forEach(discardRecentUpload);
       if (mountedRef.current) setError(cause instanceof Error ? cause.message : 'No se pudo subir la imagen.');
     } finally {
       if (uploadingRef.current && lifecycleGenerationRef.current === generation) {
@@ -242,8 +286,9 @@ export function ImageUploadField({
             onClick={() => {
               onChange('');
               onPathChange?.('');
-              discardRecentUpload(recentUploadPathRef.current);
-              recentUploadPathRef.current = '';
+              onCensoredImageChange?.('', '');
+              recentUploadPathsRef.current.forEach(discardRecentUpload);
+              recentUploadPathsRef.current = [];
               setError('');
             }}
             disabled={uploading}

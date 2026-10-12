@@ -124,10 +124,11 @@ export default async function AdminContentPage() {
           />
           <ModuleCard
             title="Eventos y temas"
-            status={deployedStudioUrl ? 'Disponible en Sanity' : 'Preparado en Sanity'}
-            tone={deployedStudioUrl ? 'ready' : 'pending'}
-            description="Los eventos estacionales admiten fechas, tema visual, banner, actividades y estados de publicación."
-            detail="La gestión se hace como documentos de evento; todavía no existe una biblioteca separada de temas reutilizables."
+            status="Disponible"
+            description="Programa eventos estacionales, cambia su paleta, sube vídeo y audio y controla la activación desde el panel."
+            detail="Las fechas se activan automáticamente. La prioridad decide qué campaña se muestra si coinciden varios eventos."
+            href="/admin/eventos"
+            actionLabel="Gestionar eventos"
           />
           <ModuleCard
             title="Encuadres de imágenes"
