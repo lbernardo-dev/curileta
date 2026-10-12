@@ -770,7 +770,7 @@ Search Console muestra el sitemap `https://www.curileta.com/sitemap.xml` como **
 
 ### Alternativa de alojamiento sin coste
 
-Oracle Cloud se está evaluando solo como posible entorno de staging. El usuario aún no ha creado una VM. No se ha migrado el sitio ni se han modificado DNS; Vercel continúa en Production mientras no se valide una instancia Always Free y se autorice expresamente cualquier cambio de tráfico.
+Oracle Cloud se está evaluando solo como posible entorno de staging. Se crearon `curileta-vcn` y la subred pública `curileta-subnet`; la regla entrante de SSH está limitada a la IP de conexión autorizada y no se abrieron HTTP ni HTTPS. La instancia `curileta-staging` solicitada como `VM.Standard.A1.Flex` con Oracle Linux 9, 1 OCPU y 6 GB no se pudo crear: OCI devolvió falta de capacidad para AD-1, incluso al reintentar. No hay VM ni IPv4 de instancia asignada, y el sitio no se ha migrado ni se ha cambiado DNS. Vercel sigue en Production. La clave privada SSH se descargó localmente; no se guarda en este repositorio ni en esta referencia. Reintentar la creación queda pendiente de que OCI disponga de capacidad o de decidir una alternativa Always Free; cualquier cambio de tráfico requiere autorización expresa.
 
 ### Trabajo de dependencias
 
