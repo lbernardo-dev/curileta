@@ -235,7 +235,7 @@ export default function LettersManager() {
             Relaciona cada carta con su episodio y decide cuándo se muestra completa, censurada o se retira.
           </p>
         </div>
-        <button type="button" onClick={beginCreate} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
+        <button type="button" onClick={beginCreate} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
           <Plus className="h-4 w-4" /> Nueva carta
         </button>
       </header>
@@ -270,8 +270,8 @@ export default function LettersManager() {
                     </div>
                     <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{letter.photos?.length || 0} fotos{letter.episodeUrl ? ' · episodio vinculado' : ''}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <button type="button" onClick={() => beginEdit(letter)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]">Editar</button>
-                      <button type="button" onClick={() => void deleteLetter(letter)} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">
+                      <button type="button" onClick={() => beginEdit(letter)} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]">Editar</button>
+                      <button type="button" onClick={() => void deleteLetter(letter)} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">
                         {confirmDelete === letter.id ? 'Confirmar retirada' : 'Eliminar'}
                       </button>
                     </div>
@@ -383,7 +383,7 @@ export default function LettersManager() {
             <FileText className="h-10 w-10 text-slate-500" />
             <h2 className="mt-4 text-xl font-bold">Administra la salida de cada carta</h2>
             <p className="mt-2 max-w-md text-sm leading-5 text-slate-600 dark:text-slate-300">Después del episodio puedes publicar la carta completa. A mitad de semana puedes cambiarla a censurada y mostrar el documento clasificado.</p>
-            <button type="button" onClick={beginCreate} className="mt-5 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">Crear carta</button>
+            <button type="button" onClick={beginCreate} disabled={!writable} title={!writable ? 'Configura SANITY_WRITE_TOKEN para guardar cartas.' : undefined} className="mt-5 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">Crear carta</button>
           </div>
         )}
       </section>
