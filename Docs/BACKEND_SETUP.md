@@ -60,7 +60,7 @@ Roles reconocidos por el panel: owner, admin, editor y analyst. Las personas edi
 
 ## Contenido e imágenes
 
-La sección Contenidos administra registros editoriales bilingües almacenados en managed_content_entries. Cada registro incluye tipo, identificador, ruta pública opcional, payload JSON, orden, publicación, borrado lógico y marcas de autoría. La edición y publicación invalidan las cachés de páginas afectadas. El contenido retirado se puede recuperar desde el panel cuando el módulo ofrece esa acción.
+La sección Contenidos administra registros editoriales bilingües almacenados en managed_content_entries. Cada registro incluye tipo, identificador, ruta pública opcional, payload JSON, orden, publicación, borrado lógico y marcas de autoría. La edición y publicación invalidan las cachés de páginas afectadas. El contenido retirado se puede recuperar desde el panel cuando el módulo ofrece esa acción. El capítulo y el Short que ya estaban publicados en YouTube se inicializan mediante supabase/migrations/20261012030000_seed_public_youtube_videos.sql; ambas fichas se verificaron en Production y quedan editables desde /admin.
 
 Las secciones especializadas pueden conservar tablas propias, por ejemplo analítica, consultas, encuadres o ajustes del catálogo. Consulta la referencia técnica antes de cambiar su esquema.
 
@@ -68,7 +68,7 @@ La API de carga requiere una sesión de owner, admin o editor. Emite una URL de 
 
 ## Analítica y vídeo
 
-La ruta de analítica registra interacciones válidas en analytics_daily. El reproductor registra un inicio interno cuando la API de YouTube confirma el estado PLAYING. La ficha se identifica por su ruta pública; /admin/estadisticas agrupa estos inicios por vídeo.
+La ruta de analítica registra interacciones válidas en analytics_daily. El reproductor registra un inicio interno cuando la API de YouTube confirma el estado PLAYING. La ficha se identifica por su ruta pública; /admin/estadisticas agrupa estos inicios por vídeo. La semilla de las fichas editoriales se aplica por separado y no cambia la tabla de métricas.
 
 Ese contador es una métrica propia del sitio y no confirma ni modifica las visualizaciones oficiales de YouTube. Si la inserción falla, el reproductor muestra una miniatura disponible y ofrece un enlace directo al vídeo en YouTube.
 
@@ -83,7 +83,7 @@ Antes de publicar un cambio de backend:
 5. Verifica rutas públicas y del panel con roles autorizados, carga de imágenes, cachés y errores de permisos.
 6. Publica la migración antes del código que dependa de ella, si todavía no está aplicada; después despliega la web y comprueba las rutas públicas y /admin en Production.
 
-Estado comprobado al 12 de octubre de 2026: la migración de contenido editorial administrado de esta iniciativa estaba aplicada y verificada en Supabase Production. El código web de la rama que acompaña esta actualización documental requiere su propio despliegue; no se describe aquí como activo en Production. La actualización de analítica de reproducción reutiliza analytics_daily y no añade una migración.
+Estado comprobado al 12 de octubre de 2026: las migraciones de contenido editorial administrado y de fichas de vídeo se aplicaron y verificaron en Supabase Production; las dos fichas existentes aparecen en managed_content_entries. También se verificaron las tablas site_events, site_theme_settings y site_theme_control y el bucket público curileta-site-media con límite de 100 MB y formatos de imagen, vídeo y audio. El código web de esta rama requiere su propio despliegue; no se describe aquí como activo en Production. La actualización de analítica de reproducción reutiliza analytics_daily y no añade una migración de métricas.
 
 Comprobaciones habituales del repositorio:
 
