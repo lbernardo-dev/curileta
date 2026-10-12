@@ -34,7 +34,7 @@
   "devDependencies": {
     "@curileta/config": "*",
     "@eslint/eslintrc": "3.3.7",
-    "@types/node": "^22.13.4",
+    "@types/node": "^26.6.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "autoprefixer": "^10.4.20",
