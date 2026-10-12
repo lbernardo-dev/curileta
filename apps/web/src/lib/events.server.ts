@@ -108,6 +108,8 @@ export function normalizeManagedEvent(value: unknown) {
   const priority = body.priority;
   const palette = normalizePalette(body.palette, themeKey);
   const effects = normalizeEffects(body.effects);
+  const artworkUrl = typeof body.artworkUrl === 'string' ? body.artworkUrl.trim() : '';
+  const artworkPath = typeof body.artworkPath === 'string' ? body.artworkPath.trim() : '';
   const heroVideoUrl = typeof body.heroVideoUrl === 'string' ? body.heroVideoUrl.trim() : '';
   const heroVideoPath = typeof body.heroVideoPath === 'string' ? body.heroVideoPath.trim() : '';
   const ambientAudioUrl = typeof body.ambientAudioUrl === 'string' ? body.ambientAudioUrl.trim() : '';
@@ -123,6 +125,7 @@ export function normalizeManagedEvent(value: unknown) {
     || (activationMode !== 'manual' && activationMode !== 'scheduled')
     || typeof body.enabled !== 'boolean' || typeof body.manualActive !== 'boolean'
     || typeof priority !== 'number' || !Number.isInteger(priority) || priority < 0 || priority > 100
+    || !validOptionalEventMedia(artworkUrl, artworkPath, 'image')
     || !validOptionalEventMedia(heroVideoUrl, heroVideoPath, 'video')
     || !validOptionalEventMedia(ambientAudioUrl, ambientAudioPath, 'audio')
     || !validOptionalEventMedia(scareSoundUrl, scareSoundPath, 'audio')) return null;
@@ -139,6 +142,8 @@ export function normalizeManagedEvent(value: unknown) {
     enabled: body.enabled,
     manual_active: body.manualActive,
     priority,
+    artwork_url: artworkUrl,
+    artwork_path: artworkPath,
     hero_video_url: heroVideoUrl,
     hero_video_path: heroVideoPath,
     ambient_audio_url: ambientAudioUrl,
@@ -178,6 +183,8 @@ export function mapManagedEvent(row: EventRow): ManagedEvent {
     enabled: row.enabled === true,
     manualActive: row.manual_active === true,
     priority: finiteNumber(row.priority, 0),
+    artworkUrl: stringValue(row.artwork_url),
+    artworkPath: stringValue(row.artwork_path),
     heroVideoUrl: stringValue(row.hero_video_url),
     heroVideoPath: stringValue(row.hero_video_path),
     ambientAudioUrl: stringValue(row.ambient_audio_url),
@@ -215,7 +222,7 @@ export function toSeasonalEvent(event: ManagedEvent, referenceDate = new Date(),
     startDate: event.startsAt,
     endDate: event.endsAt,
     timeZone: event.timeZone,
-    bannerImage: '',
+    bannerImage: event.artworkUrl,
     managed: true,
     heroVideoUrl: event.heroVideoUrl,
     heroVideoPath: event.heroVideoPath,
@@ -306,7 +313,7 @@ function normalizeEffects(value: unknown): EventEffects | null {
   };
 }
 
-function validOptionalEventMedia(url: string, path: string, kind: 'video' | 'audio') {
+function validOptionalEventMedia(url: string, path: string, kind: 'video' | 'audio' | 'image') {
   if (!url && !path) return true;
   return isEventMediaAsset(url, path, kind);
 }

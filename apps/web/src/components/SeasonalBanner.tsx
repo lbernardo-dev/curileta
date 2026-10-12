@@ -13,6 +13,16 @@ const EVENT_SYMBOL: Record<string, string> = {
   easter: '🐣',
   summer: '☀️',
   valentines: '♥',
+  'new-year': '🎆',
+  'lunar-new-year': '🏮',
+  autumn: '🍂',
+  'earth-day': '🌍',
+  'world-book-day': '📚',
+  pride: '🌈',
+  'st-patrick': '🍀',
+  'day-of-the-dead': '🌼',
+  'world-childrens-day': '🧸',
+  diwali: '🪔',
 };
 
 export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
@@ -44,7 +54,7 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(new Date(activeEvent.endDate));
-  const canExploreEvent = activeEvent.themeKey === 'halloween';
+  const exploreAnchor = activeEvent.themeKey === 'halloween' && activeEvent.specialChapter ? '#evento-halloween' : '#evento-temporada';
 
   return (
     <div
@@ -72,9 +82,9 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-          {canExploreEvent && isSeasonalActive && (
+          {isSeasonalActive && (
             <a
-              href="#evento-halloween"
+              href={`/${locale}${exploreAnchor}`}
               className="inline-flex min-h-8 items-center gap-1 rounded-full bg-[var(--seasonal-accent)] px-3 py-1.5 text-xs font-bold text-slate-950 shadow-sm transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <span>{isEn ? 'Explore' : 'Explorar'}</span>

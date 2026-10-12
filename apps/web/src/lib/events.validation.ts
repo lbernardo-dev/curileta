@@ -13,6 +13,8 @@ export interface NormalizedEventData {
   enabled: boolean;
   manual_active: boolean;
   priority: number;
+  artwork_url: string;
+  artwork_path: string;
   hero_video_url: string;
   hero_video_path: string;
   ambient_audio_url: string;
@@ -35,6 +37,8 @@ export function normalizeEventBody(body: Record<string, unknown>): NormalizedEve
   const priority = body.priority;
   const palette = normalizePalette(body.palette);
   const effects = normalizeEffects(body.effects);
+  const artworkUrl = typeof body.artworkUrl === 'string' ? body.artworkUrl : '';
+  const artworkPath = typeof body.artworkPath === 'string' ? body.artworkPath : '';
   const heroVideoUrl = typeof body.heroVideoUrl === 'string' ? body.heroVideoUrl : '';
   const heroVideoPath = typeof body.heroVideoPath === 'string' ? body.heroVideoPath : '';
   const ambientAudioUrl = typeof body.ambientAudioUrl === 'string' ? body.ambientAudioUrl : '';
@@ -50,12 +54,15 @@ export function normalizeEventBody(body: Record<string, unknown>): NormalizedEve
     || typeof body.enabled !== 'boolean' || typeof body.manualActive !== 'boolean'
     || typeof priority !== 'number' || !Number.isInteger(priority) || priority < 0 || priority > 100
     || !palette || !effects
+    || artworkUrl.length > 2_048 || artworkPath.length > 180
     || heroVideoUrl.length > 2_048 || heroVideoPath.length > 180
     || ambientAudioUrl.length > 2_048 || ambientAudioPath.length > 180
     || scareSoundUrl.length > 2_048 || scareSoundPath.length > 180
+    || Boolean(artworkUrl) !== Boolean(artworkPath)
     || Boolean(heroVideoUrl) !== Boolean(heroVideoPath)
     || Boolean(ambientAudioUrl) !== Boolean(ambientAudioPath)
     || Boolean(scareSoundUrl) !== Boolean(scareSoundPath)
+    || (artworkPath && !isEventMediaAsset(artworkUrl, artworkPath, 'image'))
     || (heroVideoPath && !isEventMediaAsset(heroVideoUrl, heroVideoPath, 'video'))
     || (ambientAudioPath && !isEventMediaAsset(ambientAudioUrl, ambientAudioPath, 'audio'))) return null;
   if (scareSoundPath && !isEventMediaAsset(scareSoundUrl, scareSoundPath, 'audio')) return null;
@@ -72,6 +79,8 @@ export function normalizeEventBody(body: Record<string, unknown>): NormalizedEve
     enabled: body.enabled,
     manual_active: body.manualActive,
     priority,
+    artwork_url: artworkUrl,
+    artwork_path: artworkPath,
     hero_video_url: heroVideoUrl,
     hero_video_path: heroVideoPath,
     ambient_audio_url: ambientAudioUrl,

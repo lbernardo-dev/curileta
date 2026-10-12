@@ -3,10 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarClock, Check, Clapperboard, LoaderCircle, Palette, Plus, Save, Sparkles, Trash2, X } from 'lucide-react';
 import { EventMediaUploadField } from '@/components/admin/EventMediaUploadField';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
+import { EventThemeControlPanel } from './EventThemeControlPanel';
 import {
   DEFAULT_EVENT_EFFECTS,
   EVENT_DECORATIONS,
   EVENT_PALETTE_PRESETS,
+  EVENT_THEME_OPTIONS,
   dateTimeValueInTimeZone,
   eventDateTimeToIso,
   eventStatusLabel,
@@ -42,7 +45,7 @@ function dateInputFromNow(deltaMinutes: number) {
 }
 
 function emptyForm(): EventForm {
-  const themeKey = 'halloween';
+  const themeKey = 'custom';
   return {
     slug: '',
     name: { es: '', en: '' },
@@ -55,6 +58,8 @@ function emptyForm(): EventForm {
     enabled: false,
     manualActive: false,
     priority: 0,
+    artworkUrl: '',
+    artworkPath: '',
     heroVideoUrl: '',
     heroVideoPath: '',
     ambientAudioUrl: '',
@@ -63,7 +68,7 @@ function emptyForm(): EventForm {
     scareSoundPath: '',
     updatedAt: '',
     palette: EVENT_PALETTE_PRESETS[themeKey],
-    effects: { ...DEFAULT_EVENT_EFFECTS, decorations: ['bats', 'leaves', 'pumpkins', 'cornerWebs', 'cornerSpiders'] },
+    effects: { ...DEFAULT_EVENT_EFFECTS, decorations: [] },
   };
 }
 
@@ -80,6 +85,8 @@ function toForm(event: ManagedEvent): EventForm {
     enabled: event.enabled,
     manualActive: event.manualActive,
     priority: event.priority,
+    artworkUrl: event.artworkUrl,
+    artworkPath: event.artworkPath,
     heroVideoUrl: event.heroVideoUrl,
     heroVideoPath: event.heroVideoPath,
     ambientAudioUrl: event.ambientAudioUrl,
@@ -99,7 +106,7 @@ export default function EventsManager() {
   const [editingId, setEditingId] = useState('');
   const [saving, setSaving] = useState(false);
   const [busyAction, setBusyAction] = useState('');
-  const [uploads, setUploads] = useState<Record<MediaKind, boolean>>({ heroVideo: false, ambientAudio: false, scareSound: false });
+  const [uploads, setUploads] = useState<Record<MediaKind | 'artwork', boolean>>({ heroVideo: false, ambientAudio: false, scareSound: false, artwork: false });
   const [deleteId, setDeleteId] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -179,6 +186,9 @@ export default function EventsManager() {
 
   function cancelForm() {
     if (form) {
+      if (form.artworkPath && form.artworkPath !== (editingEvent?.artworkPath || '')) {
+        void fetch('/api/admin/media/discard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target: 'event-artwork', path: form.artworkPath }) }).catch(() => undefined);
+      }
       void discardIfUncommitted(form.heroVideoPath, editingEvent?.heroVideoPath || '');
       void discardIfUncommitted(form.ambientAudioPath, editingEvent?.ambientAudioPath || '');
       void discardIfUncommitted(form.scareSoundPath, editingEvent?.scareSoundPath || '');
@@ -300,6 +310,8 @@ export default function EventsManager() {
       {error && <p role="alert" className="rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-[#272727] dark:text-rose-200">{error}</p>}
       {notice && <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-[#1f1f1f] dark:text-emerald-200">{notice}</p>}
 
+      <EventThemeControlPanel events={events} />
+
       <section aria-labelledby="events-list-heading" className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -387,7 +399,7 @@ export default function EventsManager() {
                   const value = event.target.value;
                   setForm((previous) => previous ? { ...previous, themeKey: value, palette: EVENT_PALETTE_PRESETS[value] || previous.palette } : previous);
                 }}>
-                  <option value="halloween">Halloween</option><option value="christmas">Navidad</option><option value="easter">Pascua</option><option value="valentines">Día del amor</option><option value="spring">Primavera</option><option value="summer">Verano</option><option value="custom">Otra temática</option>
+                  {EVENT_THEME_OPTIONS.map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}
                 </select>
                 {(form.themeKey === 'custom' || !(form.themeKey in EVENT_PALETTE_PRESETS)) && <input aria-label="Clave de la temática" className={fieldClass} value={form.themeKey} pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={48} required onChange={(event) => setField('themeKey', event.target.value)} placeholder="aniversario" />}
               </div>
@@ -415,6 +427,21 @@ export default function EventsManager() {
                 {form.activationMode === 'manual' && <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.manualActive} onChange={(event) => setField('manualActive', event.target.checked)} className="h-4 w-4 rounded accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Activo manualmente</label>}
               </div>
             </div>
+          </section>
+
+          <section className={`${cardClass} space-y-5`} aria-labelledby="event-artwork-heading">
+            <h3 id="event-artwork-heading" className="flex items-center gap-2 text-lg font-bold"><Palette className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />Imagen de temporada</h3>
+            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">La portada acompaña el anuncio y la sección del evento. Puedes usar la ilustración del pack o subir una imagen propia.</p>
+            <ImageUploadField
+              label="Ilustración del evento"
+              hint="Imagen cuadrada o apaisada. Se optimiza antes de subirla."
+              target="event-artwork"
+              value={form.artworkUrl}
+              onChange={(value) => setField('artworkUrl', value)}
+              onPathChange={(value) => setField('artworkPath', value)}
+              onUploadingChange={(busy) => setUploads((state) => ({ ...state, artwork: busy }))}
+              preserveOnUnmount
+            />
           </section>
 
           <section className={`${cardClass} space-y-5`} aria-labelledby="event-media-heading">

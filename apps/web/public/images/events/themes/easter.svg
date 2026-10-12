@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title">
+  <title id="title">Pascua</title>
+  <rect width="1200" height="675" fill="#f3ecfb"/>
+  <circle cx="170" cy="150" r="238" fill="#9b79c8" opacity=".14"/>
+  <circle cx="1080" cy="560" r="288" fill="#382344" opacity=".12"/>
+  <path d="M0 560Q230 440 450 555T900 540t300-65v200H0Z" fill="#9b79c8" opacity=".12"/>
+  <rect x="435" y="140" width="330" height="330" rx="165" fill="#382344"/>
+  <circle cx="600" cy="305" r="130" fill="#9b79c8" opacity=".18"/>
+  <text x="600" y="374" text-anchor="middle" font-family="Apple Color Emoji, Segoe UI Emoji, sans-serif" font-size="176">🐣</text>
+  <circle cx="267" cy="430" r="15" fill="#9b79c8" opacity=".55"/>
+  <circle cx="914" cy="204" r="12" fill="#9b79c8" opacity=".5"/>
+  <path d="M324 160l10 24 24 10-24 10-10 24-10-24-24-10 24-10zM890 435l8 18 18 8-18 8-8 18-8-18-18-8 18-8z" fill="#9b79c8" opacity=".55"/>
+</svg>

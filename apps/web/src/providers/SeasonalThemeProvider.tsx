@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { SeasonalEvent } from '@curileta/cms';
+import type { ManagedBaseTheme } from '@/lib/events';
 import { EVENT_PALETTE_PRESETS } from '@/lib/events';
 import { removeBrowserStorageValue, setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 
@@ -63,7 +64,7 @@ const getCampaignStorageKey = (event: SeasonalEvent, now = new Date()) => {
   return `${STORAGE_KEY_PREFIX}${event.id}:${campaignStartYear}`;
 };
 
-export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null; children: React.ReactNode }> = ({ activeEvent, children }) => {
+export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null; baseTheme?: ManagedBaseTheme | null; children: React.ReactNode }> = ({ activeEvent, baseTheme = null, children }) => {
   const campaignStorageKey = activeEvent ? getCampaignStorageKey(activeEvent) : null;
   const scopedValue = useBrowserStorageValue('local', campaignStorageKey);
   const legacyValue = useBrowserStorageValue('local', LEGACY_STORAGE_KEY);
@@ -97,10 +98,12 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
     if (!mounted) return;
     const root = document.documentElement;
     const properties = [
+      '--color-adventure-gold', '--color-adventure-gold-light', '--seasonal-header-light', '--seasonal-header-dark', '--seasonal-footer-light', '--seasonal-footer-dark',
       '--seasonal-accent', '--seasonal-accent-strong', '--seasonal-canvas-light', '--seasonal-surface-light', '--seasonal-text-light',
       '--seasonal-canvas-dark', '--seasonal-surface-dark', '--seasonal-text-dark', '--seasonal-banner-start', '--seasonal-banner-end',
     ];
     if (isSeasonalActive && themeKey) {
+      root.removeAttribute('data-site-base-theme');
       root.setAttribute('data-seasonal-theme', themeKey);
       root.setAttribute('data-seasonal-motion', motionEnabled ? 'on' : 'off');
       const palette = activeEvent?.palette || EVENT_PALETTE_PRESETS[themeKey] || EVENT_PALETTE_PRESETS.custom;
@@ -114,16 +117,38 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
       root.style.setProperty('--seasonal-text-dark', palette.textDark);
       root.style.setProperty('--seasonal-banner-start', palette.accentStrong);
       root.style.setProperty('--seasonal-banner-end', palette.accent);
+    } else if (baseTheme) {
+      root.removeAttribute('data-seasonal-theme');
+      root.removeAttribute('data-seasonal-motion');
+      root.setAttribute('data-site-base-theme', 'active');
+      root.style.setProperty('--color-adventure-gold', baseTheme.palette.accent);
+      root.style.setProperty('--color-adventure-gold-light', baseTheme.palette.accent);
+      root.style.setProperty('--seasonal-accent', baseTheme.palette.accent);
+      root.style.setProperty('--seasonal-accent-strong', baseTheme.palette.accentStrong);
+      root.style.setProperty('--seasonal-canvas-light', baseTheme.palette.canvasLight);
+      root.style.setProperty('--seasonal-surface-light', baseTheme.palette.surfaceLight);
+      root.style.setProperty('--seasonal-text-light', baseTheme.palette.textLight);
+      root.style.setProperty('--seasonal-canvas-dark', baseTheme.palette.canvasDark);
+      root.style.setProperty('--seasonal-surface-dark', baseTheme.palette.surfaceDark);
+      root.style.setProperty('--seasonal-text-dark', baseTheme.palette.textDark);
+      root.style.setProperty('--seasonal-banner-start', baseTheme.palette.accentStrong);
+      root.style.setProperty('--seasonal-banner-end', baseTheme.palette.accent);
+      root.style.setProperty('--seasonal-header-light', baseTheme.palette.surfaceLight);
+      root.style.setProperty('--seasonal-header-dark', baseTheme.palette.surfaceDark);
+      root.style.setProperty('--seasonal-footer-light', baseTheme.palette.canvasLight);
+      root.style.setProperty('--seasonal-footer-dark', baseTheme.palette.canvasDark);
     } else {
       root.removeAttribute('data-seasonal-theme');
       root.removeAttribute('data-seasonal-motion');
+      root.removeAttribute('data-site-base-theme');
     }
     return () => {
       root.removeAttribute('data-seasonal-theme');
+      root.removeAttribute('data-site-base-theme');
       root.removeAttribute('data-seasonal-motion');
       for (const property of properties) root.style.removeProperty(property);
     };
-  }, [activeEvent, mounted, isSeasonalActive, motionEnabled, themeKey]);
+  }, [activeEvent, baseTheme, mounted, isSeasonalActive, motionEnabled, themeKey]);
 
   useEffect(() => {
     const audio = audioRef.current;

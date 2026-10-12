@@ -2,6 +2,7 @@
 
 import type { SeasonalEvent } from '@curileta/cms';
 import type { Locale } from '@curileta/i18n';
+import { ContentImage } from '@/components/ContentImage';
 import { CalendarDays, Sparkles } from 'lucide-react';
 
 export function ManagedSeasonalEventSection({ event, locale }: { event: SeasonalEvent; locale: Locale }) {
@@ -22,7 +23,10 @@ export function ManagedSeasonalEventSection({ event, locale }: { event: Seasonal
             {new Intl.DateTimeFormat(dateLocale, dateOptions).format(new Date(event.startDate))} – {new Intl.DateTimeFormat(dateLocale, dateOptions).format(new Date(event.endDate))}
           </p>
         </div>
-        {event.heroVideoUrl && <video controls playsInline preload="metadata" className="max-h-72 w-full rounded-xl bg-black sm:max-w-md" src={event.heroVideoUrl} />}
+        <div className="w-full space-y-3 sm:max-w-md">
+          {event.bannerImage && <ContentImage width={960} height={540} src={event.bannerImage} alt={isEn ? `Artwork for ${name}` : `Ilustración de ${name}`} className="max-h-72 w-full rounded-xl object-cover" />}
+          {event.heroVideoUrl && <video controls playsInline preload="metadata" className="max-h-72 w-full rounded-xl bg-black" src={event.heroVideoUrl} />}
+        </div>
       </div>
     </div>
   </section>;

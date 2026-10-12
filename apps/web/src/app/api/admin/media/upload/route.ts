@@ -18,6 +18,7 @@ const targets = {
   'upcoming-book-cover': 'books/upcoming',
   'letter-photo': 'letters/photos',
   'editorial-image': 'editorial/content',
+  'event-artwork': 'events/artwork',
 } as const;
 
 export async function POST(request: Request) {

@@ -104,7 +104,8 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
     { prefix: 'letters/photos', pattern: /^letters\/photos\/[0-9a-f-]{36}\.(webp|jpg)$/i },
     { prefix: 'books/upcoming', pattern: /^books\/upcoming\/[0-9a-f-]{36}\.(webp|jpg)$/i },
     { prefix: 'editorial/content', pattern: /^editorial\/content\/[0-9a-f-]{36}\.(webp|jpg)$/i },
-    { prefix: 'events', pattern: /^events\/[0-9a-f-]{36}\.(mp4|webm|mp3|m4a|ogg)$/i },
+    { prefix: 'events', pattern: /^events\/[0-9a-f-]{36}\.(?:mp4|webm|mp3|m4a|ogg)$/i },
+    { prefix: 'events/artwork', pattern: /^events\/artwork\/[0-9a-f-]{36}\.(webp|jpg)$/i },
     { prefix: 'destinations', pattern: /^destinations\/[0-9a-f-]{36}\.(webp|jpg|mp4|webm)$/i },
   ] as const;
   const cutoff = now.getTime() - 30 * 24 * 60 * 60 * 1000;
@@ -153,7 +154,7 @@ export async function cleanupUnreferencedSiteMedia(now = new Date()) {
       admin.storage.from(SITE_MEDIA_BUCKET).getPublicUrl(path).data.publicUrl);
     deleted += await removeUnreferencedYouTubeMedia(publicUrls, sourceItems, { throwOnError: true });
   }
-  for (const candidate of selected.filter((entry) => entry.prefix === 'events')) {
+  for (const candidate of selected.filter((entry) => entry.prefix.startsWith('events'))) {
     if (await removeUnreferencedEventMedia(candidate.path)) deleted += 1;
   }
   for (const candidate of selected.filter((entry) => entry.prefix === 'destinations')) {
