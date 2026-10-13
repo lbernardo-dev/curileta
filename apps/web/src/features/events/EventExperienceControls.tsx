@@ -13,6 +13,15 @@ const EVENT_SYMBOL: Record<string, string> = {
   valentines: '💗',
 };
 
+const EVENT_SETTINGS_SYMBOL: Record<string, string> = {
+  halloween: '🕷️',
+  christmas: '🕯️',
+  spring: '🦋',
+  easter: '🌷',
+  summer: '🐚',
+  valentines: '💌',
+};
+
 type Props = {
   locale: Locale;
   event: SeasonalEvent;
@@ -21,6 +30,9 @@ type Props = {
   canEnableSound: boolean;
   soundEnabled: boolean;
   onToggleSound: () => void;
+  canToggleDecorations: boolean;
+  decorationsVisible: boolean;
+  onToggleDecorations: () => void;
   canEnableMotion: boolean;
   motionEnabled: boolean;
   onToggleMotion: () => void;
@@ -39,12 +51,15 @@ export function EventExperienceControls(props: Props) {
   const isEn = props.locale === 'en';
   const eventName = props.event.name[props.locale] || props.event.name.es;
   const symbol = EVENT_SYMBOL[props.event.themeKey] || '✨';
+  const settingsSymbol = EVENT_SETTINGS_SYMBOL[props.event.themeKey] || '⚙️';
   const palette = props.event.palette;
   const eventStyle = {
     '--event-control-accent': palette?.accent || 'var(--seasonal-accent)',
     '--event-control-strong': palette?.accentStrong || 'var(--seasonal-accent-strong)',
-    '--event-control-surface': palette?.surfaceLight || 'var(--background-primary)',
-    '--event-control-text': palette?.textLight || 'var(--text-primary)',
+    '--event-control-surface-light': palette?.surfaceLight || 'var(--background-elevated)',
+    '--event-control-surface-dark': palette?.surfaceDark || 'var(--background-elevated)',
+    '--event-control-text-light': palette?.textLight || 'var(--text-primary)',
+    '--event-control-text-dark': palette?.textDark || 'var(--text-primary)',
   } as React.CSSProperties;
 
   useEffect(() => {
@@ -71,6 +86,8 @@ export function EventExperienceControls(props: Props) {
     title: `${eventName} experience`,
     intro: 'Choose how much of the seasonal atmosphere you want to experience.',
     sound: 'Event sound',
+    decorations: 'Seasonal decorations',
+    decorationsHint: 'Show or hide the floating seasonal details.',
     motion: 'Ambient motion',
     reduced: 'Your device reduces motion, so event animation is off.',
     off: 'Turn off event atmosphere',
@@ -86,6 +103,8 @@ export function EventExperienceControls(props: Props) {
     title: `Experiencia ${eventName}`,
     intro: 'Elige cuánta ambientación de temporada quieres ver.',
     sound: 'Sonido del evento',
+    decorations: 'Elementos decorativos',
+    decorationsHint: 'Muestra u oculta los adornos de temporada que flotan por la página.',
     motion: 'Movimiento ambiental',
     reduced: 'Tu dispositivo reduce el movimiento; las animaciones están desactivadas.',
     off: 'Desactivar la ambientación',
@@ -113,14 +132,21 @@ export function EventExperienceControls(props: Props) {
 
       {props.canEnableSound && <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-4 dark:border-[#313131]">
         <div><span className="block text-sm font-semibold">{labels.sound}</span><small className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{labels.soundHint}</small></div>
-        <button type="button" className={switchClass} role="switch" aria-checked={props.soundEnabled} onClick={props.onToggleSound}>
+        <button type="button" className={switchClass} role="switch" aria-label={labels.sound} aria-checked={props.soundEnabled} onClick={props.onToggleSound}>
           {props.soundEnabled ? labels.enabled : labels.disabled}
+        </button>
+      </div>}
+
+      {props.canToggleDecorations && <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-4 dark:border-[#313131]">
+        <div><span className="block text-sm font-semibold">{labels.decorations}</span><small className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{labels.decorationsHint}</small></div>
+        <button type="button" className={switchClass} role="switch" aria-label={labels.decorations} aria-checked={props.decorationsVisible} onClick={props.onToggleDecorations}>
+          {props.decorationsVisible ? labels.enabled : labels.disabled}
         </button>
       </div>}
 
       {props.event.effects?.decorationsEnabled && <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-4 dark:border-[#313131]">
         <div><span className="block text-sm font-semibold">{labels.motion}</span>{props.reducedMotion && <small className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{labels.reduced}</small>}</div>
-        <button type="button" className={switchClass} role="switch" aria-checked={props.motionEnabled} disabled={!props.canEnableMotion} onClick={props.onToggleMotion}>
+        <button type="button" className={switchClass} role="switch" aria-label={labels.motion} aria-checked={props.motionEnabled} disabled={!props.canEnableMotion} onClick={props.onToggleMotion}>
           {props.motionEnabled ? labels.enabled : labels.disabled}
         </button>
       </div>}
@@ -128,7 +154,7 @@ export function EventExperienceControls(props: Props) {
       {props.canEnableScares && <div className="mt-4 border-t border-slate-200 pt-4 dark:border-[#313131]">
         <div className="flex items-center justify-between gap-3">
           <div><span className="block text-sm font-semibold">{labels.surprise}</span><small className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{labels.surpriseHint}</small></div>
-          <button type="button" className={switchClass} role="switch" aria-checked={props.scaresEnabled} onClick={props.onToggleScares}>
+          <button type="button" className={switchClass} role="switch" aria-label={labels.surprise} aria-checked={props.scaresEnabled} onClick={props.onToggleScares}>
             {props.scaresEnabled ? labels.enabled : labels.disabled}
           </button>
         </div>
@@ -150,7 +176,7 @@ export function EventExperienceControls(props: Props) {
       title={labels.open}
       onClick={() => setOpen((value) => !value)}
     >
-      <span aria-hidden="true">{symbol}</span>
+      <span aria-hidden="true">{settingsSymbol}</span>
       {!props.active && <span className="sr-only">{isEn ? 'Theme currently hidden' : 'Tema oculto temporalmente'}</span>}
     </button>
   </div>;
