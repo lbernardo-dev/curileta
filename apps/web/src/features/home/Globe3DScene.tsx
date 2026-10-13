@@ -114,6 +114,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   const selectedIdRef = useRef(selectedId);
   const isAutoRotatingRef = useRef(isAutoRotating);
   const isHoveredRef = useRef(false);
+  const prefersReducedMotionRef.currentRef = useRef(false);
   const [webglSupported, setWebglSupported] = useState<boolean>(true);
   const [isSceneReady, setIsSceneReady] = useState<boolean>(false);
   const [isMilestonesModalOpen, setIsMilestonesModalOpen] = useState<boolean>(false);
@@ -445,6 +446,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   useEffect(() => {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const applyMotionPreference = () => {
+      prefersReducedMotionRef.currentRef.current = motionPreference.matches;
       const shouldRotate = !motionPreference.matches;
       isAutoRotatingRef.current = shouldRotate;
       setIsAutoRotating(shouldRotate);
@@ -832,19 +834,18 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     let isInViewport = true;
     let hasRenderedFirstFrame = false;
     const clock = new THREE.Clock();
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
       // Giro suave automático
-      if (isAutoRotatingRef.current && !isDragging && !isHoveredRef.current && !prefersReducedMotion) {
+      if (isAutoRotatingRef.current && !isDragging && !isHoveredRef.current && !prefersReducedMotionRef.current) {
         targetRotationRef.current.y += 0.0003;
       }
 
       // Rotación independiente de nubes
-      if (!prefersReducedMotion) cloudsMesh.rotation.y += 0.00022;
+      if (!prefersReducedMotionRef.current) cloudsMesh.rotation.y += 0.00022;
 
       // La ruta une los destinos del relato y se va dibujando a ritmo pausado.
       const routeIndex = Math.max(0, locationsList.findIndex((location) => location.id === selectedIdRef.current));
@@ -856,7 +857,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         });
         lastRouteIndex = routeIndex;
       }
-      const routeProgress = prefersReducedMotion
+      const routeProgress = prefersReducedMotionRef.current
         ? 1
         : Math.min(1, Math.max(0, (elapsedTime - routeStartedAt) / 6.5));
       routeSegments.forEach(({ line, step, pointCount }) => {
@@ -869,7 +870,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       });
 
       const activeRouteSegment = routeSegments[routeIndex];
-      if (activeRouteSegment && !prefersReducedMotion) {
+      if (activeRouteSegment && !prefersReducedMotionRef.current) {
         const travelerProgress = routeProgress < 1
           ? routeProgress
           : ((elapsedTime - routeStartedAt - 6.5) / 4.2) % 1;
@@ -892,9 +893,9 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         lastFocusedId = currentLocation.id;
       }
 
-      const auraPulse = prefersReducedMotion ? 1 : 0.96 + (Math.sin(elapsedTime * 1.1) + 1) * 0.045;
+      const auraPulse = prefersReducedMotionRef.current ? 1 : 0.96 + (Math.sin(elapsedTime * 1.1) + 1) * 0.045;
       focusAura.scale.set(auraPulse, auraPulse, 1);
-      focusAuraMaterial.opacity = prefersReducedMotion ? 0.4 : 0.33 + (Math.sin(elapsedTime * 1.1) + 1) * 0.035;
+      focusAuraMaterial.opacity = prefersReducedMotionRef.current ? 0.4 : 0.33 + (Math.sin(elapsedTime * 1.1) + 1) * 0.035;
 
       monumentMeshesRef.current.forEach((item) => {
         // Calcular si el monumento está en la cara visible hacia la cámara
@@ -909,7 +910,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         item.group.scale.setScalar(scale);
 
         const markerPulse = isCurrent
-          ? prefersReducedMotion ? 1.32 : 1.24 + (Math.sin(elapsedTime * 1.55) + 1) * 0.08
+          ? prefersReducedMotionRef.current ? 1.32 : 1.24 + (Math.sin(elapsedTime * 1.55) + 1) * 0.08
           : 1;
         item.marker.scale.setScalar(markerPulse);
         const markerMaterial = item.marker.material as THREE.MeshStandardMaterial;
@@ -930,7 +931,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       );
 
       // Rotación suave del campo de estrellas
-      if (!prefersReducedMotion) stars.rotation.y += 0.0003;
+      if (!prefersReducedMotionRef.current) stars.rotation.y += 0.0003;
 
       renderer.render(scene, camera);
       if (!hasRenderedFirstFrame) {
