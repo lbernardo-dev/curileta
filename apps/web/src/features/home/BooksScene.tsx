@@ -113,14 +113,14 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                     <div className="mt-auto flex flex-col items-stretch gap-3 border-t border-slate-200 pt-6 dark:border-slate-800">
                       <Link
                         href={`/${locale}/libros/${book.slug || book.id}`}
-                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                        className="inline-flex min-h-11 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
                       >
                         <BookOpen className="h-4 w-4" aria-hidden="true" />
                         {isEn ? 'Book details' : 'Detalles del libro'}
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </Link>
                       {isCuriletaBook && isPublished && (
-                        <div className="flex justify-center sm:justify-start">
+                        <div className="flex w-full justify-start">
                           <AmazonMarketplaceLink locale={locale} initialCountry={amazonCountry} compact />
                         </div>
                       )}
