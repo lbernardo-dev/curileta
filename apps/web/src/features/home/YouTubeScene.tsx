@@ -22,6 +22,7 @@ import {
   Heart,
   X,
   Clapperboard,
+  ListVideo,
 } from 'lucide-react';
 
 interface YouTubeSceneProps {
@@ -56,6 +57,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   }, [propVideos]);
 
   const [selectedCategory, setSelectedCategory] = useState<'todos' | 'episode' | 'trailer' | 'song' | 'short' | 'favoritos'>('todos');
+  const [selectedChannelTab, setSelectedChannelTab] = useState<'videos' | 'shorts' | 'playlists'>('videos');
   const [activeModalVideo, setActiveModalVideo] = useState<Video | null>(null);
   const [favoriteStorageUnavailable, setFavoriteStorageUnavailable] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -159,15 +161,39 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   }, [activeModalVideo]);
 
   const counts = useMemo(() => {
+    const playlists = new Set(realVideos.map((video) => video.playlistId?.trim()).filter((id): id is string => Boolean(id && /^[A-Za-z0-9_-]{10,128}$/.test(id))));
     return {
       todos: realVideos.length,
+      videos: realVideos.filter((v) => v.type !== 'short').length,
       episode: realVideos.filter((v) => v.type === 'episode').length,
       trailer: realVideos.filter((v) => v.type === 'trailer').length,
       song: realVideos.filter((v) => v.type === 'song').length,
       short: realVideos.filter((v) => v.type === 'short').length,
+      playlists: playlists.size,
       favoritos: realVideos.filter((v) => favoriteSet.has(v.slug)).length,
     };
   }, [realVideos, favoriteSet]);
+
+  const playlists = useMemo(() => {
+    const groups = new Map<string, { id: string; name: string; videos: Video[] }>();
+
+    for (const video of realVideos) {
+      const id = video.playlistId?.trim();
+      if (!id || !/^[A-Za-z0-9_-]{10,128}$/.test(id)) continue;
+
+      const name = video.playlistName?.[locale]?.trim()
+        || video.playlistName?.es?.trim()
+        || (isEn ? 'Curileta episodes' : 'Episodios de Curileta');
+      const existing = groups.get(id);
+      if (existing) {
+        existing.videos.push(video);
+      } else {
+        groups.set(id, { id, name, videos: [video] });
+      }
+    }
+
+    return [...groups.values()];
+  }, [realVideos, locale, isEn]);
 
   const filteredVideos = useMemo(() => {
     if (selectedCategory === 'todos') return realVideos;
@@ -180,7 +206,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   return (
     <section
       id="escena-youtube"
-      className="relative z-10 overflow-hidden bg-[#f3f6f3] py-20 text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white sm:py-24"
+      className={`relative z-10 overflow-hidden bg-[#f3f6f3] text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white ${hideHeader ? 'py-10 sm:py-12' : 'py-20 sm:py-24'}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera de la sección con Zipi-Bot 3D */}
@@ -300,8 +326,39 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
         ) : (
           /* CASO B: CUANDO EXISTEN VÍDEOS REALES AUTÉNTICOS */
           <>
+            {hideHeader && (
+              <div className="mb-7 border-b border-slate-300 dark:border-[#313131]">
+                <div role="group" aria-label={isEn ? 'Channel content' : 'Contenido del canal'} className="-mb-px flex gap-7 overflow-x-auto">
+                  {([
+                    { id: 'videos', label: isEn ? 'Videos' : 'Vídeos', count: counts.videos, icon: Film },
+                    { id: 'shorts', label: 'Shorts', count: counts.short, icon: Smartphone },
+                    { id: 'playlists', label: isEn ? 'Playlists' : 'Listas', count: counts.playlists, icon: ListVideo },
+                  ] as const).map((tab) => {
+                    const Icon = tab.icon;
+                    const selected = selectedChannelTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => {
+                          setSelectedChannelTab(tab.id);
+                          setSelectedCategory('todos');
+                        }}
+                        className={`inline-flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-1 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 ${selected ? 'border-red-600 text-slate-950 dark:text-white' : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
+                      >
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <span>{tab.label}</span>
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{tab.count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Pestañas de filtrado de formatos */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 mb-12">
+            {(!hideHeader || selectedChannelTab === 'videos') && <div className="mb-8 flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setSelectedCategory('todos')}
                 className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
@@ -311,7 +368,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
-                <span>{isEn ? `All Videos (${counts.todos})` : `Todos los Vídeos (${counts.todos})`}</span>
+                <span>{isEn ? `All Videos (${hideHeader ? counts.videos : counts.todos})` : `Todos los Vídeos (${hideHeader ? counts.videos : counts.todos})`}</span>
               </button>
 
               {counts.trailer > 0 && (
@@ -325,14 +382,16 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 </button>
               )}
 
-              <button
-                onClick={() => setSelectedCategory('favoritos')}
-                disabled={!favoritesReady}
-                aria-pressed={selectedCategory === 'favoritos'}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'favoritos' ? 'border-emerald-700 bg-emerald-800 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
-              >
-                {isEn ? `Favorites on this device (${counts.favoritos})` : `Favoritos en este dispositivo (${counts.favoritos})`}
-              </button>
+              {(!hideHeader || selectedChannelTab === 'videos') && (
+                <button
+                  onClick={() => setSelectedCategory('favoritos')}
+                  disabled={!favoritesReady}
+                  aria-pressed={selectedCategory === 'favoritos'}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'favoritos' ? 'border-emerald-700 bg-emerald-800 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
+                >
+                  {isEn ? `Saved (${counts.favoritos})` : `Favoritos (${counts.favoritos})`}
+                </button>
+              )}
 
               {counts.episode > 0 && (
                 <button
@@ -362,7 +421,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 </button>
               )}
 
-              {counts.short > 0 && (
+              {!hideHeader && counts.short > 0 && (
                 <button
                   onClick={() => setSelectedCategory('short')}
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
@@ -375,15 +434,20 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   <span>{isEn ? `YouTube Shorts (${counts.short})` : `YouTube Shorts (${counts.short})`}</span>
                 </button>
               )}
-            </div>
+            </div>}
             {favoriteStorageUnavailable && (
               <p role="status" className="mx-auto -mt-8 mb-8 max-w-2xl text-center text-sm text-amber-800 dark:text-amber-200">
                 {isEn ? 'This browser could not save favorites. Check its storage settings and try again.' : 'El navegador no pudo guardar los favoritos. Revisa sus ajustes de almacenamiento e inténtalo de nuevo.'}
               </p>
             )}
 
+            <div
+              role={hideHeader ? 'region' : undefined}
+              id={hideHeader ? 'channel-content-panel' : undefined}
+              aria-label={hideHeader ? (selectedChannelTab === 'videos' ? (isEn ? 'Videos' : 'Vídeos') : selectedChannelTab === 'shorts' ? 'Shorts' : (isEn ? 'Playlists' : 'Listas')) : undefined}
+            >
             {/* Vídeos Horizontales 16:9 */}
-            {filteredVideos.filter((v) => v.type !== 'short').length > 0 && (
+            {(!hideHeader || selectedChannelTab === 'videos' || selectedCategory === 'favoritos') && filteredVideos.filter((v) => v.type !== 'short').length > 0 && (
               <div className="mb-14">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {filteredVideos
@@ -503,7 +567,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
             )}
 
             {/* YouTube Shorts (Formato Vertical 9:16) */}
-            {filteredVideos.filter((v) => v.type === 'short').length > 0 && (
+            {(!hideHeader || selectedChannelTab === 'shorts' || selectedCategory === 'favoritos') && filteredVideos.filter((v) => v.type === 'short').length > 0 && (
               <div className="mt-8 mb-12">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 text-white shadow-lg shadow-rose-900/40">
@@ -586,12 +650,80 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
               </div>
             )}
 
+            {hideHeader && selectedChannelTab === 'shorts' && filteredVideos.filter((v) => v.type === 'short').length === 0 && (
+              <section className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center dark:border-[#313131] dark:bg-[#1f1f1f]" aria-live="polite">
+                <Smartphone className="mx-auto h-8 w-8 text-red-600 dark:text-red-400" aria-hidden="true" />
+                <h2 className="mt-4 text-xl font-bold text-slate-950 dark:text-white">{isEn ? 'No Shorts published yet' : 'Todavía no hay Shorts publicados'}</h2>
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-5 text-slate-600 dark:text-slate-400">{isEn ? 'New short adventures will appear here when they are published.' : 'Aquí aparecerán las nuevas aventuras breves cuando se publiquen.'}</p>
+              </section>
+            )}
+
+            {hideHeader && selectedChannelTab === 'playlists' && playlists.length > 0 && (
+              <section aria-label={isEn ? 'Channel playlists' : 'Listas del canal'}>
+                <div className="mb-5 flex items-end justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-950 dark:text-white">{isEn ? 'Watch the journey in order' : 'Sigue la aventura en orden'}</h2>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{isEn ? 'Collections published on the official channel.' : 'Colecciones publicadas en el canal oficial.'}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {playlists.map((playlist) => {
+                    const previewVideos = playlist.videos.slice(0, 3);
+                    const countLabel = isEn
+                      ? `${playlist.videos.length} ${playlist.videos.length === 1 ? 'video' : 'videos'}`
+                      : `${playlist.videos.length} ${playlist.videos.length === 1 ? 'vídeo' : 'vídeos'}`;
+
+                    return (
+                      <a
+                        key={playlist.id}
+                        href={`https://www.youtube.com/playlist?list=${encodeURIComponent(playlist.id)}`}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:border-red-500/60 hover:shadow-xl active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:border-[#313131] dark:bg-[#1f1f1f]"
+                        aria-label={isEn ? `Open playlist ${playlist.name} on YouTube, ${countLabel}` : `Abrir la lista ${playlist.name} en YouTube, ${countLabel}`}
+                      >
+                        <div className={`relative grid aspect-video overflow-hidden bg-slate-950 ${previewVideos.length === 1 ? 'grid-cols-1' : previewVideos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                          {previewVideos.map((video) => (
+                            <ContentImage key={video.id} src={video.thumbnail} alt="" className="h-full w-full object-cover" loading="lazy" />
+                          ))}
+                          {previewVideos.length === 1 && <div className="absolute inset-0 bg-black/10" aria-hidden="true" />}
+                          <span className="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-lg bg-black/80 px-3 py-2 text-sm font-semibold text-white backdrop-blur-sm">
+                            <ListVideo className="h-4 w-4" aria-hidden="true" />
+                            {countLabel}
+                          </span>
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:bg-black/20 group-hover:opacity-100" aria-hidden="true">
+                            <Play className="h-12 w-12 fill-current drop-shadow-lg" />
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-4 p-4">
+                          <div className="min-w-0">
+                            <h3 className="truncate text-base font-bold text-slate-950 group-hover:text-red-700 dark:text-white dark:group-hover:text-red-300">{playlist.name}</h3>
+                            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{isEn ? 'Curileta official channel' : 'Canal oficial de Curileta'}</p>
+                          </div>
+                          <ExternalLink className="mt-1 h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {hideHeader && selectedChannelTab === 'playlists' && playlists.length === 0 && (
+              <section className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center dark:border-[#313131] dark:bg-[#1f1f1f]" aria-live="polite">
+                <ListVideo className="mx-auto h-8 w-8 text-red-600 dark:text-red-400" aria-hidden="true" />
+                <h2 className="mt-4 text-xl font-bold text-slate-950 dark:text-white">{isEn ? 'Playlists are on their way' : 'Las listas se están preparando'}</h2>
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-5 text-slate-600 dark:text-slate-400">{isEn ? 'Published playlists will appear here as soon as videos are assigned to them in the channel editor.' : 'Aquí aparecerán las listas publicadas cuando sus vídeos estén asociados desde la gestión del canal.'}</p>
+              </section>
+            )}
+
             {selectedCategory === 'favoritos' && favoritesReady && filteredVideos.length === 0 && (
               <section className="mx-auto max-w-2xl rounded-xl border border-slate-200 bg-white px-6 py-10 text-center dark:border-[#313131] dark:bg-[#1f1f1f]">
                 <h3 className="text-xl font-bold">{isEn ? 'No saved videos yet' : 'Aún no has guardado vídeos'}</h3>
                 <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">{isEn ? 'Use the heart on a video card to save it on this device.' : 'Pulsa el corazón de una tarjeta para guardarlo en este dispositivo.'}</p>
               </section>
             )}
+            </div>
           </>
         )}
 
@@ -747,8 +879,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
           document.body,
         )}
 
-        {/* Banner Oficial de Suscripción al Canal de YouTube */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-8 rounded-2xl border border-red-200 bg-red-50 p-8 dark:border-[#313131] dark:bg-[#181818] sm:p-10 md:flex-row">
+        {/* Banner de suscripción de la portada. La página de canal ya lo muestra junto a su identidad. */}
+        {!hideHeader && <div className="mt-12 flex flex-col items-center justify-between gap-8 rounded-2xl border border-red-200 bg-red-50 p-8 dark:border-[#313131] dark:bg-[#181818] sm:p-10 md:flex-row">
           <div className="flex items-center gap-5">
             {settings?.youtubeChannelAvatarUrl
               ? <ContentImage src={settings.youtubeChannelAvatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20" />
@@ -781,7 +913,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
             <Youtube className="w-5 h-5" />
             <span>{isEn ? 'Subscribe to Channel' : 'Suscribirme al Canal'}</span>
           </a>
-        </div>
+        </div>}
       </div>
     </section>
   );
