@@ -47,6 +47,7 @@ export default async function VideosPage({
   const isEn = locale === 'en';
   const channelTitle = settings.youtubeChannelTitle?.[locale] || settings.youtubeChannelTitle?.es || (isEn ? 'Curileta official channel' : 'Canal oficial de Curileta');
   const channelDescription = settings.youtubeChannelDescription?.[locale] || settings.youtubeChannelDescription?.es || '';
+  const channelSummary = channelDescription || (isEn ? 'Episodes, songs and short videos from Curileta.' : 'Episodios, canciones y vídeos cortos de Curileta.');
   const channelBanner = settings.youtubeChannelHeaderUrl || '/images/hero/curileta-world-expedition-clean-v1.jpg';
   const channelUrl = settings.youtubeChannelUrl?.startsWith('https://')
     ? settings.youtubeChannelUrl
@@ -89,9 +90,14 @@ export default async function VideosPage({
               <span aria-hidden="true"> · </span>
               <span>{listedVideosLabel}</span>
             </p>
-            <p className="mt-3 max-w-3xl text-pretty text-sm leading-5 text-slate-700 dark:text-slate-300 sm:text-base sm:leading-6">
-              {channelDescription || (isEn ? 'Episodes, songs and short videos from Curileta.' : 'Episodios, canciones y vídeos cortos de Curileta.')}
-            </p>
+            <details className="group mt-3 max-w-3xl text-sm leading-5 sm:text-base sm:leading-6">
+              <summary className="cursor-pointer list-none text-pretty text-slate-700 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600 dark:text-slate-300">
+                <span className="line-clamp-2 group-open:hidden">{channelSummary}</span>
+                <span className="hidden group-open:block">{channelSummary}</span>
+                <span className="mt-1 inline-block text-sm font-semibold text-sky-700 group-open:hidden dark:text-sky-300">{isEn ? 'More' : 'Más'}</span>
+                <span className="mt-1 hidden text-sm font-semibold text-sky-700 group-open:inline-block dark:text-sky-300">{isEn ? 'Show less' : 'Mostrar menos'}</span>
+              </summary>
+            </details>
             {settings.youtubeChannelTags?.length ? (
               <ul className="mt-3 flex flex-wrap gap-2" aria-label={isEn ? 'Channel tags' : 'Etiquetas del canal'}>
                 {settings.youtubeChannelTags.map((tag) => (
