@@ -442,6 +442,18 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     isAutoRotatingRef.current = isAutoRotating;
   }, [isAutoRotating]);
 
+  useEffect(() => {
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const applyMotionPreference = () => {
+      const shouldRotate = !motionPreference.matches;
+      isAutoRotatingRef.current = shouldRotate;
+      setIsAutoRotating(shouldRotate);
+    };
+    applyMotionPreference();
+    motionPreference.addEventListener('change', applyMotionPreference);
+    return () => motionPreference.removeEventListener('change', applyMotionPreference);
+  }, []);
+
   // Conversión de Lat/Lng a coordenadas esféricas 3D
   const latLngToVector3 = (lat: number, lng: number, radius: number): THREE.Vector3 => {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -631,6 +643,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const routeSegments: Array<{
       line: THREE.Line;
       material: THREE.LineDashedMaterial;
+      curve: THREE.QuadraticBezierCurve3;
       step: number;
       pointCount: number;
     }> = [];
@@ -667,8 +680,34 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       arcLine.computeLineDistances();
       arcGeo.setDrawRange(0, 0);
       arcGroup.add(arcLine);
-      routeSegments.push({ line: arcLine, material: arcMat, step: i, pointCount: points.length });
+      routeSegments.push({ line: arcLine, material: arcMat, curve, step: i, pointCount: points.length });
     }
+
+    const routeTravelerHaloMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffcf72,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const routeTraveler = new THREE.Mesh(
+      new THREE.SphereGeometry(0.022, 18, 12),
+      new THREE.MeshStandardMaterial({
+        color: 0xffe9a3,
+        emissive: 0xf8b75b,
+        emissiveIntensity: 1.8,
+        roughness: 0.26,
+      })
+    );
+    const routeTravelerHalo = new THREE.Mesh(
+      new THREE.SphereGeometry(0.052, 18, 12),
+      routeTravelerHaloMaterial
+    );
+    routeTravelerHalo.renderOrder = 5;
+    routeTraveler.add(routeTravelerHalo);
+    routeTraveler.add(new THREE.PointLight(0xffd27a, 0.4, 0.45, 2));
+    routeTraveler.visible = false;
+    arcGroup.add(routeTraveler);
 
     // 6. LUCES DE ESCENA CÁLIDA ESTILO ANIMACIÓN PIXAR
     const ambientLight = new THREE.AmbientLight(0xe8f2fa, 1.05);
@@ -714,6 +753,14 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
+    const onPointerEnter = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') isHoveredRef.current = true;
+    };
+
+    const onPointerLeave = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') isHoveredRef.current = false;
+    };
+
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
       isDragging = true;
@@ -728,6 +775,10 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       const deltaX = e.clientX - previousMousePosition.x;
       const deltaY = e.clientY - previousMousePosition.y;
       dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
+      if (dragDistance >= 6 && isAutoRotatingRef.current) {
+        isAutoRotatingRef.current = false;
+        setIsAutoRotating(false);
+      }
 
       targetRotationRef.current.y += deltaX * 0.005;
       targetRotationRef.current.x = Math.max(-Math.PI / 2.4, Math.min(Math.PI / 2.4, targetRotationRef.current.x + deltaY * 0.005));
@@ -769,6 +820,8 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     domElement.style.width = '100%';
     domElement.style.height = '100%';
     domElement.style.touchAction = 'pan-y';
+    domElement.addEventListener('pointerenter', onPointerEnter);
+    domElement.addEventListener('pointerleave', onPointerLeave);
     domElement.addEventListener('pointerdown', onPointerDown);
     domElement.addEventListener('pointermove', onPointerMove);
     domElement.addEventListener('pointerup', onPointerUp);
@@ -787,7 +840,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
       // Giro suave automático
       if (isAutoRotatingRef.current && !isDragging && !isHoveredRef.current && !prefersReducedMotion) {
-        targetRotationRef.current.y += 0.00048;
+        targetRotationRef.current.y += 0.0003;
       }
 
       // Rotación independiente de nubes
@@ -805,7 +858,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       }
       const routeProgress = prefersReducedMotion
         ? 1
-        : Math.min(1, Math.max(0, (elapsedTime - routeStartedAt) / 13.5));
+        : Math.min(1, Math.max(0, (elapsedTime - routeStartedAt) / 6.5));
       routeSegments.forEach(({ line, step, pointCount }) => {
         const visiblePoints = step < routeIndex
           ? pointCount
@@ -814,6 +867,19 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
             : 0;
         line.geometry.setDrawRange(0, visiblePoints);
       });
+
+      const activeRouteSegment = routeSegments[routeIndex];
+      if (activeRouteSegment && !prefersReducedMotion) {
+        const travelerProgress = routeProgress < 1
+          ? routeProgress
+          : ((elapsedTime - routeStartedAt - 6.5) / 4.2) % 1;
+        routeTraveler.position.copy(activeRouteSegment.curve.getPointAt(travelerProgress));
+        routeTraveler.scale.setScalar(0.9 + (Math.sin(elapsedTime * 4.2) + 1) * 0.08);
+        routeTravelerHaloMaterial.opacity = 0.12 + (Math.sin(elapsedTime * 3.6) + 1) * 0.08;
+        routeTraveler.visible = true;
+      } else {
+        routeTraveler.visible = false;
+      }
 
       // Los hitos respiran suavemente y la parada activa recibe un halo de luz.
       const currentLocation = locationsList[routeIndex];
@@ -877,6 +943,9 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
 
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       isInViewport = entry.isIntersecting;
+      if (isInViewport) {
+        routeStartedAt = clock.getElapsedTime();
+      }
       if (isInViewport && !animationFrameId) {
         animate();
       } else if (!isInViewport && animationFrameId) {
@@ -901,6 +970,8 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
       cancelAnimationFrame(animationFrameId);
       intersectionObserver.disconnect();
       window.removeEventListener('resize', handleResize);
+      domElement.removeEventListener('pointerenter', onPointerEnter);
+      domElement.removeEventListener('pointerleave', onPointerLeave);
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointermove', onPointerMove);
       domElement.removeEventListener('pointerup', onPointerUp);
@@ -1054,7 +1125,9 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 </span>
                 <div className="w-px h-3.5 bg-slate-200 dark:bg-slate-800" />
                 <button
-                  onClick={() => setIsAutoRotating(!isAutoRotating)}
+                  onClick={() => setIsAutoRotating((current) => !current)}
+                  aria-label={isAutoRotating ? copy('Pausar el giro suave del globo', 'Pause globe rotation') : copy('Activar el giro suave del globo', 'Start globe rotation')}
+                  aria-pressed={isAutoRotating}
                   className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-400 transition-colors cursor-pointer"
                   title={isAutoRotating ? copy('Pausar giro automático', 'Pause automatic rotation') : copy('Activar giro automático', 'Start automatic rotation')}
                 >
