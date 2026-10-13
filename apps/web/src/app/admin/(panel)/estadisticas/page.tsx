@@ -33,6 +33,7 @@ const eventLabels: Record<string, string> = {
   song_play: 'Reproducciones de canciones',
   wallpaper_download: 'Descargas de fondos',
   gallery_download: 'Descargas de la galería',
+  mask_download: 'Descargas de máscaras imprimibles',
   video_vote: 'Votos en vídeos',
   content_share_native: 'Compartir desde el dispositivo',
   content_share_copy: 'Enlaces copiados',
@@ -105,7 +106,15 @@ export default function AdminAnalyticsPage() {
     });
     return [...counts.entries()].sort((left, right) => right[1] - left[1]).slice(0, 10);
   }, [videoPlayRows]);
-  const downloadsTotal = useMemo(() => rows.filter((row) => ['wallpaper_download', 'gallery_download'].includes(row.event_name)).reduce((total, row) => total + Number(row.event_count), 0), [rows]);
+  const downloadsTotal = useMemo(() => rows.filter((row) => ['wallpaper_download', 'gallery_download', 'mask_download'].includes(row.event_name)).reduce((total, row) => total + Number(row.event_count), 0), [rows]);
+  const maskDownloadsByCharacter = useMemo(() => {
+    const counts = new Map<string, number>();
+    rows.filter((row) => row.event_name === 'mask_download').forEach((row) => {
+      const match = row.path.match(/^\/(?:es|en)\/mascaras\/([a-z0-9-]+)$/);
+      if (match) counts.set(match[1], (counts.get(match[1]) || 0) + Number(row.event_count));
+    });
+    return [...counts.entries()].sort((left, right) => right[1] - left[1]);
+  }, [rows]);
   const eventTotals = useMemo(() => {
     const counts = new Map<string, number>();
     rows.forEach((row) => counts.set(row.event_name, (counts.get(row.event_name) || 0) + Number(row.event_count)));
@@ -210,9 +219,9 @@ export default function AdminAnalyticsPage() {
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Recuento agregado en el periodo</p>
             </article>
             <article className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#313131] dark:bg-[#1f1f1f]">
-              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Descargas de imágenes</p>
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Recursos descargados</p>
               <p className="mt-3 text-4xl font-bold tabular-nums">{downloadsTotal.toLocaleString('es-ES')}</p>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Fondos y galería en el periodo</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Fondos, galería y máscaras PDF en el periodo</p>
             </article>
           </section>
 
@@ -235,6 +244,14 @@ export default function AdminAnalyticsPage() {
           </section>
 
           <CharacterFavoriteStats days={favoriteDays} />
+
+          <section className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="mask-downloads-heading">
+            <div className="border-b border-slate-200 p-6 dark:border-[#313131]">
+              <h2 id="mask-downloads-heading" className="text-xl font-bold">Descargas de máscaras por personaje</h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">PDF servidos correctamente durante {periodLabel}. El registro se guarda agregado y omite solicitudes con DNT o GPC activado.</p>
+            </div>
+            {maskDownloadsByCharacter.length ? <div className="overflow-x-auto"><table className="w-full min-w-[24rem] text-left text-sm"><thead className="bg-slate-50 text-slate-600 dark:bg-[#181818] dark:text-slate-300"><tr><th scope="col" className="px-6 py-3 font-semibold">Personaje</th><th scope="col" className="px-6 py-3 text-right font-semibold">Descargas</th></tr></thead><tbody className="divide-y divide-slate-200 dark:divide-[#313131]">{maskDownloadsByCharacter.map(([slug, count]) => <tr key={slug}><th scope="row" className="px-6 py-3 font-medium">{characterMaskLabel(slug)}</th><td className="px-6 py-3 text-right font-semibold tabular-nums">{count.toLocaleString('es-ES')}</td></tr>)}</tbody></table></div> : <p className="px-6 py-8 text-sm text-slate-600 dark:text-slate-300">No hay descargas de máscaras en este periodo.</p>}
+          </section>
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
             <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]">
@@ -374,4 +391,9 @@ function shareChannelLabel(channel: string) {
 
 function groupingLabel(grouping: Grouping) {
   return { day: 'día', week: 'semana', month: 'mes', year: 'año' }[grouping];
+}
+
+function characterMaskLabel(slug: string) {
+  const names: Record<string, string> = { curileta: 'Curileta', pompon: 'Pompón' };
+  return names[slug] || slug.replaceAll('-', ' ').replace(/\b\w/g, (letter) => letter.toLocaleUpperCase('es'));
 }

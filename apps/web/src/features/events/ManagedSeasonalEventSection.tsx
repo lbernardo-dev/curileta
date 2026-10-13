@@ -4,9 +4,11 @@ import { useState } from 'react';
 import type { SeasonalEvent } from '@curileta/cms';
 import type { Locale } from '@curileta/i18n';
 import { ContentImage } from '@/components/ContentImage';
+import { CharacterMaskDownloads } from './CharacterMaskDownloads';
+import type { CharacterMask } from '@/lib/character-masks.server';
 import { CalendarDays, Download, Sparkles } from 'lucide-react';
 
-export function ManagedSeasonalEventSection({ event, locale }: { event: SeasonalEvent; locale: Locale }) {
+export function ManagedSeasonalEventSection({ event, locale, masks }: { event: SeasonalEvent; locale: Locale; masks: CharacterMask[] }) {
   const isEn = locale === 'en';
   const [revealed, setRevealed] = useState<string[]>([]);
   const name = event.name[locale] || event.name.es;
@@ -64,9 +66,10 @@ export function ManagedSeasonalEventSection({ event, locale }: { event: Seasonal
                   <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{description}</p>
                 </div>
               </div>
-              {activity.kind === 'download' ? <a href={activity.resourceUrl} download target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-lg bg-[var(--seasonal-accent-strong)] px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)]">
-                <Download className="h-4 w-4" />{isEn ? 'Download and print' : 'Descargar e imprimir'}
-              </a> : <>
+              {isMaskLibraryActivity(activity.kind, activity.id) ? <CharacterMaskDownloads masks={masks} locale={locale} />
+                : activity.kind === 'download' ? <a href={activity.resourceUrl} download target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-lg bg-[var(--seasonal-accent-strong)] px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)]">
+                  <Download className="h-4 w-4" />{isEn ? 'Download and print' : 'Descargar e imprimir'}
+                </a> : <>
                 <button type="button" aria-expanded={isRevealed} onClick={() => toggleReveal(activity.id)} className="mt-5 inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-lg border border-[var(--seasonal-accent)] px-4 py-2 text-sm font-semibold text-[var(--seasonal-accent-strong)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[var(--seasonal-surface-light)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)] dark:hover:bg-[var(--seasonal-surface-dark)]">
                   <Sparkles className="h-4 w-4" />{isRevealed ? (isEn ? 'Hide the answer' : 'Ocultar respuesta') : (isEn ? 'Reveal the answer' : 'Descubrir la respuesta')}
                 </button>
@@ -78,6 +81,11 @@ export function ManagedSeasonalEventSection({ event, locale }: { event: Seasonal
       </div>
     </div>
   </section>;
+}
+
+function isMaskLibraryActivity(kind: string, id: string) {
+  // Keep the approved masks visible during deploys that briefly run before the data migration.
+  return kind === 'maskLibrary' || (kind === 'download' && id === 'mascaras-y-coloreo');
 }
 
 function themeGlyph(themeKey: string) {

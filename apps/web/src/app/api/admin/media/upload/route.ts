@@ -19,6 +19,7 @@ const targets = {
   'letter-photo': 'letters/photos',
   'editorial-image': 'editorial/content',
   'event-artwork': 'events/artwork',
+  'character-mask-preview': 'masks/previews',
 } as const;
 
 export async function POST(request: Request) {

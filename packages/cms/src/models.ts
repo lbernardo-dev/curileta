@@ -285,7 +285,7 @@ export interface SeasonalEvent {
     intro: LocalizedString;
     activities: Array<{
       id: string;
-      kind: 'reveal' | 'download';
+      kind: 'reveal' | 'download' | 'maskLibrary';
       icon: string;
       title: LocalizedString;
       description: LocalizedString;

@@ -31,6 +31,7 @@ import { getAuthorPages } from '@/lib/author-pages.server';
 import { getRequestTimestamp } from '@/lib/request-time.server';
 import { getLandingLetters } from '@/lib/letters';
 import { getPublicDestinations } from '@/lib/destinations.server';
+import { getPublishedCharacterMasks } from '@/lib/character-masks.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 
@@ -95,6 +96,7 @@ export default async function HomePage({
     upcomingCharacterSlugs,
     bookCatalogSettings,
     authorPages,
+    characterMasks,
   ] = await Promise.all([
     getPublicDestinations(locale),
     cmsProvider.getCharacters(locale),
@@ -114,6 +116,7 @@ export default async function HomePage({
     getUpcomingEpisodeCharacterSlugs(),
     getBookCatalogSettings(),
     getAuthorPages(),
+    getPublishedCharacterMasks(),
   ]);
 
   const displayBooks = mergeBookCatalog(books, bookCatalogSettings);
@@ -139,7 +142,7 @@ export default async function HomePage({
 
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
-    seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} />,
+    seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} masks={characterMasks} />,
     story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
     globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,

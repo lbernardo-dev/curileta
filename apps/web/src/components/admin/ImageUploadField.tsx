@@ -20,7 +20,8 @@ export type AdminImageTarget =
   | 'upcoming-book-cover'
   | 'letter-photo'
   | 'editorial-image'
-  | 'event-artwork';
+  | 'event-artwork'
+  | 'character-mask-preview';
 
 interface UploadTicket {
   bucket: string;
