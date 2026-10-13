@@ -29,8 +29,6 @@ export function EventThemeControlPanel({ events }: { events: ManagedEvent[] }) {
   const [notice, setNotice] = useState('');
 
   const loadControl = useCallback(async () => {
-    setLoading(true);
-    setError('');
     try {
       const response = await fetch('/api/admin/events/base-theme', { cache: 'no-store' });
       const result = await response.json().catch(() => null) as { success?: boolean; baseTheme?: ManagedBaseTheme; control?: ThemeControlState; error?: string } | null;
@@ -85,6 +83,8 @@ export function EventThemeControlPanel({ events }: { events: ManagedEvent[] }) {
       });
       const result = await response.json().catch(() => null) as { success?: boolean; error?: string } | null;
       if (!response.ok || !result?.success) throw new Error(result?.error || 'No se pudo guardar el tema base.');
+      setLoading(true);
+      setError('');
       await loadControl();
       setNotice('La apariencia del tema base se ha guardado.');
     } catch (cause) {

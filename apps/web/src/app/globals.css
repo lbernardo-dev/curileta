@@ -320,41 +320,123 @@ html.dark[data-site-base-theme] {
 .seasonal-decoration-layer {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 20;
   overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.seasonal-decoration-layer > span {
+  position: absolute;
   pointer-events: none;
 }
 
-.seasonal-decoration-layer span {
-  position: absolute;
-  top: 104%;
+.seasonal-theme-frame {
+  position: fixed;
+  inset: 6px;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--seasonal-accent) 30%, transparent);
+  border-radius: 1rem;
+}
+
+.seasonal-decoration-layer .seasonal-decoration {
+  top: -3rem;
   font-size: 1.25rem;
+  line-height: 1;
   will-change: transform;
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--seasonal-accent) 35%, transparent);
 }
 
-.seasonal-decoration {
-  animation: seasonal-drift linear infinite;
-}
-
-.seasonal-decoration-still {
-  top: auto !important;
-  bottom: 8%;
-  animation: none;
-}
-
-html[data-seasonal-motion="off"] .seasonal-decoration {
+.seasonal-decoration-layer .seasonal-decoration-still {
   top: auto;
-  bottom: 8%;
-  animation: none;
+  bottom: 12%;
+  font-size: 1.5rem;
 }
+
+.seasonal-decoration--snow {
+  animation-name: seasonal-snowfall;
+  font-size: 1.4rem;
+}
+
+.seasonal-decoration:not(.seasonal-decoration--snow) {
+  animation-name: seasonal-drift;
+}
+
+.seasonal-decoration-layer .seasonal-decoration { animation-timing-function: linear; animation-iteration-count: infinite; }
 
 @keyframes seasonal-drift {
-  from { transform: translate3d(0, 0, 0) rotate(0deg); }
-  to { transform: translate3d(2rem, -115vh, 0) rotate(28deg); }
+  from { transform: translate3d(-1rem, 0, 0) rotate(-12deg); }
+  to { transform: translate3d(2rem, 115vh, 0) rotate(24deg); }
+}
+
+@keyframes seasonal-snowfall {
+  from { transform: translate3d(0, -4vh, 0) rotate(0deg); }
+  to { transform: translate3d(2rem, 110vh, 0) rotate(220deg); }
+}
+
+.seasonal-fog {
+  inset: auto -4vw -2rem;
+  z-index: 2;
+  height: 8rem;
+  border-radius: 50%;
+  background: var(--seasonal-accent);
+  filter: blur(3rem);
+  opacity: 0.1;
+}
+
+.seasonal-corner-web {
+  top: 5rem;
+  z-index: 3;
+  color: var(--seasonal-accent);
+  font-size: clamp(2rem, 5vw, 4rem);
+  opacity: 0.5;
+}
+
+.seasonal-corner-web--left { left: 0.25rem; }
+.seasonal-corner-web--right { right: 0.25rem; transform: scaleX(-1); }
+
+.seasonal-snowbank {
+  bottom: -1.5rem;
+  z-index: 3;
+  width: min(22vw, 18rem);
+  height: 5.5rem;
+  border-radius: 58% 42% 0 0;
+  background: #f5fbff;
+  box-shadow: 0 -0.5rem 0.9rem rgb(255 255 255 / 0.35);
+  opacity: 0.86;
+}
+
+.seasonal-snowbank--left { left: -3rem; transform: rotate(-5deg); }
+.seasonal-snowbank--right { right: -3rem; transform: rotate(5deg); }
+
+.seasonal-snowman {
+  right: clamp(1.5rem, 6vw, 5rem);
+  bottom: 2.5rem;
+  z-index: 4;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  filter: drop-shadow(0 2px 8px rgb(20 35 30 / 0.2));
+}
+
+.seasonal-firefly {
+  z-index: 3;
+  color: #f4ce68;
+  text-shadow: 0 0 1.5rem #f4ce68;
+  animation: seasonal-glow 3s cubic-bezier(0.32, 0.72, 0, 1) infinite alternate;
+}
+
+.seasonal-firefly--one { left: 14%; top: 42%; }
+.seasonal-firefly--two { right: 16%; top: 64%; animation-delay: -1.2s; }
+
+@keyframes seasonal-glow {
+  from { opacity: 0.3; transform: scale(0.82); }
+  to { opacity: 0.95; transform: scale(1.18); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .seasonal-decoration { animation: none; top: auto; bottom: 8%; }
+  .seasonal-decoration,
+  .seasonal-firefly { animation: none !important; }
+  .seasonal-decoration-layer .seasonal-decoration { top: auto; bottom: 12%; }
+  .seasonal-snowman { transform: none; }
 }
 
 /* ============================================================

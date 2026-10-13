@@ -3,7 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { SeasonalEvent } from '@curileta/cms';
 import type { ManagedBaseTheme } from '@/lib/events';
-import { EVENT_PALETTE_PRESETS } from '@/lib/events';
+import { EVENT_DECORATIONS, EVENT_PALETTE_PRESETS } from '@/lib/events';
 import { removeBrowserStorageValue, setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 
 interface SeasonalThemeContextType {
@@ -235,15 +235,32 @@ export const useSeasonalTheme = () => useContext(SeasonalThemeContext);
 
 function SeasonalDecorations({ event, active, motionEnabled }: { event: SeasonalEvent | null; active: boolean; motionEnabled: boolean }) {
   const effects = event?.effects;
-  const decorations = event?.ambientDecorations.floatingEmojis || [];
-  if (!active || !effects?.decorationsEnabled || !decorations.length || effects.decorationCount <= 0) return null;
+  const selected = event?.effects?.decorations || [];
+  const decorationItems = selected.flatMap((key) => {
+    const item = EVENT_DECORATIONS.find((decoration) => decoration.key === key);
+    return item ? [item] : [];
+  });
+  if (!active || !effects?.decorationsEnabled || !decorationItems.length || effects.decorationCount <= 0) return null;
   const count = Math.min(effects.decorationCount, 32);
   const speed = effects.decorationSpeed === 'quick' ? 15 : effects.decorationSpeed === 'slow' ? 34 : 24;
-  return <div aria-hidden="true" className="seasonal-decoration-layer">{Array.from({ length: count }, (_, index) => <span
-    key={`${decorations[index % decorations.length]}-${index}`}
-    className={motionEnabled ? 'seasonal-decoration' : 'seasonal-decoration-still'}
-    style={{ left: `${(index * 37 + 9) % 100}%`, animationDelay: `${-(index * 3 % speed)}s`, animationDuration: `${speed + (index * 7 % 12)}s`, opacity: effects.decorationOpacity }}
-  >{decorations[index % decorations.length]}</span>)}</div>;
+  const has = (key: string) => selected.includes(key);
+  return <div aria-hidden="true" className={`seasonal-decoration-layer seasonal-scene seasonal-scene--${event?.themeKey || 'custom'}`}>
+    <span className="seasonal-theme-frame" />
+    {has('fog') && <span className="seasonal-fog" />}
+    {has('cornerWebs') && <><span className="seasonal-corner-web seasonal-corner-web--left">🕸️</span><span className="seasonal-corner-web seasonal-corner-web--right">🕸️</span></>}
+    {has('snowbanks') && <><span className="seasonal-snowbank seasonal-snowbank--left" /><span className="seasonal-snowbank seasonal-snowbank--right" /></>}
+    {has('snowman') && <span className="seasonal-snowman">⛄</span>}
+    {has('fireflies') && <span className="seasonal-firefly seasonal-firefly--one">✦</span>}
+    {has('fireflies') && <span className="seasonal-firefly seasonal-firefly--two">✦</span>}
+    {Array.from({ length: count }, (_, index) => {
+      const item = decorationItems[index % decorationItems.length];
+      return <span
+        key={`${item.key}-${index}`}
+        className={`${motionEnabled ? 'seasonal-decoration' : 'seasonal-decoration-still'} seasonal-decoration--${item.key}`}
+        style={{ left: `${(index * 37 + 9) % 100}%`, animationDelay: `${-(index * 3 % speed)}s`, animationDuration: `${speed + (index * 7 % 12)}s`, opacity: effects.decorationOpacity }}
+      >{item.glyph}</span>;
+    })}
+  </div>;
 }
 
 function useReducedMotionPreference() {
