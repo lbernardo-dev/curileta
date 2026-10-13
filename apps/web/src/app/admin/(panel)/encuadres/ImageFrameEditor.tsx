@@ -9,6 +9,7 @@ import {
   IMAGE_FRAME_TARGETS,
   type ImageFrameKey,
   type ImageFrameMap,
+  type ImageFrameTarget,
   type ImageFrameSettings,
 } from '@/lib/image-frames';
 
@@ -26,7 +27,7 @@ export function ImageFrameEditor() {
   const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('mobile');
   const [status, setStatus] = useState<{ tone: 'success' | 'error'; message: string } | null>(null);
   const pointerStart = useRef<{ x: number; y: number; clientX: number; clientY: number } | null>(null);
-  const target = IMAGE_FRAME_TARGETS[selectedKey];
+  const target: ImageFrameTarget = IMAGE_FRAME_TARGETS[selectedKey];
   const effectivePreviewMode = target.desktopAspectRatio ? previewMode : 'mobile';
   const previewAspectRatio = effectivePreviewMode === 'desktop'
     ? target.desktopAspectRatio || target.aspectRatio

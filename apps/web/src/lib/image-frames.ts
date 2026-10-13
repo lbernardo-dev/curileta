@@ -4,6 +4,15 @@ export interface ImageFrameSettings {
   zoom: number;
 }
 
+export interface ImageFrameTarget {
+  title: string;
+  description: string;
+  imageSrc: string;
+  aspectRatio: string;
+  desktopAspectRatio?: string;
+  defaults: ImageFrameSettings;
+}
+
 export const IMAGE_FRAME_TARGETS = {
   'home-book-cover': {
     title: 'Portada del bloque de historia en inicio',
