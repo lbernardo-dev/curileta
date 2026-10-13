@@ -7,6 +7,7 @@ import { YouTubeScene } from '@/features/home/YouTubeScene';
 import { cmsProvider } from '@/lib/cms';
 import { getVideoVoteCounts } from '@/lib/video-votes';
 import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';
+import { ExternalLink, Youtube } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -37,6 +38,10 @@ export default async function VideosPage({
   const channelTitle = settings.youtubeChannelTitle?.[locale] || settings.youtubeChannelTitle?.es || (isEn ? 'Curileta official channel' : 'Canal oficial de Curileta');
   const channelDescription = settings.youtubeChannelDescription?.[locale] || settings.youtubeChannelDescription?.es || '';
   const channelBanner = settings.youtubeChannelHeaderUrl || '/images/hero/curileta-world-expedition-clean-v1.jpg';
+  const channelUrl = settings.youtubeChannelUrl?.startsWith('https://')
+    ? settings.youtubeChannelUrl
+    : 'https://www.youtube.com/@AventurasdeCurileta';
+  const subscribeUrl = `${channelUrl}${channelUrl.includes('?') ? '&' : '?'}sub_confirmation=1`;
 
   return (
     <div className="min-h-screen bg-[#f3f6f3] text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white">
@@ -59,6 +64,26 @@ export default async function VideosPage({
                   {settings.youtubeChannelTags.map((tag) => <li key={tag} className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">{tag}</li>)}
                 </ul>
               ) : null}
+              <div className="mt-5 flex flex-wrap justify-center gap-3 sm:justify-start">
+                <a
+                  href={channelUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/40 bg-black/20 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-black/35 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                >
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  {isEn ? 'Visit channel' : 'Ver canal'}
+                </a>
+                <a
+                  href={subscribeUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-500 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                >
+                  <Youtube className="h-4 w-4" aria-hidden="true" />
+                  {isEn ? 'Subscribe' : 'Suscribirme'}
+                </a>
+              </div>
             </div>
           </div>
         </section>
