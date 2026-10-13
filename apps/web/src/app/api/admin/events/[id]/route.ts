@@ -15,7 +15,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const body = await readJson(request);
   if (!body) return NextResponse.json({ success: false, error: 'El evento no tiene un formato válido o supera el tamaño permitido.' }, { status: 400, headers: noStore });
   const event = normalizeEventBody(body);
-  if (!event) return NextResponse.json({ success: false, error: 'Revisa el nombre, las fechas, la temática, la campaña bilingüe, las actividades, los archivos, la paleta y los efectos del evento.' }, { status: 400, headers: noStore });
+  if (!event) return NextResponse.json({ success: false, error: 'Revisa el nombre, las fechas, la temática, la campaña bilingüe, los acertijos, las actividades, los archivos, la paleta y los efectos del evento.' }, { status: 400, headers: noStore });
 
   const supabase = createSupabaseAdminClient();
   const { data: previous, error: readError } = await supabase

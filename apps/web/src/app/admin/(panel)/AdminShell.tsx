@@ -15,6 +15,7 @@ const navigation = [
   { href: '/admin/destinos', label: 'Destinos', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/cartas', label: 'Cartas', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/eventos', label: 'Eventos y ambientes', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/acertijos', label: 'Acertijos de temporada', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/mascaras', label: 'Máscaras descargables', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/recursos-imprimibles', label: 'PDF de eventos', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/proximo-episodio', label: 'Próximo episodio', roles: ['owner', 'admin', 'editor'] },

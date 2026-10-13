@@ -215,7 +215,7 @@ function mapCampaignContent(value: unknown): EventCampaignContent {
   const activities = Array.isArray(content.activities) ? content.activities.flatMap((value) => {
     const activity = objectValue(value);
     const kind = activity.kind;
-    if (kind !== 'reveal' && kind !== 'download' && kind !== 'maskLibrary') return [];
+    if (kind !== 'reveal' && kind !== 'riddleSet' && kind !== 'download' && kind !== 'maskLibrary') return [];
     return [{
       id: stringValue(activity.id),
       kind: kind as EventCampaignContent['activities'][number]['kind'],
@@ -225,6 +225,12 @@ function mapCampaignContent(value: unknown): EventCampaignContent {
       reveal: localizedValue(activity.reveal),
       resourceUrl: stringValue(activity.resourceUrl),
       resourcePath: stringValue(activity.resourcePath),
+      riddles: Array.isArray(activity.riddles) ? activity.riddles.flatMap((value) => {
+        const riddle = objectValue(value);
+        const id = stringValue(riddle.id);
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) return [];
+        return [{ id, title: localizedValue(riddle.title), prompt: localizedValue(riddle.prompt), answer: localizedValue(riddle.answer) }];
+      }) : undefined,
     }];
   }) : [];
   return { title: localizedValue(content.title), intro: localizedValue(content.intro), activities };

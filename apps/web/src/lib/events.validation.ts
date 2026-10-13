@@ -103,6 +103,7 @@ function normalizeCampaignContent(value: unknown): EventCampaignContent | null {
   if (!title || !intro || !Array.isArray(content.activities) || content.activities.length > 6) return null;
   const ids = new Set<string>();
   const activities = [];
+  let riddleSetCount = 0;
   for (const raw of content.activities) {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
     const activity = raw as Record<string, unknown>;
@@ -112,20 +113,42 @@ function normalizeCampaignContent(value: unknown): EventCampaignContent | null {
     const activityTitle = readLocalized(activity.title, 100, true);
     const description = readLocalized(activity.description, 320, true);
     const reveal = readLocalized(activity.reveal, 640, kind === 'reveal');
+    const riddles = kind === 'riddleSet' ? normalizeRiddles(activity.riddles) : undefined;
     const resourceUrl = typeof activity.resourceUrl === 'string' ? activity.resourceUrl.trim() : '';
     const resourcePath = typeof activity.resourcePath === 'string' ? activity.resourcePath.trim() : '';
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || id.length > 48 || ids.has(id)
-      || (kind !== 'reveal' && kind !== 'download' && kind !== 'maskLibrary') || !icon || icon.length > 12
+      || (kind !== 'reveal' && kind !== 'riddleSet' && kind !== 'download' && kind !== 'maskLibrary') || !icon || icon.length > 12
       || !activityTitle || !description || !reveal
       || resourceUrl.length > 2048 || resourcePath.length > 180
       || Boolean(resourceUrl) !== Boolean(resourcePath)
       || (kind === 'download' && !isOptionalEventResource(resourceUrl, resourcePath))) return null;
-    if ((kind === 'reveal' || kind === 'maskLibrary') && (resourceUrl || resourcePath)) return null;
+    if (kind === 'riddleSet' && (!riddles || riddles.length < 1 || riddles.length > 24)) return null;
+    if (kind === 'riddleSet' && ++riddleSetCount > 1) return null;
+    if (kind !== 'riddleSet' && activity.riddles !== undefined) return null;
+    if ((kind === 'reveal' || kind === 'riddleSet' || kind === 'maskLibrary') && (resourceUrl || resourcePath)) return null;
     if (kind === 'download' && (!resourceUrl || !resourcePath)) return null;
     ids.add(id);
-    activities.push({ id, kind: kind as EventCampaignContent['activities'][number]['kind'], icon, title: activityTitle, description, reveal, resourceUrl, resourcePath });
+    activities.push({ id, kind: kind as EventCampaignContent['activities'][number]['kind'], icon, title: activityTitle, description, reveal, resourceUrl, resourcePath, ...(riddles ? { riddles } : {}) });
   }
   return { title, intro, activities };
+}
+
+function normalizeRiddles(value: unknown) {
+  if (!Array.isArray(value)) return null;
+  const ids = new Set<string>();
+  const riddles = [];
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const riddle = raw as Record<string, unknown>;
+    const id = typeof riddle.id === 'string' ? riddle.id.trim() : '';
+    const title = readLocalized(riddle.title, 80, true);
+    const prompt = readLocalized(riddle.prompt, 320, true);
+    const answer = readLocalized(riddle.answer, 240, true);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || id.length > 48 || ids.has(id) || !title || !prompt || !answer) return null;
+    ids.add(id);
+    riddles.push({ id, title, prompt, answer });
+  }
+  return riddles;
 }
 
 function isOptionalEventResource(url: string, path: string) {

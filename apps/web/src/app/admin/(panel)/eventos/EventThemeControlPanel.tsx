@@ -43,7 +43,25 @@ export function EventThemeControlPanel({ events }: { events: ManagedEvent[] }) {
     }
   }, [events]);
 
-  useEffect(() => { void loadControl(); }, [loadControl]);
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch('/api/admin/events/base-theme', { cache: 'no-store', signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json().catch(() => null) as { success?: boolean; baseTheme?: ManagedBaseTheme; control?: ThemeControlState; error?: string } | null;
+        if (!response.ok || !result?.success || !result.baseTheme || !result.control) throw new Error(result?.error || 'No se pudo cargar el control de temas.');
+        return result;
+      })
+      .then((result) => {
+        setBaseTheme(result.baseTheme || null);
+        if (result.control) {
+          setControl(result.control);
+          setSelectedEventId(result.control.eventId || events[0]?.id || '');
+        }
+      })
+      .catch((cause: unknown) => { if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : 'No se pudo cargar el control de temas.'); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [events]);
 
   async function apply(action: 'resume-schedule' | 'apply-base' | 'activate-event') {
     if (action === 'activate-event' && !selectedEventId) return;

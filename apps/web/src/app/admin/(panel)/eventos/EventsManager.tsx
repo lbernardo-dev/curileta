@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { CalendarClock, Check, Clapperboard, LoaderCircle, Palette, Plus, Save, Sparkles, Trash2, X } from 'lucide-react';
 import { EventMediaUploadField } from '@/components/admin/EventMediaUploadField';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
@@ -258,6 +259,15 @@ export default function EventsManager() {
       setError('La fecha y hora de fin deben ser posteriores al inicio.');
       return;
     }
+    if (form.campaignContent.activities.some((activity) => activity.kind === 'riddleSet' && (!activity.riddles?.length || activity.riddles.length > 24))) {
+      setError('Cada colección de acertijos debe incluir entre 1 y 24 acertijos.');
+      return;
+    }
+    if (form.campaignContent.activities.some((activity) => activity.kind === 'riddleSet' && activity.riddles?.some((riddle) =>
+      !riddle.title.es.trim() || !riddle.title.en.trim() || !riddle.prompt.es.trim() || !riddle.prompt.en.trim() || !riddle.answer.es.trim() || !riddle.answer.en.trim()))) {
+      setError('Completa el título, enunciado y respuesta de cada acertijo en español e inglés.');
+      return;
+    }
     const startsAt = eventDateTimeToIso(form.startsAt, form.timeZone);
     const endsAt = eventDateTimeToIso(form.endsAt, form.timeZone, true);
     if (!startsAt || !endsAt) {
@@ -490,9 +500,12 @@ export default function EventsManager() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h3 id="event-campaign-heading" className="flex items-center gap-2 text-lg font-bold"><Sparkles className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />Historia y actividades</h3>
-                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">Este contenido aparece debajo del hero cuando la temporada está activa. Añade una historia y retos con respuesta interactiva o materiales para descargar.</p>
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">Este contenido aparece debajo del hero cuando la temporada está activa. Añade una historia, actividades y colecciones de acertijos.</p>
               </div>
-              <button type="button" onClick={addActivity} disabled={form.campaignContent.activities.length >= 6} className={`${buttonClass} border border-emerald-700 text-emerald-900 hover:bg-emerald-50 disabled:opacity-50 dark:text-emerald-200 dark:hover:bg-[#183d2c]`}><Plus className="h-4 w-4" />Añadir actividad</button>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/admin/acertijos" className={`${buttonClass} border border-emerald-700 text-emerald-900 hover:bg-emerald-50 dark:text-emerald-200 dark:hover:bg-[#183d2c]`}>Gestionar acertijos</Link>
+                <button type="button" onClick={addActivity} disabled={form.campaignContent.activities.length >= 6} className={`${buttonClass} border border-emerald-700 text-emerald-900 hover:bg-emerald-50 disabled:opacity-50 dark:text-emerald-200 dark:hover:bg-[#183d2c]`}><Plus className="h-4 w-4" />Añadir actividad</button>
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <TextField label="Título de la sección en español" value={form.campaignContent.title.es} maxLength={140} required onChange={(value) => setCampaignLocalizedField('title', 'es', value)} />
@@ -515,7 +528,8 @@ export default function EventsManager() {
                       if (kind !== 'reveal') {
                       setActivityField(activity.id, 'reveal', { es: '', en: '' });
                     }
-                  }}><option value="reveal">Reto interactivo con respuesta</option><option value="download">Material descargable</option><option value="maskLibrary">Biblioteca de máscaras</option></select></label>
+                    setActivityField(activity.id, 'riddles', kind === 'riddleSet' ? (activity.riddles || []) : undefined);
+                  }}><option value="reveal">Reto interactivo con respuesta</option><option value="riddleSet" disabled>Colección de acertijos, gestionar en su sección</option><option value="download">Material descargable</option><option value="maskLibrary">Biblioteca de máscaras</option></select></label>
                 </div>
                 <button type="button" onClick={() => removeActivity(activity)} className={`${buttonClass} text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-[#272727]`} aria-label={`Eliminar actividad ${index + 1}`}><Trash2 className="h-4 w-4" />Quitar actividad</button>
               </div>
@@ -528,6 +542,8 @@ export default function EventsManager() {
               {activity.kind === 'reveal' ? <div className="grid gap-4 sm:grid-cols-2">
                 <TextAreaField label="Respuesta que se revela en español" value={activity.reveal.es} maxLength={640} required onChange={(value) => setActivityLocalizedField(activity.id, 'reveal', 'es', value)} />
                 <TextAreaField label="Answer revealed in English" value={activity.reveal.en} maxLength={640} required onChange={(value) => setActivityLocalizedField(activity.id, 'reveal', 'en', value)} />
+              </div> : activity.kind === 'riddleSet' ? <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950 dark:border-emerald-900 dark:bg-[#183d2c] dark:text-emerald-100">
+                Esta colección incluye {activity.riddles?.length || 0} acertijos. Para añadir, editar o cambiar su orden, abre <Link href="/admin/acertijos" className="font-semibold underline underline-offset-2">la gestión de acertijos</Link>.
               </div> : activity.kind === 'maskLibrary' ? <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950 dark:border-emerald-900 dark:bg-[#183d2c] dark:text-emerald-100">
                 Esta actividad muestra las máscaras publicadas en <strong>/admin/mascaras</strong>, con selector, vista previa y descargas por personaje. La lista de personajes y sus archivos se configura en esa sección.
               </div> : <EventMediaUploadField
