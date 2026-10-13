@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   const body = await readJson(request);
   if (!body) return NextResponse.json({ success: false, error: 'El evento no tiene un formato válido o supera el tamaño permitido.' }, { status: 400, headers: noStore });
   const event = normalizeEventBody(body);
-  if (!event) return NextResponse.json({ success: false, error: 'Revisa el nombre, las fechas, la temática, la paleta, los efectos y los archivos del evento.' }, { status: 400, headers: noStore });
+  if (!event) return NextResponse.json({ success: false, error: 'Revisa el nombre, las fechas, la temática, la campaña bilingüe, las actividades, los archivos, la paleta y los efectos del evento.' }, { status: 400, headers: noStore });
 
   try {
     const { data, error } = await createSupabaseAdminClient()
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 async function readJson(request: Request): Promise<Record<string, unknown> | null> {
   try {
     const raw = await request.text();
-    if (raw.length > 32_000) return null;
+    if (raw.length > 64_000) return null;
     const body: unknown = JSON.parse(raw);
     return body && typeof body === 'object' && !Array.isArray(body) ? body as Record<string, unknown> : null;
   } catch {

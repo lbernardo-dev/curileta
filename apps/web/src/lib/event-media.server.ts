@@ -3,7 +3,7 @@ import 'server-only';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 const EVENT_MEDIA_BUCKET = 'curileta-site-media';
-const storageEventPathPattern = /^events\/(?:[0-9a-f-]{36}\.(?:mp4|webm|mp3|m4a|ogg)|artwork\/[0-9a-f-]{36}\.(?:webp|jpg))$/i;
+const storageEventPathPattern = /^events\/(?:[0-9a-f-]{36}\.(?:mp4|webm|mp3|m4a|ogg)|artwork\/[0-9a-f-]{36}\.(?:webp|jpg)|materials\/[0-9a-f-]{36}\.pdf)$/i;
 const halloweenVideoPath = 'static:halloween-hero';
 const halloweenVideoUrl = '/videos/hero/events/halloween/curileta-halloween.mp4';
 const artworkPresetUrls: Record<string, string> = {
@@ -18,8 +18,9 @@ const artworkPresetUrls: Record<string, string> = {
   'world-childrens-day': '/images/events/themes/world-childrens-day.svg', diwali: '/images/events/themes/diwali.svg',
 };
 
-export function isEventMediaAsset(urlValue: unknown, pathValue: unknown, kind: 'video' | 'audio' | 'image') {
+export function isEventMediaAsset(urlValue: unknown, pathValue: unknown, kind: 'video' | 'audio' | 'image' | 'pdf') {
   if (typeof urlValue !== 'string' || typeof pathValue !== 'string') return false;
+  if (kind === 'pdf' && pathValue === 'static:resource:halloween-printables' && urlValue === '/files/events/halloween/curileta-halloween-printables.pdf') return true;
   if (kind === 'video' && pathValue === halloweenVideoPath && urlValue === halloweenVideoUrl) return true;
   if (kind === 'image' && pathValue.startsWith('static:theme:')) {
     return artworkPresetUrls[pathValue.slice('static:theme:'.length)] === urlValue;
@@ -29,6 +30,7 @@ export function isEventMediaAsset(urlValue: unknown, pathValue: unknown, kind: '
   if (kind === 'video' && extension !== 'mp4' && extension !== 'webm') return false;
   if (kind === 'audio' && !['mp3', 'm4a', 'ogg', 'webm'].includes(extension || '')) return false;
   if (kind === 'image' && !['webp', 'jpg'].includes(extension || '')) return false;
+  if (kind === 'pdf' && (extension !== 'pdf' || !pathValue.startsWith('events/materials/'))) return false;
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!supabaseUrl) return false;
@@ -49,8 +51,21 @@ export async function removeUnreferencedEventMedia(path: string) {
     admin.from('site_events').select('id').eq('ambient_audio_path', path).limit(1).maybeSingle(),
     admin.from('site_events').select('id').eq('scare_sound_path', path).limit(1).maybeSingle(),
     admin.from('site_events').select('id').eq('artwork_path', path).limit(1).maybeSingle(),
+    admin.from('site_events').select('id, campaign_content'),
   ]);
-  if (references.some(({ error, data }) => error || data)) return false;
+  if (references.slice(0, 4).some(({ error, data }) => error || data)) return false;
+  const campaignReferences = references[4];
+  if (campaignReferences.error || !Array.isArray(campaignReferences.data)) return false;
+  if (campaignReferences.data.some((event) => hasCampaignResourcePath(event.campaign_content, path))) return false;
   const { error } = await admin.storage.from(EVENT_MEDIA_BUCKET).remove([path]);
   return !error;
+}
+
+function hasCampaignResourcePath(value: unknown, path: string): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const campaign = value as Record<string, unknown>;
+  return Array.isArray(campaign.activities) && campaign.activities.some((value) => (
+    value && typeof value === 'object' && !Array.isArray(value)
+    && (value as Record<string, unknown>).resourcePath === path
+  ));
 }

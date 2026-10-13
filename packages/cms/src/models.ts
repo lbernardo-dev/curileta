@@ -280,6 +280,20 @@ export interface SeasonalEvent {
     scareEffectsEnabled: boolean;
     scareFrequency?: 'rare' | 'regular';
   };
+  campaignContent?: {
+    title: LocalizedString;
+    intro: LocalizedString;
+    activities: Array<{
+      id: string;
+      kind: 'reveal' | 'download';
+      icon: string;
+      title: LocalizedString;
+      description: LocalizedString;
+      reveal: LocalizedString;
+      resourceUrl: string;
+      resourcePath: string;
+    }>;
+  };
   ambientDecorations: {
     glowColor: string;
     accentColor: string;

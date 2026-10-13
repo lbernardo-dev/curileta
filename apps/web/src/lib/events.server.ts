@@ -7,6 +7,7 @@ import {
   DEFAULT_EVENT_EFFECTS,
   EVENT_DECORATIONS,
   EVENT_PALETTE_PRESETS,
+  type EventCampaignContent,
   isManagedEventActive,
   type EventEffects,
   type EventPalette,
@@ -150,6 +151,7 @@ export function normalizeManagedEvent(value: unknown) {
     ambient_audio_path: ambientAudioPath,
     scare_sound_url: scareSoundUrl,
     scare_sound_path: scareSoundPath,
+    campaign_content: mapCampaignContent(body.campaignContent),
     palette,
     effects,
   };
@@ -191,6 +193,7 @@ export function mapManagedEvent(row: EventRow): ManagedEvent {
     ambientAudioPath: stringValue(row.ambient_audio_path),
     scareSoundUrl: stringValue(row.scare_sound_url),
     scareSoundPath: stringValue(row.scare_sound_path),
+    campaignContent: mapCampaignContent(row.campaign_content),
     palette,
     effects: {
       decorationsEnabled: effectsValue.decorationsEnabled === true,
@@ -205,6 +208,26 @@ export function mapManagedEvent(row: EventRow): ManagedEvent {
     createdAt: stringValue(row.created_at),
     updatedAt: stringValue(row.updated_at),
   };
+}
+
+function mapCampaignContent(value: unknown): EventCampaignContent {
+  const content = objectValue(value);
+  const activities = Array.isArray(content.activities) ? content.activities.flatMap((value) => {
+    const activity = objectValue(value);
+    const kind = activity.kind;
+    if (kind !== 'reveal' && kind !== 'download') return [];
+    return [{
+      id: stringValue(activity.id),
+      kind: kind as EventCampaignContent['activities'][number]['kind'],
+      icon: stringValue(activity.icon, '✨'),
+      title: localizedValue(activity.title),
+      description: localizedValue(activity.description),
+      reveal: localizedValue(activity.reveal),
+      resourceUrl: stringValue(activity.resourceUrl),
+      resourcePath: stringValue(activity.resourcePath),
+    }];
+  }) : [];
+  return { title: localizedValue(content.title), intro: localizedValue(content.intro), activities };
 }
 
 export function toSeasonalEvent(event: ManagedEvent, referenceDate = new Date(), forceActive = false): SeasonalEvent {
@@ -232,6 +255,7 @@ export function toSeasonalEvent(event: ManagedEvent, referenceDate = new Date(),
     scareSoundPath: event.scareSoundPath,
     palette: event.palette,
     effects: event.effects,
+    campaignContent: event.campaignContent,
     ambientDecorations: {
       glowColor: event.palette.accent,
       accentColor: event.palette.accent,

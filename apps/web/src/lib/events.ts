@@ -24,6 +24,23 @@ export interface EventEffects {
   scareFrequency?: 'rare' | 'regular';
 }
 
+export interface EventCampaignActivity {
+  id: string;
+  kind: 'reveal' | 'download';
+  icon: string;
+  title: { es: string; en: string };
+  description: { es: string; en: string };
+  reveal: { es: string; en: string };
+  resourceUrl: string;
+  resourcePath: string;
+}
+
+export interface EventCampaignContent {
+  title: { es: string; en: string };
+  intro: { es: string; en: string };
+  activities: EventCampaignActivity[];
+}
+
 export interface ManagedEvent {
   id: string;
   slug: string;
@@ -45,6 +62,7 @@ export interface ManagedEvent {
   ambientAudioPath: string;
   scareSoundUrl: string;
   scareSoundPath: string;
+  campaignContent: EventCampaignContent;
   palette: EventPalette;
   effects: EventEffects;
   createdAt: string;
@@ -95,6 +113,14 @@ export const EVENT_DECORATIONS = [
   { key: 'butterflies', label: 'Mariposas', glyph: '🦋' },
   { key: 'acorns', label: 'Bellotas', glyph: '🌰' },
   { key: 'ribbons', label: 'Cintas', glyph: '🎀' },
+  { key: 'snowbanks', label: 'Acumulaciones de nieve', glyph: '❄️' },
+  { key: 'snowman', label: 'Muñeco de nieve', glyph: '⛄' },
+  { key: 'garlands', label: 'Guirnaldas y luces', glyph: '💡' },
+  { key: 'fog', label: 'Niebla ambiental', glyph: '🌫️' },
+  { key: 'fireflies', label: 'Luciérnagas', glyph: '✨' },
+  { key: 'confetti', label: 'Confeti', glyph: '🎊' },
+  { key: 'paperLanterns', label: 'Faroles de papel', glyph: '🏮' },
+  { key: 'bunting', label: 'Banderines', glyph: '🎏' },
 ] as const;
 
 export const EVENT_PALETTE_PRESETS: Record<string, EventPalette> = {
