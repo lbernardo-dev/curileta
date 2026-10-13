@@ -508,13 +508,14 @@ export default function EventsManager() {
                   <label className="block text-sm font-semibold">Tipo de actividad<select value={activity.kind} className={fieldClass} onChange={(event) => {
                     const kind = event.target.value as EventCampaignActivity['kind'];
                     setActivityField(activity.id, 'kind', kind);
-                    if (kind === 'reveal') {
+                      if (kind !== 'download') {
                       setActivityField(activity.id, 'resourceUrl', '');
                       setActivityField(activity.id, 'resourcePath', '');
-                    } else {
+                      }
+                      if (kind !== 'reveal') {
                       setActivityField(activity.id, 'reveal', { es: '', en: '' });
                     }
-                  }}><option value="reveal">Reto interactivo con respuesta</option><option value="download">Material descargable</option></select></label>
+                  }}><option value="reveal">Reto interactivo con respuesta</option><option value="download">Material descargable</option><option value="maskLibrary">Biblioteca de máscaras</option></select></label>
                 </div>
                 <button type="button" onClick={() => removeActivity(activity)} className={`${buttonClass} text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-[#272727]`} aria-label={`Eliminar actividad ${index + 1}`}><Trash2 className="h-4 w-4" />Quitar actividad</button>
               </div>
@@ -527,6 +528,8 @@ export default function EventsManager() {
               {activity.kind === 'reveal' ? <div className="grid gap-4 sm:grid-cols-2">
                 <TextAreaField label="Respuesta que se revela en español" value={activity.reveal.es} maxLength={640} required onChange={(value) => setActivityLocalizedField(activity.id, 'reveal', 'es', value)} />
                 <TextAreaField label="Answer revealed in English" value={activity.reveal.en} maxLength={640} required onChange={(value) => setActivityLocalizedField(activity.id, 'reveal', 'en', value)} />
+              </div> : activity.kind === 'maskLibrary' ? <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950 dark:border-emerald-900 dark:bg-[#183d2c] dark:text-emerald-100">
+                Esta actividad muestra las máscaras publicadas en <strong>/admin/mascaras</strong>, con selector, vista previa y descargas por personaje. La lista de personajes y sus archivos se configura en esa sección.
               </div> : <EventMediaUploadField
                 kind="activityPdf"
                 label="PDF descargable"

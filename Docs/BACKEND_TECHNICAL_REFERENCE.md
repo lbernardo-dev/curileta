@@ -184,7 +184,21 @@ La política enumera Vercel, Supabase, Cloudflare Turnstile y Resend. Según con
 
 El PR #19 quedó integrado como e3d7831 y Vercel confirmó Production Ready el 12 de octubre de 2026. El PR #20 quedó integrado como 3d7d8b5; el despliegue Cfn3JcQtJJriLox8gsLJD9DidEof alcanzó Production Ready en www.curileta.com. El PR #21 sincronizó la referencia. El PR #22 corrigió la descripción pública de retención; el despliegue 66rGkx1pZbiwKQ4PSXTi6jAGVRni alcanzó Production Ready y se comprobó el texto actualizado en español e inglés. Se verificaron visualmente `/es/cookies`, `/es/privacidad`, `/es/contacto` y `/en/privacidad`; no se envió el formulario ni se inspeccionó Network. La lista de variables de Vercel Production muestra el ID de Google Analytics, pero no la bandera de habilitación: por ello Analytics queda desactivado por código. El aviso del formulario se fija ahora en código como `contact-form-privacy-v2`, ignorando la variable obsoleta `PRIVACY_NOTICE_VERSION`. Estos cambios no alteran tablas ni funciones SQL y no requieren migración. La tarea de `pg_cron` `contact-submission-retention` está activa a las 03:00 UTC y terminó correctamente los días 11, 12 y 13 de octubre. El proceso elimina consultas cerradas sin oportunidad tras 30 días y marca oportunidades sin actividad al cumplir 12 meses. No había avisos pendientes, eliminaciones de oportunidades programadas ni consultas cerradas atrasadas en la consulta agregada del 13 de octubre. La ruta Vercel que envía avisos y programa la eliminación posterior de oportunidades, y la ruta de limpieza multimedia, exigen `CRON_SECRET`, que falta en Production; por eso esos dos procesos siguen sin ejecutarse. La política pública explica que las consultas cerradas se limpian automáticamente y que las oportunidades deben revisarse manualmente hasta activar sus avisos. La [auditoría de privacidad](./PRIVACY_COMPLIANCE_AUDIT.md) enumera el alcance, las medidas técnicas, los hallazgos y las decisiones del titular que faltan.
 
-## 11. Verificación y diagnóstico
+## 11. Máscaras imprimibles administradas
+
+Estado de este cambio: código, recursos aprobados, PDFs y migración preparados localmente; falta aplicar la migración `20261013020000_character_masks.sql` y confirmar el despliegue Production antes de declarar el módulo activo allí. La aprobación del titular cubre las ilustraciones de Curileta y Pompón presentadas en esta tarea.
+
+`/admin/mascaras` permite a `owner`, `admin` y `editor` crear, editar, publicar, retirar y eliminar recursos. Cada fila de `character_masks` guarda un slug estable, el slug del personaje, título y descripción en español e inglés, una imagen de vista previa, un PDF imprimible, orden, estado de publicación, actor y marcas temporales. Solo se publica si están configurados y validados imagen y PDF. Los borradores quedan fuera de las lecturas públicas. La tabla tiene RLS habilitada y permisos SQL reservados a `service_role`; la autorización de cada operación se valida en el servidor con el perfil administrativo.
+
+La migración incluye dos registros publicados y aprobados: Curileta y Pompón. Sus imágenes viven en `apps/web/public/images/events/masks/`; sus PDFs A4 bilingües viven en `apps/web/public/files/events/masks/`. `apps/web/scripts/generate_character_mask_printables.py` reconstruye esos dos PDF a partir de las imágenes aprobadas. Las guías circulares señalan los ojos; el cuadernillo previo de Halloween con la máscara genérica no se enlaza desde la actividad pública.
+
+La portada carga solo máscaras publicadas y presenta selector por personaje, vista previa y descarga. El editor `/admin/eventos` ofrece el tipo de actividad `maskLibrary`, que muestra la biblioteca publicada sin enlazar el cuadernillo genérico anterior. La migración convierte en esa actividad la ficha Halloween `mascaras-y-coloreo` y vacía su URL anterior. La descarga pasa por `/api/masks/[slug]/download`; el servidor valida publicación y ruta de recurso, sirve el PDF como descarga y, cuando el navegador no indica DNT/GPC, suma un evento `mask_download` a `analytics_daily` por día, personaje e idioma. No se almacenan identificadores de visitante ni se confirma que el archivo se haya impreso o guardado en el dispositivo. `/admin/mascaras` y `/admin/estadisticas` muestran los totales por personaje.
+
+Las imágenes nuevas usan `POST /api/admin/media/upload`, el bucket público `curileta-site-media` y `masks/previews/{uuid}.webp|jpg`, con hasta 8 MB; los PDFs usan `POST/DELETE /api/admin/character-masks/media` y `masks/printables/{uuid}.pdf`, con hasta 8 MB. `ImageUploadField` y `EventMediaUploadField` cargan mediante permisos firmados; la limpieza consulta las referencias antes de borrar un objeto. Las imágenes y PDFs publicados son públicos y deben prepararse para publicación. No se requieren variables de entorno nuevas.
+
+Archivos principales: `apps/web/src/lib/character-masks.server.ts`, `apps/web/src/features/events/CharacterMaskDownloads.tsx`, `apps/web/src/app/admin/(panel)/mascaras/CharacterMasksManager.tsx`, `apps/web/src/app/api/admin/character-masks/route.ts`, `apps/web/src/app/api/admin/character-masks/[id]/route.ts`, `apps/web/src/app/api/masks/[slug]/download/route.ts` y `supabase/migrations/20261013020000_character_masks.sql`. No describir la funcionalidad como vigente en Production hasta verificar la migración, la versión de Vercel y una descarga pública.
+
+## 12. Verificación y diagnóstico
 
 Comandos habituales para la aplicación web:
 
@@ -204,19 +218,19 @@ En CI confirma que todos corresponden al mismo commit. Para una vista previa com
 
 Un HTTP 503 en administración suele indicar variables privadas ausentes, tabla o migración no aplicada, o fallo de Supabase. Revisa logs del servidor sin copiar secretos ni datos personales a incidencias públicas.
 
-## 12. Límites y cobertura pendiente
+## 13. Límites y cobertura pendiente
 
 - El panel central administra los tipos listados en esta referencia; algunos tipos tienen restricciones de alta o edición por diseño del formulario.
 - Las secciones especializadas pueden depender de sus propias tablas y permisos.
 - La presencia de una página administrativa no significa que toda la aplicación sea editable: textos de interfaz, traducciones, contenido legal y valores predeterminados pueden seguir dentro del código. La cobertura debe auditarse módulo por módulo antes de prometer administración completa.
 - No guardes identificadores de proyectos, URLs privadas, detalles de DNS o despliegues, credenciales, datos personales ni trazas con datos de visitantes en esta referencia.
 
-## 13. Mantenimiento documental
+## 14. Mantenimiento documental
 
 Cuando cambie un flujo, API, rol, tabla, permiso, almacenamiento, entorno, política de datos o despliegue, actualiza esta referencia y BACKEND_SETUP.md en el mismo cambio. Distingue el código existente de las migraciones aplicadas y los despliegues verificados. El README enlaza a ambas guías en Docs.
 
 
-## 14. Despliegue verificado del consentimiento de cookies
+## 15. Despliegue verificado del consentimiento de cookies
 
 El PR #26 se integró en `main` con el commit `9657b975b18ab0ce47a063ba1d393deca8a63c5b`. Vercel Production identificó el despliegue `DnXBw8GxVZgi1edCEFykxvLTAgtz` como Ready el 12 de octubre de 2026 y asignó `www.curileta.com`. Se verificaron visualmente `/es/cookies`, `/en/cookies` y `/es/privacidad`. La interfaz habla de cookies opcionales; para aceptarlas requiere una autodeclaración adulta o de tutor autorizado. La autodeclaración no es verificación de edad ni consentimiento parental verificable.
 

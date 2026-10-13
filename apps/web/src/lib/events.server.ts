@@ -215,7 +215,7 @@ function mapCampaignContent(value: unknown): EventCampaignContent {
   const activities = Array.isArray(content.activities) ? content.activities.flatMap((value) => {
     const activity = objectValue(value);
     const kind = activity.kind;
-    if (kind !== 'reveal' && kind !== 'download') return [];
+    if (kind !== 'reveal' && kind !== 'download' && kind !== 'maskLibrary') return [];
     return [{
       id: stringValue(activity.id),
       kind: kind as EventCampaignContent['activities'][number]['kind'],

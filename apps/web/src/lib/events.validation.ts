@@ -115,12 +115,12 @@ function normalizeCampaignContent(value: unknown): EventCampaignContent | null {
     const resourceUrl = typeof activity.resourceUrl === 'string' ? activity.resourceUrl.trim() : '';
     const resourcePath = typeof activity.resourcePath === 'string' ? activity.resourcePath.trim() : '';
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || id.length > 48 || ids.has(id)
-      || (kind !== 'reveal' && kind !== 'download') || !icon || icon.length > 12
+      || (kind !== 'reveal' && kind !== 'download' && kind !== 'maskLibrary') || !icon || icon.length > 12
       || !activityTitle || !description || !reveal
       || resourceUrl.length > 2048 || resourcePath.length > 180
       || Boolean(resourceUrl) !== Boolean(resourcePath)
       || (kind === 'download' && !isOptionalEventResource(resourceUrl, resourcePath))) return null;
-    if (kind === 'reveal' && (resourceUrl || resourcePath)) return null;
+    if ((kind === 'reveal' || kind === 'maskLibrary') && (resourceUrl || resourcePath)) return null;
     if (kind === 'download' && (!resourceUrl || !resourcePath)) return null;
     ids.add(id);
     activities.push({ id, kind: kind as EventCampaignContent['activities'][number]['kind'], icon, title: activityTitle, description, reveal, resourceUrl, resourcePath });

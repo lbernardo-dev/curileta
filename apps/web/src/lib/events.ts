@@ -26,7 +26,7 @@ export interface EventEffects {
 
 export interface EventCampaignActivity {
   id: string;
-  kind: 'reveal' | 'download';
+  kind: 'reveal' | 'download' | 'maskLibrary';
   icon: string;
   title: { es: string; en: string };
   description: { es: string; en: string };
