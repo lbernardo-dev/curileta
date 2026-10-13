@@ -350,7 +350,7 @@ html.dark:is([data-seasonal-theme], [data-site-base-theme]) {
 }
 
 html:is([data-seasonal-theme], [data-site-base-theme]) body {
-  background-color: var(--seasonal-canvas-light);
+  background-color: var(--background-canvas);
 }
 
 html.dark:is([data-seasonal-theme], [data-site-base-theme]) body {
@@ -362,7 +362,7 @@ html:is([data-seasonal-theme], [data-site-base-theme]) :is(
   [class~="bg-[#faf9f4]"], [class~="bg-[#f8f6ef]"], [class~="bg-[#f7f8f3]"],
   [class~="bg-[#fbfcf8]"], [class~="bg-slate-50"], [class~="bg-gray-50"]
 ) {
-  background-color: var(--seasonal-canvas-light);
+  background-color: var(--background-canvas);
 }
 
 html:is([data-seasonal-theme], [data-site-base-theme]) :is(
