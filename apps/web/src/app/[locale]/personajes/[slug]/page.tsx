@@ -12,6 +12,7 @@ import { CharacterFavoriteButton, CharacterFavoritesProvider } from '@/component
 import { CharacterPassportSpread } from '@/components/CharacterPassportSpread';
 import { getCharacterFavoriteRankings } from '@/lib/character-favorites.server';
 import { getPublicDestinations } from '@/lib/destinations.server';
+import { CuriletaMainProfile } from '@/features/characters/CuriletaMainProfile';
 import {
   Sparkles,
   ArrowLeft,
@@ -48,7 +49,11 @@ export async function generateMetadata({
     return { title: 'Personaje no encontrado' };
   }
 
-  const desc = character.shortDescription[locale] || character.shortDescription.es;
+  const desc = character.slug === 'curileta'
+    ? (locale === 'en'
+      ? 'Meet Curileta, the little explorer. Follow her route, discover the friends she meets and open her field notebook.'
+      : 'Conoce a Curileta, la pequeña exploradora. Sigue su ruta, descubre a quienes encuentra y abre su cuaderno de campo.')
+    : character.shortDescription[locale] || character.shortDescription.es;
   return {
     title: `${character.name} — Pasaporte Oficial de Explorador`,
     description: desc,
@@ -104,6 +109,23 @@ export default async function CharacterDetailPage({
     { key: 'wisdom', label: locale === 'en' ? 'Wisdom' : 'Sabiduría', value: character.explorerStats.wisdom },
   ] : [];
   const growthArea = [...stats].sort((left, right) => left.value - right.value)[0];
+
+  if (character.slug === 'curileta') {
+    const characters = await cmsProvider.getCharacters(locale);
+    const storyCrew = characters.filter((item) => item.slug !== character.slug);
+    return (
+      <CuriletaMainProfile
+        locale={locale as Locale}
+        character={character}
+        locations={locations}
+        books={books}
+        episodes={relatedEpisodes}
+        milestones={storyMoments}
+        characters={storyCrew}
+        initialRankings={rankings}
+      />
+    );
+  }
 
   return (
     <CharacterFavoritesProvider locale={locale as Locale} initialRankings={rankings}>
