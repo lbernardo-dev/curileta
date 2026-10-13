@@ -156,6 +156,9 @@ Las claves privadas se usan solo en servidor. No añadas valores al repositorio,
 - Configura variables por entorno en el proveedor de despliegue.
 - Integra el código después de verificar CI para el commit actual; comprueba una vista previa y luego las rutas públicas y /admin en Production.
 - Documenta por separado el resultado del despliegue web y el resultado de migración de datos.
+- `.gitignore` excluye `._*` y `**/._*` de Git; `.vercelignore` aplica las mismas reglas a las cargas directas a Vercel. Los archivos AppleDouble son metadatos de macOS, no recursos de la aplicación.
+
+El 13 de octubre de 2026 se eliminaron los sidecars `._*` encontrados en el árbol de trabajo y en los metadatos locales de Git; la comprobación no encontró archivos de ese tipo versionados. Las reglas de exclusión se incorporan en este cambio. Su presencia en el repositorio y su efecto en nuevos despliegues quedan pendientes hasta integrar este PR.
 
 Las migraciones de contenido administrado y de conservación de los dos vídeos se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. Las tablas site_events, site_theme_settings y site_theme_control, además del bucket público curileta-site-media con su límite de 100 MB y formatos multimedia permitidos, también se verificaron en Production. El reproductor y la analítica del PR #15 siguen en la versión de Production y la deduplicación del PR #16 está desplegada desde main en be6bd94. El 12 de octubre de 2026 se comprobó www.curileta.com/es/videos: el catálogo muestra 2 piezas en total, un capítulo y un Short; al abrir cada una, YouTube bloquea la reproducción insertada y el modal ofrece el enlace directo correcto (watch para el capítulo y shorts para el Short). La medición propia solo registra el inicio cuando la API comunica PLAYING; no altera la métrica oficial de YouTube. No hizo falta una migración de datos para deduplicar. La documentación no reemplaza una comprobación del estado remoto.
 
