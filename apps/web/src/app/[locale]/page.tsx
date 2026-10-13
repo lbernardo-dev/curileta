@@ -32,6 +32,7 @@ import { getRequestTimestamp } from '@/lib/request-time.server';
 import { getLandingLetters } from '@/lib/letters';
 import { getPublicDestinations } from '@/lib/destinations.server';
 import { getPublishedCharacterMasks } from '@/lib/character-masks.server';
+import { getPublishedEventPrintables } from '@/lib/event-printables.server';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 
@@ -120,6 +121,7 @@ export default async function HomePage({
   ]);
 
   const displayBooks = mergeBookCatalog(books, bookCatalogSettings);
+  const eventPrintables = activeEvent ? await getPublishedEventPrintables(activeEvent.id) : [];
   const landingLetters = getLandingLetters(letters);
   const featuredBooks = getLatestBooks(displayBooks, bookCatalogSettings.featuredBookSlugs, 3);
   const storyRoute = books.find((book) => book.slug === 'las-aventuras-de-curileta')?.locations || [];
@@ -142,7 +144,7 @@ export default async function HomePage({
 
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
-    seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} masks={characterMasks} />,
+    seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} masks={characterMasks} printables={eventPrintables} />,
     story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
     globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,

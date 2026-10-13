@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { FileAudio2, FileVideo2, FileText, Trash2, Upload } from 'lucide-react';
 
-type MediaKind = 'heroVideo' | 'ambientAudio' | 'scareSound' | 'activityPdf' | 'characterMaskPdf';
+type MediaKind = 'heroVideo' | 'ambientAudio' | 'scareSound' | 'activityPdf' | 'eventPrintablePdf' | 'characterMaskPdf';
 
 interface Ticket {
   bucket: string;
@@ -39,7 +39,7 @@ export function EventMediaUploadField({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const isVideo = kind === 'heroVideo';
-  const isPdf = kind === 'activityPdf' || kind === 'characterMaskPdf';
+  const isPdf = kind === 'activityPdf' || kind === 'eventPrintablePdf' || kind === 'characterMaskPdf';
   const isMaskPdf = kind === 'characterMaskPdf';
   const uploadKind = kind;
   const accept = isVideo ? 'video/mp4,video/webm' : isPdf ? 'application/pdf,.pdf' : 'audio/mpeg,audio/mp4,audio/ogg,audio/webm';

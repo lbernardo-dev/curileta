@@ -51,6 +51,7 @@ export default async function AdminOverviewPage() {
         { href: '/admin/cartas', title: 'Cartas', description: 'Edita cartas y fotos y controla su publicación en la landing' },
         { href: '/admin/eventos', title: 'Eventos y ambientes', description: 'Programa temporadas, temas, vídeos, sonidos y ambientación' },
         { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra los personajes, las vistas previas, los PDF y sus descargas' },
+        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y otros recursos imprimibles' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
         { href: '/admin/forms', title: 'Formularios', description: 'Campos y configuración de contacto' },
         { href: '/admin/consultas', title: 'Consultas', description: 'Mensajes recibidos y estado de atención' },
@@ -66,6 +67,7 @@ export default async function AdminOverviewPage() {
         { href: '/admin/cartas', title: 'Cartas', description: 'Edita cartas y fotos y controla su publicación en la landing' },
         { href: '/admin/eventos', title: 'Eventos y ambientes', description: 'Programa temporadas, temas, vídeos, sonidos y ambientación' },
         { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra los personajes, las vistas previas, los PDF y sus descargas' },
+        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y otros recursos imprimibles' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
       ]
       : [{ href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' }];
