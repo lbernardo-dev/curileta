@@ -206,7 +206,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
   return (
     <section
       id="escena-youtube"
-      className={`relative z-10 overflow-hidden bg-[#f3f6f3] text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white ${hideHeader ? 'py-10 sm:py-12' : 'py-20 sm:py-24'}`}
+      className={`relative z-10 overflow-hidden bg-[#f3f6f3] text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white ${hideHeader ? 'py-6 sm:py-8' : 'py-20 sm:py-24'}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Cabecera de la sección con Zipi-Bot 3D */}
