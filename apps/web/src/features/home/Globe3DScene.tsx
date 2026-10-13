@@ -114,7 +114,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   const selectedIdRef = useRef(selectedId);
   const isAutoRotatingRef = useRef(isAutoRotating);
   const isHoveredRef = useRef(false);
-  const prefersReducedMotionRef.currentRef = useRef(false);
+  const prefersReducedMotionRef = useRef(false);
   const [webglSupported, setWebglSupported] = useState<boolean>(true);
   const [isSceneReady, setIsSceneReady] = useState<boolean>(false);
   const [isMilestonesModalOpen, setIsMilestonesModalOpen] = useState<boolean>(false);
@@ -446,7 +446,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   useEffect(() => {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const applyMotionPreference = () => {
-      prefersReducedMotionRef.currentRef.current = motionPreference.matches;
+      prefersReducedMotionRef.current = motionPreference.matches;
       const shouldRotate = !motionPreference.matches;
       isAutoRotatingRef.current = shouldRotate;
       setIsAutoRotating(shouldRotate);
