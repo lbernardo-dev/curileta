@@ -101,8 +101,8 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
                   <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">{title}</h2>
                   {subtitle && <p className="mt-2 text-sm font-medium text-emerald-800">{subtitle}</p>}
                   <p className="mt-4 text-sm leading-6 text-[#5c6b61]">{description}</p>
-                  <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-[#e7eae2] pt-5">
-                    <Link href={`/${locale}/libros/${book.slug}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e]">
+                  <div className="mt-auto flex w-full flex-col items-start gap-3 border-t border-[#e7eae2] pt-5">
+                    <Link href={`/${locale}/libros/${book.slug}`} className="inline-flex min-h-11 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e]">
                       {isEn ? 'Book details' : 'Detalles del libro'} <ArrowRight className="h-4 w-4" />
                     </Link>
                     {book.slug === CURILETA_BOOK_SLUG && isPublished && (
