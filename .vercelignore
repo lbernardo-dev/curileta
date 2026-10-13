@@ -1,0 +1,3 @@
+# macOS AppleDouble resource fork sidecars must never enter deployment uploads.
+._*
+**/._*
