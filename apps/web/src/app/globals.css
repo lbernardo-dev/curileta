@@ -255,37 +255,37 @@ html.dark[data-seasonal-theme] {
   --background-canvas: var(--seasonal-footer-dark);
 }
 
-html[data-seasonal-theme] header[data-seasonal-surface="header"] {
+html:is([data-seasonal-theme], [data-site-base-theme]) header[data-seasonal-surface="header"] {
   background-color: var(--seasonal-header-light);
   border-color: color-mix(in srgb, var(--seasonal-accent) 20%, #e5e9df);
 }
 
-html.dark[data-seasonal-theme] header[data-seasonal-surface="header"] {
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) header[data-seasonal-surface="header"] {
   background-color: var(--seasonal-header-dark);
   border-color: color-mix(in srgb, var(--seasonal-accent) 28%, #1e293b);
 }
 
-html[data-seasonal-theme] footer[data-seasonal-surface="footer"] {
+html:is([data-seasonal-theme], [data-site-base-theme]) footer[data-seasonal-surface="footer"] {
   background-color: var(--seasonal-footer-light);
   border-color: color-mix(in srgb, var(--seasonal-accent) 20%, #e2e7dd);
 }
 
-html.dark[data-seasonal-theme] footer[data-seasonal-surface="footer"] {
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) footer[data-seasonal-surface="footer"] {
   background-color: var(--seasonal-footer-dark);
   border-color: color-mix(in srgb, var(--seasonal-accent) 28%, #1e293b);
 }
 
-html[data-seasonal-theme] ::selection {
+html:is([data-seasonal-theme], [data-site-base-theme]) ::selection {
   background-color: var(--seasonal-accent-strong);
   color: #ffffff;
 }
 
-html[data-seasonal-theme] ::-webkit-scrollbar-thumb {
+html:is([data-seasonal-theme], [data-site-base-theme]) ::-webkit-scrollbar-thumb {
   background: var(--seasonal-accent);
 }
 
-html[data-seasonal-theme] :focus-visible {
-  outline-color: var(--seasonal-accent-strong);
+html:is([data-seasonal-theme], [data-site-base-theme]) :focus-visible {
+  outline-color: var(--seasonal-text-accent, var(--seasonal-accent-strong));
 }
 
 html[data-seasonal-theme] {
@@ -315,6 +315,160 @@ html.dark[data-site-base-theme] {
   --background-secondary: var(--seasonal-surface-dark);
   --background-primary: var(--seasonal-canvas-dark);
   --text-primary: var(--seasonal-text-dark);
+}
+
+/* Apply the selected palette to the public experience, including older pages
+   that still use literal Tailwind colors. The provider only sets these root
+   attributes inside the localized public layout, so /admin stays untouched. */
+html:is([data-seasonal-theme], [data-site-base-theme]) {
+  --background-elevated: var(--seasonal-surface-light);
+  --background-accent: color-mix(in srgb, var(--seasonal-accent) 12%, var(--seasonal-canvas-light));
+  --interactive-primary: var(--seasonal-accent-strong);
+  --interactive-primary-hover: var(--seasonal-accent);
+  --interactive-accent: var(--seasonal-accent);
+  --interactive-focus: var(--seasonal-accent);
+  --border-subtle: color-mix(in srgb, var(--seasonal-accent) 16%, var(--seasonal-surface-light));
+  --border-strong: color-mix(in srgb, var(--seasonal-accent) 32%, var(--seasonal-surface-light));
+  --text-secondary: color-mix(in srgb, var(--seasonal-text-light) 76%, var(--seasonal-canvas-light));
+  --text-muted: color-mix(in srgb, var(--seasonal-text-light) 58%, var(--seasonal-canvas-light));
+  --seasonal-text-accent: var(--seasonal-accent-strong);
+  --color-curileta-green: var(--seasonal-accent-strong);
+  --color-curileta-green-light: var(--seasonal-accent);
+  --color-curileta-green-dark: var(--seasonal-accent-strong);
+  --color-adventure-gold: var(--seasonal-accent);
+  --color-adventure-gold-light: color-mix(in srgb, var(--seasonal-accent) 55%, white);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) {
+  --background-elevated: color-mix(in srgb, var(--seasonal-surface-dark) 82%, white);
+  --background-accent: color-mix(in srgb, var(--seasonal-accent) 22%, var(--seasonal-canvas-dark));
+  --border-subtle: color-mix(in srgb, var(--seasonal-accent) 24%, var(--seasonal-surface-dark));
+  --border-strong: color-mix(in srgb, var(--seasonal-accent) 44%, var(--seasonal-surface-dark));
+  --text-secondary: color-mix(in srgb, var(--seasonal-text-dark) 76%, var(--seasonal-canvas-dark));
+  --text-muted: color-mix(in srgb, var(--seasonal-text-dark) 58%, var(--seasonal-canvas-dark));
+  --seasonal-text-accent: color-mix(in srgb, var(--seasonal-accent) 70%, white);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) body {
+  background-color: var(--seasonal-canvas-light);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) body {
+  background-color: var(--seasonal-canvas-dark);
+}
+
+/* Shared public page and card surfaces. */
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-[#faf9f4]"], [class~="bg-[#f8f6ef]"], [class~="bg-[#f7f8f3]"],
+  [class~="bg-[#fbfcf8]"], [class~="bg-slate-50"], [class~="bg-gray-50"]
+) {
+  background-color: var(--seasonal-canvas-light);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-white"], [class~="bg-[#fffdf8]"], [class~="bg-[#f0eee6]"],
+  [class~="bg-[#f1f3eb]"], [class~="bg-[#f2f3ec]"], [class~="bg-[#f3f6f3]"],
+  [class~="bg-[#f4f3ec]"], [class~="bg-[#eef2ea]"], [class~="bg-[#eff2ec]"],
+  [class~="bg-[#e9efe4]"], [class~="bg-slate-100"], [class~="bg-slate-200"]
+) {
+  background-color: var(--background-elevated);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="dark:bg-slate-950"], [class~="dark:bg-slate-950/95"], [class~="dark:bg-slate-950/85"],
+  [class~="dark:bg-slate-950/80"], [class~="dark:bg-slate-950/70"], [class~="dark:bg-slate-950/50"],
+  [class~="dark:bg-[#181818]"], [class~="dark:bg-[#000000]"]
+) {
+  background-color: var(--seasonal-canvas-dark);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="dark:bg-slate-900"], [class~="dark:bg-slate-900/95"], [class~="dark:bg-slate-900/90"],
+  [class~="dark:bg-slate-900/80"], [class~="dark:bg-slate-800"], [class~="dark:bg-[#1f1f1f]"],
+  [class~="dark:bg-[#272727]"]
+) {
+  background-color: var(--background-elevated);
+}
+
+/* Brand green and gold controls follow the selected event accent. */
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-[#1c493b]"], [class~="bg-[#174438]"], [class~="bg-[#205844]"],
+  [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-emerald-800"]
+) {
+  background-color: var(--seasonal-accent-strong);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="hover:bg-[#27634e]"], [class~="hover:bg-emerald-700"], [class~="hover:bg-emerald-800"]
+):hover {
+  background-color: var(--seasonal-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-amber-50"],
+  [class~="bg-amber-500/10"], [class~="bg-amber-950/40"], [class~="bg-amber-950/70"],
+  [class~="bg-rose-50"], [class~="bg-rose-950/40"], [class~="bg-sky-50"]
+) {
+  background-color: var(--background-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-amber-200"], [class~="bg-amber-300"], [class~="bg-amber-400"],
+  [class~="bg-amber-500"], [class~="bg-amber-700"], [class~="bg-amber-950"],
+  [class~="bg-emerald-400"], [class~="bg-emerald-950"]
+) {
+  background-color: var(--seasonal-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="text-[#20352c]"], [class~="text-[#254537]"], [class~="text-[#302a1c]"],
+  [class~="text-[#352c1b]"], [class~="text-[#3e5548]"], [class~="text-[#486454]"],
+  [class~="text-[#4b5846]"], [class~="text-[#4d5f54]"], [class~="text-[#54472c]"],
+  [class~="text-[#594c32]"], [class~="text-[#5c6b61]"], [class~="text-[#647268]"],
+  [class~="text-[#665630]"], [class~="text-[#675b41]"], [class~="text-[#6b5722]"],
+  [class~="text-[#71603b]"], [class~="text-[#718076]"], [class~="text-[#718078]"],
+  [class~="text-[#74643b]"], [class~="text-[#775b1c]"], [class~="text-[#867345]"],
+  [class~="text-[#8e7a4f]"], [class~="text-[#9b6332]"], [class~="text-slate-900"],
+  [class~="text-slate-800"], [class~="text-gray-900"]
+) {
+  color: var(--text-primary);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="text-slate-700"], [class~="text-slate-600"], [class~="text-slate-500"],
+  [class~="text-[#5c6b61]"], [class~="text-[#647268]"], [class~="text-[#718076]"],
+  [class~="text-[#718078]"]
+) {
+  color: var(--text-secondary);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="text-[var(--seasonal-accent-strong)]"], [class~="text-emerald-700"],
+  [class~="text-emerald-800"], [class~="text-emerald-900"], [class~="text-emerald-950"],
+  [class~="text-emerald-300"], [class~="text-emerald-400"], [class~="text-emerald-500"],
+  [class~="text-emerald-600"], [class~="text-emerald-100"], [class~="text-emerald-200"],
+  [class~="text-amber-100"], [class~="text-amber-200"], [class~="text-amber-300"],
+  [class~="text-amber-400"], [class~="text-amber-500"], [class~="text-amber-600"],
+  [class~="text-amber-700"], [class~="text-sky-300"], [class~="text-sky-400"],
+  [class~="text-purple-400"], [class~="text-indigo-400"], [class~="text-[#9b6332]"]
+) {
+  color: var(--seasonal-text-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="hover:text-emerald-700"], [class~="hover:text-emerald-800"],
+  [class~="hover:text-emerald-600"], [class~="hover:text-amber-700"]
+):hover {
+  color: var(--seasonal-text-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="border-slate-100"], [class~="border-slate-200"], [class~="border-[#cbd6c8]"],
+  [class~="border-[#cfd9d1]"], [class~="border-[#dbe1d4]"], [class~="border-[#e2e7dd]"],
+  [class~="border-[#e5e9df]"], [class~="border-[#e7eae2]"], [class~="border-emerald-100"],
+  [class~="border-emerald-300"], [class~="border-emerald-700"], [class~="border-emerald-800"]
+) {
+  border-color: var(--border-subtle);
 }
 
 .seasonal-decoration-layer {
