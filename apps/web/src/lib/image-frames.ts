@@ -4,20 +4,31 @@ export interface ImageFrameSettings {
   zoom: number;
 }
 
+export interface ImageFrameTarget {
+  title: string;
+  description: string;
+  imageSrc: string;
+  aspectRatio: string;
+  desktopAspectRatio?: string;
+  defaults: ImageFrameSettings;
+}
+
 export const IMAGE_FRAME_TARGETS = {
   'home-book-cover': {
     title: 'Portada del bloque de historia en inicio',
-    description: 'Imagen grande junto al bloque «La historia en un libro».',
+    description: 'Ilustración panorámica junto al bloque «La historia en un libro».',
     imageSrc: '/images/books/las-aventuras-de-curileta/portada.webp',
-    aspectRatio: '0.92 / 1',
-    defaults: { positionX: 50, positionY: 100, zoom: 1.08 },
+    aspectRatio: '5 / 4',
+    desktopAspectRatio: '1 / 1',
+    defaults: { positionX: 50, positionY: 43, zoom: 1 },
   },
   'home-books-cover': {
     title: 'Portada de la tarjeta de libros en inicio',
-    description: 'Imagen de la tarjeta del libro en la sección de libros de la portada.',
+    description: 'Ilustración del libro en la sección de libros de la portada.',
     imageSrc: '/images/books/las-aventuras-de-curileta/portada.webp',
-    aspectRatio: '0.78 / 1',
-    defaults: { positionX: 50, positionY: 100, zoom: 1.04 },
+    aspectRatio: '5 / 4',
+    desktopAspectRatio: '1 / 1',
+    defaults: { positionX: 50, positionY: 43, zoom: 1 },
   },
   'catalog-book-cover': {
     title: 'Portada en la tarjeta del catálogo',
@@ -38,6 +49,7 @@ export const IMAGE_FRAME_TARGETS = {
   description: string;
   imageSrc: string;
   aspectRatio: string;
+  desktopAspectRatio?: string;
   defaults: ImageFrameSettings;
 }>;
 

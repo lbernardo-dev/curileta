@@ -3,11 +3,13 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
+import { Monitor, Smartphone } from 'lucide-react';
 import {
   getImageFrame,
   IMAGE_FRAME_TARGETS,
   type ImageFrameKey,
   type ImageFrameMap,
+  type ImageFrameTarget,
   type ImageFrameSettings,
 } from '@/lib/image-frames';
 
@@ -22,9 +24,14 @@ export function ImageFrameEditor() {
   const [draft, setDraft] = useState<ImageFrameSettings>(getImageFrame({}, targetKeys[0]));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('mobile');
   const [status, setStatus] = useState<{ tone: 'success' | 'error'; message: string } | null>(null);
   const pointerStart = useRef<{ x: number; y: number; clientX: number; clientY: number } | null>(null);
-  const target = IMAGE_FRAME_TARGETS[selectedKey];
+  const target: ImageFrameTarget = IMAGE_FRAME_TARGETS[selectedKey];
+  const effectivePreviewMode = target.desktopAspectRatio ? previewMode : 'mobile';
+  const previewAspectRatio = effectivePreviewMode === 'desktop'
+    ? target.desktopAspectRatio || target.aspectRatio
+    : target.aspectRatio;
   const persisted = getImageFrame(savedFrames, selectedKey);
   const hasChanges = !isSameFrame(draft, persisted);
 
@@ -122,7 +129,7 @@ export function ImageFrameEditor() {
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">Presentación de imágenes</p>
         <h1 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">Encuadres de la web</h1>
         <p className="mt-3 max-w-2xl text-pretty text-base leading-6 text-slate-600 dark:text-slate-300">
-          Arrastra la imagen dentro del marco y ajusta cuánto se amplía. La vista previa respeta el recorte que se verá en la página.
+          Arrastra la imagen dentro del marco y ajusta cuánto se amplía. Comprueba el recorte en los formatos móvil y escritorio.
         </p>
       </header>
 
@@ -139,15 +146,37 @@ export function ImageFrameEditor() {
           </select>
           <p className="text-sm text-slate-600 dark:text-slate-300">{target.description}</p>
 
+          {target.desktopAspectRatio && (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Formato de vista previa</span>
+              <div role="group" aria-label="Formato de vista previa" className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-[#414141] dark:bg-[#272727]">
+                {([
+                  ['mobile', 'Móvil', Smartphone],
+                  ['desktop', 'Escritorio', Monitor],
+                ] as const).map(([mode, label, Icon]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={effectivePreviewMode === mode}
+                    onClick={() => setPreviewMode(mode)}
+                    className={`inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-sm font-medium transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 ${effectivePreviewMode === mode ? 'bg-emerald-800 text-white dark:bg-emerald-700' : 'text-slate-700 hover:bg-white dark:text-slate-200 dark:hover:bg-[#313131]'}`}
+                  >
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div
             className="relative mx-auto w-full max-w-xl touch-none cursor-grab overflow-hidden rounded-xl bg-[#163b32] shadow-inner active:cursor-grabbing"
-            style={{ aspectRatio: target.aspectRatio }}
+            style={{ aspectRatio: previewAspectRatio }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={finishDragging}
             onPointerCancel={finishDragging}
             role="img"
-            aria-label="Vista previa del encuadre. Arrastra la imagen para cambiarla de posición. También puedes usar los controles siguientes."
+            aria-label={`Vista previa del encuadre en formato ${effectivePreviewMode === 'mobile' ? 'móvil' : 'escritorio'}. Arrastra la imagen para cambiarla de posición. También puedes usar los controles siguientes.`}
           >
             <Image
               src={target.imageSrc}
@@ -163,10 +192,10 @@ export function ImageFrameEditor() {
               }}
             />
             <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
-              Vista previa del marco
+              Vista previa {effectivePreviewMode === 'mobile' ? 'móvil' : 'escritorio'}
             </span>
           </div>
-          <p className="text-center text-xs text-slate-500 dark:text-slate-400">Arrastra la imagen para moverla. Usa los controles para afinar la posición.</p>
+          <p className="text-center text-xs text-slate-500 dark:text-slate-400">La posición y la ampliación se comparten entre formatos. Alterna la vista para comprobar cada composición antes de guardar.</p>
         </div>
 
         <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-6">
