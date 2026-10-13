@@ -17,6 +17,9 @@ interface SeasonalThemeContextType {
   toggleAmbientAudio: () => void;
   canPlayScareSound: boolean;
   playScareSound: () => void;
+  canToggleDecorations: boolean;
+  decorationsVisible: boolean;
+  toggleDecorations: () => void;
   canEnableMotion: boolean;
   motionEnabled: boolean;
   toggleMotion: () => void;
@@ -37,6 +40,9 @@ const SeasonalThemeContext = createContext<SeasonalThemeContextType>({
   toggleAmbientAudio: () => {},
   canPlayScareSound: false,
   playScareSound: () => {},
+  canToggleDecorations: false,
+  decorationsVisible: false,
+  toggleDecorations: () => {},
   canEnableMotion: false,
   motionEnabled: false,
   toggleMotion: () => {},
@@ -69,8 +75,10 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
   const scopedValue = useBrowserStorageValue('local', campaignStorageKey);
   const legacyValue = useBrowserStorageValue('local', LEGACY_STORAGE_KEY);
   const motionPreferenceKey = campaignStorageKey ? `${campaignStorageKey}:motion` : null;
+  const decorationsPreferenceKey = campaignStorageKey ? `${campaignStorageKey}:decorations` : null;
   const scarePreferenceKey = campaignStorageKey ? `${campaignStorageKey}:scares` : null;
   const motionPreference = useBrowserStorageValue('local', motionPreferenceKey);
+  const decorationsPreference = useBrowserStorageValue('local', decorationsPreferenceKey);
   const scarePreference = useBrowserStorageValue('local', scarePreferenceKey);
   const mounted = useClientHydrated();
   const reducedMotion = useReducedMotionPreference();
@@ -90,6 +98,8 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
   const canPlayAmbientAudio = Boolean(isSeasonalActive && activeEvent?.effects?.soundEnabled && activeEvent.ambientAudioUrl);
   const ambientAudioPlaying = Boolean(canPlayAmbientAudio && activeEvent && playingEventId === activeEvent.id);
   const canPlayScareSound = Boolean(isSeasonalActive && activeEvent?.effects?.scareEffectsEnabled && activeEvent.scareSoundUrl);
+  const canToggleDecorations = Boolean(isSeasonalActive && activeEvent?.effects?.decorationsEnabled && activeEvent.effects.decorationCount > 0);
+  const decorationsVisible = Boolean(canToggleDecorations && decorationsPreference !== 'false');
   const canEnableMotion = Boolean(isSeasonalActive && activeEvent?.effects?.decorationsEnabled && activeEvent.effects.motionEnabled !== false && !reducedMotion);
   const motionEnabled = Boolean(canEnableMotion && motionPreference !== 'false');
   const scareEffectsEnabled = Boolean(canPlayScareSound && scarePreference === 'true');
@@ -179,6 +189,11 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
     setBrowserStorageValue('local', motionPreferenceKey, motionEnabled ? 'false' : 'true');
   };
 
+  const toggleDecorations = () => {
+    if (!decorationsPreferenceKey || !canToggleDecorations) return;
+    setBrowserStorageValue('local', decorationsPreferenceKey, decorationsVisible ? 'false' : 'true');
+  };
+
   const toggleScareEffects = () => {
     if (!scarePreferenceKey || !canPlayScareSound) return;
     setBrowserStorageValue('local', scarePreferenceKey, scareEffectsEnabled ? 'false' : 'true');
@@ -206,6 +221,9 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
       toggleAmbientAudio,
       canPlayScareSound,
       playScareSound,
+      canToggleDecorations,
+      decorationsVisible,
+      toggleDecorations,
       canEnableMotion,
       motionEnabled,
       toggleMotion,
@@ -225,7 +243,7 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
         onPause={() => setPlayingEventId((current) => current === activeEvent.id ? '' : current)}
       />}
       {canPlayScareSound && <audio ref={scareSoundRef} src={activeEvent?.scareSoundUrl} preload="none" aria-hidden="true" className="hidden" />}
-      <SeasonalDecorations event={activeEvent} active={isSeasonalActive} motionEnabled={motionEnabled} />
+      <SeasonalDecorations event={activeEvent} active={decorationsVisible} motionEnabled={motionEnabled} />
       {children}
     </SeasonalThemeContext.Provider>
   );
