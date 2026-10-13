@@ -10,7 +10,7 @@ set campaign_content = jsonb_set(
     select jsonb_agg(activity.value order by activity.ordinality)
     from jsonb_array_elements(coalesce(event.campaign_content->'activities', '[]'::jsonb))
       with ordinality as activity(value, ordinality)
-    where activity.value->>'id' is distinct from 'acertijo-luna'
+    where activity.value->>'id' not in ('acertijo-luna', 'acertijos-de-halloween')
   ), '[]'::jsonb) || jsonb_build_array(
     '{
       "id":"acertijos-de-halloween",
