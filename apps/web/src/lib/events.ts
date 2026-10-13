@@ -26,13 +26,21 @@ export interface EventEffects {
 
 export interface EventCampaignActivity {
   id: string;
-  kind: 'reveal' | 'download' | 'maskLibrary';
+  kind: 'reveal' | 'riddleSet' | 'download' | 'maskLibrary';
   icon: string;
   title: { es: string; en: string };
   description: { es: string; en: string };
   reveal: { es: string; en: string };
   resourceUrl: string;
   resourcePath: string;
+  riddles?: EventRiddle[];
+}
+
+export interface EventRiddle {
+  id: string;
+  title: { es: string; en: string };
+  prompt: { es: string; en: string };
+  answer: { es: string; en: string };
 }
 
 export interface EventCampaignContent {

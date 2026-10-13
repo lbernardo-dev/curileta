@@ -8,7 +8,7 @@ import { CharacterMaskDownloads } from './CharacterMaskDownloads';
 import type { CharacterMask } from '@/lib/character-masks.server';
 import type { EventPrintable } from '@/lib/event-printables.server';
 import { EventPrintableDownloads } from './EventPrintableDownloads';
-import { CalendarDays, Download, Sparkles } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, Download, Sparkles } from 'lucide-react';
 
 export function ManagedSeasonalEventSection({ event, locale, masks, printables }: { event: SeasonalEvent; locale: Locale; masks: CharacterMask[]; printables: EventPrintable[] }) {
   const isEn = locale === 'en';
@@ -69,6 +69,7 @@ export function ManagedSeasonalEventSection({ event, locale, masks, printables }
                 </div>
               </div>
               {isMaskLibraryActivity(activity.kind, activity.id) ? <CharacterMaskDownloads masks={masks} locale={locale} />
+                : activity.kind === 'riddleSet' ? <RiddleCarousel key={`${event.id}:${activity.id}`} activity={activity} locale={locale} />
                 : activity.kind === 'download' ? <a href={activity.resourceUrl} download target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-lg bg-[var(--seasonal-accent-strong)] px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)]">
                   <Download className="h-4 w-4" />{isEn ? 'Download and print' : 'Descargar e imprimir'}
                 </a> : <>
@@ -84,6 +85,40 @@ export function ManagedSeasonalEventSection({ event, locale, masks, printables }
       </div>
     </div>
   </section>;
+}
+
+function RiddleCarousel({ activity, locale }: { activity: NonNullable<SeasonalEvent['campaignContent']>['activities'][number]; locale: Locale }) {
+  const isEn = locale === 'en';
+  const riddles = activity.riddles || [];
+  const [index, setIndex] = useState(0);
+  const [revealedId, setRevealedId] = useState('');
+  const riddle = riddles[index];
+  if (!riddle) return <p className="mt-5 rounded-lg bg-[var(--seasonal-surface-light)] p-4 text-sm text-[var(--text-secondary)] dark:bg-[var(--seasonal-surface-dark)]">{isEn ? 'Riddles will appear here soon.' : 'Los acertijos aparecerán aquí próximamente.'}</p>;
+  const title = riddle.title[locale] || riddle.title.es;
+  const prompt = riddle.prompt[locale] || riddle.prompt.es;
+  const answer = riddle.answer[locale] || riddle.answer.es;
+  const revealed = revealedId === riddle.id;
+  const move = (step: -1 | 1) => {
+    setIndex((current) => (current + step + riddles.length) % riddles.length);
+    setRevealedId('');
+  };
+
+  return <div className="mt-5 flex min-h-64 flex-1 flex-col rounded-xl bg-[var(--seasonal-surface-light)] p-4 dark:bg-[var(--seasonal-surface-dark)] sm:p-5" aria-label={isEn ? 'Riddle collection' : 'Colección de acertijos'}>
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-xs font-semibold uppercase tracking-wide text-[var(--seasonal-accent-strong)]">{isEn ? 'Riddle' : 'Acertijo'} {index + 1} {isEn ? 'of' : 'de'} {riddles.length}</span>
+      <span className="text-sm font-semibold text-[var(--text-secondary)]">{title}</span>
+    </div>
+    <div className="mt-3 h-1 overflow-hidden rounded-full bg-[var(--background-canvas)]" aria-hidden="true"><div className="h-full rounded-full bg-[var(--seasonal-accent)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]" style={{ width: `${((index + 1) / riddles.length) * 100}%` }} /></div>
+    <p className="mt-5 min-h-16 flex-1 text-base font-medium leading-7 text-[var(--text-primary)]" aria-live="polite">{prompt}</p>
+    <button type="button" aria-expanded={revealed} onClick={() => setRevealedId(revealed ? '' : riddle.id)} className="mt-4 inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-lg border border-[var(--seasonal-accent)] px-3 py-2 text-sm font-semibold text-[var(--seasonal-accent-strong)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[var(--background-canvas)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)]">
+      <Sparkles className="h-4 w-4" />{revealed ? (isEn ? 'Hide the answer' : 'Ocultar respuesta') : (isEn ? 'Reveal the answer' : 'Descubrir la respuesta')}
+    </button>
+    {revealed && <p role="status" className="mt-3 rounded-lg bg-[var(--background-canvas)] p-3 text-sm leading-6 text-[var(--text-primary)]">{answer}</p>}
+    <div className="mt-4 flex items-center justify-between border-t border-[var(--border-subtle)] pt-3">
+      <button type="button" onClick={() => move(-1)} disabled={riddles.length < 2} aria-label={isEn ? 'Previous riddle' : 'Acertijo anterior'} className="inline-flex min-h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-[var(--text-secondary)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[var(--background-canvas)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)] disabled:cursor-not-allowed disabled:opacity-50"><ChevronLeft className="h-4 w-4" />{isEn ? 'Previous' : 'Anterior'}</button>
+      <button type="button" onClick={() => move(1)} disabled={riddles.length < 2} aria-label={isEn ? 'Next riddle' : 'Siguiente acertijo'} className="inline-flex min-h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-[var(--text-secondary)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[var(--background-canvas)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--seasonal-accent)] disabled:cursor-not-allowed disabled:opacity-50">{isEn ? 'Next' : 'Siguiente'}<ChevronRight className="h-4 w-4" /></button>
+    </div>
+  </div>;
 }
 
 function isMaskLibraryActivity(kind: string, id: string) {
