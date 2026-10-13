@@ -16,6 +16,7 @@ const navigation = [
   { href: '/admin/cartas', label: 'Cartas', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/eventos', label: 'Eventos y ambientes', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/mascaras', label: 'Máscaras descargables', roles: ['owner', 'admin', 'editor'] },
+  { href: '/admin/recursos-imprimibles', label: 'PDF de eventos', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/proximo-episodio', label: 'Próximo episodio', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/youtube', label: 'Canal de YouTube', roles: ['owner', 'admin', 'editor'] },
   { href: '/admin/forms', label: 'Formularios', roles: ['owner', 'admin'] },

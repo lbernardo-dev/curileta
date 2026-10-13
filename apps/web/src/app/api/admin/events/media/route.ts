@@ -33,7 +33,8 @@ export async function POST(request: Request) {
   const type = typeof contentType === 'string' && Object.prototype.hasOwnProperty.call(uploadTypes, contentType)
     ? uploadTypes[contentType as keyof typeof uploadTypes]
     : null;
-  const acceptedKind = type && (value.kind === type.kind || (type.kind === 'ambientAudio' && value.kind === 'scareSound'));
+  const acceptedKind = type && (value.kind === type.kind || (type.kind === 'ambientAudio' && value.kind === 'scareSound')
+    || (type.kind === 'activityPdf' && value.kind === 'eventPrintablePdf'));
   if (!type || !acceptedKind || typeof value.fileSize !== 'number' || !Number.isInteger(value.fileSize)
     || value.fileSize < 1 || value.fileSize > type.maxBytes) {
     return NextResponse.json({ error: 'El formato o el tamaño del archivo no está permitido para este campo.' }, { status: 400 });
@@ -41,8 +42,10 @@ export async function POST(request: Request) {
 
   try {
     const admin = createSupabaseAdminClient();
-    const path = type.kind === 'activityPdf'
-      ? `events/materials/${crypto.randomUUID()}.pdf`
+    const path = value.kind === 'eventPrintablePdf'
+      ? `events/printables/${crypto.randomUUID()}.pdf`
+      : type.kind === 'activityPdf'
+        ? `events/materials/${crypto.randomUUID()}.pdf`
       : `events/${crypto.randomUUID()}.${type.extension}`;
     const { data, error } = await admin.storage.from(bucket).createSignedUploadUrl(path);
     if (error || !data?.token) throw error || new Error('Supabase no devolvió un permiso de subida.');

@@ -6,9 +6,11 @@ import type { Locale } from '@curileta/i18n';
 import { ContentImage } from '@/components/ContentImage';
 import { CharacterMaskDownloads } from './CharacterMaskDownloads';
 import type { CharacterMask } from '@/lib/character-masks.server';
+import type { EventPrintable } from '@/lib/event-printables.server';
+import { EventPrintableDownloads } from './EventPrintableDownloads';
 import { CalendarDays, Download, Sparkles } from 'lucide-react';
 
-export function ManagedSeasonalEventSection({ event, locale, masks }: { event: SeasonalEvent; locale: Locale; masks: CharacterMask[] }) {
+export function ManagedSeasonalEventSection({ event, locale, masks, printables }: { event: SeasonalEvent; locale: Locale; masks: CharacterMask[]; printables: EventPrintable[] }) {
   const isEn = locale === 'en';
   const [revealed, setRevealed] = useState<string[]>([]);
   const name = event.name[locale] || event.name.es;
@@ -78,6 +80,7 @@ export function ManagedSeasonalEventSection({ event, locale, masks }: { event: S
             </article>;
           })}
         </div> : <p className="mt-5 rounded-xl border border-[var(--border-subtle)] p-5 text-sm text-[var(--text-secondary)]">{isEn ? 'The story is ready. Activities will appear here when they are added in the event editor.' : 'La historia está lista. Las actividades aparecerán aquí cuando se añadan desde la edición del evento.'}</p>}
+        <EventPrintableDownloads resources={printables} locale={locale} />
       </div>
     </div>
   </section>;
