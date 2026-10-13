@@ -36,6 +36,9 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
     toggleAmbientAudio,
     canPlayScareSound,
     playScareSound,
+    canToggleDecorations,
+    decorationsVisible,
+    toggleDecorations,
     scareEffectsEnabled,
     toggleScareEffects,
     canEnableMotion,
@@ -100,6 +103,9 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
             canEnableSound={canPlayAmbientAudio}
             soundEnabled={ambientAudioPlaying}
             onToggleSound={toggleAmbientAudio}
+            canToggleDecorations={canToggleDecorations}
+            decorationsVisible={decorationsVisible}
+            onToggleDecorations={toggleDecorations}
             canEnableMotion={canEnableMotion}
             motionEnabled={motionEnabled}
             onToggleMotion={toggleMotion}
