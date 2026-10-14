@@ -432,6 +432,16 @@ html.dark:is([data-seasonal-theme], [data-site-base-theme]) :is(
   background-color: var(--background-elevated);
 }
 
+/* Light translucent chips need a dark surface when their seasonal text color
+   is adapted for dark mode. Preserve components that already define a dark
+   background utility of their own. */
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-white/70"], [class~="bg-white/80"],
+  [class~="bg-white/90"], [class~="bg-white/95"]
+):not([class*="dark:bg-"]) {
+  background-color: var(--background-elevated);
+}
+
 /* Brand green and gold controls follow the selected event accent. */
 html:is([data-seasonal-theme], [data-site-base-theme]) :is(
   [class~="bg-[#1c493b]"], [class~="bg-[#174438]"], [class~="bg-[#205844]"],
