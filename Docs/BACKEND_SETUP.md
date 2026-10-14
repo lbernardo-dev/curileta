@@ -1,6 +1,6 @@
 # Configuración y operación del backend de Curileta
 
-Fecha de revisión: 13 de octubre de 2026. Esta guía describe el backend basado en Supabase y el panel de administración. La referencia complementaria está en [BACKEND_TECHNICAL_REFERENCE.md](./BACKEND_TECHNICAL_REFERENCE.md).
+Fecha de revisión: 14 de octubre de 2026. Esta guía describe el backend basado en Supabase y el panel de administración. La referencia complementaria está en [BACKEND_TECHNICAL_REFERENCE.md](./BACKEND_TECHNICAL_REFERENCE.md).
 
 ## Arquitectura
 
@@ -39,7 +39,8 @@ Define solo las variables necesarias para las funciones que vayas a habilitar. L
 - YOUTUBE_API_KEY: completa metadatos al importar vídeos desde el panel.
 - RESEND_API_KEY, CONTACT_FROM_EMAIL y CONTACT_TO_EMAIL: notificaciones de formularios y avisos operativos.
 - `PRIVACY_NOTICE_VERSION` está obsoleta: el servidor fija la versión del aviso en código junto al texto, para que una variable antigua no invalide la constancia.
-- CRON_SECRET: protege las rutas programadas de retención de oportunidades y limpieza multimedia. Está configurada como Secret en Vercel Production desde el 13 de octubre de 2026; su valor no se documenta. El redepliegue `5iULqPvatzNwVcD7JA4B5scXMCn` de `main` (`bb65e31`) terminó Ready en `www.curileta.com`. La primera ejecución posterior al cambio aún debe comprobarse en logs (retención diaria a las 03:30 UTC; limpieza multimedia los domingos a las 04:00 UTC). No fuerces manualmente la retención: puede enviar un aviso agregado y programar borrados 30 días después de la aceptación de Resend. La limpieza de consultas cerradas es independiente: `pg_cron` la ejecuta a las 03:00 UTC y las tres ejecuciones recientes terminaron correctamente.
+- CRON_SECRET: protege las rutas programadas de retención de oportunidades y limpieza multimedia. Se comprobó como Secret en Vercel Production el 13 de octubre de 2026; su valor no se documenta. El panel de Vercel confirma Cron Jobs habilitado con `/api/cron/lead-retention` diario a las 03:30 UTC y `/api/cron/site-media-cleanup` los domingos a las 04:00 UTC, según `apps/web/vercel.json`. El proyecto Hobby ofrece una ventana flexible de una hora y solo permite consultar la última hora de logs. La consulta realizada el 14 de octubre no mostró registros recientes de retención, pero no cubría toda su ventana; la primera ejecución programada permanece sin verificar. No la fuerces manualmente: si hay oportunidades vencidas, puede enviar un aviso agregado y programar su eliminación 30 días después del envío confirmado por Resend. La limpieza multimedia siguiente está prevista para el 18 de octubre de 2026 a las 04:00 UTC. La purga independiente de consultas cerradas en `pg_cron` corre a las 03:00 UTC y sus tres ejecuciones previas terminaron correctamente.
+- SANITY_AUTH_TOKEN (GitHub Actions): credencial opcional para publicar el Studio alojado; no se usa en `/admin` ni en las escrituras editoriales actuales de Supabase. El workflow `.github/workflows/deploy-studio.yml` conserva la compilación como requisito y omite la publicación cuando falta. No es una variable de entorno de Vercel.
 - NEXT_PUBLIC_TURNSTILE_SITE_KEY y TURNSTILE_SECRET_KEY: validación del formulario público con Turnstile.
 
 Configura las credenciales privadas en el gestor de secretos de cada entorno de servidor. No las añadas al repositorio ni a variables públicas del cliente. Los valores se guardan únicamente en el proveedor correspondiente y no en esta guía.
