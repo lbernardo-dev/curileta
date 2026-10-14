@@ -248,7 +248,7 @@ En CI confirma que todos corresponden al mismo commit. Para una vista previa com
 
 Un HTTP 503 en administración suele indicar variables privadas ausentes, tabla o migración no aplicada, o fallo de Supabase. Revisa logs del servidor sin copiar secretos ni datos personales a incidencias públicas.
 
-## 13. Límites y cobertura pendiente
+## 15. Límites y cobertura pendiente
 
 - El panel central administra los tipos listados en esta referencia; algunos tipos tienen restricciones de alta o edición por diseño del formulario.
 - Las secciones especializadas pueden depender de sus propias tablas y permisos.
@@ -260,27 +260,27 @@ Un HTTP 503 en administración suele indicar variables privadas ausentes, tabla 
 Cuando cambie un flujo, API, rol, tabla, permiso, almacenamiento, entorno, política de datos o despliegue, actualiza esta referencia y BACKEND_SETUP.md en el mismo cambio. Distingue el código existente de las migraciones aplicadas y los despliegues verificados. El README enlaza a ambas guías en Docs.
 
 
-## 15. Despliegue verificado del consentimiento de cookies
+## 16. Despliegue verificado del consentimiento de cookies
 
 El PR #26 se integró en `main` con el commit `9657b975b18ab0ce47a063ba1d393deca8a63c5b`. Vercel Production identificó el despliegue `DnXBw8GxVZgi1edCEFykxvLTAgtz` como Ready el 12 de octubre de 2026 y asignó `www.curileta.com`. Se verificaron visualmente `/es/cookies`, `/en/cookies` y `/es/privacidad`. La interfaz habla de cookies opcionales; para aceptarlas requiere una autodeclaración adulta o de tutor autorizado. La autodeclaración no es verificación de edad ni consentimiento parental verificable.
 
 La bandera `NEXT_PUBLIC_GOOGLE_ANALYTICS_ENABLED` no está configurada como habilitada en Production. Por tanto, Analytics sigue apagado y no se presenta el diálogo de elección en la landing mientras la función esté desactivada. Antes de habilitarlo para el público mixto mundial sigue pendiente la revisión legal y de controles para menores. Los chequeos de CI y vista previa del PR pasaron; TypeScript pasó para los paquetes de analítica y web. ESLint presentó dos avisos preexistentes en el editor de eventos y el reproductor de YouTube. No hubo cambio de esquema ni migración SQL.
 
-## 16. Ficha ampliada de Curileta
+## 17. Ficha ampliada de Curileta
 
 `/[locale]/personajes/curileta` tiene una experiencia específica para el personaje protagonista. El servidor toma biografía, papel, mochila, curiosidades, estadísticas, paradas, momentos narrativos, libro, episodios y amistades de los modelos públicos existentes (`Character`, `Location`, `NarrativeMilestone`, `Book` y `Video`). El encabezado de la ficha mantiene el avatar junto a nombre y papel, separado de la ilustración de cuerpo completo; el espacio superior y el margen de ancla respetan el encabezado global fijo. El pasaporte reutiliza la misma ruta de destinos; el cuaderno permite abrir y volver a sellar momentos y escoger objetos para la mochila. Esas interacciones viven solo en el estado de la página, no se envían ni guardan. La descarga de la máscara usa el endpoint público existente `/api/masks/curileta/download`; favoritos y uso compartido conservan sus integraciones existentes.
 
 Archivos principales: `apps/web/src/features/characters/CuriletaMainProfile.tsx`, `apps/web/src/components/CuriletaFieldJournal.tsx`, `apps/web/src/app/[locale]/personajes/[slug]/page.tsx` y `apps/web/src/components/CharacterPassportSpread.tsx`. No añade tablas, permisos administrativos, variables de configuración ni migraciones. La interfaz se integró en `main` mediante el PR #45 con el commit `2e320f0aa1e85a42dd348fee1e851bbb49c21aa2`. Vercel marcó como Production Ready el despliegue `9aXz8oqPNLHFpj2a5WEfckmuPkJC`, asignado a `www.curileta.com`. El 13 de octubre de 2026 se revisaron `/es/personajes/curileta` y `/en/personajes/curileta`: ambas muestran avatar, nombre, papel y ficha debajo del encabezado fijo, además del pasaporte, cuaderno, historias y amistades relacionados.
 
 
-## 17. Globo interactivo de la expedición
+## 18. Globo interactivo de la expedición
 
 `/[locale]/mundo` monta `Globe3DScene` con destinos, hitos narrativos y el orden editorial del libro. La escena Three.js muestra el atlas esférico, monumentos procedurales, paradas seleccionables, el trazado por etapas y una ruta que puede reproducirse con avance automático. En esta mejora, el globo inicia un giro ambiental lento cuando el dispositivo no solicita movimiento reducido; el giro se pausa al acercar el puntero al planeta y un arrastre manual desactiva el giro automático. El control permite reactivarlo y anuncia su estado a tecnologías de asistencia. El trayecto activo se dibuja en 6,5 segundos y una luz viajera recorre el arco. La preferencia de movimiento reducido desactiva la rotación, el viajero y el pulso de los hitos; el cambio de esa preferencia se observa mientras la página está abierta.
 
 Archivos principales: `apps/web/src/features/home/Globe3DScene.tsx`, `apps/web/src/features/home/globe/pixarEarthTexture.ts`, `apps/web/src/features/home/globe/monumentModels.ts` y `apps/web/src/app/[locale]/mundo/page.tsx`. La lista de destinos y relatos sigue usando los modelos existentes `Location` y `NarrativeMilestone`; esta mejora visual no añade edición administrativa, tablas, permisos, variables de configuración ni migraciones. El PR #47 se integró en `main` con el commit `c3fec379279e5ec9fe2e5a73f45281d84d4570f1`; Vercel confirmó Production Ready en el despliegue `EBppctxjpo3otusnqV7wy3m8oFGJ` el 13 de octubre de 2026. Se verificaron `/es/mundo` y `/en/mundo`: el globo muestra el giro ambiental activado y el control accesible ofrece pausarlo en ambos idiomas. En la vista previa, el recorrido avanzó de España a México tras completar el tramo, y se vio el punto luminoso recorriendo el arco. CI aprobó lint, typecheck, pruebas automatizadas y los builds web y de Sanity Studio. No se añadieron tablas, variables ni migraciones.
 
 
-## 18. Ficha del canal de YouTube en la página de vídeos
+## 19. Ficha del canal de YouTube en la página de vídeos
 
 La ruta pública `/[locale]/videos` presenta la identidad del canal con una jerarquía inspirada en una ficha de canal: banner panorámico en una franja independiente, perfil con avatar y metadatos debajo, y navegación de contenido para vídeos, Shorts y listas. El perfil muestra nombre, identificador, recuento real de vídeos publicados, descripción, etiquetas, enlaces de suscripción y canal. La descripción queda resumida a dos líneas con un control nativo localizado «Más» / «Mostrar menos».
 
@@ -289,17 +289,22 @@ Archivos principales: `apps/web/src/app/[locale]/videos/page.tsx` y `apps/web/sr
 El layout se integró mediante el PR #49 en el commit `a87da49740d1a236735ee085d43f5adab5a5c13b`; Production quedó Ready en el despliegue Vercel `3HhFf2d5fcZ3r5ox6jneCW3E1AaJ`. El resumen localizado se integró mediante el PR #50 en el commit `0884362494b900a1d44539becc2eb3e209c64e53`; Production quedó Ready en `AfevGg5RQPYBgbM8MSUewXVGrvxX`, asignado a `www.curileta.com`. La página española de Production se comprobó con los datos reales del CMS: banner separado, avatar debajo, nombre, `@AventurasdeCurileta`, dos vídeos, descripción resumida y expandible, etiquetas, botones de canal y pestañas de vídeos, Shorts y listas. Se abrió la descripción completa y se comprobó la navegación hacia Shorts y listas. CI #177 y Vercel Preview fueron satisfactorios; el control de descripción también se comprobó en inglés en vista previa, cuyo CMS no contiene las fichas de Production.
 
 
-## 19. Disposición de compra en las tarjetas de libros
+## 20. Disposición de compra en las tarjetas de libros
 
 Las tarjetas del libro destacado en portada y del catálogo presentan la acción de detalles y la compra de Amazon en una columna alineada. El control de mercado se muestra debajo de la compra, con el selector a todo el ancho disponible en tarjetas compactas; la tienda elegida sigue guardándose en el navegador y determina el enlace externo. Se aplica en `StoryLanding`, `BooksScene`, `/[locale]/libros` y `AmazonMarketplaceLink`. No añade datos, permisos, endpoints, variables de configuración ni migraciones. La implementación quedó integrada en el PR #53, commit `063c9ef471d835705ab0ae185536dbf13f123eec`. CI #185 (lint, comprobación de tipos, pruebas y build) y Vercel Preview concluyeron correctamente. Production quedó Ready en el despliegue `9m8Gc6yfzVLea3zbUkrZEywUgQN3`; se comprobó visualmente la disposición en `www.curileta.com/es/libros`, `www.curileta.com/en/libros` y la tarjeta destacada de la portada.
 
-## 20. Encuadres iniciales de portadas de libros
+## 21. Encuadres iniciales de portadas de libros
 
 El editor `/admin/encuadres` controla la posición horizontal y vertical y la ampliación de las portadas para las cuatro ubicaciones registradas en `IMAGE_FRAME_TARGETS`. Los valores de `home-book-cover` y `home-books-cover` colocan la ilustración en un marco panorámico con posición centrada y sin ampliación adicional, para evitar cortar la cara de Curileta y a sus compañeros. El editor permite previsualizar los formatos móvil y escritorio; ambos comparten los mismos valores de posición y ampliación. Los encuadres guardados en la base de datos prevalecen sobre estos valores iniciales y no se modifican al desplegar el código. El botón «Restaurar valores iniciales» permite aplicar el nuevo encuadre de forma explícita desde administración.
 
 Archivos principales: `apps/web/src/lib/image-frames.ts` y `apps/web/src/app/admin/(panel)/encuadres/ImageFrameEditor.tsx`. La API existente `/api/admin/image-frames` conserva sus permisos y la tabla de encuadres conserva su esquema y políticas actuales. No se añaden variables de configuración ni migraciones. El PR #55 integró el código en `main` con el commit `65c57f1bbfe7903e7f42e62160743264d1927fbc`. CI #190 aprobó lint, typecheck, pruebas y build. Vercel Preview `6xc6gvj2C19H852G9AzrHKUHB4kb` quedó Ready; Production `FrJ29urvYRu9NMTnX22uoe4cSYa6` quedó Ready y asignó `www.curileta.com`. Se comprobó visualmente `/es` en Production: el recorte centrado muestra la ilustración y las caras de los personajes en el bloque del libro. La ruta de administración redirigió al inicio de sesión en la sesión del navegador usada; la compilación confirma el editor, pero no se inspeccionaron sus controles autenticados durante este ciclo. No se modificó el esquema ni se requirió migración. Los encuadres existentes siguen prevaleciendo; para sustituir uno guardado por el nuevo valor inicial, se puede usar «Restaurar valores iniciales» desde `/admin/encuadres`.
 
 
-## 21. Publicación del Sanity Studio opcional
+## 22. Publicación del Sanity Studio opcional
 
 `apps/studio` conserva su build editorial, pero no es una dependencia de escritura de `/admin`: el panel actual guarda el contenido editorial en Supabase. El workflow `.github/workflows/deploy-studio.yml` compila el Studio cuando cambian sus fuentes, el CMS compartido, los manifiestos de paquetes o el propio workflow. La publicación alojada en Sanity requiere el Secret de GitHub Actions `SANITY_AUTH_TOKEN`. En este cambio, la compilación sigue siendo obligatoria; si el Secret no está disponible, la publicación se omite con un aviso y el job no bloquea el resto de CI. La ausencia del Secret se comprobó en la ejecución del workflow para el commit `614ee1419294b79f32129f6eeac88b0d7da2d8dd`: el build del Studio concluyó correctamente y falló únicamente la comprobación previa a publicar. El ajuste del comportamiento está incluido en esta rama de revisión y aún no debe considerarse desplegado hasta que el PR se integre y se ejecute en `main`. No cambia la API, Supabase, las migraciones ni las credenciales de runtime; `SANITY_AUTH_TOKEN` es una credencial independiente, exclusiva de GitHub Actions.
+
+
+## 23. Alertas de dependencias
+
+El 14 de octubre de 2026 se habilitaron Dependabot alerts en la configuración del repositorio GitHub. GitHub activó también el gráfico de dependencias como requisito. Las actualizaciones de seguridad automáticas permanecen deshabilitadas; esta preferencia no autoriza ni integra cambios de paquetes automáticamente. El primer análisis encontró nueve alertas abiertas en `package-lock.json`: cinco advisories de `js-yaml` y una alerta cada una para `braces`, `sprintf-js`, `uuid` y `postcss-selector-parser`. Las alertas deben resolverse con cambios de dependencia compatibles, CI aprobado y comprobación del despliegue cuando afecten al runtime. No se deben cerrar ni descartar solo para limpiar el contador.
