@@ -8,6 +8,7 @@ on:
       - 'packages/cms/**'
       - 'package.json'
       - 'package-lock.json'
+      - '.github/workflows/deploy-studio.yml'
   workflow_dispatch:
 
 concurrency:
@@ -51,17 +52,21 @@ jobs:
           SANITY_STUDIO_PROJECT_ID: l71yzb5e
           SANITY_STUDIO_DATASET: production
 
-      - name: Check deployment credential
+      - name: Detect optional Studio deployment credential
+        id: studio_deploy
         shell: bash
         env:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
         run: |
-          if [[ -z "$SANITY_AUTH_TOKEN" ]]; then
-            echo "::error title=Studio deployment blocked::Add the SANITY_AUTH_TOKEN GitHub Actions secret before deploying."
-            exit 1
+          if [[ -n "$SANITY_AUTH_TOKEN" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Hosted Studio publish skipped::SANITY_AUTH_TOKEN is not configured; the Studio build succeeded."
           fi
 
       - name: Deploy hosted Studio
+        if: steps.studio_deploy.outputs.available == 'true'
         run: npm exec --workspace=apps/studio -- sanity deploy --yes
         env:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
