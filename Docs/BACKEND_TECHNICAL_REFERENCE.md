@@ -248,7 +248,7 @@ En CI confirma que todos corresponden al mismo commit. Para una vista previa com
 
 Un HTTP 503 en administración suele indicar variables privadas ausentes, tabla o migración no aplicada, o fallo de Supabase. Revisa logs del servidor sin copiar secretos ni datos personales a incidencias públicas.
 
-## 15. Límites y cobertura pendiente
+## 14. Límites y cobertura pendiente
 
 - El panel central administra los tipos listados en esta referencia; algunos tipos tienen restricciones de alta o edición por diseño del formulario.
 - Las secciones especializadas pueden depender de sus propias tablas y permisos.
