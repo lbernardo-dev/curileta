@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient, isSupabaseConfigured } from '@/lib/supabase/server';
 
 export const CHARACTER_MASKS_BUCKET = 'curileta-site-media';
 
@@ -17,6 +17,39 @@ const staticAssets = {
 } as const;
 
 export type CharacterMaskLocaleText = { es: string; en: string };
+
+const PREVIEW_CHARACTER_MASKS: CharacterMask[] = [
+  {
+    id: 'preview-curileta-mask-v1', slug: 'curileta', characterSlug: 'curileta',
+    title: { es: 'Máscara de Curileta', en: 'Curileta mask' },
+    description: {
+      es: 'Recorta la silueta y los ojos para acompañar a Curileta en una nueva aventura.',
+      en: 'Cut out the shape and eye holes to join Curileta on a new adventure.',
+    },
+    previewImageUrl: '/images/events/masks/curileta-mask-v1.png',
+    previewImagePath: 'static:character-mask:curileta-preview-v1',
+    printablePdfUrl: '/files/events/masks/curileta-mask-v1.pdf',
+    printablePdfPath: 'static:character-mask:curileta-printable-v1',
+    sortOrder: 1, isPublished: true, createdAt: '', updatedAt: '',
+  },
+  {
+    id: 'preview-pompon-mask-v1', slug: 'pompon', characterSlug: 'pompon',
+    title: { es: 'Máscara de Pompón', en: 'Pompón mask' },
+    description: {
+      es: 'Recorta la silueta y las orejas para acompañar a Pompón en una nueva aventura.',
+      en: 'Cut out the shape and ears to join Pompón on a new adventure.',
+    },
+    previewImageUrl: '/images/events/masks/pompon-mask-v1.png',
+    previewImagePath: 'static:character-mask:pompon-preview-v1',
+    printablePdfUrl: '/files/events/masks/pompon-mask-v1.pdf',
+    printablePdfPath: 'static:character-mask:pompon-printable-v1',
+    sortOrder: 2, isPublished: true, createdAt: '', updatedAt: '',
+  },
+];
+
+function isPreviewCharacterMasksEnabled() {
+  return process.env.VERCEL_ENV === 'preview' && !isSupabaseConfigured();
+}
 
 export interface CharacterMask {
   id: string;
@@ -69,6 +102,7 @@ export function mapCharacterMask(row: CharacterMaskRow): CharacterMask {
 }
 
 export async function getPublishedCharacterMasks(): Promise<CharacterMask[]> {
+  if (isPreviewCharacterMasksEnabled()) return PREVIEW_CHARACTER_MASKS;
   try {
     const { data, error } = await createSupabaseAdminClient()
       .from('character_masks')
@@ -84,6 +118,7 @@ export async function getPublishedCharacterMasks(): Promise<CharacterMask[]> {
 }
 
 export async function getPublishedCharacterMask(slug: string): Promise<CharacterMask | null> {
+  if (isPreviewCharacterMasksEnabled()) return PREVIEW_CHARACTER_MASKS.find((mask) => mask.slug === slug) || null;
   try {
     const { data, error } = await createSupabaseAdminClient()
       .from('character_masks')

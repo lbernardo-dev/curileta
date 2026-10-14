@@ -20,7 +20,8 @@ import type {
 } from '@curileta/cms';
 import { INITIAL_SETTINGS } from '@curileta/cms';
 import { DatabaseCMSProvider } from '@curileta/cms/server';
-import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient, isSupabaseConfigured } from '@/lib/supabase/server';
+import { PREVIEW_HALLOWEEN_EVENT } from './preview-seasonal-event';
 
 type ContentType =
   | 'character'
@@ -152,6 +153,9 @@ export class SupabaseCMSProvider implements CMSProvider {
   }
 
   async getSeasonalEvents(locale?: string): Promise<SeasonalEvent[]> {
+    if (process.env.VERCEL_ENV === 'preview' && !isSupabaseConfigured()) {
+      return [PREVIEW_HALLOWEEN_EVENT];
+    }
     return (await this.list<SeasonalEvent>('seasonalEvent')) ?? this.fallback.getSeasonalEvents(locale);
   }
 
