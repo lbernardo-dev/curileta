@@ -383,7 +383,7 @@ const TiltCharacterCard: React.FC<{
       onClick={onSelect}
       role="group"
       aria-label={copy(locale, `Pasaporte de ${characterName(character, locale)}`, `${characterName(character, locale)} passport`)}
-      className={`group relative rounded-[1.65rem] p-4 sm:p-5 cursor-pointer border transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col justify-between ${
+      className={`group relative rounded-[1.65rem] p-4 sm:p-5 cursor-pointer border transition-all duration-700 ease-fluid flex flex-col justify-between ${
         isSelected
           ? 'bg-[#fff9ed] dark:bg-slate-900 border-amber-400 shadow-[0_14px_36px_rgba(104,75,22,0.14)] ring-1 ring-amber-300/70 text-slate-900 dark:text-white -translate-y-1'
           : 'bg-[#fffdf8] dark:bg-slate-900/80 border-[#e8e1d5] dark:border-slate-800 hover:border-emerald-700/45 hover:bg-white dark:hover:bg-slate-900 shadow-[0_10px_30px_rgba(24,54,41,0.06)] text-slate-800 dark:text-white hover:-translate-y-1'
@@ -405,14 +405,14 @@ const TiltCharacterCard: React.FC<{
 
         {/* Avatar circular; la ilustración completa se conserva para la ficha ampliada */}
         <div
-          className={`relative mx-auto my-4 h-44 w-44 max-w-full rounded-full border-2 bg-gradient-to-tr bg-[#f5edde] p-1 shadow-[0_12px_30px_rgba(61,45,23,0.12)] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-0.5 ${theme.gradient}`}
+          className={`relative mx-auto my-4 h-44 w-44 max-w-full rounded-full border-2 bg-linear-to-tr bg-[#f5edde] p-1 shadow-[0_12px_30px_rgba(61,45,23,0.12)] transition-transform duration-700 ease-fluid group-hover:-translate-y-0.5 ${theme.gradient}`}
         >
           <div className="relative h-full w-full overflow-hidden rounded-full bg-[#f5edde]">
             <CharacterAvatarImage
               slug={character.slug}
               name={characterName(character, locale)}
               size={176}
-              className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.025]"
+              className="h-full w-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-[1.025]"
             />
             <button
               type="button"
@@ -434,7 +434,7 @@ const TiltCharacterCard: React.FC<{
           <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-emerald-800 dark:group-hover:text-amber-300 transition-colors">
             {characterName(character, locale)}
           </h3>
-          <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mt-1.5 tracking-wide line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-5">
+          <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mt-1.5 tracking-wide line-clamp-2 min-h-10 flex items-center justify-center leading-5">
             {roleText}
           </p>
           <div className="mt-2 flex justify-center">
@@ -469,7 +469,7 @@ const TiltCharacterCard: React.FC<{
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner p-0.5">
               <div
-                className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 h-full rounded-full shadow-xs"
+                className="bg-linear-to-r from-amber-500 via-amber-400 to-amber-300 h-full rounded-full shadow-2xs"
                 style={{ width: `${character.explorerStats.curiosity}%` }}
               />
             </div>
@@ -482,7 +482,7 @@ const TiltCharacterCard: React.FC<{
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner p-0.5">
               <div
-                className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 h-full rounded-full shadow-xs"
+                className="bg-linear-to-r from-emerald-500 via-teal-400 to-emerald-300 h-full rounded-full shadow-2xs"
                 style={{ width: `${character.explorerStats.courage}%` }}
               />
             </div>
@@ -497,10 +497,10 @@ const TiltCharacterCard: React.FC<{
               event.stopPropagation();
               onSelect();
             }}
-            className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider py-2.5 px-4 rounded-2xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] w-full justify-center cursor-pointer active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
+            className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider py-2.5 px-4 rounded-2xl transition-all duration-700 ease-fluid w-full justify-center cursor-pointer active:scale-[0.98] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
               isSelected
-                ? 'bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 font-black border-b-4 border-amber-600 shadow-[0_4px_12px_rgba(245,158,11,0.4)]'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b-4 border-slate-300 dark:border-slate-700 group-hover:bg-gradient-to-b group-hover:from-amber-300 group-hover:via-amber-400 group-hover:to-amber-500 group-hover:text-slate-950 group-hover:border-amber-600 shadow-sm'
+                ? 'bg-linear-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 font-black border-b-4 border-amber-600 shadow-[0_4px_12px_rgba(245,158,11,0.4)]'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b-4 border-slate-300 dark:border-slate-700 group-hover:bg-linear-to-b group-hover:from-amber-300 group-hover:via-amber-400 group-hover:to-amber-500 group-hover:text-slate-950 group-hover:border-amber-600 shadow-xs'
             }`}
           >
             <span>{isSelected ? copy(locale, '★ Pasaporte abierto', '★ Passport open') : copy(locale, 'Abrir pasaporte', 'Open passport')}</span>
@@ -588,7 +588,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   return (
     <section id="escena-personajes" className="relative z-10 py-24 sm:py-28 bg-[#f7f5ed] dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Línea divisoria superior */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-700/45 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-emerald-700/45 to-transparent" />
 
       {/* Partículas de ambiente */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.08),transparent)] pointer-events-none" />
@@ -603,7 +603,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
             </div>
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
               {copy(locale, 'La alianza de los', 'Meet the')}<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
                 {copy(locale, '19 grandes exploradores.', '19 great explorers.')}
               </span>
             </h2>
@@ -634,7 +634,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                   isCatActive
                     ? 'bg-emerald-500 text-white dark:bg-emerald-400 dark:text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/20 scale-105 font-black'
-                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:text-slate-900 dark:hover:text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:text-slate-900 dark:hover:text-white shadow-xs'
                 }`}
               >
                 {cat.label}
@@ -660,7 +660,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         {/* Panel Detallado: Ficha de Expedicionario / Pasaporte Oficial */}
         <div
           ref={passportPanelRef}
-          className="scroll-mt-24 bg-[#fffdf8] dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-[#e7e1d5] dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_18px_55px_rgba(24,54,41,0.09)] relative overflow-hidden"
+          className="scroll-mt-24 bg-[#fffdf8] dark:bg-linear-to-b dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-[#e7e1d5] dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_18px_55px_rgba(24,54,41,0.09)] relative overflow-hidden"
         >
           {/* Sello de agua del Pasaporte */}
           <div className="absolute right-6 -bottom-10 opacity-5 pointer-events-none font-black text-9xl text-amber-500 select-none">
@@ -670,7 +670,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Retrato y datos principales */}
             <div className="lg:col-span-4 text-center lg:text-left flex flex-col items-center lg:items-start">
-              <div className="relative w-44 sm:w-52 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-amber-300 via-emerald-300 to-emerald-500 shadow-lg mb-4 group" style={{ aspectRatio: getCharacterImageAspectRatio(selectedCharacter.mainImage?.url || getCharacterImagePath(selectedCharacter.slug), selectedCharacter.mainImage?.aspectRatio) }}>
+              <div className="relative w-44 sm:w-52 rounded-3xl overflow-hidden p-1 bg-linear-to-tr from-amber-300 via-emerald-300 to-emerald-500 shadow-lg mb-4 group" style={{ aspectRatio: getCharacterImageAspectRatio(selectedCharacter.mainImage?.url || getCharacterImagePath(selectedCharacter.slug), selectedCharacter.mainImage?.aspectRatio) }}>
                 <CharacterAvatar
                   key={selectedCharacter.id}
                   character={selectedCharacter}
@@ -688,7 +688,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               </div>
 
               <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start mb-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider shadow-sm">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider shadow-xs">
                   ★ {copy(locale, 'PASAPORTE', 'PASSPORT')}: {selectedCharacter.id.toUpperCase()}
                 </span>
                 <span
@@ -729,7 +729,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                 {selectedCharacter.personality?.map((trait) => (
                   <span
                     key={trait}
-                    className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-xs"
                   >
                     ✨ {characterTrait(trait, locale)}
                   </span>
@@ -850,7 +850,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                           key={idx}
                           className="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-950/80 border border-amber-200 dark:border-amber-400/30 flex items-start gap-3 shadow-md"
                         >
-                          <Briefcase className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                          <Briefcase className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                             {item[locale] || item.es}
                           </span>
@@ -872,7 +872,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
                         key={idx}
                         className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-slate-950/80 border border-emerald-200 dark:border-emerald-500/30 flex items-start gap-3"
                       >
-                        <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                           {fact[locale] || fact.es}
                         </span>
@@ -922,7 +922,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           onClick={() => setLightboxCharacter(null)}
         >
           <div
-            className="relative max-w-2xl w-full bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
+            className="relative max-w-2xl w-full bg-white dark:bg-linear-to-b dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Botón cerrar */}
@@ -943,7 +943,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
 
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
               {/* Imagen oficial con marco de expedición */}
-              <div className="relative w-56 sm:w-64 rounded-3xl p-1 bg-gradient-to-tr from-amber-300 via-emerald-300 to-emerald-500 shadow-xl shrink-0" style={{ aspectRatio: getCharacterImageAspectRatio(lightboxCharacter.mainImage?.url || getCharacterImagePath(lightboxCharacter.slug), lightboxCharacter.mainImage?.aspectRatio) }}>
+              <div className="relative w-56 sm:w-64 rounded-3xl p-1 bg-linear-to-tr from-amber-300 via-emerald-300 to-emerald-500 shadow-xl shrink-0" style={{ aspectRatio: getCharacterImageAspectRatio(lightboxCharacter.mainImage?.url || getCharacterImagePath(lightboxCharacter.slug), lightboxCharacter.mainImage?.aspectRatio) }}>
                 <div className="w-full h-full rounded-[22px] overflow-hidden bg-[#f5edde] flex items-center justify-center">
                   <CharacterAvatar
                     character={lightboxCharacter}

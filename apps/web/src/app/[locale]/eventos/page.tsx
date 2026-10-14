@@ -34,16 +34,16 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
       icon={<CalendarDays className="h-4 w-4" />}
     >
       {event ? (
-        <SitePageCard className="overflow-hidden !p-0">
-          <div className="relative overflow-hidden bg-[var(--background-secondary)]">
+        <SitePageCard className="overflow-hidden p-0!">
+          <div className="relative overflow-hidden bg-(--background-secondary)">
             <div className="absolute inset-0 opacity-20" style={{ background: 'radial-gradient(ellipse at 78% 16%, ' + event.ambientDecorations.glowColor + ', transparent 50%)' }} />
             <div className={`relative grid gap-8 p-6 sm:p-10 ${specialChapter ? 'md:grid-cols-[1.2fr_0.8fr] md:items-center' : ''}`}>
               <div>
-                <p className="inline-flex items-center gap-2 rounded-full bg-[var(--background-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--seasonal-accent-strong)] ring-1 ring-[var(--border-subtle)]">
+                <p className="inline-flex items-center gap-2 rounded-full bg-(--background-primary) px-3 py-1.5 text-xs font-semibold text-(--seasonal-accent-strong) ring-1 ring-(--border-subtle)">
                   <Sparkles className="h-3.5 w-3.5" />{isEn ? 'Now in the Curileta world' : 'Ahora en el mundo de Curileta'}
                 </p>
-                <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-4xl">{event.name[locale] || event.name.es}</h2>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">{event.tagline[locale] || event.tagline.es}</p>
+                <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-(--text-primary) sm:text-4xl">{event.name[locale] || event.name.es}</h2>
+                <p className="mt-3 max-w-2xl text-base leading-7 text-(--text-secondary)">{event.tagline[locale] || event.tagline.es}</p>
                 <ShareActions
                   contentType="seasonalEvent"
                   contentSlug={event.slug}
@@ -51,16 +51,16 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
                   description={event.tagline[locale] || event.tagline.es}
                   locale={locale}
                 />
-                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-secondary)]">
-                  <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{formatDate(event.startDate)} – {formatDate(event.endDate)}</span>
-                  {specialChapter && <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-[var(--seasonal-accent-strong)]" />{specialChapter.status === 'published' ? (isEn ? 'Available now' : 'Disponible') : (isEn ? 'Coming soon' : 'Próximamente')}</span>}
+                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-(--text-secondary)">
+                  <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-(--seasonal-accent-strong)" />{formatDate(event.startDate)} – {formatDate(event.endDate)}</span>
+                  {specialChapter && <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-(--seasonal-accent-strong)" />{specialChapter.status === 'published' ? (isEn ? 'Available now' : 'Disponible') : (isEn ? 'Coming soon' : 'Próximamente')}</span>}
                 </div>
               </div>
-              {specialChapter && <div className="rounded-[1.5rem] border border-[var(--border-subtle)] bg-[var(--background-primary)] p-6 shadow-sm">
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--seasonal-accent-strong)]">{isEn ? 'Seasonal chapter' : 'Capítulo de temporada'}</span>
+              {specialChapter && <div className="rounded-3xl border border-(--border-subtle) bg-(--background-primary) p-6 shadow-xs">
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-(--seasonal-accent-strong)">{isEn ? 'Seasonal chapter' : 'Capítulo de temporada'}</span>
                 <h3 className="mt-3 font-display text-2xl font-semibold">{specialChapter.title[locale] || specialChapter.title.es}</h3>
-                <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{specialChapter.synopsis[locale] || specialChapter.synopsis.es}</p>
-                <p className="mt-4 text-sm font-medium text-[var(--text-secondary)]">{isEn ? 'Release date' : 'Fecha prevista'}: {formatDate(specialChapter.releaseDate)}</p>
+                <p className="mt-3 text-sm leading-6 text-(--text-secondary)">{specialChapter.synopsis[locale] || specialChapter.synopsis.es}</p>
+                <p className="mt-4 text-sm font-medium text-(--text-secondary)">{isEn ? 'Release date' : 'Fecha prevista'}: {formatDate(specialChapter.releaseDate)}</p>
                 <Link href={specialChapter.status === 'published' && specialChapter.youtubeId ? '/' + locale + '/videos' : '/' + locale + (event.themeKey === 'halloween' ? '#evento-halloween' : '')} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]">
                   {specialChapter.status === 'published' && specialChapter.youtubeId
                     ? (isEn ? 'Watch the special' : 'Ver el especial')
@@ -73,9 +73,9 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
         </SitePageCard>
       ) : (
         <SitePageCard className="py-12 text-center sm:py-16">
-          <CalendarDays className="mx-auto h-10 w-10 text-[var(--seasonal-accent-strong)]" />
+          <CalendarDays className="mx-auto h-10 w-10 text-(--seasonal-accent-strong)" />
           <h2 className="mt-4 font-display text-2xl font-semibold">{isEn ? 'No public events announced yet' : 'Todavía no hay eventos públicos anunciados'}</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--text-secondary)]">
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-(--text-secondary)">
             {isEn ? 'When a seasonal story or public event is confirmed, it will appear here.' : 'Cuando se confirme una historia de temporada o un encuentro público, aparecerá aquí.'}
           </p>
         </SitePageCard>
@@ -83,9 +83,9 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
       <SitePageCard className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="font-display text-xl font-semibold">{isEn ? 'Invite Curileta to a school or library' : 'Invita a Curileta a tu centro o biblioteca'}</h2>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">{isEn ? 'Ask about a possible reading, workshop or collaboration.' : 'Consulta la posibilidad de organizar una lectura, taller o colaboración.'}</p>
+          <p className="mt-2 text-sm text-(--text-secondary)">{isEn ? 'Ask about a possible reading, workshop or collaboration.' : 'Consulta la posibilidad de organizar una lectura, taller o colaboración.'}</p>
         </div>
-        <Link href={'/' + locale + '/contacto'} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-[var(--background-secondary)] px-5 py-3 text-sm font-semibold text-[var(--text-primary)] ring-1 ring-[var(--border-subtle)] transition hover:text-[var(--seasonal-accent-strong)]">
+        <Link href={'/' + locale + '/contacto'} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-(--background-secondary) px-5 py-3 text-sm font-semibold text-(--text-primary) ring-1 ring-(--border-subtle) transition hover:text-(--seasonal-accent-strong)">
           <Mail className="h-4 w-4" />{isEn ? 'Make an enquiry' : 'Hacer una consulta'}
         </Link>
       </SitePageCard>

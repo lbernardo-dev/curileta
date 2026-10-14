@@ -115,10 +115,10 @@ export function UpcomingEpisodeEditor() {
                     type="button"
                     onClick={() => toggle(character.slug)}
                     aria-pressed={active}
-                    className={`group w-48 shrink-0 snap-start overflow-hidden rounded-2xl border text-left transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${active ? 'border-emerald-700 bg-emerald-50 shadow-md dark:border-emerald-400 dark:bg-emerald-950/30' : 'border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]'}`}
+                    className={`group w-48 shrink-0 snap-start overflow-hidden rounded-2xl border text-left transition-all duration-700 ease-fluid hover:-translate-y-1 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 ${active ? 'border-emerald-700 bg-emerald-50 shadow-md dark:border-emerald-400 dark:bg-emerald-950/30' : 'border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]'}`}
                   >
-                    <span className="relative block aspect-[4/3] overflow-hidden bg-[#efe7d5]">
-                      <Image src={character.image} alt="" fill sizes="192px" className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]" />
+                    <span className="relative block aspect-4/3 overflow-hidden bg-[#efe7d5]">
+                      <Image src={character.image} alt="" fill sizes="192px" className="object-cover transition-transform duration-700 ease-fluid group-hover:scale-[1.04]" />
                       <span className={`absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border ${active ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-white/80 bg-white/90 text-transparent'}`}>
                         {active && <span aria-hidden="true" className="text-sm font-bold">✓</span>}
                       </span>
@@ -139,7 +139,7 @@ export function UpcomingEpisodeEditor() {
               type="button"
               onClick={save}
               disabled={!hasChanges || saving}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600"
             >
               {saving ? 'Guardando…' : saved ? 'Lista guardada' : 'Guardar selección'}
             </button>

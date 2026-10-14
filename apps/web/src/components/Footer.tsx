@@ -19,7 +19,7 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12">
         <div className="grid gap-10 border-b border-[#e2e7dd] pb-10 dark:border-slate-800 md:grid-cols-[1.25fr_0.75fr_0.8fr]">
           <div>
-            <Link href={`/${locale}`} className="inline-flex items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600">
+            <Link href={`/${locale}`} className="inline-flex items-center gap-3 rounded-lg focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-emerald-600">
               <NauticalCompassMark />
               <span className="font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Curileta<span className="text-amber-500">.</span></span>
             </Link>
@@ -77,7 +77,7 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
               <button
                 type="button"
                 onClick={openAnalyticsPreferences}
-                className={`${linkClass} rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300`}
+                className={`${linkClass} rounded-xs focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300`}
               >
                 {isEn ? 'Cookie preferences' : 'Preferencias de cookies'}
               </button>

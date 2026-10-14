@@ -68,7 +68,7 @@ export const FriendsScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   const [activeFriend, setActiveFriend] = useState<string>('curileta');
 
   return (
-    <section id="escena-amigos" className="py-28 bg-gradient-to-b from-slate-950 via-emerald-950 to-slate-950 text-white overflow-hidden">
+    <section id="escena-amigos" className="py-28 bg-linear-to-b from-slate-950 via-emerald-950 to-slate-950 text-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4">
@@ -100,8 +100,8 @@ export const FriendsScene: React.FC<{ locale: Locale }> = ({ locale }) => {
               >
                 <div>
                   {/* Avatar Icon Circle */}
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${friend.color} p-0.5 shadow-lg mb-6 flex items-center justify-center`}>
-                    <div className="w-full h-full rounded-[14px] bg-slate-950/40 backdrop-blur-sm flex items-center justify-center">
+                  <div className={`w-16 h-16 rounded-2xl bg-linear-to-tr ${friend.color} p-0.5 shadow-lg mb-6 flex items-center justify-center`}>
+                    <div className="w-full h-full rounded-[14px] bg-slate-950/40 backdrop-blur-xs flex items-center justify-center">
                       {friend.icon}
                     </div>
                   </div>

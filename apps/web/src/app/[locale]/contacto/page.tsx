@@ -27,7 +27,7 @@ interface ContactPageProps {
 }
 
 function inputClasses() {
-  return 'min-h-12 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-base text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] placeholder:text-slate-500 hover:border-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818] dark:text-white';
+  return 'min-h-12 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-base text-slate-900 outline-hidden transition-all duration-700 ease-fluid placeholder:text-slate-500 hover:border-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818] dark:text-white';
 }
 
 function fieldInitialValue(field: ContactFormField) {
@@ -182,7 +182,7 @@ export default function ContactPage({ params }: ContactPageProps) {
 
     if (field.type === 'checkbox') {
       return (
-        <label key={field.key} htmlFor={id} className="flex cursor-pointer items-start gap-3 rounded-lg p-2 text-sm text-slate-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 focus-within:ring-2 focus-within:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">
+        <label key={field.key} htmlFor={id} className="flex cursor-pointer items-start gap-3 rounded-lg p-2 text-sm text-slate-700 transition-all duration-700 ease-fluid hover:bg-emerald-50 focus-within:ring-2 focus-within:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">
           <input
             id={id}
             name={field.key}
@@ -195,7 +195,7 @@ export default function ContactPage({ params }: ContactPageProps) {
           <span>
             {label}{requiredMark}
             {(field.system === 'privacyAcknowledgement' || field.system === 'privacyConsent') && (
-              <Link href={`/${locale}/privacidad`} className="ml-2 inline-block font-semibold text-emerald-800 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-300">
+              <Link href={`/${locale}/privacidad`} className="ml-2 inline-block font-semibold text-emerald-800 underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-300">
                 {isEn ? 'Read the privacy policy' : 'Leer la política de privacidad'}
               </Link>
             )}
@@ -351,7 +351,7 @@ export default function ContactPage({ params }: ContactPageProps) {
                 <button
                   type="submit"
                   disabled={loading || loadingConfig || Boolean(turnstileSiteKey && !turnstileToken)}
-                  className="min-h-12 w-full rounded-lg bg-emerald-800 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1f1f1f]"
+                  className="min-h-12 w-full rounded-lg bg-emerald-800 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1f1f1f]"
                 >
                   {loading ? (isEn ? 'Sending…' : 'Enviando…') : (isEn ? 'Send message' : 'Enviar mensaje')}
                 </button>

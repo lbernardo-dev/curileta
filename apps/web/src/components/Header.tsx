@@ -50,7 +50,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
           <Link
             href={`/${locale}`}
             onClick={handleBrandClick}
-            className="group flex items-center gap-2.5 rounded-xl p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+            className="group flex items-center gap-2.5 rounded-xl p-1 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
           >
             <NauticalCompassMark />
             <div className="flex flex-col">
@@ -83,7 +83,7 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
             <LocaleSwitcher currentLocale={locale} />
             <Link
               href={`/${locale}/libros/las-aventuras-de-curileta`}
-              className="inline-flex h-9 items-center gap-2 rounded-full bg-[#1c493b] px-4 text-xs font-semibold text-white shadow-sm transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e]"
+              className="inline-flex h-9 items-center gap-2 rounded-full bg-[#1c493b] px-4 text-xs font-semibold text-white shadow-xs transition-all duration-700 ease-fluid hover:bg-[#27634e]"
             >
               <BookOpen className="h-4 w-4 text-amber-300" />
               <span>{isEn ? 'The book' : 'El libro'}</span>
@@ -152,11 +152,11 @@ function SeasonalHeaderTrim() {
   const decorations = activeEvent?.effects?.decorations || [];
   if (!isSeasonalActive || !activeEvent?.effects?.decorationsEnabled) return null;
   if (activeEvent.themeKey === 'christmas' && decorations.includes('garlands')) {
-    return <svg aria-hidden="true" viewBox="0 0 1440 44" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 top-0 z-[42] h-7 w-full overflow-visible text-emerald-800 dark:text-emerald-300">
+    return <svg aria-hidden="true" viewBox="0 0 1440 44" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 top-0 z-42 h-7 w-full overflow-visible text-emerald-800 dark:text-emerald-300">
       <path d="M0 2 C180 42 340 42 520 2 S860 42 1040 2 S1260 22 1440 2" fill="none" stroke="currentColor" strokeWidth="3" />
       {[70, 190, 310, 430, 550, 670, 790, 910, 1030, 1150, 1270, 1390].map((x, index) => <circle key={x} cx={x} cy={index % 2 === 0 ? 17 : 25} r="5" fill={index % 3 === 0 ? '#ef6551' : index % 3 === 1 ? '#f1c453' : '#4dba89'} stroke="white" strokeWidth="1" />)}
     </svg>;
   }
-  if (activeEvent.themeKey === 'halloween' && (decorations.includes('bats') || decorations.includes('cornerWebs'))) return <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1 z-[42] -translate-x-1/2 text-lg opacity-80">🦇　🕸️　🦇</span>;
+  if (activeEvent.themeKey === 'halloween' && (decorations.includes('bats') || decorations.includes('cornerWebs'))) return <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1 z-42 -translate-x-1/2 text-lg opacity-80">🦇　🕸️　🦇</span>;
   return null;
 }

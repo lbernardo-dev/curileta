@@ -143,11 +143,11 @@ export function FormsManager() {
                 <h3 className="text-sm font-semibold">{locale === 'es' ? 'Textos en español' : 'Textos en inglés'}</h3>
                 <label className="block space-y-2 text-sm font-semibold">
                   <span>Título</span>
-                  <input value={formText(form.title, locale)} onChange={(event) => updateForm(form.id, (current) => ({ ...current, title: { ...current.title, [locale]: event.target.value } }))} maxLength={120} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
+                  <input value={formText(form.title, locale)} onChange={(event) => updateForm(form.id, (current) => ({ ...current, title: { ...current.title, [locale]: event.target.value } }))} maxLength={120} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
                 </label>
                 <label className="block space-y-2 text-sm font-semibold">
                   <span>Descripción</span>
-                  <textarea value={formText(form.description, locale)} onChange={(event) => updateForm(form.id, (current) => ({ ...current, description: { ...current.description, [locale]: event.target.value } }))} maxLength={600} rows={3} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
+                  <textarea value={formText(form.description, locale)} onChange={(event) => updateForm(form.id, (current) => ({ ...current, description: { ...current.description, [locale]: event.target.value } }))} maxLength={600} rows={3} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
                 </label>
               </div>
             ))}
@@ -159,7 +159,7 @@ export function FormsManager() {
                 <h3 className="text-lg font-bold">Campos</h3>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Los campos básicos de nombre, correo y mensaje son obligatorios.</p>
               </div>
-              <button type="button" onClick={() => addField(form.id)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]">Añadir campo</button>
+              <button type="button" onClick={() => addField(form.id)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]">Añadir campo</button>
             </div>
 
             <div className="space-y-3">
@@ -169,7 +169,7 @@ export function FormsManager() {
                     {(['es', 'en'] as const).map((locale) => (
                       <label key={locale} className="block space-y-2 text-sm font-semibold">
                         <span>{locale === 'es' ? 'Etiqueta en español' : 'Etiqueta en inglés'}</span>
-                        <input value={formText(field.label, locale)} onChange={(event) => updateField(form.id, field.key, (current) => ({ ...current, label: { ...current.label, [locale]: event.target.value } }))} maxLength={120} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
+                        <input value={formText(field.label, locale)} onChange={(event) => updateField(form.id, field.key, (current) => ({ ...current, label: { ...current.label, [locale]: event.target.value } }))} maxLength={120} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
                       </label>
                     ))}
                   </div>
@@ -185,7 +185,7 @@ export function FormsManager() {
                             ? current.options?.length ? current.options : [{ value: 'option_1', label: { es: 'Opción 1', en: 'Option 1' } }]
                             : current.options,
                         };
-                      })} disabled={Boolean(field.system)} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60 dark:border-[#313131] dark:bg-[#181818]">
+                      })} disabled={Boolean(field.system)} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60 dark:border-[#313131] dark:bg-[#181818]">
                         <option value="text">Texto</option>
                         <option value="email">Correo</option>
                         <option value="textarea">Mensaje largo</option>
@@ -201,7 +201,7 @@ export function FormsManager() {
                           onChange={(event) => updateField(form.id, field.key, (current) => ({ ...current, options: parseOptionLines(event.target.value) }))}
                           rows={4}
                           aria-describedby={`options-help-${field.key}`}
-                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]"
+                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]"
                         />
                         <span id={`options-help-${field.key}`} className="block text-xs font-normal text-slate-600 dark:text-slate-300">Una opción por línea: valor | español | inglés.</span>
                       </label>
@@ -214,7 +214,7 @@ export function FormsManager() {
                   {field.system ? (
                     <span className="text-xs text-slate-600 dark:text-slate-300">Campo esencial</span>
                   ) : (
-                    <button type="button" onClick={() => removeField(form.id, field.key)} className="min-h-12 rounded-lg px-3 py-2 text-sm font-semibold text-red-800 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700 dark:text-red-200 dark:hover:bg-[#272727]">Quitar campo</button>
+                    <button type="button" onClick={() => removeField(form.id, field.key)} className="min-h-12 rounded-lg px-3 py-2 text-sm font-semibold text-red-800 transition-all duration-700 ease-fluid hover:bg-red-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-700 dark:text-red-200 dark:hover:bg-[#272727]">Quitar campo</button>
                   )}
                 </article>
               ))}
@@ -224,7 +224,7 @@ export function FormsManager() {
           <div className="grid grid-cols-1 gap-4 border-t border-slate-200 pt-6 dark:border-[#313131] sm:grid-cols-2">
             <label className="block space-y-2 text-sm font-semibold">
               <span>Correo para las consultas</span>
-              <input type="email" value={form.notification_settings?.defaultTo || ''} onChange={(event) => updateForm(form.id, (current) => ({ ...current, notification_settings: { ...current.notification_settings, defaultTo: event.target.value } }))} placeholder="equipo@curileta.com" maxLength={320} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
+              <input type="email" value={form.notification_settings?.defaultTo || ''} onChange={(event) => updateForm(form.id, (current) => ({ ...current, notification_settings: { ...current.notification_settings, defaultTo: event.target.value } }))} placeholder="equipo@curileta.com" maxLength={320} className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
               <span className="block text-xs font-normal text-slate-600 dark:text-slate-300">Si queda vacío, se usa la dirección configurada en Vercel.</span>
             </label>
           </div>
@@ -242,7 +242,7 @@ export function FormsManager() {
                       value={form.notification_settings?.categoryRecipients?.[option.value] || ''}
                       onChange={(event) => updateCategoryRecipient(form.id, option.value, event.target.value)}
                       maxLength={320}
-                      className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]"
+                      className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]"
                     />
                   </label>
                 ))}
@@ -251,7 +251,7 @@ export function FormsManager() {
           ) : null}
 
           <div className="flex justify-end border-t border-slate-200 pt-6 dark:border-[#313131]">
-            <button type="button" onClick={() => saveForm(form)} disabled={saving} className="min-h-12 rounded-lg bg-emerald-800 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1f1f1f]">{saving ? 'Guardando…' : 'Guardar formulario'}</button>
+            <button type="button" onClick={() => saveForm(form)} disabled={saving} className="min-h-12 rounded-lg bg-emerald-800 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1f1f1f]">{saving ? 'Guardando…' : 'Guardar formulario'}</button>
           </div>
         </section>
       )) : (

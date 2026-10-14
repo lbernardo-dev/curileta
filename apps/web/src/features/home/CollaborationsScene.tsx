@@ -24,7 +24,7 @@ export const CollaborationsScene: React.FC<CollaborationsSceneProps> = ({ locale
   return (
     <section className="relative z-10 py-24 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950 border border-emerald-200 dark:border-slate-800 p-8 sm:p-12 lg:p-16 shadow-xl dark:shadow-2xl">
+        <div className="rounded-3xl bg-linear-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950 border border-emerald-200 dark:border-slate-800 p-8 sm:p-12 lg:p-16 shadow-xl dark:shadow-2xl">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-slate-800 text-emerald-800 dark:text-slate-300 text-xs font-bold uppercase tracking-widest mb-4">
               <Briefcase className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
@@ -47,7 +47,7 @@ export const CollaborationsScene: React.FC<CollaborationsSceneProps> = ({ locale
               const icon = iconMap[c.iconName] || <Building2 className="w-6 h-6 text-emerald-400" />;
 
               return (
-                <div key={c.id || title} className="p-6 rounded-2xl bg-white/90 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2 shadow-sm">
+                <div key={c.id || title} className="p-6 rounded-2xl bg-white/90 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2 shadow-xs">
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-slate-900 flex items-center justify-center mb-3">
                     {icon}
                   </div>
@@ -68,7 +68,7 @@ export const CollaborationsScene: React.FC<CollaborationsSceneProps> = ({ locale
             </Link>
             <Link
               href={`/${locale}/prensa`}
-              className="px-8 py-3.5 rounded-full font-bold text-sm bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 dark:border-slate-700 transition-all shadow-sm"
+              className="px-8 py-3.5 rounded-full font-bold text-sm bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 dark:border-slate-700 transition-all shadow-xs"
             >
               {isEn ? 'Request press information' : 'Solicitar información de prensa'}
             </Link>

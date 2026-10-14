@@ -62,9 +62,9 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             return (
               <article
                 key={book.id || book.slug}
-                className={`group ${books.length === 1 ? 'mx-auto w-full max-w-5xl lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]' : 'flex flex-col'} h-full min-w-0 overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]`}
+                className={`group ${books.length === 1 ? 'mx-auto w-full max-w-5xl lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]' : 'flex flex-col'} h-full min-w-0 overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-fluid hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]`}
               >
-                <div className={`relative overflow-hidden ${books.length === 1 ? 'aspect-[5/4] lg:aspect-auto lg:min-h-[30rem]' : 'aspect-[5/4] sm:aspect-[16/10]'}`}>
+                <div className={`relative overflow-hidden ${books.length === 1 ? 'aspect-5/4 lg:aspect-auto lg:min-h-120' : 'aspect-5/4 sm:aspect-16/10'}`}>
                   <BookCoverPanel
                     src={coverImage.url}
                     alt={coverImage.alt[locale] || coverImage.alt.es}
@@ -74,7 +74,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                     fillContainer
                   />
                   {!isCuriletaBook && isPublished && (
-                    <span className="absolute bottom-4 left-4 rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-[#20352c] shadow-sm">
+                    <span className="absolute bottom-4 left-4 rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#20352c] shadow-xs">
                       {isEn ? 'Story illustration' : 'Ilustración del relato'}
                     </span>
                   )}
@@ -113,7 +113,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                     <div className="mt-auto flex flex-col items-stretch gap-3 border-t border-slate-200 pt-6 dark:border-slate-800">
                       <Link
                         href={`/${locale}/libros/${book.slug || book.id}`}
-                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c493b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
                       >
                         <BookOpen className="h-4 w-4" aria-hidden="true" />
                         {isEn ? 'Book details' : 'Detalles del libro'}

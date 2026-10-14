@@ -143,7 +143,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
 
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
               {copy('Lleva la aventura contigo.', 'Take the adventure with you.')}<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-600 to-sky-600 dark:from-emerald-300 dark:via-amber-300 dark:to-sky-300">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 via-amber-600 to-sky-600 dark:from-emerald-300 dark:via-amber-300 dark:to-sky-300">
                 {hasPublishedWallpapers
                   ? copy('Fondos creados para tu pantalla.', 'Art made for your screen.')
                   : copy('Muy pronto, ilustraciones propias.', 'Original illustrations are on their way.')}
@@ -160,7 +160,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                   : 'Original expedition scenes for mobile and desktop are being prepared.'
               )}
             </p>
-            <Link href={`/${locale}/galeria`} className="mt-5 inline-flex min-h-11 items-center rounded-full border border-emerald-800 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-emerald-400 dark:text-emerald-200 dark:hover:bg-[#272727]">
+            <Link href={`/${locale}/galeria`} className="mt-5 inline-flex min-h-11 items-center rounded-full border border-emerald-800 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-fluid hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-emerald-400 dark:text-emerald-200 dark:hover:bg-[#272727]">
               {copy('Explorar la galería', 'Explore the gallery')}
             </Link>
           </div>
@@ -180,7 +180,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                   deviceFilter === 'all'
                     ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md font-black'
-                    : 'bg-white dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:text-slate-950 dark:hover:text-white shadow-xs'
                 }`}
               >
                 {copy(`Todos (${counts.all})`, `All (${counts.all})`)}
@@ -191,7 +191,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                 className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                   deviceFilter === 'mobile'
                     ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md font-black'
-                    : 'bg-white dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:text-slate-950 dark:hover:text-white shadow-xs'
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
@@ -203,7 +203,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                 className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                   deviceFilter === 'desktop'
                     ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md font-black'
-                    : 'bg-white dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:text-slate-950 dark:hover:text-white shadow-xs'
                 }`}
               >
                 <Monitor className="w-3.5 h-3.5" />
@@ -219,7 +219,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={copy('Buscar por personaje, país o etiqueta…', 'Search by character, country or tag…')}
-                className="w-full bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors shadow-sm"
+                className="w-full bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:border-emerald-400 transition-colors shadow-xs"
               />
               {searchQuery && (
                 <button
@@ -250,8 +250,8 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                   onClick={() => setCategoryFilter(cat.id as WallpaperCategoryFilter)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                     isActive
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-sm'
-                      : 'bg-white dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-slate-200 shadow-sm'
+                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-xs'
+                      : 'bg-white dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-slate-200 shadow-xs'
                   }`}
                 >
                   {cat.label}
@@ -264,7 +264,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
         {/* Cuadrícula de Fondos de Pantalla */}
         {filteredWallpapers.length === 0 ? (
           hasPublishedWallpapers ? (
-            <div className="mx-auto max-w-4xl rounded-[2rem] border border-[#e7dfd0] bg-[#fffdf8] px-6 py-14 text-center shadow-[0_18px_55px_rgba(24,54,41,0.07)] sm:px-12 sm:py-16">
+            <div className="mx-auto max-w-4xl rounded-4xl border border-[#e7dfd0] bg-[#fffdf8] px-6 py-14 text-center shadow-[0_18px_55px_rgba(24,54,41,0.07)] sm:px-12 sm:py-16">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eaf1e6] text-emerald-800">
                 <ImageIcon className="h-7 w-7" />
               </div>
@@ -283,7 +283,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
               </button>
             </div>
           ) : (
-            <div className="mx-auto grid max-w-6xl items-center gap-10 rounded-[2rem] border border-[#e7dfd0] bg-[#fffdf8] p-6 shadow-[0_18px_55px_rgba(24,54,41,0.07)] sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+            <div className="mx-auto grid max-w-6xl items-center gap-10 rounded-4xl border border-[#e7dfd0] bg-[#fffdf8] p-6 shadow-[0_18px_55px_rgba(24,54,41,0.07)] sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
               <div className="relative mx-auto w-full max-w-2xl pb-5 pr-8">
                 <div aria-hidden="true" className="relative aspect-video overflow-hidden rounded-2xl border-[6px] border-[#20352c] bg-[#b9dfe5] shadow-[0_18px_34px_rgba(32,53,44,0.18)]">
                   <div className="absolute right-[15%] top-[14%] h-12 w-12 rounded-full bg-[#ffe4a4] sm:h-16 sm:w-16" />
@@ -297,8 +297,8 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                   </svg>
                   <span className="absolute bottom-3 left-3 rounded-full bg-[#173d32]/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">{copy('Paisaje panorámico', 'Panoramic landscape')}</span>
                 </div>
-                <div aria-hidden="true" className="absolute bottom-0 right-0 h-40 w-[5.5rem] rounded-[1.5rem] border-[5px] border-[#20352c] bg-[#f5f0df] p-1.5 shadow-xl sm:h-48 sm:w-28">
-                  <div className="relative h-full overflow-hidden rounded-[1rem] bg-[#b9dfe5]">
+                <div aria-hidden="true" className="absolute bottom-0 right-0 h-40 w-22 rounded-3xl border-[5px] border-[#20352c] bg-[#f5f0df] p-1.5 shadow-xl sm:h-48 sm:w-28">
+                  <div className="relative h-full overflow-hidden rounded-2xl bg-[#b9dfe5]">
                     <div className="absolute right-3 top-4 h-5 w-5 rounded-full bg-[#ffe4a4]" />
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[#89b87d]" style={{ clipPath: 'polygon(0 52%, 36% 16%, 63% 58%, 100% 28%, 100% 100%, 0 100%)' }} />
                     <div className="absolute inset-x-0 bottom-0 h-[30%] bg-[#4e855e]" />
@@ -336,7 +336,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                   {/* Contenedor de la Imagen */}
                   <div
                     className={`relative w-full bg-slate-950 overflow-hidden ${
-                      isMobile ? 'aspect-[9/16]' : 'aspect-video'
+                      isMobile ? 'aspect-9/16' : 'aspect-video'
                     }`}
                   >
                     <ContentImage
@@ -345,7 +345,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-80" />
+                    <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/20 to-transparent opacity-80" />
 
                     {/* Insignia 2K Ultra HD */}
                     <div className="absolute top-3 left-3 flex items-center gap-1.5">
@@ -372,11 +372,11 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
 
                     {/* Barra inferior con resolución */}
                     <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-[11px] font-mono font-bold text-white/90">
-                      <span className="bg-black/80 px-2 py-0.5 rounded backdrop-blur-md">
+                      <span className="bg-black/80 px-2 py-0.5 rounded-sm backdrop-blur-md">
                         {wp.resolution.split(' ')[0]} px
                       </span>
                       {wp.country && (
-                        <span className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded backdrop-blur-md">
+                        <span className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded-sm backdrop-blur-md">
                           {wp.country[locale] || wp.country.es}
                         </span>
                       )}
@@ -465,7 +465,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
               {/* Lado izquierdo: Simulación de dispositivo */}
               <div className="lg:w-1/2 bg-slate-100 dark:bg-slate-950 flex items-center justify-center p-6 sm:p-10 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800">
                 {selectedWallpaper.deviceType === 'mobile' ? (
-                  <div className="relative w-64 aspect-[9/19] rounded-[38px] p-2 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 shadow-2xl border-4 border-slate-700/80 ring-1 ring-white/10">
+                  <div className="relative w-64 aspect-9/19 rounded-[38px] p-2 bg-linear-to-b from-slate-700 via-slate-800 to-slate-900 shadow-2xl border-4 border-slate-700/80 ring-1 ring-white/10">
                     {/* Isla Dinámica / Notch */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-10 flex items-center justify-center">
                       <div className="w-2.5 h-2.5 rounded-full bg-slate-900 mr-2" />
@@ -479,12 +479,12 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                         alt={copy('Vista previa', 'Wallpaper preview')}
                         className="absolute inset-0 w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+                      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
 
                       {/* Reloj y Fecha simulados */}
                       <div className="relative z-10 text-center mt-6">
                         <span className="text-3xl font-extrabold tracking-tight drop-shadow-md">09:41</span>
-                        <p className="text-[11px] font-bold text-slate-200 drop-shadow">{copy('Viernes, 9 de octubre', 'Friday, October 9')}</p>
+                        <p className="text-[11px] font-bold text-slate-200 drop-shadow-sm">{copy('Viernes, 9 de octubre', 'Friday, October 9')}</p>
                       </div>
 
                       {/* Notificación Curileta */}
@@ -498,15 +498,15 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="relative w-full max-w-md aspect-video rounded-2xl p-2 bg-gradient-to-b from-slate-700 to-slate-900 shadow-2xl border-2 border-slate-700 ring-1 ring-white/10 flex flex-col">
+                  <div className="relative w-full max-w-md aspect-video rounded-2xl p-2 bg-linear-to-b from-slate-700 to-slate-900 shadow-2xl border-2 border-slate-700 ring-1 ring-white/10 flex flex-col">
                     <div className="relative w-full h-full rounded-xl overflow-hidden bg-black">
                       <ContentImage
                         src={selectedWallpaper.fullImageUrl}
                         alt={copy('Vista previa', 'Wallpaper preview')}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
-                      <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[9px] text-white">
+                      <div className="absolute inset-0 bg-linear-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-sm bg-black/60 backdrop-blur-md text-[9px] text-white">
                         <Compass className="w-2.5 h-2.5 text-emerald-400" />
                         <span>Curileta 2K Desktop</span>
                       </div>
@@ -582,7 +582,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                 <div className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800">
                   <button
                     onClick={(e) => handleDownload(e, selectedWallpaper)}
-                    className="w-full py-4 rounded-2xl font-black text-base bg-gradient-to-r from-amber-400 via-amber-300 to-emerald-400 text-slate-950 hover:opacity-95 active:scale-98 transition-all shadow-xl shadow-amber-400/20 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-4 rounded-2xl font-black text-base bg-linear-to-r from-amber-400 via-amber-300 to-emerald-400 text-slate-950 hover:opacity-95 active:scale-98 transition-all shadow-xl shadow-amber-400/20 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Download className="w-5 h-5" />
                     <span>{copy('Descargar fondo en 2K (alta calidad)', 'Download 2K wallpaper (high quality)')}</span>
@@ -597,7 +597,7 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
         )}
 
         {/* Banner Informativo sobre Calidad 2K */}
-        <div className="mt-16 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50/60 to-emerald-100/50 dark:from-slate-900 dark:via-emerald-950/60 dark:to-slate-900 border border-emerald-300 dark:border-emerald-500/30 p-8 sm:p-10 shadow-xl dark:shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-16 rounded-3xl bg-linear-to-r from-emerald-50 via-teal-50/60 to-emerald-100/50 dark:from-slate-900 dark:via-emerald-950/60 dark:to-slate-900 border border-emerald-300 dark:border-emerald-500/30 p-8 sm:p-10 shadow-xl dark:shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center md:text-left">
             <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{copy('¿Buscas un recurso visual para tu colegio o evento?', 'Looking for a visual resource for your school or event?')}</h4>
             <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl">

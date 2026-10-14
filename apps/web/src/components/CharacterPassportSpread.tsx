@@ -79,7 +79,7 @@ export function CharacterPassportSpread({
               <dd className="mt-1 leading-6 text-white/90">{relationship}</dd>
             </div>
           </dl>
-          <Link href={`/${locale}/mundo#escena-mapa`} className="relative mt-6 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+          <Link href={`/${locale}/mundo#escena-mapa`} className="relative mt-6 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-white/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300">
             <MapPin className="h-4 w-4 text-amber-300" />{isEn ? 'Open the interactive map' : 'Abrir el mapa interactivo'}<ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -112,8 +112,8 @@ export function CharacterPassportSpread({
               {!currentMilestone && <p className="border-t border-[#d6c9a7] pt-4 text-sm leading-6 text-[#594c32]">{isEn ? 'A stop recorded in this explorer’s travel passport.' : 'Una parada registrada en el pasaporte de esta exploradora.'}</p>}
 
               <div className="mt-5 flex items-center justify-between gap-3">
-                <button type="button" onClick={() => setActiveIndex((index) => Math.max(0, index - 1))} disabled={activeIndex === 0} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#c7b98f] px-4 py-2 text-sm font-semibold text-[#54472c] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700"><ArrowLeft className="h-4 w-4" />{isEn ? 'Previous visa' : 'Visado anterior'}</button>
-                <button type="button" onClick={() => setActiveIndex((index) => Math.min(routeLocations.length - 1, index + 1))} disabled={activeIndex === routeLocations.length - 1} className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#174438] px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#205844] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">{isEn ? 'Next visa' : 'Siguiente visado'}<ArrowRight className="h-4 w-4" /></button>
+                <button type="button" onClick={() => setActiveIndex((index) => Math.max(0, index - 1))} disabled={activeIndex === 0} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#c7b98f] px-4 py-2 text-sm font-semibold text-[#54472c] transition-all duration-700 ease-fluid hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-700"><ArrowLeft className="h-4 w-4" />{isEn ? 'Previous visa' : 'Visado anterior'}</button>
+                <button type="button" onClick={() => setActiveIndex((index) => Math.min(routeLocations.length - 1, index + 1))} disabled={activeIndex === routeLocations.length - 1} className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#174438] px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-[#205844] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-700">{isEn ? 'Next visa' : 'Siguiente visado'}<ArrowRight className="h-4 w-4" /></button>
               </div>
             </>
           ) : (

@@ -68,7 +68,7 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
   return (
     <section id="escena-mapa" className="relative py-28 bg-slate-950 text-white overflow-hidden">
       {/* Light path beam across top transition */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-amber-400 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.8)]" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-emerald-500 via-amber-400 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.8)]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
@@ -89,10 +89,10 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
         {/* Interactive Stylized World Map Grid */}
         <div className="relative rounded-3xl bg-slate-900/90 border border-emerald-500/30 p-6 sm:p-10 shadow-2xl backdrop-blur-xl overflow-hidden">
           {/* Constellation grid lines background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-size-[3rem_3rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
 
           {/* Map Surface View */}
-          <div className="relative w-full aspect-[16/9] min-h-[340px] max-h-[520px] rounded-2xl bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
+          <div className="relative w-full aspect-video min-h-[340px] max-h-[520px] rounded-2xl bg-linear-to-b from-slate-950 to-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
             {/* SVG Glowing Path connecting points */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               <path
@@ -123,7 +123,7 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
                     left: `${dest.coordinates.x}%`,
                     top: `${dest.coordinates.y}%`,
                   }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 p-2 rounded-full transition-all duration-300 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 p-2 rounded-full transition-all duration-300 group cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300 ${
                     isSelected ? 'scale-125 z-20' : 'hover:scale-110 z-10'
                   }`}
                   aria-label={isEnglish ? `Explore destination: ${dest.country[locale]}` : `Explorar destino: ${dest.country[locale]}`}
@@ -137,7 +137,7 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
                   >
                     <Compass className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-45 transition-transform" />
                   </div>
-                  <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-slate-950/90 border border-slate-700 text-[10px] sm:text-xs font-bold text-white whitespace-nowrap shadow">
+                  <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-slate-950/90 border border-slate-700 text-[10px] sm:text-xs font-bold text-white whitespace-nowrap shadow-sm">
                     {dest.country[locale]}
                   </span>
                 </button>
@@ -160,7 +160,7 @@ export const MapScene: React.FC<{ locale: Locale }> = ({ locale }) => {
             <div className="flex justify-end">
               <a
                 href="#escena-amigos"
-                className="w-full md:w-auto text-center px-6 py-3 rounded-full font-bold text-sm bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-900/30 transition-all cursor-pointer"
+                className="w-full md:w-auto text-center px-6 py-3 rounded-full font-bold text-sm bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-900/30 transition-all cursor-pointer"
               >
                 {isEnglish ? 'Meet the local guides' : 'Conocer a los guías locales'}
               </a>

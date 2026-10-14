@@ -111,8 +111,8 @@ const labels: Record<string, string> = {
   en: 'Inglés',
 };
 
-const inputClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
-const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-wait disabled:opacity-60';
+const inputClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-hidden transition-all duration-700 ease-fluid focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
+const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-wait disabled:opacity-60';
 
 type Draft = {
   contentType: AdminManagedContentType;
@@ -308,7 +308,7 @@ function FieldValue({
   if (typeof value === 'boolean') {
     return (
       <label className="flex min-h-11 items-center gap-3 rounded-lg border border-slate-200 px-3 dark:border-[#414141]">
-        <input type="checkbox" checked={value} disabled={locked} onChange={(event) => onChange(path, event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+        <input type="checkbox" checked={value} disabled={locked} onChange={(event) => onChange(path, event.target.checked)} className="h-4 w-4 rounded-sm border-slate-300 text-emerald-700 focus:ring-emerald-600" />
         <span className="text-sm font-semibold">{label}</span>
       </label>
     );
@@ -582,7 +582,7 @@ export default function ContentManager() {
                 try { await refresh(undefined, next); }
                 catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudo cargar el contenido.'); }
                 finally { setLoading(false); }
-              }} className="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+              }} className="h-4 w-4 rounded-sm border-slate-300 text-emerald-700 focus:ring-emerald-600" />
               Mostrar fichas retiradas
             </label>
           )}
@@ -681,7 +681,7 @@ export default function ContentManager() {
                     <input className={inputClass} type="number" step="1" value={draft.sortOrder} onChange={(event) => setDraft((current) => current ? { ...current, sortOrder: Number(event.target.value) } : current)} />
                   </label>
                   <label className="flex min-h-11 items-center gap-3 rounded-lg border border-slate-200 px-3 dark:border-[#414141]">
-                    <input type="checkbox" checked={draft.isPublished} onChange={(event) => setDraft((current) => current ? { ...current, isPublished: event.target.checked } : current)} className="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+                    <input type="checkbox" checked={draft.isPublished} onChange={(event) => setDraft((current) => current ? { ...current, isPublished: event.target.checked } : current)} className="h-4 w-4 rounded-sm border-slate-300 text-emerald-700 focus:ring-emerald-600" />
                     <span className="text-sm font-semibold">Visible en el sitio</span>
                   </label>
                 </div>

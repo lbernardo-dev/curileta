@@ -91,7 +91,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
   return (
     <section id="escena-cartas" className="relative z-10 py-28 bg-amber-50/40 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
       {/* Trazado estético superior */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-rose-500 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-amber-400 via-rose-500 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Encabezado */}
@@ -102,7 +102,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
           </div>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
             {isEn ? 'Letters to Pompón.' : 'Cartas a Pompón.'}<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-sky-500 dark:from-amber-300 dark:via-rose-300 dark:to-sky-300">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-500 via-rose-500 to-sky-500 dark:from-amber-300 dark:via-rose-300 dark:to-sky-300">
               {isEn ? 'Words that crossed oceans.' : 'Palabras que cruzaron océanos.'}
             </span>
           </h2>
@@ -127,7 +127,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                   setSelectedLetterId(item.id);
                   setActivePhotoIndex(0);
                 }}
-                className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 border cursor-pointer ${
+                className={`shrink-0 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 border cursor-pointer ${
                   isSelected
                     ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/20 scale-105 font-black'
                     : 'bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-amber-400/50 hover:bg-amber-50/50 dark:hover:bg-slate-800'
@@ -143,7 +143,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
         {/* Escaparate Central: la carta física y sus recuerdos */}
         <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
           {/* Columna Izquierda: Carta Postal estilo Parchment (7 cols) */}
-          <article className="relative flex flex-col overflow-hidden rounded-lg border border-[#dcc8a2] bg-[#fffaf0] p-6 shadow-[0_18px_52px_rgba(103,77,39,0.15)] before:pointer-events-none before:absolute before:inset-3 before:rounded-md before:border before:border-[#eadcc2] before:content-[''] sm:p-10 lg:col-span-7 lg:h-full lg:min-h-[50rem]">
+          <article className="relative flex flex-col overflow-hidden rounded-lg border border-[#dcc8a2] bg-[#fffaf0] p-6 shadow-[0_18px_52px_rgba(103,77,39,0.15)] before:pointer-events-none before:absolute before:inset-3 before:rounded-md before:border before:border-[#eadcc2] before:content-[''] sm:p-10 lg:col-span-7 lg:h-full lg:min-h-200">
             <div aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-full w-2 bg-[#eadcc2]/70" />
             {/* Trama de matasellos vintage de fondo */}
             <div className="pointer-events-none absolute right-5 top-5 z-0 opacity-80 sm:right-7 sm:top-7">
@@ -186,7 +186,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
             </div>
 
             {letter.episodeUrl && (
-              <a href={letter.episodeUrl} target="_blank" rel="noreferrer" className="relative z-10 mb-2 inline-flex min-h-10 w-fit items-center rounded-lg px-3 py-2 text-sm font-semibold text-rose-800 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2">
+              <a href={letter.episodeUrl} target="_blank" rel="noreferrer" className="relative z-10 mb-2 inline-flex min-h-10 w-fit items-center rounded-lg px-3 py-2 text-sm font-semibold text-rose-800 transition-all duration-700 ease-fluid hover:bg-rose-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2">
                 {isEn ? 'Watch the related episode on YouTube' : 'Ver el episodio relacionado en YouTube'}
               </a>
             )}
@@ -213,10 +213,10 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                     </div>
                   </div>
                   <div className="relative space-y-3 border-y border-[#a8a394] py-5" aria-hidden="true">
-                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Message' : 'Mensaje'}</span><span className="h-3 flex-1 rounded-sm bg-[#252a27]" /></div>
-                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Coordinates' : 'Coordenadas'}</span><span className="h-3 w-4/5 rounded-sm bg-[#252a27]" /></div>
-                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Discovery' : 'Hallazgo'}</span><span className="h-3 w-11/12 rounded-sm bg-[#252a27]" /></div>
-                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Signature' : 'Firma'}</span><span className="h-3 w-2/3 rounded-sm bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Message' : 'Mensaje'}</span><span className="h-3 flex-1 rounded-xs bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Coordinates' : 'Coordenadas'}</span><span className="h-3 w-4/5 rounded-xs bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Discovery' : 'Hallazgo'}</span><span className="h-3 w-11/12 rounded-xs bg-[#252a27]" /></div>
+                    <div className="flex items-center gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]"><span className="w-20 shrink-0">{isEn ? 'Signature' : 'Firma'}</span><span className="h-3 w-2/3 rounded-xs bg-[#252a27]" /></div>
                   </div>
                   <div className="relative flex items-center justify-between gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#626358]">
                     <span>{isEn ? 'Original held in the forest archive' : 'Original custodiado en el archivo del bosque'}</span>
@@ -274,8 +274,8 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
           </article>
 
           {/* Columna Derecha: Fotos Polaroid Adjuntas en el Sobre (5 cols) */}
-          <aside className="flex flex-col gap-6 lg:col-span-5 lg:h-full lg:min-h-[50rem]">
-            <div className="flex flex-col rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80 sm:p-8 lg:flex-1">
+          <aside className="flex flex-col gap-6 lg:col-span-5 lg:h-full lg:min-h-200">
+            <div className="flex flex-col rounded-4xl border border-slate-200 bg-white/80 p-6 shadow-xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80 sm:p-8 lg:flex-1">
               <div className="flex items-center justify-between mb-4">
                 <div className="inline-flex items-center gap-2 text-xs font-black uppercase text-amber-700 dark:text-amber-400 tracking-wider">
                   <Camera className="w-4 h-4 text-amber-500" />
@@ -309,10 +309,10 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
 
               {/* Polaroid Activa */}
               {activePhoto ? (
-                <div className="mt-6 rounded-lg border border-[#e3d7bd] bg-[#fffdf7] p-4 text-slate-900 shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-rotate-1 lg:my-auto">
+                <div className="mt-6 rounded-lg border border-[#e3d7bd] bg-[#fffdf7] p-4 text-slate-900 shadow-xl transition-transform duration-500 ease-fluid hover:-rotate-1 lg:my-auto">
                   {activePhotoIsCensored ? (
                     <>
-                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md border border-[#39413b] bg-[#77766b] text-[#f1eee5]" aria-label={isEn ? 'Classified, heavily blurred field photo' : 'Foto de campo clasificada y muy difuminada'}>
+                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-md border border-[#39413b] bg-[#77766b] text-[#f1eee5]" aria-label={isEn ? 'Classified, heavily blurred field photo' : 'Foto de campo clasificada y muy difuminada'}>
                       {activePhoto.imageUrl ? (
                         <ContentImage src={activePhoto.imageUrl} alt={isEn ? 'Heavily blurred classified field photo' : 'Foto de campo clasificada y muy difuminada'} className="absolute inset-[-8%] h-[116%] w-[116%] scale-110 object-cover blur-2xl saturate-50" />
                       ) : (
@@ -321,9 +321,9 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                       <div aria-hidden="true" className="absolute inset-0 bg-[#20251f]/65" />
                       <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white/90 sm:inset-x-5 sm:top-5">
                         <span>{isEn ? 'Recovered field image' : 'Imagen de campo recuperada'}</span>
-                        <span className="rounded-sm border border-white/40 px-2 py-1">{isEn ? 'File sealed' : 'Archivo sellado'}</span>
+                        <span className="rounded-xs border border-white/40 px-2 py-1">{isEn ? 'File sealed' : 'Archivo sellado'}</span>
                       </div>
-                      <div aria-hidden="true" className="absolute inset-x-[8%] top-[39%] h-3 -rotate-2 rounded-sm bg-[#161a17]/90 shadow-[0_8px_0_rgba(22,26,23,0.82),0_-8px_0_rgba(22,26,23,0.82)]" />
+                      <div aria-hidden="true" className="absolute inset-x-[8%] top-[39%] h-3 -rotate-2 rounded-xs bg-[#161a17]/90 shadow-[0_8px_0_rgba(22,26,23,0.82),0_-8px_0_rgba(22,26,23,0.82)]" />
                       <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 rotate-[-11deg] flex-col items-center justify-center rounded-full border-[3px] border-[#e0b39d]/90 text-center text-[9px] font-black uppercase leading-tight tracking-[0.16em] text-[#ffe3d5] shadow-lg sm:h-28 sm:w-28">
                         <LockKeyhole className="mb-1 h-5 w-5" />
                         <span>{isEn ? 'Classified' : 'Clasificado'}</span>
@@ -334,16 +334,16 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                           <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/75">{isEn ? 'Expedition evidence' : 'Evidencia de expedición'}</p>
                           <p className="mt-1 text-sm font-black uppercase tracking-[0.08em]">{isEn ? 'Contents withheld' : 'Contenido reservado'}</p>
                         </div>
-                        <span className="rounded-sm bg-[#a13c36] px-2 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-white">{String(letter.order).padStart(2, '0')} / {String(activePhotoIndex + 1).padStart(2, '0')}</span>
+                        <span className="rounded-xs bg-[#a13c36] px-2 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-white">{String(letter.order).padStart(2, '0')} / {String(activePhotoIndex + 1).padStart(2, '0')}</span>
                       </div>
                     </div>
                     <p className="pt-3 text-xs leading-relaxed text-slate-700 sm:text-sm">
-                      {isEn ? 'The blur is only a clue. The original stays sealed until the expedition tells its story.' : 'El desenfoque es solo una pista. El original seguirá bajo sello hasta que la expedición cuente su historia.'}
+                      {isEn ? 'The blur-sm is only a clue. The original stays sealed until the expedition tells its story.' : 'El desenfoque es solo una pista. El original seguirá bajo sello hasta que la expedición cuente su historia.'}
                     </p>
                     </>
                   ) : (
                   <>
-                  <div className="relative flex aspect-[4/3] w-full flex-col justify-between overflow-hidden rounded-md border border-[#d8c7a5] bg-[#dce8e2] p-4 text-[#344236]">
+                  <div className="relative flex aspect-4/3 w-full flex-col justify-between overflow-hidden rounded-md border border-[#d8c7a5] bg-[#dce8e2] p-4 text-[#344236]">
                     {activePhoto.imageUrl ? (
                       <ContentImage
                         src={activePhoto.imageUrl}
@@ -359,12 +359,12 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                       </>
                     )}
                     <div className="relative z-10 flex items-start justify-between gap-3">
-                      <span className="self-start rounded-full bg-[#fffaf0] px-2 py-1 text-[9px] font-mono font-bold uppercase text-[#4f4634] shadow-sm">
+                      <span className="self-start rounded-full bg-[#fffaf0] px-2 py-1 text-[9px] font-mono font-bold uppercase text-[#4f4634] shadow-xs">
                         {isEn ? activePhoto.tagEn || PHOTO_TAGS_EN[activePhoto.tag] || activePhoto.tag : activePhoto.tag}
                       </span>
-                      {!activePhoto.imageUrl && <Camera aria-hidden="true" className="h-5 w-5 text-[#fffaf0] drop-shadow" />}
+                      {!activePhoto.imageUrl && <Camera aria-hidden="true" className="h-5 w-5 text-[#fffaf0] drop-shadow-sm" />}
                     </div>
-                    <div className="relative z-10 rounded-md bg-[#fffaf0]/95 px-3 py-2 shadow-sm">
+                    <div className="relative z-10 rounded-md bg-[#fffaf0]/95 px-3 py-2 shadow-xs">
                       <h4 className="text-lg font-bold leading-tight text-[#263b30]">
                         {activePhoto.title[locale] || activePhoto.title.es}
                       </h4>
@@ -390,9 +390,9 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
             </div>
 
             {/* Cuadro de Amistad y Hogar con el avatar de Pompón */}
-            <div className="bg-gradient-to-br from-amber-50 via-sky-50/40 to-teal-50 dark:from-sky-950/70 dark:via-slate-900 dark:to-emerald-950/70 border-2 border-sky-300 dark:border-sky-500/40 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-2xl relative overflow-hidden group">
+            <div className="bg-linear-to-br from-amber-50 via-sky-50/40 to-teal-50 dark:from-sky-950/70 dark:via-slate-900 dark:to-emerald-950/70 border-2 border-sky-300 dark:border-sky-500/40 rounded-4xl p-6 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-2xl relative overflow-hidden group">
               <div className="flex items-center gap-4 mb-4">
-                <div className="relative h-20 w-20 shrink-0 rounded-full bg-gradient-to-tr from-sky-400 via-amber-300 to-indigo-400 p-1 shadow-xl transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 sm:h-24 sm:w-24">
+                <div className="relative h-20 w-20 shrink-0 rounded-full bg-linear-to-tr from-sky-400 via-amber-300 to-indigo-400 p-1 shadow-xl transition-transform duration-700 ease-fluid group-hover:scale-105 sm:h-24 sm:w-24">
                   <div className="h-full w-full overflow-hidden rounded-full bg-slate-950">
                     <CharacterAvatarImage
                       slug="pompon"

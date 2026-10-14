@@ -31,7 +31,7 @@ export default async function FondosPage({
   return (
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen transition-colors duration-300">
       <div className="pt-16 sm:pt-20 text-center max-w-3xl mx-auto px-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
           <span>{isEn ? 'Free screen art' : 'Ilustraciones para tus pantallas'}</span>
         </div>

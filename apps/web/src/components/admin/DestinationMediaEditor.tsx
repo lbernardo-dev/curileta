@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUp, ImagePlus, Trash2, Upload } from 'lucide-react';
 import { ContentImage } from '@/components/ContentImage';
 import { encodeAdminImage } from '@/lib/admin-image-encoding';
 
-const fieldClass = 'mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
+const fieldClass = 'mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-hidden transition-all duration-700 ease-fluid focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
 
 interface UploadTicket {
   bucket: string;
@@ -163,7 +163,7 @@ export function DestinationMediaEditor({
           <p className="mt-1 max-w-2xl text-sm leading-5 text-slate-600 dark:text-slate-300">Carga varias piezas desde el ordenador. Las fotos se optimizan a WebP o JPEG según el navegador; puedes elegir una para la tarjeta de portada.</p>
         </div>
         <input ref={inputRef} type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm" className="sr-only" aria-label="Seleccionar fotos y vídeos" disabled={uploading} onChange={(event) => { void uploadFiles(event.target.files); }} />
-        <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
+        <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">
           <Upload className="h-4 w-4" />{uploading ? 'Subiendo…' : 'Elegir archivos'}
         </button>
       </div>
@@ -180,9 +180,9 @@ export function DestinationMediaEditor({
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{item.kind === 'image' ? 'Fotografía' : 'Escena de vídeo'}</span>
             <div className="flex items-center gap-1">
               {item.kind === 'image' && <label className="mr-2 inline-flex items-center gap-2 text-xs font-semibold"><input type="radio" name="destination-card-image" checked={item.isCard} onChange={() => selectCard(item.id)} className="accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Usar en tarjeta</label>}
-              <button type="button" onClick={() => move(item.id, -1)} disabled={index === 0} aria-label="Subir medio" className="rounded-md p-2 hover:bg-slate-100 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowUp className="h-4 w-4" /></button>
-              <button type="button" onClick={() => move(item.id, 1)} disabled={index === media.length - 1} aria-label="Bajar medio" className="rounded-md p-2 hover:bg-slate-100 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowDown className="h-4 w-4" /></button>
-              <button type="button" onClick={() => onChange(media.filter(({ id }) => id !== item.id).map((entry, sortOrder) => ({ ...entry, isCard: item.isCard ? false : entry.isCard, sortOrder })))} aria-label="Quitar medio" className="rounded-md p-2 text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]"><Trash2 className="h-4 w-4" /></button>
+              <button type="button" onClick={() => move(item.id, -1)} disabled={index === 0} aria-label="Subir medio" className="rounded-md p-2 hover:bg-slate-100 disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowUp className="h-4 w-4" /></button>
+              <button type="button" onClick={() => move(item.id, 1)} disabled={index === media.length - 1} aria-label="Bajar medio" className="rounded-md p-2 hover:bg-slate-100 disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowDown className="h-4 w-4" /></button>
+              <button type="button" onClick={() => onChange(media.filter(({ id }) => id !== item.id).map((entry, sortOrder) => ({ ...entry, isCard: item.isCard ? false : entry.isCard, sortOrder })))} aria-label="Quitar medio" className="rounded-md p-2 text-rose-700 hover:bg-rose-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]"><Trash2 className="h-4 w-4" /></button>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">

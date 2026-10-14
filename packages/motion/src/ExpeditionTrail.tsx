@@ -531,13 +531,13 @@ export const AdventureTrailConnector: React.FC<AdventureTrailConnectorProps> = (
       <div className="relative z-10 max-w-xl mx-auto px-4 flex flex-col items-center text-center">
         <a
           href={targetId}
-          className="group inline-flex flex-col items-center gap-2 p-3 sm:p-4 rounded-3xl bg-slate-950/85 hover:bg-slate-900/95 border-2 border-dashed border-amber-400/60 hover:border-amber-300 text-white shadow-[0_8px_30px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          className="group inline-flex flex-col items-center gap-2 p-3 sm:p-4 rounded-3xl bg-slate-950/85 hover:bg-slate-900/95 border-2 border-dashed border-amber-400/60 hover:border-amber-300 text-white shadow-[0_8px_30px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
           title={isEn ? `Go to ${destTitleText}` : `Avanzar hacia ${destTitleText}`}
         >
           {/* Fila superior: Badge de Hito y rosa de los vientos */}
           <div className="flex items-center gap-2">
             <span
-              className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1"
+              className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-xs flex items-center gap-1"
               style={{
                 backgroundColor: isHalloweenSpecial ? '#ea580c' : inkColor,
                 color: '#ffffff',
@@ -619,7 +619,7 @@ export const TreasureDestinationMark: React.FC<TreasureDestinationMarkProps> = (
         {/* LA GRAN X DEL TESORO CON SELLO DE CERA ROJA */}
         <div className="relative mb-6">
           {/* Círculo de cera de sello oficial de expedición */}
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-red-700 via-red-800 to-amber-950 border-4 border-amber-400 p-1 shadow-[0_0_35px_rgba(220,38,38,0.5)] flex items-center justify-center relative group hover:scale-105 transition-transform duration-300">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-linear-to-br from-red-700 via-red-800 to-amber-950 border-4 border-amber-400 p-1 shadow-[0_0_35px_rgba(220,38,38,0.5)] flex items-center justify-center relative group hover:scale-105 transition-transform duration-300">
             {/* Clásica X de mapa pirata / explorador */}
             <div className="relative w-14 h-14 flex items-center justify-center">
               <span className="absolute text-5xl sm:text-6xl font-black text-amber-200 select-none leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
@@ -653,7 +653,7 @@ export const TreasureDestinationMark: React.FC<TreasureDestinationMarkProps> = (
         <div className="flex flex-wrap items-center justify-center gap-3">
           <a
             href={targetId}
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-amber-500/25 transition-all hover:scale-105 active:scale-95"
+            className="px-6 py-3 rounded-full bg-linear-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-amber-500/25 transition-all hover:scale-105 active:scale-95"
           >
             {isEn ? 'Explore Closing Narrative ↓' : 'Descubrir Cierre Narrativo ↓'}
           </a>
@@ -781,7 +781,7 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
       >
         {/* Hilo de sendero vertical discontinuo que une los marcadores de los capítulos */}
         <div
-          className="absolute top-5 bottom-5 left-1/2 -translate-x-1/2 w-0.5 border-l border-dashed border-amber-400/25 pointer-events-none -z-0"
+          className="absolute top-5 bottom-5 left-1/2 -translate-x-1/2 w-0.5 border-l border-dashed border-amber-400/25 pointer-events-none z-0"
           aria-hidden="true"
         />
 
@@ -793,7 +793,7 @@ export const LateralChapterRail: React.FC<LateralChapterRailProps> = ({
             <button
               key={item.id}
               onClick={() => handleScrollTo(item.targetId, item.id)}
-              className="group relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 z-10 cursor-pointer"
+              className="group relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-hidden focus:ring-2 focus:ring-amber-400 z-10 cursor-pointer"
               style={{
                 backgroundColor: isActive ? item.themeColor : '#0f172a',
                 color: isActive ? '#020617' : '#e2e8f0',
@@ -901,7 +901,7 @@ export const ExpeditionCompassHUD: React.FC<{
                   className="flex items-center gap-3 p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all hover:scale-102 group cursor-pointer"
                 >
                   <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shadow-md flex-shrink-0"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shadow-md shrink-0"
                     style={{ backgroundColor: wp.color, color: '#020617' }}
                   >
                     {getChapterIcon(wp.badgeIcon, 'w-3.5 h-3.5 text-slate-950')}
@@ -914,7 +914,7 @@ export const ExpeditionCompassHUD: React.FC<{
                       {wp.subtitle[locale as 'es' | 'en'] || wp.subtitle.es}
                     </span>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-300 flex-shrink-0" />
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-300 shrink-0" />
                 </button>
               ))}
             </div>
@@ -928,7 +928,7 @@ export const ExpeditionCompassHUD: React.FC<{
           title={isEn ? 'View adventure map milestones' : 'Ver hitos del mapa de aventuras'}
           aria-label={isEn ? 'View adventure map milestones' : 'Ver hitos del mapa de aventuras'}
         >
-          <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 p-0.5 shadow-md flex items-center justify-center">
+          <div className="w-7 h-7 rounded-full bg-linear-to-tr from-amber-500 to-amber-300 p-0.5 shadow-md flex items-center justify-center">
             <Compass className="w-4 h-4 text-slate-950 group-hover:rotate-45 transition-transform duration-500" />
           </div>
           <div className="text-left">
@@ -949,7 +949,7 @@ export const ExpeditionCompassHUD: React.FC<{
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
         >
-          <div className="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-950 to-emerald-950 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-amber-500/20 text-white overflow-hidden">
+          <div className="relative w-full max-w-md bg-linear-to-b from-slate-900 via-slate-950 to-emerald-950 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-amber-500/20 text-white overflow-hidden">
             <button
               onClick={() => setActiveWaypoint(null)}
               className="absolute top-4 right-4 p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
@@ -997,7 +997,7 @@ export const ExpeditionCompassHUD: React.FC<{
 
             <button
               onClick={() => setActiveWaypoint(null)}
-              className="w-full py-3 rounded-full font-black text-sm uppercase tracking-wider bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+              className="w-full py-3 rounded-full font-black text-sm uppercase tracking-wider bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
             >
               {isEn ? 'Continue Expedition' : 'Continuar Expedición'}
             </button>

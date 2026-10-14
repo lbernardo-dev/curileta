@@ -111,7 +111,7 @@ export default async function AdminOverviewPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {shortcuts.map((item) => (
-                <Link key={item.href} href={item.href} className="group rounded-xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:border-emerald-300 hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f] dark:hover:bg-[#272727]">
+                <Link key={item.href} href={item.href} className="group rounded-xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-fluid hover:-translate-y-1 hover:border-emerald-300 hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f] dark:hover:bg-[#272727]">
                   <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-950 dark:text-white dark:group-hover:text-emerald-200">{item.title}</h3>
                   <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">{item.description}</p>
                   <span className="mt-4 inline-block text-sm font-semibold text-emerald-800 dark:text-emerald-300">Abrir sección</span>
@@ -126,7 +126,7 @@ export default async function AdminOverviewPage() {
                 <h2 className="text-xl font-bold">Consultas recientes</h2>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Los mensajes nuevos aparecen aquí al enviarse.</p>
               </div>
-              <Link href="/admin/consultas" className="rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">
+              <Link href="/admin/consultas" className="rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-fluid hover:bg-emerald-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200 dark:hover:bg-[#272727]">
                 Ver todas las consultas
               </Link>
             </div>}

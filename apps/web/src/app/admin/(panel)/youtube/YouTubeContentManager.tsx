@@ -8,7 +8,7 @@ import { ImageUploadField } from '@/components/admin/ImageUploadField';
 
 type ContentFilter = 'all' | 'video' | 'short' | 'music';
 
-const inputClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:bg-[#181818] dark:text-white';
+const inputClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-hidden transition-all duration-700 ease-fluid focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:bg-[#181818] dark:text-white';
 const textareaClass = `${inputClass} min-h-28 resize-y`;
 const surfaceClass = 'rounded-2xl border border-slate-200 bg-white p-4 dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-6';
 
@@ -282,7 +282,7 @@ export function YouTubeContentManager() {
           <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Vídeos y música</h1>
           <p className="mt-3 max-w-2xl text-pretty text-base leading-6 text-slate-600 dark:text-slate-300">Administra episodios, Shorts, videoclips y fichas musicales desde un solo lugar.</p>
         </div>
-        <a href="https://www.youtube.com/@curileta" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:hover:bg-[#272727]">
+        <a href="https://www.youtube.com/@curileta" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:hover:bg-[#272727]">
           Abrir canal público
         </a>
       </header>
@@ -314,7 +314,7 @@ export function YouTubeContentManager() {
               </select>
             </Field>
           ) : <span className="hidden lg:block" aria-hidden="true" />}
-          <button type="submit" disabled={importing || pendingImageUploads > 0 || !storageAvailable} className="min-h-11 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
+          <button type="submit" disabled={importing || pendingImageUploads > 0 || !storageAvailable} className="min-h-11 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">
             {importing ? 'Leyendo enlace…' : 'Importar datos'}
           </button>
         </form>
@@ -327,7 +327,7 @@ export function YouTubeContentManager() {
               <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">{editingKey ? 'Editar ficha' : 'Revisar importación'}</p>
               <h2 id="youtube-item-editor-heading" className="mt-1 text-xl font-bold">{itemLabel(draft)}</h2>
             </div>
-            <button type="button" onClick={cancelDraft} className="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-300 dark:hover:bg-[#272727]">Cerrar editor</button>
+            <button type="button" onClick={cancelDraft} className="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-300 dark:hover:bg-[#272727]">Cerrar editor</button>
           </div>
 
           <form onSubmit={saveItem} className="space-y-6">
@@ -432,7 +432,7 @@ export function YouTubeContentManager() {
                   ))}
                 </div>
                 <label className="flex items-center gap-3 text-sm font-semibold">
-                  <input type="checkbox" checked={draft.votingEnabled || false} onChange={(event) => updateDraft('votingEnabled', event.target.checked)} className="h-4 w-4 rounded border-slate-300 accent-emerald-800 focus-visible:ring-2 focus-visible:ring-emerald-600" />
+                  <input type="checkbox" checked={draft.votingEnabled || false} onChange={(event) => updateDraft('votingEnabled', event.target.checked)} className="h-4 w-4 rounded-sm border-slate-300 accent-emerald-800 focus-visible:ring-2 focus-visible:ring-emerald-600" />
                   Activar votación en la ficha
                 </label>
                 {draft.votingEnabled && <div className="grid gap-4 sm:grid-cols-2">{(['es', 'en'] as const).map((locale) => <Field key={`vote-${locale}`} label={`Pregunta de votación en ${locale === 'es' ? 'español' : 'inglés'}`}><input className={inputClass} maxLength={500} value={localized(draft.votePrompt, locale)} onChange={(event) => updateLocalized('votePrompt', locale, event.target.value)} /></Field>)}</div>}
@@ -441,14 +441,14 @@ export function YouTubeContentManager() {
 
             {draft.youtubeMetadata && (
               <details className="rounded-xl bg-slate-50 p-4 text-sm dark:bg-[#181818]">
-                <summary className="cursor-pointer font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Datos detectados en YouTube</summary>
+                <summary className="cursor-pointer font-semibold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">Datos detectados en YouTube</summary>
                 <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
                   {Object.entries(draft.youtubeMetadata)
                     .filter(([key, value]) => key !== 'thumbnailUrls' && value !== '' && value !== undefined)
                     .map(([key, value]) => (
                       <div key={key} className="min-w-0">
                         <dt className="text-xs text-slate-500 dark:text-slate-400">{youtubeMetadataLabels[key] || key}</dt>
-                        <dd className="break-words text-slate-700 dark:text-slate-200">{typeof value === 'boolean' ? (value ? 'Sí' : 'No') : value}</dd>
+                        <dd className="wrap-break-word text-slate-700 dark:text-slate-200">{typeof value === 'boolean' ? (value ? 'Sí' : 'No') : value}</dd>
                       </div>
                     ))}
                 </dl>
@@ -466,12 +466,12 @@ export function YouTubeContentManager() {
             )}
 
             <label className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 text-sm font-semibold dark:bg-[#181818]">
-              <input type="checkbox" checked={draft.isPublished} onChange={(event) => updateDraft('isPublished', event.target.checked)} className="h-4 w-4 rounded border-slate-300 accent-emerald-800 focus-visible:ring-2 focus-visible:ring-emerald-600" />
+              <input type="checkbox" checked={draft.isPublished} onChange={(event) => updateDraft('isPublished', event.target.checked)} className="h-4 w-4 rounded-sm border-slate-300 accent-emerald-800 focus-visible:ring-2 focus-visible:ring-emerald-600" />
               Visible en el sitio al guardar
             </label>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              <button type="button" onClick={cancelDraft} className="min-h-11 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:hover:bg-[#272727]">Cancelar</button>
-              <button type="submit" disabled={saving || pendingImageUploads > 0 || !storageAvailable} className="min-h-11 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
+              <button type="button" onClick={cancelDraft} className="min-h-11 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:hover:bg-[#272727]">Cancelar</button>
+              <button type="submit" disabled={saving || pendingImageUploads > 0 || !storageAvailable} className="min-h-11 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">
                 {saving ? 'Guardando…' : draft.isPublished ? (editingKey ? 'Guardar cambios' : 'Crear y publicar ficha') : 'Guardar como oculta'}
               </button>
             </div>
@@ -492,7 +492,7 @@ export function YouTubeContentManager() {
             {([
               ['all', 'Todo'], ['video', 'Vídeos'], ['short', 'Shorts'], ['music', 'Música'],
             ] as const).map(([value, label]) => (
-              <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)} className={`rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${filter === value ? 'bg-emerald-800 text-white' : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}>
+              <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)} className={`rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 ${filter === value ? 'bg-emerald-800 text-white' : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}>
                 {label}
               </button>
             ))}
@@ -521,13 +521,13 @@ export function YouTubeContentManager() {
                   <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{item.publishedAt?.slice(0, 10) || 'Sin fecha'}{item.duration ? ` · ${item.duration}` : ''}{item.youtubeMetadata?.viewCount ? ` · ${Number(item.youtubeMetadata.viewCount).toLocaleString('es-ES')} reproducciones al importar` : ''}</p>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
-                  <button type="button" onClick={() => editItem(item)} className="min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:hover:bg-[#272727]">Editar</button>
+                  <button type="button" onClick={() => editItem(item)} className="min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:hover:bg-[#272727]">Editar</button>
                   {confirmingDelete === item.itemKey ? (
                     <div className="flex items-center gap-2" role="group" aria-label={`Confirmar retirada de ${itemLabel(item)}`}>
-                      <button type="button" onClick={() => void deleteItem(item)} className="min-h-10 rounded-lg bg-red-700 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600">Retirar</button>
-                      <button type="button" onClick={() => setConfirmingDelete(null)} className="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-300">Cancelar</button>
+                      <button type="button" onClick={() => void deleteItem(item)} className="min-h-10 rounded-lg bg-red-700 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-red-800 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-600">Retirar</button>
+                      <button type="button" onClick={() => setConfirmingDelete(null)} className="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-300">Cancelar</button>
                     </div>
-                  ) : <button type="button" onClick={() => setConfirmingDelete(item.itemKey)} className="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-red-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:text-red-300 dark:hover:bg-[#272727]">Retirar</button>}
+                  ) : <button type="button" onClick={() => setConfirmingDelete(item.itemKey)} className="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-red-700 transition-all duration-700 ease-fluid hover:bg-red-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-600 dark:text-red-300 dark:hover:bg-[#272727]">Retirar</button>}
                 </div>
               </article>
             ))}

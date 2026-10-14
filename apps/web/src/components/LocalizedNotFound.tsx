@@ -14,15 +14,15 @@ function NotFoundContent({ locale }: { locale: Locale }) {
   const isEn = locale === 'en';
 
   return (
-    <section className="grid min-h-[65vh] place-items-center bg-[var(--background-canvas)] px-5 py-16 text-[var(--text-primary)]">
+    <section className="grid min-h-[65vh] place-items-center bg-(--background-canvas) px-5 py-16 text-(--text-primary)">
       <div className="max-w-xl text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)] ring-1 ring-[var(--border-subtle)]"><Compass className="h-8 w-8" /></div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--seasonal-accent-strong)]">{isEn ? 'A wrong turn on the map' : 'Un desvío en el mapa'}</p>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-(--background-secondary) text-(--seasonal-accent-strong) ring-1 ring-(--border-subtle)"><Compass className="h-8 w-8" /></div>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-(--seasonal-accent-strong)">{isEn ? 'A wrong turn on the map' : 'Un desvío en el mapa'}</p>
         <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">{isEn ? 'This page is not here' : 'Esta página no está aquí'}</h1>
-        <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">{isEn ? 'The address may have changed, or this trail may not exist yet. Let’s find another part of the adventure.' : 'Puede que la dirección haya cambiado o que este camino todavía no exista. Busquemos otra parte de la aventura.'}</p>
+        <p className="mt-4 text-base leading-7 text-(--text-secondary)">{isEn ? 'The address may have changed, or this trail may not exist yet. Let’s find another part of the adventure.' : 'Puede que la dirección haya cambiado o que este camino todavía no exista. Busquemos otra parte de la aventura.'}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href={'/' + locale} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]"><Home className="h-4 w-4" />{isEn ? 'Back to home' : 'Volver al inicio'}</Link>
-          <Link href={'/' + locale + '/mundo'} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--background-primary)] px-5 py-3 text-sm font-semibold text-[var(--text-primary)] ring-1 ring-[var(--border-subtle)] transition hover:text-[var(--seasonal-accent-strong)]"><Search className="h-4 w-4" />{isEn ? 'Explore the world' : 'Explorar el mundo'}</Link>
+          <Link href={'/' + locale + '/mundo'} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-(--background-primary) px-5 py-3 text-sm font-semibold text-(--text-primary) ring-1 ring-(--border-subtle) transition hover:text-(--seasonal-accent-strong)"><Search className="h-4 w-4" />{isEn ? 'Explore the world' : 'Explorar el mundo'}</Link>
         </div>
       </div>
     </section>
@@ -49,7 +49,7 @@ export function LocalizedNotFound({ withSiteChrome = false }: { withSiteChrome?:
   return (
     <SeasonalThemeProvider activeEvent={activeEvent}>
       <Header locale={locale} />
-      <main id="main-content" className="flex-grow"><NotFoundContent locale={locale} /></main>
+      <main id="main-content" className="grow"><NotFoundContent locale={locale} /></main>
       <Footer locale={locale} />
     </SeasonalThemeProvider>
   );

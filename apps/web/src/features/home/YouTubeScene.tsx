@@ -269,7 +269,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
               {/* Los 3 formatos en preparación */}
               <div className="mb-8 grid grid-cols-1 gap-4 text-left sm:grid-cols-3">
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-fluid hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-800 dark:bg-[#272727] dark:text-sky-300">
                     <Film className="w-5 h-5" />
                   </div>
@@ -286,7 +286,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </span>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-fluid hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-[#272727] dark:text-emerald-300">
                     <Music className="w-5 h-5" />
                   </div>
@@ -303,7 +303,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   </span>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-700 ease-fluid hover:-translate-y-1 hover:shadow-lg dark:border-[#414141] dark:bg-[#181818]">
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-800 dark:bg-[#272727] dark:text-rose-300">
                     <Smartphone className="w-5 h-5" />
                   </div>
@@ -345,7 +345,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                           setSelectedChannelTab(tab.id);
                           setSelectedCategory('todos');
                         }}
-                        className={`inline-flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-1 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 ${selected ? 'border-red-600 text-slate-950 dark:text-white' : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
+                        className={`inline-flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-1 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-600 ${selected ? 'border-red-600 text-slate-950 dark:text-white' : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
                       >
                         <Icon className="h-4 w-4" aria-hidden="true" />
                         <span>{tab.label}</span>
@@ -364,7 +364,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                   selectedCategory === 'todos'
                     ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/30 scale-105 font-black'
-                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-xs'
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
@@ -375,7 +375,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 <button
                   onClick={() => setSelectedCategory('trailer')}
                   aria-pressed={selectedCategory === 'trailer'}
-                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'trailer' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'trailer' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
                 >
                   <Clapperboard className="h-3.5 w-3.5" />
                   <span>{isEn ? `Trailers (${counts.trailer})` : `Tráilers (${counts.trailer})`}</span>
@@ -387,7 +387,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   onClick={() => setSelectedCategory('favoritos')}
                   disabled={!favoritesReady}
                   aria-pressed={selectedCategory === 'favoritos'}
-                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'favoritos' ? 'border-emerald-700 bg-emerald-800 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 ${selectedCategory === 'favoritos' ? 'border-emerald-700 bg-emerald-800 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]'}`}
                 >
                   {isEn ? `Saved (${counts.favoritos})` : `Favoritos (${counts.favoritos})`}
                 </button>
@@ -399,7 +399,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                     selectedCategory === 'episode'
                       ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/30 scale-105 font-black'
-                      : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                      : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-xs'
                   }`}
                 >
                   <Film className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
@@ -413,7 +413,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                     selectedCategory === 'song'
                       ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/30 scale-105 font-black'
-                      : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                      : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500/50 hover:text-slate-950 dark:hover:text-white shadow-xs'
                   }`}
                 >
                   <Music className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
@@ -426,8 +426,8 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   onClick={() => setSelectedCategory('short')}
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                     selectedCategory === 'short'
-                      ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white border-rose-500 shadow-lg shadow-rose-600/40 scale-105 font-black'
-                      : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-rose-500/50 hover:text-slate-950 dark:hover:text-white shadow-sm'
+                      ? 'bg-linear-to-r from-red-600 to-rose-600 text-white border-rose-500 shadow-lg shadow-rose-600/40 scale-105 font-black'
+                      : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-rose-500/50 hover:text-slate-950 dark:hover:text-white shadow-xs'
                   }`}
                 >
                   <Smartphone className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
@@ -469,7 +469,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 dark:opacity-85"
                               loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                            <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/20 to-transparent" />
 
                             <div className="absolute top-3 left-3 flex items-center gap-1.5">
                               <span
@@ -506,7 +506,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                                 ? (isEn ? `Remove ${title} from favorites on this device` : `Quitar ${title} de favoritos en este dispositivo`)
                                 : (isEn ? `Save ${title} to favorites on this device` : `Guardar ${title} en favoritos en este dispositivo`)}
                               aria-pressed={favoriteSet.has(video.slug)}
-                              className="absolute right-3 top-3 z-10 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-black/75 text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                              className="absolute right-3 top-3 z-10 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-black/75 text-white transition-all duration-700 ease-fluid hover:scale-105 hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
                             >
                               <Heart className={`h-5 w-5 ${favoriteSet.has(video.slug) ? 'fill-current text-rose-300' : ''}`} />
                             </button>
@@ -570,7 +570,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
             {(!hideHeader || selectedChannelTab === 'shorts' || selectedCategory === 'favoritos') && filteredVideos.filter((v) => v.type === 'short').length > 0 && (
               <div className="mt-8 mb-12">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 text-white shadow-lg shadow-rose-900/40">
+                  <div className="p-2 rounded-xl bg-linear-to-tr from-red-600 to-rose-600 text-white shadow-lg shadow-rose-900/40">
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
@@ -596,14 +596,14 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                           key={video.id}
                           className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-500 overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col relative"
                         >
-                          <div className="relative aspect-[9/16] w-full bg-slate-950 overflow-hidden">
+                          <div className="relative aspect-9/16 w-full bg-slate-950 overflow-hidden">
                             <ContentImage
                               src={video.thumbnail}
                               alt={title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 dark:opacity-80"
                               loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40" />
+                            <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-transparent to-black/40" />
 
                             <div className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-md">
                               <Smartphone className="w-2.5 h-2.5" />
@@ -614,7 +614,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                               type="button"
                               onClick={() => openVideo(video)}
                               aria-label={`${isEn ? 'Play short' : 'Reproducir short'}: ${title}`}
-                              className="absolute inset-0 m-auto z-0 flex h-10 w-10 items-center justify-center rounded-full bg-red-600/90 text-white shadow-lg transition-transform duration-300 group-hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                              className="absolute inset-0 m-auto z-0 flex h-10 w-10 items-center justify-center rounded-full bg-red-600/90 text-white shadow-lg transition-transform duration-300 group-hover:scale-125 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
                             >
                               <Play className="w-4 h-4 fill-current ml-0.5" />
                             </button>
@@ -627,12 +627,12 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                                 ? (isEn ? `Remove ${title} from favorites on this device` : `Quitar ${title} de favoritos en este dispositivo`)
                                 : (isEn ? `Save ${title} to favorites on this device` : `Guardar ${title} en favoritos en este dispositivo`)}
                               aria-pressed={favoriteSet.has(video.slug)}
-                              className="absolute right-2 top-2 z-10 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-black/75 text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                              className="absolute right-2 top-2 z-10 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-black/75 text-white transition-all duration-700 ease-fluid hover:scale-105 hover:bg-red-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
                             >
                               <Heart className={`h-5 w-5 ${favoriteSet.has(video.slug) ? 'fill-current text-rose-300' : ''}`} />
                             </button>
 
-                            <div className="absolute bottom-0 inset-x-0 p-2.5 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent">
+                            <div className="absolute bottom-0 inset-x-0 p-2.5 bg-linear-to-t from-slate-950 via-slate-950/90 to-transparent">
                               <p className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-tight">
                                 {title}
                               </p>
@@ -679,7 +679,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                         href={`https://www.youtube.com/playlist?list=${encodeURIComponent(playlist.id)}`}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:border-red-500/60 hover:shadow-xl active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:border-[#313131] dark:bg-[#1f1f1f]"
+                        className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-700 ease-fluid hover:-translate-y-1 hover:border-red-500/60 hover:shadow-xl active:scale-[0.99] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-600 dark:border-[#313131] dark:bg-[#1f1f1f]"
                         aria-label={isEn ? `Open playlist ${playlist.name} on YouTube, ${countLabel}` : `Abrir la lista ${playlist.name} en YouTube, ${countLabel}`}
                       >
                         <div className={`relative grid aspect-video overflow-hidden bg-slate-950 ${previewVideos.length === 1 ? 'grid-cols-1' : previewVideos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
@@ -687,11 +687,11 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                             <ContentImage key={video.id} src={video.thumbnail} alt="" className="h-full w-full object-cover" loading="lazy" />
                           ))}
                           {previewVideos.length === 1 && <div className="absolute inset-0 bg-black/10" aria-hidden="true" />}
-                          <span className="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-lg bg-black/80 px-3 py-2 text-sm font-semibold text-white backdrop-blur-sm">
+                          <span className="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-lg bg-black/80 px-3 py-2 text-sm font-semibold text-white backdrop-blur-xs">
                             <ListVideo className="h-4 w-4" aria-hidden="true" />
                             {countLabel}
                           </span>
-                          <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:bg-black/20 group-hover:opacity-100" aria-hidden="true">
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-700 ease-fluid group-hover:bg-black/20 group-hover:opacity-100" aria-hidden="true">
                             <Play className="h-12 w-12 fill-current drop-shadow-lg" />
                           </span>
                         </div>
@@ -729,7 +729,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
         {/* Modal de Reproducción (Solo si hay un vídeo activo válido) */}
         {activeModalVideo && activeModalVideo.youtubeId !== 'dQw4w9WgXcQ' && typeof document !== 'undefined' && createPortal(
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto overscroll-contain bg-slate-950/90 p-2 backdrop-blur-xl animate-in fade-in duration-200 sm:p-4">
+          <div className="fixed inset-0 z-1000 flex items-center justify-center overflow-y-auto overscroll-contain bg-slate-950/90 p-2 backdrop-blur-xl animate-in fade-in duration-200 sm:p-4">
             <div
               ref={dialogRef}
               role="dialog"
@@ -776,7 +776,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
 
               <div
                 className={`relative shrink-0 bg-black ${
-                  activeModalVideo.type === 'short' ? 'mx-auto h-[65vh] max-h-[42rem] w-auto max-w-full aspect-[9/16]' : 'aspect-video w-full'
+                  activeModalVideo.type === 'short' ? 'mx-auto h-[65vh] max-h-168 w-auto max-w-full aspect-9/16' : 'aspect-video w-full'
                 }`}
               >
                 <YouTubeTrackedPlayer
@@ -821,7 +821,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                   onClick={() => toggleFavorite(activeModalVideo.slug)}
                   disabled={!favoritesReady}
                   aria-pressed={favoriteSet.has(activeModalVideo.slug)}
-                  className="mt-4 min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]"
+                  className="mt-4 min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:hover:bg-[#272727]"
                 >
                   {favoriteSet.has(activeModalVideo.slug)
                     ? (isEn ? 'Remove from favorites on this device' : 'Quitar de favoritos en este dispositivo')

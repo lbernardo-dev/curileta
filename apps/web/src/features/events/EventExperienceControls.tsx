@@ -98,13 +98,13 @@ export function EventExperienceControls(props: Props) {
     surprise: 'Sonido sorpresa',
   };
 
-  const switchClass = 'inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-[var(--event-control-accent)] px-3 py-2 text-xs font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--event-control-accent)] disabled:cursor-not-allowed disabled:opacity-60';
-  const actionClass = 'inline-flex min-h-10 items-center justify-center rounded-lg bg-[var(--event-control-strong)] px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--event-control-accent)]';
+  const switchClass = 'inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-(--event-control-accent) px-3 py-2 text-xs font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-(--event-control-accent) disabled:cursor-not-allowed disabled:opacity-60';
+  const actionClass = 'inline-flex min-h-10 items-center justify-center rounded-lg bg-(--event-control-strong) px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:brightness-110 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-(--event-control-accent)';
 
   return <div ref={rootRef} className="relative" style={eventStyle}>
-    {open && <section id="event-experience-settings" role="region" aria-label={labels.title} className="absolute right-0 top-[calc(100%+0.75rem)] z-[70] w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-[var(--event-control-surface-light)] p-4 text-[var(--event-control-text-light)] shadow-xl dark:border-[#313131] dark:bg-[var(--event-control-surface-dark)] dark:text-[var(--event-control-text-dark)] sm:p-5">
+    {open && <section id="event-experience-settings" role="region" aria-label={labels.title} className="absolute right-0 top-[calc(100%+0.75rem)] z-70 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-(--event-control-surface-light) p-4 text-(--event-control-text-light) shadow-xl dark:border-[#313131] dark:bg-(--event-control-surface-dark) dark:text-(--event-control-text-dark) sm:p-5">
       <div className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--event-control-accent)]/10 text-xl" aria-hidden="true">{symbol}</span>
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-(--event-control-accent)/10 text-xl" aria-hidden="true">{symbol}</span>
         <div>
           <h2 className="text-base font-bold">{labels.title}</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{labels.intro}</p>
@@ -143,7 +143,7 @@ export function EventExperienceControls(props: Props) {
     <button
       ref={triggerRef}
       type="button"
-      className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 px-2 text-base text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-white/20 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white${props.active ? '' : ' opacity-70'}`}
+      className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 px-2 text-base text-white transition-all duration-700 ease-fluid hover:bg-white/20 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white${props.active ? '' : ' opacity-70'}`}
       aria-label={labels.open}
       aria-expanded={open}
       aria-controls="event-experience-settings"

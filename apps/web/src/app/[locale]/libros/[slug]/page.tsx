@@ -119,7 +119,7 @@ export default async function BookDetailPage({
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Link
           href={`/${locale}/libros`}
-          className="mb-8 inline-flex items-center gap-2 text-xs font-bold text-amber-400 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+          className="mb-8 inline-flex items-center gap-2 text-xs font-bold text-amber-400 transition-all duration-700 ease-fluid hover:text-amber-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{locale === 'en' ? 'Back to books' : 'Volver al catálogo de libros'}</span>
@@ -135,7 +135,7 @@ export default async function BookDetailPage({
                   target="_blank"
                   rel="noreferrer"
                   aria-label={locale === 'en' ? 'Open the full size front cover' : 'Abrir la portada a tamaño completo'}
-                  className="relative block aspect-[4/5] overflow-hidden rounded-2xl shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                  className="relative block aspect-4/5 overflow-hidden rounded-2xl shadow-xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300"
                 >
                   <Image
                     src={coverImage.url}
@@ -161,7 +161,7 @@ export default async function BookDetailPage({
                   target="_blank"
                   rel="noreferrer"
                   aria-label={locale === 'en' ? 'Open the full size back cover' : 'Abrir la contraportada a tamaño completo'}
-                  className="block rounded-2xl bg-[#fff8e7] p-2 shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                  className="block rounded-2xl bg-[#fff8e7] p-2 shadow-xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300"
                 >
                   <Image src={CURILETA_BOOK_BACK_COVER.src} alt={CURILETA_BOOK_BACK_COVER.alt[locale] || CURILETA_BOOK_BACK_COVER.alt.es} width={CURILETA_BOOK_BACK_COVER.width} height={CURILETA_BOOK_BACK_COVER.height} sizes="(max-width: 768px) 40vw, 200px" className="h-auto w-full rounded-lg" />
                 </a>
@@ -171,11 +171,11 @@ export default async function BookDetailPage({
               </figure>
             </div>
           ) : (
-            <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-2xl border border-[#313131] bg-[#131209] shadow-2xl md:w-[48%]">
+            <div className="relative aspect-16/10 w-full shrink-0 overflow-hidden rounded-2xl border border-[#313131] bg-[#131209] shadow-2xl md:w-[48%]">
               <ContentImage
                 src={coverImage.url}
                 alt={coverAlt}
-                className="h-full w-full object-contain transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                className="h-full w-full object-contain transition-all duration-700 ease-fluid"
               />
               <span className="absolute bottom-3 left-3 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-semibold text-white/90">
                 {locale === 'en' ? 'Story illustration' : 'Ilustración de la aventura'}
@@ -208,7 +208,7 @@ export default async function BookDetailPage({
             {book.author && (
               <p className="text-xs text-slate-400">
                 {locale === 'en' ? 'Author:' : 'Autoría:'} {authorPage
-                  ? <Link href={`/${locale}/autora/${authorPage.slug}`} className="font-semibold text-slate-200 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">{authorPage.name[locale] || authorPage.name.es}</Link>
+                  ? <Link href={`/${locale}/autora/${authorPage.slug}`} className="font-semibold text-slate-200 underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300">{authorPage.name[locale] || authorPage.name.es}</Link>
                   : <span className="font-semibold text-slate-200">{book.author}</span>}
               </p>
             )}
@@ -237,7 +237,7 @@ export default async function BookDetailPage({
                       href={store.url}
                       target="_blank"
                       action={{ name: 'book_purchase_click', id: book.slug, label: store.storeName }}
-                      className="flex items-center gap-1.5 rounded-xl border border-[#313131] bg-[#000000] px-4 py-2 text-xs font-semibold text-slate-200 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#272727] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                      className="flex items-center gap-1.5 rounded-xl border border-[#313131] bg-[#000000] px-4 py-2 text-xs font-semibold text-slate-200 transition-all duration-700 ease-fluid hover:bg-[#272727] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300"
                     >
                       <span>{store.storeName}</span>
                       <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
@@ -248,7 +248,7 @@ export default async function BookDetailPage({
             )}
             {!isCuriletaBook && isPublished && (!book.purchaseLinks || book.purchaseLinks.length === 0) && (
               <div className="pt-6">
-                <Link href={`/${locale}/contacto`} className="inline-flex items-center gap-2 rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <Link href={`/${locale}/contacto`} className="inline-flex items-center gap-2 rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-700 ease-fluid hover:bg-amber-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300">
                   {locale === 'en' ? 'Ask about availability' : 'Consultar disponibilidad'} <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -280,7 +280,7 @@ export default async function BookDetailPage({
                     target="_blank"
                     rel="noreferrer"
                     aria-label={locale === 'en' ? `Open full size image: ${panel.title.en}` : `Abrir imagen a tamaño completo: ${panel.title.es}`}
-                    className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-800"
+                    className="block rounded-xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-800"
                   >
                     <Image
                       src={panel.src}
@@ -296,7 +296,7 @@ export default async function BookDetailPage({
                       <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1c493b] text-sm font-semibold text-white">{index + 1}</span>
                       <span className="text-base font-semibold">{panel.title[locale] || panel.title.es}</span>
                     </span>
-                    <a href={panel.src} target="_blank" rel="noreferrer" className="text-xs font-medium text-slate-600 underline decoration-[#9b8a66] underline-offset-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-800">
+                    <a href={panel.src} target="_blank" rel="noreferrer" className="text-xs font-medium text-slate-600 underline decoration-[#9b8a66] underline-offset-4 transition-all duration-700 ease-fluid hover:text-slate-950 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-800">
                       {locale === 'en' ? 'Open full size' : 'Ver imagen completa'}
                     </a>
                   </figcaption>

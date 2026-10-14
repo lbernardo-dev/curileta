@@ -42,14 +42,14 @@ export default async function AccessibilityPage({ params }: { params: Promise<{ 
         <h2 className="font-display text-2xl font-semibold">{isEn ? 'What we support today' : 'Medidas disponibles'}</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {items.map((item) => (
-            <article key={item.title} className="rounded-2xl bg-[var(--background-secondary)] p-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[var(--seasonal-accent-strong)] shadow-sm dark:bg-slate-800">{item.icon}</div>
+            <article key={item.title} className="rounded-2xl bg-(--background-secondary) p-5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-(--seasonal-accent-strong) shadow-xs dark:bg-slate-800">{item.icon}</div>
               <h3 className="mt-4 text-base font-semibold">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{item.body}</p>
+              <p className="mt-2 text-sm leading-6 text-(--text-secondary)">{item.body}</p>
             </article>
           ))}
         </div>
-        <p className="mt-6 text-sm leading-6 text-[var(--text-secondary)]">
+        <p className="mt-6 text-sm leading-6 text-(--text-secondary)">
           {isEn
             ? 'This is an ongoing effort, not a certification of full WCAG conformance. If a page or interaction creates a barrier, tell us what happened and which device or assistive technology you use.'
             : 'Este trabajo es continuo y no constituye una certificación de conformidad total con WCAG. Si una página o interacción te supone una barrera, cuéntanos qué ocurrió y qué dispositivo o tecnología de apoyo utilizas.'}
@@ -58,9 +58,9 @@ export default async function AccessibilityPage({ params }: { params: Promise<{ 
       <SitePageCard className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h2 className="font-display text-xl font-semibold">{isEn ? 'Report an accessibility barrier' : 'Comunicar una barrera de accesibilidad'}</h2>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">{isEn ? 'Our adult contact form is available for accessibility questions and suggestions.' : 'Puedes usar el formulario de contacto para compartir dudas y sugerencias de accesibilidad.'}</p>
+          <p className="mt-2 text-sm text-(--text-secondary)">{isEn ? 'Our adult contact form is available for accessibility questions and suggestions.' : 'Puedes usar el formulario de contacto para compartir dudas y sugerencias de accesibilidad.'}</p>
         </div>
-        <Link href={`/${locale}/contacto`} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--seasonal-accent-strong)]">
+        <Link href={`/${locale}/contacto`} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--seasonal-accent-strong)">
           <Mail className="h-4 w-4" />{isEn ? 'Contact us' : 'Contactar'}
         </Link>
       </SitePageCard>

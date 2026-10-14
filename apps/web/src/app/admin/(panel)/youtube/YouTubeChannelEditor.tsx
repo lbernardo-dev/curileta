@@ -33,7 +33,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   );
 }
 
-const inputClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:bg-[#181818] dark:text-white';
+const inputClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-hidden transition-all duration-700 ease-fluid focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#444] dark:bg-[#181818] dark:text-white';
 
 export function YouTubeChannelEditor() {
   const [config, setConfig] = useState<ChannelConfig>(emptyConfig);
@@ -154,7 +154,7 @@ export function YouTubeChannelEditor() {
               <Field label="Etiquetas del canal" hint="Hasta ocho etiquetas. Se muestran junto al título y la descripción.">
                 <div className="flex gap-2">
                   <input className={inputClass} maxLength={32} value={tagDraft} onChange={(event) => setTagDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addTag(); } }} placeholder="Aventuras" />
-                  <button type="button" onClick={addTag} disabled={!tagDraft.trim() || config.youtubeChannelTags.length >= 8} className="min-h-11 shrink-0 rounded-lg border border-slate-300 px-4 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 disabled:opacity-50 dark:border-[#444] dark:hover:bg-[#272727]">Añadir</button>
+                  <button type="button" onClick={addTag} disabled={!tagDraft.trim() || config.youtubeChannelTags.length >= 8} className="min-h-11 shrink-0 rounded-lg border border-slate-300 px-4 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 disabled:opacity-50 dark:border-[#444] dark:hover:bg-[#272727]">Añadir</button>
                 </div>
                 <span className="mt-3 flex flex-wrap gap-2">
                   {config.youtubeChannelTags.map((tag) => <button key={tag} type="button" onClick={() => removeTag(tag)} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-red-100 hover:text-red-800 dark:bg-[#272727] dark:text-slate-200 dark:hover:bg-red-950" aria-label={`Quitar ${tag}`}>{tag} ×</button>)}
@@ -164,7 +164,7 @@ export function YouTubeChannelEditor() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-slate-600 dark:text-slate-300">Los textos se guardan por idioma para mantener la localización de la web.</p>
-              <button type="button" onClick={save} disabled={saving || loading || pendingUploads > 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
+              <button type="button" onClick={save} disabled={saving || loading || pendingUploads > 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">
                 <Save className="h-4 w-4" />{saving ? 'Guardando…' : saved ? 'Cambios guardados' : 'Guardar cambios'}
               </button>
             </div>

@@ -75,17 +75,17 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
 
           <div className="relative mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
             {route.map((location, index) => (
-              <article key={location.id} className="relative overflow-hidden rounded-[1.65rem] bg-[#fffdf8] shadow-[0_16px_55px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
-                <Link href={`/${locale}/destinos/${location.slug}`} className="group block h-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[#e7ece5]">
+              <article key={location.id} className="relative overflow-hidden rounded-[1.65rem] bg-[#fffdf8] shadow-[0_16px_55px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/8">
+                <Link href={`/${locale}/destinos/${location.slug}`} className="group block h-full transition-all duration-700 ease-fluid hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-700">
+                  <div className="relative aspect-4/3 overflow-hidden bg-[#e7ece5]">
                     <ContentImage
                       src={location.heroImage.url}
                       alt={localized(location.heroImage.alt, locale) || localized(location.name, locale)}
                       loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.03]"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#12261f]/65 via-transparent to-transparent" />
-                    <span className="absolute left-5 top-5 inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 px-2 text-xs font-semibold text-[#20352c] shadow-sm">
+                    <div className="absolute inset-0 bg-linear-to-t from-[#12261f]/65 via-transparent to-transparent" />
+                    <span className="absolute left-5 top-5 inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 px-2 text-xs font-semibold text-[#20352c] shadow-xs">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <span className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 text-sm font-medium text-white">
@@ -110,7 +110,7 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
           </div>
 
           <div className="mt-8 flex justify-center">
-            <Link href={`/${locale}/destinos`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#cbd6c8] px-5 py-3 text-sm font-semibold text-[#254537] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-emerald-700 hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
+            <Link href={`/${locale}/destinos`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#cbd6c8] px-5 py-3 text-sm font-semibold text-[#254537] transition-all duration-700 ease-fluid hover:border-emerald-700 hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-700">
               <span>{isEn ? 'Browse every destination' : 'Ver todos los destinos'}</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -153,14 +153,14 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
               <ul className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4">
                 {upcomingCharacters.map((character) => (
                   <li key={character.id} className="w-64 shrink-0 snap-start">
-                    <Link href={`/${locale}/personajes/${character.slug}`} className="group flex h-full items-center gap-4 rounded-3xl bg-[#fbfcf8] p-4 shadow-sm ring-1 ring-[#20352c]/[0.07] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700">
+                    <Link href={`/${locale}/personajes/${character.slug}`} className="group flex h-full items-center gap-4 rounded-3xl bg-[#fbfcf8] p-4 shadow-xs ring-1 ring-[#20352c]/[0.07] transition-all duration-700 ease-fluid hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-700">
                       <CharacterAvatarImage
                         slug={character.slug}
                         name={crewName(character.slug, character.name, locale)}
                         alt={localized(character.mainImage.alt, locale) || character.name}
                         fallbackSrc={character.mainImage.url}
                         size={80}
-                        className="h-20 w-20 border-2 border-[#d7e1d3] bg-[#f3ead8] shadow-sm transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+                        className="h-20 w-20 border-2 border-[#d7e1d3] bg-[#f3ead8] shadow-xs transition-transform duration-700 ease-fluid group-hover:scale-105"
                       />
                       <div className="min-w-0">
                         <h4 className="truncate font-display text-lg font-semibold text-[#20352c]">{crewName(character.slug, character.name, locale)}</h4>
@@ -189,7 +189,7 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
       {featuredBook && featuredCover && (
         <section className="bg-[#fffdf7] px-5 py-20 text-[#20352c] sm:px-8 sm:py-28 lg:px-12">
           <SectionEmblem icon={BookOpen} tone="amber" label={isEn ? 'Curileta’s published book' : 'El libro publicado de Curileta'} />
-          <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#163b32] text-white shadow-[0_28px_90px_rgba(16,48,38,0.18)] lg:grid-cols-[0.92fr_1.08fr]">
+          <div className="mx-auto grid max-w-7xl overflow-hidden rounded-4xl bg-[#163b32] text-white shadow-[0_28px_90px_rgba(16,48,38,0.18)] lg:grid-cols-[0.92fr_1.08fr]">
             <div className="relative min-h-[320px] overflow-hidden bg-[#163b32] sm:min-h-[400px] lg:min-h-[560px]">
               <Image
                 src={featuredCover.url}

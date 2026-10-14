@@ -15,8 +15,8 @@ const colors: Array<{ key: keyof EventPalette; label: string }> = [
 ];
 
 const panelClass = 'rounded-xl border border-slate-200 bg-white p-6 dark:border-[#313131] dark:bg-[#1f1f1f]';
-const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-wait disabled:opacity-60';
-const fieldClass = 'mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 outline-none focus:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
+const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-wait disabled:opacity-60';
+const fieldClass = 'mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 outline-hidden focus:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
 
 export function EventThemeControlPanel({ events }: { events: ManagedEvent[] }) {
   const [baseTheme, setBaseTheme] = useState<ManagedBaseTheme | null>(null);
@@ -153,7 +153,7 @@ export function EventThemeControlPanel({ events }: { events: ManagedEvent[] }) {
         </div>
 
         {baseTheme && <details className="mt-6 rounded-lg border border-slate-200 dark:border-[#313131]">
-          <summary className="cursor-pointer px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Configurar apariencia del tema base</summary>
+          <summary className="cursor-pointer px-4 py-3 text-sm font-semibold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">Configurar apariencia del tema base</summary>
           <form onSubmit={(event) => void saveBase(event)} className="space-y-5 border-t border-slate-200 p-4 dark:border-[#313131]">
             <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">Estas preferencias se aplican cuando seleccionas el tema base. No muestran el aviso estacional.</p>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -163,7 +163,7 @@ export function EventThemeControlPanel({ events }: { events: ManagedEvent[] }) {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {colors.map(({ key, label }) => <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm font-semibold dark:border-[#313131]">
-                <input type="color" aria-label={label} value={baseTheme.palette[key]} onChange={(event) => updatePalette(key, event.target.value)} className="h-10 w-12 cursor-pointer rounded border-0 bg-transparent p-0 focus-visible:ring-2 focus-visible:ring-emerald-600" />
+                <input type="color" aria-label={label} value={baseTheme.palette[key]} onChange={(event) => updatePalette(key, event.target.value)} className="h-10 w-12 cursor-pointer rounded-sm border-0 bg-transparent p-0 focus-visible:ring-2 focus-visible:ring-emerald-600" />
                 <span><span className="block">{label}</span><span className="font-mono text-xs text-slate-500">{baseTheme.palette[key]}</span></span>
               </label>)}
             </div>

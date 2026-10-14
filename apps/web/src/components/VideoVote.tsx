@@ -117,7 +117,7 @@ export function VideoVote({ slug, title, prompt, initialVotes, locale, enabled =
             setMessage('');
             setShowChallenge(true);
           }}
-          className="min-h-10 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+          className="min-h-10 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600"
         >
           {sending ? (isEn ? 'Saving…' : 'Guardando…') : voted ? (isEn ? 'Vote recorded' : 'Ya has votado aquí') : (isEn ? 'Vote' : 'Votar')}
         </button>

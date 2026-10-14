@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ChevronLeft, LoaderCircle, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
 import type { EventCampaignActivity, EventRiddle, ManagedEvent } from '@/lib/events';
 
-const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-not-allowed disabled:opacity-50';
-const fieldClass = 'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
+const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-not-allowed disabled:opacity-50';
+const fieldClass = 'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-hidden transition-all duration-700 ease-fluid focus:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
 const cardClass = 'rounded-xl border border-slate-200 bg-white p-5 dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-6';
 
 function createRiddle(): EventRiddle {
@@ -185,7 +185,7 @@ export default function RiddlesManager() {
         <div><h2 id="riddle-events-title" className="text-xl font-bold">Elige una temporada</h2><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Cada evento tiene su propia colección, lista para activarse con su tema.</p></div>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-[#272727] dark:text-slate-200">{events.length} temporadas</span>
       </div>
-      {loading ? <div className={`${cardClass} animate-pulse`} aria-label="Cargando temporadas"><div className="h-5 w-48 rounded bg-slate-200 dark:bg-[#313131]" /><div className="mt-4 h-20 rounded-lg bg-slate-100 dark:bg-[#272727]" /></div>
+      {loading ? <div className={`${cardClass} animate-pulse`} aria-label="Cargando temporadas"><div className="h-5 w-48 rounded-sm bg-slate-200 dark:bg-[#313131]" /><div className="mt-4 h-20 rounded-lg bg-slate-100 dark:bg-[#272727]" /></div>
         : events.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => {
             const count = event.campaignContent.activities.find((activity) => activity.kind === 'riddleSet')?.riddles?.length || 0;
@@ -232,7 +232,7 @@ export default function RiddlesManager() {
         </fieldset>)}
         {!riddles.length && <p className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900 dark:bg-[#272117] dark:text-amber-100">Añade al menos un acertijo antes de guardar la colección.</p>}
       </div>
-      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur dark:border-[#313131] dark:bg-[#1f1f1f]/95">
+      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur-sm dark:border-[#313131] dark:bg-[#1f1f1f]/95">
         {selectedEvent.campaignContent.activities.some((activity) => activity.kind === 'riddleSet') && (confirmDelete
           ? <span className="flex flex-wrap items-center gap-2 text-sm text-rose-800 dark:text-rose-200"><span>¿Eliminar esta colección?</span><button type="button" onClick={() => void deleteCollection()} disabled={saving} className={`${buttonClass} bg-rose-700 text-white hover:bg-rose-600`}>Sí, eliminar</button><button type="button" onClick={() => setConfirmDelete(false)} className={`${buttonClass} border border-slate-300 dark:border-[#414141]`}>Cancelar</button></span>
           : <button type="button" onClick={() => setConfirmDelete(true)} className={`${buttonClass} text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-[#272727]`}><Trash2 className="h-4 w-4" />Eliminar colección</button>)}

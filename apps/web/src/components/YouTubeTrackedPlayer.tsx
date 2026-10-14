@@ -224,7 +224,7 @@ export function YouTubeTrackedPlayer({
               href={youtubeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
             >
               {locale === 'en' ? 'Watch on YouTube' : 'Ver en YouTube'}
             </a>

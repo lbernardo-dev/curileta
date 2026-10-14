@@ -30,20 +30,20 @@ export default async function LegalNoticePage({ params }: { params: Promise<{ lo
       <SitePageCard className="border-l-4 border-l-amber-500">
         <h2 className="font-display text-xl font-semibold">{isEn ? 'Website owner' : 'Titular del sitio web'}</h2>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-          <div><dt className="font-semibold">{isEn ? 'Name' : 'Nombre'}</dt><dd className="mt-1 text-[var(--text-secondary)]">Lester Romero Bernardo</dd></div>
-          <div><dt className="font-semibold">{isEn ? 'Tax ID' : 'NIF'}</dt><dd className="mt-1 text-[var(--text-secondary)]">60679024X</dd></div>
-          <div className="sm:col-span-2"><dt className="font-semibold">{isEn ? 'Postal address' : 'Dirección postal'}</dt><dd className="mt-1 text-[var(--text-secondary)]">Calle Juana María Condesa Lluch 6, Valencia, España</dd></div>
-          <div><dt className="font-semibold">{isEn ? 'Email' : 'Correo electrónico'}</dt><dd className="mt-1"><a href="mailto:lasaventurasdecurileta@gmail.com" className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">lasaventurasdecurileta@gmail.com</a></dd></div>
-          <div><dt className="font-semibold">{isEn ? 'Contact form' : 'Formulario de contacto'}</dt><dd className="mt-1"><Link href={`/${locale}/contacto`} className="text-[var(--seasonal-accent-strong)] underline underline-offset-4">{isEn ? 'Open the form' : 'Abrir el formulario'}</Link></dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Name' : 'Nombre'}</dt><dd className="mt-1 text-(--text-secondary)">Lester Romero Bernardo</dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Tax ID' : 'NIF'}</dt><dd className="mt-1 text-(--text-secondary)">60679024X</dd></div>
+          <div className="sm:col-span-2"><dt className="font-semibold">{isEn ? 'Postal address' : 'Dirección postal'}</dt><dd className="mt-1 text-(--text-secondary)">Calle Juana María Condesa Lluch 6, Valencia, España</dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Email' : 'Correo electrónico'}</dt><dd className="mt-1"><a href="mailto:lasaventurasdecurileta@gmail.com" className="text-(--seasonal-accent-strong) underline underline-offset-4">lasaventurasdecurileta@gmail.com</a></dd></div>
+          <div><dt className="font-semibold">{isEn ? 'Contact form' : 'Formulario de contacto'}</dt><dd className="mt-1"><Link href={`/${locale}/contacto`} className="text-(--seasonal-accent-strong) underline underline-offset-4">{isEn ? 'Open the form' : 'Abrir el formulario'}</Link></dd></div>
         </dl>
       </SitePageCard>
 
       <SitePageCard>
         <div className="flex items-start gap-3">
-          <FileText className="mt-1 h-5 w-5 shrink-0 text-[var(--seasonal-accent-strong)]" />
+          <FileText className="mt-1 h-5 w-5 shrink-0 text-(--seasonal-accent-strong)" />
           <div>
             <h2 className="font-display text-xl font-semibold">{isEn ? 'Intellectual property' : 'Propiedad intelectual'}</h2>
-            <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+            <p className="mt-3 text-sm leading-7 text-(--text-secondary)">
               {isEn
                 ? 'The Curileta name, characters, stories, illustrations, logos, audiovisual works and page design may be protected by intellectual-property rights. Rights belong to their respective owners. Do not reproduce or use protected material commercially without prior authorisation from the rights holder.'
                 : 'El nombre Curileta, sus personajes, historias, ilustraciones, logotipos, obras audiovisuales y diseño de la web pueden estar protegidos por derechos de propiedad intelectual. Los derechos corresponden a sus respectivos titulares. No reproduzcas ni utilices comercialmente material protegido sin autorización previa de quien tenga los derechos.'}
@@ -54,7 +54,7 @@ export default async function LegalNoticePage({ params }: { params: Promise<{ lo
 
       <SitePageCard>
         <h2 className="font-display text-xl font-semibold">{isEn ? 'Use of the website' : 'Uso del sitio web'}</h2>
-        <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+        <p className="mt-3 text-sm leading-7 text-(--text-secondary)">
           {isEn
             ? 'Please use this website lawfully and avoid actions that could disrupt its availability or security. External links lead to services operated by third parties, which are responsible for their own content and policies.'
             : 'Utiliza esta web de forma lícita y evita acciones que puedan afectar a su disponibilidad o seguridad. Los enlaces externos dirigen a servicios de terceros, responsables de sus propios contenidos y políticas.'}

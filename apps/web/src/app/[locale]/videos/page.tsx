@@ -69,7 +69,7 @@ export default async function VideosPage({
                   href={channelUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/40 bg-black/20 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-black/35 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/40 bg-black/20 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-black/35 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
                 >
                   <ExternalLink className="h-4 w-4" aria-hidden="true" />
                   {isEn ? 'Visit channel' : 'Ver canal'}
@@ -78,7 +78,7 @@ export default async function VideosPage({
                   href={subscribeUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-500 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-red-500 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
                 >
                   <Youtube className="h-4 w-4" aria-hidden="true" />
                   {isEn ? 'Subscribe' : 'Suscribirme'}

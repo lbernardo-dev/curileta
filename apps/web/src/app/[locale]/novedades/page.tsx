@@ -45,13 +45,13 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
     >
       {event && (
         <Link href={'/' + locale + '/eventos'} className="group block">
-          <SitePageCard className="flex flex-col gap-5 border-l-4 border-l-[var(--seasonal-accent-strong)] transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+          <SitePageCard className="flex flex-col gap-5 border-l-4 border-l-(--seasonal-accent-strong) transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--seasonal-accent-strong)]"><Sparkles className="h-3.5 w-3.5" />{isEn ? 'Current seasonal story' : 'Historia de temporada activa'}</span>
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--seasonal-accent-strong)"><Sparkles className="h-3.5 w-3.5" />{isEn ? 'Current seasonal story' : 'Historia de temporada activa'}</span>
               <h2 className="mt-3 font-display text-2xl font-semibold">{event.name[locale] || event.name.es}</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{event.tagline[locale] || event.tagline.es}</p>
+              <p className="mt-2 text-sm leading-6 text-(--text-secondary)">{event.tagline[locale] || event.tagline.es}</p>
             </div>
-            <span className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]">{isEn ? 'See the story' : 'Ver la historia'}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+            <span className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-(--seasonal-accent-strong)">{isEn ? 'See the story' : 'Ver la historia'}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
           </SitePageCard>
         </Link>
       )}
@@ -61,20 +61,20 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
           {[...publishedBooks.map((book) => ({ book, upcoming: false })), ...upcomingBooks.map((book) => ({ book, upcoming: true }))].map(({ book, upcoming }) => {
             const coverImage = getBookCoverImage(book);
             return (
-              <article key={book.id} className="overflow-hidden rounded-3xl bg-[var(--background-primary)] shadow-sm ring-1 ring-[var(--border-subtle)] sm:grid sm:grid-cols-[minmax(150px,0.42fr)_1fr]">
-                <div className="relative aspect-[4/5] bg-[#f1ead5] p-4 sm:aspect-auto sm:min-h-64">
+              <article key={book.id} className="overflow-hidden rounded-3xl bg-(--background-primary) shadow-xs ring-1 ring-(--border-subtle) sm:grid sm:grid-cols-[minmax(150px,0.42fr)_1fr]">
+                <div className="relative aspect-4/5 bg-[#f1ead5] p-4 sm:aspect-auto sm:min-h-64">
                   <Image src={coverImage.url} alt={coverImage.alt[locale] || coverImage.alt.es} fill className="object-contain p-5" sizes="(max-width: 640px) 100vw, 320px" />
                 </div>
                 <div className="flex flex-col p-6 sm:p-7">
-                  <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--seasonal-accent-strong)]">
+                  <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-(--seasonal-accent-strong)">
                     {upcoming ? <CalendarDays className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
                     {upcoming ? (isEn ? 'Coming soon' : 'Próximamente') : (isEn ? 'Published' : 'Publicado')}
                   </span>
                   <h2 className="mt-3 font-display text-2xl font-semibold">{book.title[locale] || book.title.es}</h2>
-                  {book.subtitle && <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">{book.subtitle[locale] || book.subtitle.es}</p>}
-                  <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{book.description[locale] || book.description.es}</p>
-                  {(!upcoming || book.publicationDate) && <p className="mt-4 text-xs font-medium text-[var(--text-secondary)]">{upcoming ? (isEn ? 'Planned publication' : 'Fecha prevista') : (isEn ? 'Published' : 'Publicado')} · {formatDate(book.publicationDate)}</p>}
-                  <Link href={'/' + locale + '/libros/' + book.slug} className="mt-auto inline-flex min-h-11 items-center gap-2 pt-5 text-sm font-semibold text-[var(--seasonal-accent-strong)]">
+                  {book.subtitle && <p className="mt-1 text-sm font-medium text-(--text-secondary)">{book.subtitle[locale] || book.subtitle.es}</p>}
+                  <p className="mt-3 text-sm leading-6 text-(--text-secondary)">{book.description[locale] || book.description.es}</p>
+                  {(!upcoming || book.publicationDate) && <p className="mt-4 text-xs font-medium text-(--text-secondary)">{upcoming ? (isEn ? 'Planned publication' : 'Fecha prevista') : (isEn ? 'Published' : 'Publicado')} · {formatDate(book.publicationDate)}</p>}
+                  <Link href={'/' + locale + '/libros/' + book.slug} className="mt-auto inline-flex min-h-11 items-center gap-2 pt-5 text-sm font-semibold text-(--seasonal-accent-strong)">
                     {isEn ? 'Book details' : 'Ficha del libro'}<ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -84,9 +84,9 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
         </div>
       ) : !event ? (
         <SitePageCard className="py-12 text-center">
-          <Newspaper className="mx-auto h-9 w-9 text-[var(--seasonal-accent-strong)]" />
+          <Newspaper className="mx-auto h-9 w-9 text-(--seasonal-accent-strong)" />
           <h2 className="mt-4 font-display text-2xl font-semibold">{isEn ? 'No updates published yet' : 'Todavía no hay novedades publicadas'}</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--text-secondary)]">{isEn ? 'New releases and confirmed stories will appear here.' : 'Aquí aparecerán las nuevas publicaciones e historias confirmadas.'}</p>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-(--text-secondary)">{isEn ? 'New releases and confirmed stories will appear here.' : 'Aquí aparecerán las nuevas publicaciones e historias confirmadas.'}</p>
         </SitePageCard>
       ) : null}
     </SitePageLayout>

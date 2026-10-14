@@ -52,7 +52,7 @@ export default async function LocaleLayout({
   return (
     <SeasonalThemeProvider activeEvent={activeEvent} baseTheme={baseTheme}>
       <Header locale={locale as Locale} />
-      <main id="main-content" className="flex-grow">
+      <main id="main-content" className="grow">
         {children}
       </main>
       <Footer locale={locale as Locale} youtubeChannelUrl={settings.youtubeChannelUrl} />

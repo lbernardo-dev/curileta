@@ -1,6 +1,6 @@
 # Referencia funcional y técnica del backend
 
-Fecha de revisión: 13 de octubre de 2026. Esta referencia describe la arquitectura y el estado verificado del backend. La guía de configuración está en [BACKEND_SETUP.md](./BACKEND_SETUP.md).
+Fecha de revisión: 14 de octubre de 2026. Esta referencia describe la arquitectura y el estado verificado del backend. La guía de configuración está en [BACKEND_SETUP.md](./BACKEND_SETUP.md).
 
 ## 1. Estado de esta versión
 
@@ -16,6 +16,12 @@ Fecha de revisión: 13 de octubre de 2026. Esta referencia describe la arquitect
 ## 2. Arquitectura y responsabilidades
 
 La aplicación web se ejecuta con Next.js. Supabase aporta autenticación, PostgreSQL y almacenamiento de imágenes. Las rutas de servidor separan la lectura pública de las operaciones protegidas. Resend y Turnstile son integraciones opcionales para formularios.
+
+### Estilos y compilación del frontend
+
+La rama aislada `codex/tailwind4-preview` migra el workspace `apps/web` de Tailwind CSS 3 a 4.3.3. Usa `@tailwindcss/postcss` desde `apps/web/postcss.config.mjs`; Tailwind y PostCSS se declaran en `apps/web/package.json`, y Autoprefixer deja de ser necesario porque Tailwind 4 resuelve prefijos e imports. `apps/web/src/app/globals.css` contiene la importación de Tailwind, la variante oscura, las extensiones del tema y el escaneo explícito de `packages/` para los componentes compartidos del monorepo. El migrador oficial también actualizó las utilidades incompatibles en páginas públicas, panel y paquetes compartidos. En local terminaron correctamente `npm run typecheck --workspace=apps/web`, `npm test` (19 pruebas), `npm run build --workspace=apps/web` y `npm run lint --workspace=apps/web`; lint conserva un aviso React Hook preexistente en `YouTubeTrackedPlayer.tsx:127`. El build local no tenía credenciales Supabase y usó los fallbacks disponibles, por lo que no valida contenido de Production.
+
+Estos cambios existen solo en la rama de preview. La compilación local pasó, pero la compilación y comparación visual de Vercel aún requieren verificación; no se describe Tailwind 4 como activo en Production hasta que Vercel confirme el despliegue correspondiente.
 
 ```mermaid
 flowchart LR

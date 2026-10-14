@@ -126,7 +126,7 @@ export function CharacterFavoriteButton({
         aria-label={liked
           ? (isEn ? `Remove ${ranking?.name || 'character'} from favorites` : `Quitar a ${ranking?.name || 'este personaje'} de favoritos`)
           : (isEn ? `Add ${ranking?.name || 'character'} to favorites` : `Añadir a ${ranking?.name || 'este personaje'} a favoritos`)}
-        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#cbd6c8] bg-white px-4 py-2 text-sm font-semibold text-[#254537] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-100 dark:hover:bg-rose-950/40 ${className}`}
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#cbd6c8] bg-white px-4 py-2 text-sm font-semibold text-[#254537] transition-all duration-700 ease-fluid hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-100 dark:hover:bg-rose-950/40 ${className}`}
       >
         <Heart className={`h-4 w-4 ${liked ? 'fill-rose-500 text-rose-500' : 'text-rose-500'} ${pending ? 'animate-pulse' : ''}`} />
         {compact ? <span className="tabular-nums">{(ranking?.count || 0).toLocaleString(isEn ? 'en-US' : 'es-ES')}</span> : <span>{liked ? (isEn ? 'In favorites' : 'En favoritos') : (isEn ? 'Add to favorites' : 'Añadir a favoritos')}</span>}
@@ -141,11 +141,11 @@ export function FavoriteRankBadge({ slug, locale, className = '' }: { slug: stri
   const { rankings } = useCharacterFavorites();
   const ranking = rankings.find((item) => item.slug === slug);
   if (!ranking || ranking.rank === null) {
-    return <span className={`inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-sm ${className}`}>{locale === 'en' ? 'No votes yet' : 'Aún sin votos'}</span>;
+    return <span className={`inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-xs ${className}`}>{locale === 'en' ? 'No votes yet' : 'Aún sin votos'}</span>;
   }
   const medal = ranking.rank === 1 ? '🥇' : ranking.rank === 2 ? '🥈' : ranking.rank === 3 ? '🥉' : null;
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-emerald-950 shadow-sm ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-emerald-950 shadow-xs ${className}`}>
       <span aria-hidden="true">{medal || '♥'}</span>
       {locale === 'en' ? `#${ranking.rank} · ${ranking.count}` : `#${ranking.rank} · ${ranking.count}`}
     </span>
@@ -189,7 +189,7 @@ export function FavoriteLeaderboard({
                       aria-label={isEn
                         ? `${character.name}, place ${place}, ${leader.count} favorites`
                         : `${character.name}, puesto ${place}, ${leader.count} favoritos`}
-                      className="group flex min-w-0 flex-col items-center rounded-xl px-1 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                      className="group flex min-w-0 flex-col items-center rounded-xl px-1 py-1 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-300"
                     >
                       <span className="mb-1 text-lg" aria-hidden="true">{place === 1 ? '🥇' : place === 2 ? '🥈' : '🥉'}</span>
                       <ContentImage
@@ -199,7 +199,7 @@ export function FavoriteLeaderboard({
                         height={72}
                         loading="lazy"
                         decoding="async"
-                        className="mb-0 h-14 w-14 rounded-full border-2 border-white/80 object-cover shadow-lg transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 sm:h-20 sm:w-20"
+                        className="mb-0 h-14 w-14 rounded-full border-2 border-white/80 object-cover shadow-lg transition-transform duration-700 ease-fluid group-hover:scale-105 sm:h-20 sm:w-20"
                       />
                       <span className="mt-2 block w-full truncate text-xs font-bold text-white sm:text-sm">{character.name}</span>
                       <span className="mt-0.5 block text-[10px] text-slate-300 sm:text-xs">

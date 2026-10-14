@@ -133,7 +133,7 @@ export function ImageFrameEditor() {
             id="image-frame-target"
             value={selectedKey}
             onChange={(event) => chooseTarget(event.target.value as ImageFrameKey)}
-            className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#272727] dark:text-white"
+            className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#272727] dark:text-white"
           >
             {targetKeys.map((key) => <option key={key} value={key}>{IMAGE_FRAME_TARGETS[key].title}</option>)}
           </select>
@@ -162,7 +162,7 @@ export function ImageFrameEditor() {
                 transformOrigin: `${draft.positionX}% ${draft.positionY}%`,
               }}
             />
-            <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+            <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-xs">
               Vista previa del marco
             </span>
           </div>
@@ -186,7 +186,7 @@ export function ImageFrameEditor() {
               type="button"
               onClick={saveFrame}
               disabled={loading || saving || !hasChanges}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:bg-emerald-700 dark:hover:bg-emerald-600"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:bg-emerald-700 dark:hover:bg-emerald-600"
             >
               {saving ? 'Guardando…' : loading ? 'Cargando…' : 'Guardar encuadre'}
             </button>
@@ -194,7 +194,7 @@ export function ImageFrameEditor() {
               type="button"
               onClick={resetFrame}
               disabled={loading || saving || isSameFrame(draft, target.defaults)}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:text-white dark:hover:bg-[#272727]"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 transition-all duration-700 ease-fluid hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:text-white dark:hover:bg-[#272727]"
             >
               Restaurar valores iniciales
             </button>
@@ -237,7 +237,7 @@ function RangeControl({
         step={step}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="h-2 w-full cursor-pointer accent-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-4 dark:accent-emerald-400"
+        className="h-2 w-full cursor-pointer accent-emerald-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-4 dark:accent-emerald-400"
       />
     </div>
   );

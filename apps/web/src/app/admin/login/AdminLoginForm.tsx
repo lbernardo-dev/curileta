@@ -50,7 +50,7 @@ export function AdminLoginForm() {
           maxLength={320}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] placeholder:text-slate-500 hover:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818] dark:text-white"
+          className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 outline-hidden transition-all duration-700 ease-fluid placeholder:text-slate-500 hover:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818] dark:text-white"
         />
       </div>
       <div className="space-y-2">
@@ -64,13 +64,13 @@ export function AdminLoginForm() {
           maxLength={1024}
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818] dark:text-white"
+          className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 outline-hidden transition-all duration-700 ease-fluid hover:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818] dark:text-white"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="min-h-12 w-full rounded-lg bg-emerald-800 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1f1f1f]"
+        className="min-h-12 w-full rounded-lg bg-emerald-800 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1f1f1f]"
       >
         {loading ? 'Validando acceso…' : 'Entrar al panel'}
       </button>

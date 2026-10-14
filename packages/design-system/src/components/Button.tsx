@@ -11,17 +11,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'primary', size = 'md', className, children, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-400 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-full cursor-pointer';
+      'inline-flex items-center justify-center font-bold transition-all duration-200 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-sky-400 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-full cursor-pointer';
 
     const variants = {
       primary:
-        'bg-[var(--color-curileta-green)] hover:bg-[var(--color-curileta-green-dark)] text-white shadow-md hover:shadow-lg active:scale-95',
+        'bg-curileta-green hover:bg-curileta-green-dark text-white shadow-md hover:shadow-lg active:scale-95',
       secondary:
-        'bg-white text-[var(--color-forest)] border-2 border-[var(--color-curileta-green)] hover:bg-[var(--background-accent)] active:scale-95',
+        'bg-white text-(--color-forest) border-2 border-curileta-green hover:bg-(--background-accent) active:scale-95',
       accent:
-        'bg-[var(--color-adventure-gold)] hover:bg-amber-600 text-slate-950 font-extrabold shadow-md hover:shadow-lg active:scale-95',
+        'bg-(--color-adventure-gold) hover:bg-amber-600 text-slate-950 font-extrabold shadow-md hover:shadow-lg active:scale-95',
       ghost:
-        'bg-transparent hover:bg-black/5 text-slate-800 dark:text-slate-100 hover:text-[var(--color-curileta-green)]',
+        'bg-transparent hover:bg-black/5 text-slate-800 dark:text-slate-100 hover:text-curileta-green',
     };
 
     const sizes = {

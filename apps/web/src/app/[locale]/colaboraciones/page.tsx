@@ -38,18 +38,18 @@ export default async function CollaborationsPage({ params }: { params: Promise<{
       <div className="grid gap-5 md:grid-cols-3">
         {opportunities.map((item) => (
           <SitePageCard key={item.id} className="flex flex-col">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)]">{iconFor(item.iconName)}</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-(--background-secondary) text-(--seasonal-accent-strong)">{iconFor(item.iconName)}</div>
             <h2 className="mt-5 font-display text-xl font-semibold">{item.title[locale] || item.title.es}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{item.desc[locale] || item.desc.es}</p>
+            <p className="mt-2 text-sm leading-6 text-(--text-secondary)">{item.desc[locale] || item.desc.es}</p>
           </SitePageCard>
         ))}
       </div>
       <SitePageCard className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-4">
-          <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)] sm:flex"><BookOpen className="h-5 w-5" /></div>
+          <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-(--background-secondary) text-(--seasonal-accent-strong) sm:flex"><BookOpen className="h-5 w-5" /></div>
           <div>
             <h2 className="font-display text-xl font-semibold">{isEn ? 'A first conversation is all you need' : 'Basta con iniciar una conversación'}</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-(--text-secondary)">
               {isEn
                 ? 'These are areas of interest, not a promise that every programme or licence is currently available. Tell us who you are, what you have in mind and how to reach you.'
                 : 'Estas son áreas de interés, no una promesa de que cada programa o licencia esté disponible ahora. Cuéntanos quién eres, qué propones y cómo podemos responderte.'}
@@ -60,7 +60,7 @@ export default async function CollaborationsPage({ params }: { params: Promise<{
           <Mail className="h-4 w-4" />{isEn ? 'Send a proposal' : 'Enviar una propuesta'}<ArrowRight className="h-4 w-4" />
         </Link>
       </SitePageCard>
-      <p className="inline-flex items-center gap-2 text-xs leading-5 text-[var(--text-secondary)]"><CalendarDays className="h-4 w-4 shrink-0" />{isEn ? 'Events, school visits and readings are arranged individually; no dates are confirmed through this page.' : 'Los eventos, visitas escolares y lecturas se acuerdan de forma individual; esta página no confirma fechas.'}</p>
+      <p className="inline-flex items-center gap-2 text-xs leading-5 text-(--text-secondary)"><CalendarDays className="h-4 w-4 shrink-0" />{isEn ? 'Events, school visits and readings are arranged individually; no dates are confirmed through this page.' : 'Los eventos, visitas escolares y lecturas se acuerdan de forma individual; esta página no confirma fechas.'}</p>
     </SitePageLayout>
   );
 }

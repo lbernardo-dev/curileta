@@ -60,7 +60,7 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
     <div
       role="banner"
       aria-label={isEn ? 'Seasonal event announcement' : 'Aviso de evento estacional'}
-      className="relative z-50 w-full border-b border-white/10 bg-[var(--seasonal-accent-strong)] px-3 py-2.5 text-white shadow-md sm:px-6"
+      className="relative z-50 w-full border-b border-white/10 bg-(--seasonal-accent-strong) px-3 py-2.5 text-white shadow-md sm:px-6"
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-5 gap-y-2">
         <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
@@ -85,7 +85,7 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
           {isSeasonalActive && (
             <a
               href={`/${locale}${exploreAnchor}`}
-              className="inline-flex min-h-8 items-center gap-1 rounded-full bg-[var(--seasonal-accent)] px-3 py-1.5 text-xs font-bold text-slate-950 shadow-sm transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex min-h-8 items-center gap-1 rounded-full bg-(--seasonal-accent) px-3 py-1.5 text-xs font-bold text-slate-950 shadow-xs transition hover:brightness-110 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <span>{isEn ? 'Explore' : 'Explorar'}</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -115,7 +115,7 @@ export const SeasonalBanner: React.FC<{ locale: Locale }> = ({ locale }) => {
             type="button"
             onClick={toggleSeasonalTheme}
             aria-pressed={isSeasonalActive}
-            className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/90 transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/90 transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             title={isEn
               ? isUserDismissed ? 'Restore the seasonal theme' : 'Temporarily view the regular theme'
               : isUserDismissed ? 'Volver a activar el tema de temporada' : 'Ver temporalmente el tema habitual'}

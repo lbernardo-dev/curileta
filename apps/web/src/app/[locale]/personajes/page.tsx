@@ -84,7 +84,7 @@ export default async function CharactersPage({
             <Link
               key={c.id}
               href={`/${locale}/personajes/${c.slug}`}
-              className="p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-emerald-400 text-left transition-all group flex flex-col justify-between shadow-sm hover:shadow-md"
+              className="p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-emerald-400 text-left transition-all group flex flex-col justify-between shadow-xs hover:shadow-md"
             >
               <div>
                 <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold block uppercase">

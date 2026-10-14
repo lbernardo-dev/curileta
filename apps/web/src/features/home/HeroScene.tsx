@@ -117,8 +117,8 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
           </video>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#09241f]/96 via-[#09241f]/76 to-[#09241f]/20 sm:from-[#09241f]/95 sm:via-[#09241f]/62 sm:to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#09241f]/70 via-transparent to-[#09241f]/10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#09241f]/96 via-[#09241f]/76 to-[#09241f]/20 sm:from-[#09241f]/95 sm:via-[#09241f]/62 sm:to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#09241f]/70 via-transparent to-[#09241f]/10" />
 
       </div>
 
@@ -141,14 +141,14 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
           <div className="mt-7 flex flex-col items-start gap-3 sm:mt-8 sm:flex-row sm:items-center">
             <Link
               href={`/${locale}/libros/las-aventuras-de-curileta`}
-              className="inline-flex min-h-12 w-fit max-w-full items-center justify-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-[#1c3028] shadow-lg shadow-black/15 transition hover:-translate-y-0.5 hover:bg-amber-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex min-h-12 w-fit max-w-full items-center justify-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-[#1c3028] shadow-lg shadow-black/15 transition hover:-translate-y-0.5 hover:bg-amber-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <span>{isEn ? 'Discover the book' : 'Descubre el libro'}</span>
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <a
               href="#ruta"
-              className="inline-flex min-h-12 w-fit max-w-full items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex min-h-12 w-fit max-w-full items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-xs transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <Compass className="h-4 w-4" aria-hidden="true" />
               <span>{isEn ? 'Follow the route' : 'Seguir la ruta'}</span>

@@ -32,9 +32,9 @@ export const LocaleSwitcher: React.FC<{ currentLocale: Locale }> = ({ currentLoc
           <button
             key={loc}
             onClick={() => handleLocaleChange(loc)}
-            className={`h-full px-2.5 rounded-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer ${
+            className={`h-full px-2.5 rounded-full transition-all duration-700 ease-fluid cursor-pointer ${
               isActive
-                ? 'bg-emerald-600 text-white shadow-sm font-extrabold'
+                ? 'bg-emerald-600 text-white shadow-xs font-extrabold'
                 : 'hover:text-emerald-300 text-slate-300'
             }`}
             aria-label={`Cambiar a ${localeNames[loc]}`}

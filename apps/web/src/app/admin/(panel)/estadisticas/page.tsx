@@ -157,7 +157,7 @@ export default function AdminAnalyticsPage() {
         <div className="flex flex-wrap gap-3">
           <label className="block space-y-2 text-sm font-semibold">
             <span>Periodo</span>
-            <select value={range} onChange={(event) => setRange(event.target.value)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
+            <select value={range} onChange={(event) => setRange(event.target.value)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
               <option value="7">Siete días</option>
               <option value="30">Treinta días</option>
               <option value="90">Noventa días</option>
@@ -168,7 +168,7 @@ export default function AdminAnalyticsPage() {
           </label>
           <label className="block space-y-2 text-sm font-semibold">
             <span>Agrupar por</span>
-            <select value={grouping} onChange={(event) => setGrouping(event.target.value as Grouping)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
+            <select value={grouping} onChange={(event) => setGrouping(event.target.value as Grouping)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
               <option value="day">Día</option>
               <option value="week">Semana</option>
               <option value="month">Mes</option>
@@ -177,7 +177,7 @@ export default function AdminAnalyticsPage() {
           </label>
           <label className="block space-y-2 text-sm font-semibold">
             <span>Actividad</span>
-            <select value={selectedEvent} onChange={(event) => setSelectedEvent(event.target.value)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
+            <select value={selectedEvent} onChange={(event) => setSelectedEvent(event.target.value)} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]">
               {eventTotals.map(([eventName]) => <option key={eventName} value={eventName}>{analyticsEventLabel(eventName)}</option>)}
             </select>
           </label>
@@ -232,7 +232,7 @@ export default function AdminAnalyticsPage() {
 
           <section className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="all-events-heading">
             <div className="border-b border-slate-200 p-6 dark:border-[#313131]"><h2 id="all-events-heading" className="text-xl font-bold">Todos los eventos registrados</h2><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Conteos por tipo durante {periodLabel}. Los datos se guardan agregados por día, ruta e idioma.</p></div>
-            {eventTotals.length ? <div className="overflow-x-auto"><table className="w-full min-w-[32rem] text-left text-sm"><thead className="bg-slate-50 text-slate-600 dark:bg-[#181818] dark:text-slate-300"><tr><th scope="col" className="px-6 py-3 font-semibold">Actividad</th><th scope="col" className="px-6 py-3 text-right font-semibold">Total</th></tr></thead><tbody className="divide-y divide-slate-200 dark:divide-[#313131]">{eventTotals.map(([eventName, count]) => <tr key={eventName}><th scope="row" className="px-6 py-3 font-medium">{analyticsEventLabel(eventName)}</th><td className="px-6 py-3 text-right font-semibold tabular-nums">{count.toLocaleString('es-ES')}</td></tr>)}</tbody></table></div> : <p className="px-6 py-8 text-sm text-slate-600 dark:text-slate-300">No hay eventos registrados para este periodo.</p>}
+            {eventTotals.length ? <div className="overflow-x-auto"><table className="w-full min-w-lg text-left text-sm"><thead className="bg-slate-50 text-slate-600 dark:bg-[#181818] dark:text-slate-300"><tr><th scope="col" className="px-6 py-3 font-semibold">Actividad</th><th scope="col" className="px-6 py-3 text-right font-semibold">Total</th></tr></thead><tbody className="divide-y divide-slate-200 dark:divide-[#313131]">{eventTotals.map(([eventName, count]) => <tr key={eventName}><th scope="row" className="px-6 py-3 font-medium">{analyticsEventLabel(eventName)}</th><td className="px-6 py-3 text-right font-semibold tabular-nums">{count.toLocaleString('es-ES')}</td></tr>)}</tbody></table></div> : <p className="px-6 py-8 text-sm text-slate-600 dark:text-slate-300">No hay eventos registrados para este periodo.</p>}
           </section>
 
           <section className="rounded-xl border border-slate-200 bg-white dark:border-[#313131] dark:bg-[#1f1f1f]" aria-labelledby="visits-trend-heading">

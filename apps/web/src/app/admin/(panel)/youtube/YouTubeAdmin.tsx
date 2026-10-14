@@ -21,7 +21,7 @@ export function YouTubeAdmin() {
             type="button"
             aria-current={section === value ? 'page' : undefined}
             onClick={() => setSection(value)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${section === value ? 'bg-emerald-100 text-emerald-950 dark:bg-[#272727] dark:text-emerald-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#272727]'}`}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 ${section === value ? 'bg-emerald-100 text-emerald-950 dark:bg-[#272727] dark:text-emerald-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#272727]'}`}
           >
             {label}
           </button>

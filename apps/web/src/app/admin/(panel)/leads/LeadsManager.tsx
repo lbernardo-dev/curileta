@@ -103,7 +103,7 @@ export function LeadsManager() {
 
       <label className="block max-w-xl space-y-2 text-sm font-semibold">
         <span>Buscar oportunidades</span>
-        <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]" />
+        <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#1f1f1f]" />
       </label>
 
       {error && <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-[#272727] dark:text-red-200">{error}</p>}
@@ -116,20 +116,20 @@ export function LeadsManager() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
                   <h2 className="text-lg font-bold">{lead.name}</h2>
-                  <a href={`mailto:${lead.email}`} className="mt-1 inline-block break-all text-sm text-emerald-800 underline decoration-emerald-600 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200">{lead.email}</a>
+                  <a href={`mailto:${lead.email}`} className="mt-1 inline-block break-all text-sm text-emerald-800 underline decoration-emerald-600 underline-offset-2 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200">{lead.email}</a>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{[lead.company, lead.category, lead.locale.toUpperCase()].filter(Boolean).join(' · ')}</p>
                 </div>
                 <label className="block space-y-2 text-sm font-semibold">
                   <span>Fase</span>
-                  <select value={lead.lead_stage} disabled={updatingId === lead.id} onChange={(event) => updateLead(lead.id, { leadStage: event.target.value as LeadStage })} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60 dark:border-[#313131] dark:bg-[#181818]">
+                  <select value={lead.lead_stage} disabled={updatingId === lead.id} onChange={(event) => updateLead(lead.id, { leadStage: event.target.value as LeadStage })} className="min-h-12 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60 dark:border-[#313131] dark:bg-[#181818]">
                     {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
               </div>
-              <p className="whitespace-pre-wrap break-words text-base leading-6">{lead.message}</p>
+              <p className="whitespace-pre-wrap wrap-break-word text-base leading-6">{lead.message}</p>
               <label className="block space-y-2 text-sm font-semibold">
                 <span>Notas internas</span>
-                <textarea value={notes[lead.id] || ''} maxLength={4000} rows={3} onChange={(event) => setNotes((current) => ({ ...current, [lead.id]: event.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
+                <textarea value={notes[lead.id] || ''} maxLength={4000} rows={3} onChange={(event) => setNotes((current) => ({ ...current, [lead.id]: event.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-normal outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#313131] dark:bg-[#181818]" />
               </label>
               {lead.lead_deletion_scheduled_at && (
                 <section role="status" className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm leading-5 text-amber-950 dark:border-amber-900 dark:bg-[#272727] dark:text-amber-100">
@@ -137,17 +137,17 @@ export function LeadsManager() {
                     <h3 className="font-semibold">Revisión de conservación pendiente</h3>
                     <p className="mt-1">Esta oportunidad se eliminará el {new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium' }).format(new Date(lead.lead_deletion_scheduled_at))} si no se reanuda el seguimiento. {lead.lead_retention_notified_at ? 'El aviso se envió al equipo.' : 'El aviso por correo está pendiente de configuración o entrega.'}</p>
                   </div>
-                  <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { reviewLead: true })} className="rounded-lg bg-amber-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700">{updatingId === lead.id ? 'Guardando…' : 'Mantener 12 meses más'}</button>
+                  <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { reviewLead: true })} className="rounded-lg bg-amber-800 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-amber-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-700">{updatingId === lead.id ? 'Guardando…' : 'Mantener 12 meses más'}</button>
                 </section>
               )}
               {Object.keys(lead.answers || {}).some((key) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)) && (
                 <details className="rounded-lg bg-slate-50 p-4 dark:bg-[#181818]">
-                  <summary className="cursor-pointer rounded-sm text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Más respuestas</summary>
+                  <summary className="cursor-pointer rounded-xs text-sm font-semibold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">Más respuestas</summary>
                   <dl className="mt-3 space-y-2 text-sm">
                     {Object.entries(lead.answers).filter(([key]) => !['name', 'email', 'company', 'category', 'message', 'adultConsent', 'privacyConsent', 'privacyAcknowledgement'].includes(key)).map(([key, value]) => (
                       <div key={key} className="grid grid-cols-1 gap-1 sm:grid-cols-[12rem_minmax(0,1fr)]">
                         <dt className="font-semibold">{key}</dt>
-                        <dd className="break-words text-slate-700 dark:text-slate-200">{String(value)}</dd>
+                        <dd className="wrap-break-word text-slate-700 dark:text-slate-200">{String(value)}</dd>
                       </div>
                     ))}
                   </dl>
@@ -158,15 +158,15 @@ export function LeadsManager() {
                 <span>{lead.status === 'resolved' || lead.status === 'archived' ? 'Consulta cerrada' : 'Consulta abierta'}</span>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-3">
-                <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { leadNotes: notes[lead.id] || '' })} className="rounded-lg bg-emerald-900 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">{updatingId === lead.id ? 'Guardando…' : 'Guardar notas'}</button>
+                <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { leadNotes: notes[lead.id] || '' })} className="rounded-lg bg-emerald-900 px-4 py-2 text-sm font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-800 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">{updatingId === lead.id ? 'Guardando…' : 'Guardar notas'}</button>
                 {removingId === lead.id ? (
                   <div className="flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 p-3 text-sm dark:bg-[#272727]">
                     <span>Dejará la lista de oportunidades. La consulta y sus notas seguirán guardadas.</span>
-                    <button type="button" onClick={() => setRemovingId('')} className="rounded-lg px-3 py-2 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">Cancelar</button>
-                    <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { leadStage: null })} className="rounded-lg bg-amber-800 px-3 py-2 font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700">Confirmar</button>
+                    <button type="button" onClick={() => setRemovingId('')} className="rounded-lg px-3 py-2 font-semibold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">Cancelar</button>
+                    <button type="button" disabled={updatingId === lead.id} onClick={() => updateLead(lead.id, { leadStage: null })} className="rounded-lg bg-amber-800 px-3 py-2 font-semibold text-white transition-all duration-700 ease-fluid hover:bg-amber-700 active:scale-[0.98] disabled:opacity-60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-700">Confirmar</button>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setRemovingId(lead.id)} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Quitar de oportunidades</button>
+                  <button type="button" onClick={() => setRemovingId(lead.id)} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Quitar de oportunidades</button>
                 )}
               </div>
             </article>

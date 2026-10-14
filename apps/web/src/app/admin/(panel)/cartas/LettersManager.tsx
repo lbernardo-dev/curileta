@@ -13,7 +13,7 @@ type LetterDraft = Omit<LetterItem, 'body' | 'photos'> & {
 };
 type ManagedLetter = LetterItem & { documentId: string; isDeleted: boolean };
 
-const fieldClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#272727] dark:text-white';
+const fieldClass = 'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 transition-all duration-700 ease-fluid focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#272727] dark:text-white';
 const labelClass = 'mb-1 block text-sm font-semibold text-slate-700 dark:text-slate-200';
 
 function emptyDraft(order = 1): LetterDraft {
@@ -246,7 +246,7 @@ export default function LettersManager() {
             Relaciona cada carta con su episodio y decide cuándo se muestra completa, censurada o se retira.
           </p>
         </div>
-        <button type="button" onClick={beginCreate} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
+        <button type="button" onClick={beginCreate} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
           <Plus className="h-4 w-4" /> Nueva carta
         </button>
       </header>
@@ -260,7 +260,7 @@ export default function LettersManager() {
             <h2 className="text-xl font-bold">Cartas guardadas</h2>
             <span className="text-sm text-slate-600 dark:text-slate-300">{letters.length} en total</span>
           </div>
-          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200"><input type="checkbox" checked={showDeleted} onChange={(event) => setShowDeleted(event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />Mostrar cartas retiradas</label>
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200"><input type="checkbox" checked={showDeleted} onChange={(event) => setShowDeleted(event.target.checked)} className="h-4 w-4 rounded-sm border-slate-300 text-emerald-700 focus:ring-emerald-600" />Mostrar cartas retiradas</label>
           {letters.length ? (
             <ul className="space-y-3">
               {letters.map((letter) => {
@@ -277,9 +277,9 @@ export default function LettersManager() {
                     </div>
                     <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{letter.photos?.length || 0} fotos{letter.episodeUrl ? ' · episodio vinculado' : ''}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {letter.isDeleted ? <button type="button" onClick={() => void restoreLetter(letter)} className="rounded-lg border border-emerald-700 px-3 py-2 text-sm font-semibold text-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200">Recuperar carta</button> : <>
-                        <button type="button" onClick={() => beginEdit(letter)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]">Editar</button>
-                        <button type="button" onClick={() => void deleteLetter(letter)} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">
+                      {letter.isDeleted ? <button type="button" onClick={() => void restoreLetter(letter)} className="rounded-lg border border-emerald-700 px-3 py-2 text-sm font-semibold text-emerald-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-emerald-200">Recuperar carta</button> : <>
+                        <button type="button" onClick={() => beginEdit(letter)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]">Editar</button>
+                        <button type="button" onClick={() => void deleteLetter(letter)} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition-all duration-700 ease-fluid hover:bg-rose-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]">
                           {confirmDelete === letter.id ? 'Confirmar retirada' : 'Eliminar'}
                         </button>
                       </>}
@@ -304,7 +304,7 @@ export default function LettersManager() {
                 <h2 className="text-xl font-bold">{editingId ? 'Editar carta' : 'Crear carta'}</h2>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Las cartas y sus fotos se administran desde este panel y se guardan en la biblioteca del sitio.</p>
               </div>
-              <button type="button" onClick={closeEditor} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Cerrar</button>
+              <button type="button" onClick={closeEditor} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Cerrar</button>
             </div>
 
             <section className="space-y-4" aria-labelledby="letter-settings-heading">
@@ -354,16 +354,16 @@ export default function LettersManager() {
             <section className="space-y-4" aria-labelledby="letter-photos-heading">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div><h3 id="letter-photos-heading" className="text-lg font-bold">Fotos de la carta</h3><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Carga imágenes desde el ordenador, ordénalas y decide su visibilidad.</p></div>
-                <button type="button" onClick={() => updateDraft('photos', [...draft.photos, { photoId: crypto.randomUUID(), title: { es: '', en: '' }, fact: { es: '', en: '' }, tag: '', tagEn: '', imageUrl: '', storagePath: '', censoredImageUrl: '', censoredStoragePath: '', visibility: 'public' }])} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]"><Plus className="h-4 w-4" /> Añadir foto</button>
+                <button type="button" onClick={() => updateDraft('photos', [...draft.photos, { photoId: crypto.randomUUID(), title: { es: '', en: '' }, fact: { es: '', en: '' }, tag: '', tagEn: '', imageUrl: '', storagePath: '', censoredImageUrl: '', censoredStoragePath: '', visibility: 'public' }])} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:hover:bg-[#272727]"><Plus className="h-4 w-4" /> Añadir foto</button>
               </div>
               {draft.photos.length ? <div className="space-y-4">
                 {draft.photos.map((photo, index) => <article key={photo.photoId} className="space-y-4 rounded-xl border border-slate-200 p-4 dark:border-[#414141]">
                   <div className="flex items-center justify-between gap-3">
                     <h4 className="text-base font-semibold">Foto {index + 1}</h4>
                     <div className="flex gap-1">
-                      <button type="button" aria-label={`Mover foto ${index + 1} antes`} disabled={index === 0} onClick={() => movePhoto(index, -1)} className="rounded-lg p-2 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowUp className="h-4 w-4" /></button>
-                      <button type="button" aria-label={`Mover foto ${index + 1} después`} disabled={index === draft.photos.length - 1} onClick={() => movePhoto(index, 1)} className="rounded-lg p-2 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowDown className="h-4 w-4" /></button>
-                      <button type="button" aria-label={`Eliminar foto ${index + 1}`} onClick={() => updateDraft('photos', draft.photos.filter((_, photoIndex) => photoIndex !== index))} className="rounded-lg p-2 text-rose-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]"><Trash2 className="h-4 w-4" /></button>
+                      <button type="button" aria-label={`Mover foto ${index + 1} antes`} disabled={index === 0} onClick={() => movePhoto(index, -1)} className="rounded-lg p-2 transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowUp className="h-4 w-4" /></button>
+                      <button type="button" aria-label={`Mover foto ${index + 1} después`} disabled={index === draft.photos.length - 1} onClick={() => movePhoto(index, 1)} className="rounded-lg p-2 transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:hover:bg-[#272727]"><ArrowDown className="h-4 w-4" /></button>
+                      <button type="button" aria-label={`Eliminar foto ${index + 1}`} onClick={() => updateDraft('photos', draft.photos.filter((_, photoIndex) => photoIndex !== index))} className="rounded-lg p-2 text-rose-700 transition-all duration-700 ease-fluid hover:bg-rose-50 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-600 dark:text-rose-300 dark:hover:bg-[#272727]"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -383,8 +383,8 @@ export default function LettersManager() {
             </section>
 
             <div className="flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 pt-4 dark:border-[#313131]">
-              <button type="button" onClick={closeEditor} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Cancelar</button>
-              <button type="submit" disabled={saving || uploadingPhotos > 0} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"><Save className="h-4 w-4" />{saving ? 'Guardando…' : uploadingPhotos > 0 ? 'Esperando las fotos…' : 'Guardar carta'}</button>
+              <button type="button" onClick={closeEditor} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition-all duration-700 ease-fluid hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 dark:text-slate-200 dark:hover:bg-[#272727]">Cancelar</button>
+              <button type="submit" disabled={saving || uploadingPhotos > 0} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"><Save className="h-4 w-4" />{saving ? 'Guardando…' : uploadingPhotos > 0 ? 'Esperando las fotos…' : 'Guardar carta'}</button>
             </div>
           </form>
         ) : (
@@ -392,7 +392,7 @@ export default function LettersManager() {
             <FileText className="h-10 w-10 text-slate-500" />
             <h2 className="mt-4 text-xl font-bold">Administra la salida de cada carta</h2>
             <p className="mt-2 max-w-md text-sm leading-5 text-slate-600 dark:text-slate-300">Después del episodio puedes publicar la carta completa. A mitad de semana puedes cambiarla a censurada y mostrar el documento clasificado.</p>
-            <button type="button" onClick={beginCreate} className="mt-5 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">Crear carta</button>
+            <button type="button" onClick={beginCreate} className="mt-5 rounded-lg bg-emerald-700 px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-emerald-800 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">Crear carta</button>
           </div>
         )}
       </section>

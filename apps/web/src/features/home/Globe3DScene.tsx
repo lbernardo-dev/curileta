@@ -924,14 +924,14 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   return (
     <section id="escena-mapa" className="relative z-10 overflow-hidden bg-[#f3f2e8] py-12 text-[#1d392f] transition-colors duration-300 dark:bg-[#071b19] dark:text-white sm:py-24">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(132,204,167,0.25),transparent_75%)] dark:bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(16,185,129,0.14),transparent_75%)]" />
-      <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent" />
+      <div className="absolute left-0 right-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/70 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative mx-auto mb-9 max-w-3xl text-center sm:mb-14">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#d8c7a5] bg-[#f7f1e1] shadow-[0_12px_32px_rgba(25,74,53,0.16)] ring-4 ring-white/70 dark:border-sky-200/30 dark:bg-[#132d3a] dark:ring-slate-900/60 sm:mb-5 sm:h-20 sm:w-20">
             <NauticalRose locale={locale} />
           </div>
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-800/10 bg-white/75 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-900 shadow-sm dark:border-emerald-300/15 dark:bg-emerald-950/50 dark:text-emerald-200">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-800/10 bg-white/75 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-900 shadow-xs dark:border-emerald-300/15 dark:bg-emerald-950/50 dark:text-emerald-200">
             <Globe className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
             <span>{locale === 'en' ? 'Curileta’s illustrated atlas' : 'El atlas ilustrado de Curileta'}</span>
             <span className="h-1 w-1 rounded-full bg-amber-500" />
@@ -939,7 +939,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
           </div>
           <h2 className="font-display text-3xl font-semibold leading-[1.04] tracking-[-0.045em] text-[#19382e] dark:text-white sm:text-5xl md:text-6xl">
             {copy('El mapa cobra vida.', 'Her map comes to life.')}
-            <span className="mt-1 block bg-gradient-to-r from-emerald-700 via-teal-600 to-sky-600 bg-clip-text text-transparent dark:from-emerald-300 dark:via-teal-200 dark:to-sky-300">
+            <span className="mt-1 block bg-linear-to-r from-emerald-700 via-teal-600 to-sky-600 bg-clip-text text-transparent dark:from-emerald-300 dark:via-teal-200 dark:to-sky-300">
               {copy('Cada parada guarda una historia.', 'Every stop holds a story.')}
             </span>
           </h2>
@@ -953,7 +953,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
             type="button"
             onClick={() => isRoutePlaying ? setIsRoutePlaying(false) : startStoryRoute()}
             aria-pressed={isRoutePlaying}
-            className={`mt-6 inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_12px_28px_rgba(26,69,51,0.18)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${isRoutePlaying ? 'bg-amber-300 text-[#17372c] hover:bg-amber-200' : 'bg-[#1c493b] text-white hover:bg-[#27634e]'}`}
+            className={`mt-6 inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_12px_28px_rgba(26,69,51,0.18)] transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${isRoutePlaying ? 'bg-amber-300 text-[#17372c] hover:bg-amber-200' : 'bg-[#1c493b] text-white hover:bg-[#27634e]'}`}
           >
             {isRoutePlaying ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
             <span>{isRoutePlaying ? copy('Pausar el recorrido', 'Pause the journey') : copy('Recorrer la ruta del libro', 'Follow the book route')}</span>
@@ -962,11 +962,11 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         </div>
 
         {/* Panel Cartográfico 3D y Tarjeta de Destino */}
-        <div className="relative grid grid-cols-1 items-start gap-6 overflow-hidden rounded-[2rem] border border-[#d9e3d6] bg-[#fffdf7] p-4 shadow-[0_28px_90px_rgba(25,67,48,0.12)] dark:border-emerald-500/20 dark:bg-[#0d2521] sm:gap-8 sm:p-7 lg:grid-cols-12 lg:p-8">
+        <div className="relative grid grid-cols-1 items-start gap-6 overflow-hidden rounded-4xl border border-[#d9e3d6] bg-[#fffdf7] p-4 shadow-[0_28px_90px_rgba(25,67,48,0.12)] dark:border-emerald-500/20 dark:bg-[#0d2521] sm:gap-8 sm:p-7 lg:grid-cols-12 lg:p-8">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_45%_at_50%_0%,rgba(221,238,220,0.45),transparent)] dark:bg-[radial-gradient(ellipse_75%_45%_at_50%_0%,rgba(16,185,129,0.08),transparent)]" />
 
           {/* Selector rápido de destinos con iconos de monumentos */}
-          <div role="group" aria-label={copy('Paradas del viaje', 'Journey stops')} className="relative z-10 -mx-1 flex snap-x snap-mandatory flex-nowrap items-center justify-start gap-2 overflow-x-auto border-b border-[#e7e9dd] px-1 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:border-slate-700/80 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 sm:pb-5 lg:col-span-12">
+          <div role="group" aria-label={copy('Paradas del viaje', 'Journey stops')} className="relative z-10 -mx-1 flex snap-x snap-mandatory flex-nowrap items-center justify-start gap-2 overflow-x-auto border-b border-[#e7e9dd] px-1 pb-4 scrollbar-none [&::-webkit-scrollbar]:hidden dark:border-slate-700/80 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 sm:pb-5 lg:col-span-12">
             {locationsList.map((loc, index) => {
               const isSelected = selectedId === loc.id;
               return (
@@ -986,7 +986,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 </button>
               );
             })}
-            <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 z-20 flex w-9 items-center justify-center bg-gradient-to-l from-[#fffdf7] via-[#fffdf7]/90 to-transparent text-emerald-800 dark:from-[#0d2521] dark:via-[#0d2521]/90 dark:text-emerald-200 sm:hidden">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 z-20 flex w-9 items-center justify-center bg-linear-to-l from-[#fffdf7] via-[#fffdf7]/90 to-transparent text-emerald-800 dark:from-[#0d2521] dark:via-[#0d2521]/90 dark:text-emerald-200 sm:hidden">
               <ChevronRight className="h-4 w-4" />
             </div>
           </div>
@@ -996,12 +996,12 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
             {/* Contenedor del lienzo 3D */}
             <div className="relative isolate w-full overflow-hidden rounded-[1.75rem] border border-[#b7d3e6] bg-[#123c5a] shadow-[0_22px_65px_rgba(20,69,105,0.22)] dark:border-sky-300/20">
               <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_46%,rgba(89,166,222,0.36),transparent_44%),radial-gradient(ellipse_at_50%_115%,rgba(250,196,112,0.2),transparent_55%),linear-gradient(145deg,#174668,#153957_55%,#1a3c51)]" />
-              <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(204,231,250,.14)_1px,transparent_1px),linear-gradient(90deg,rgba(204,231,250,.14)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_74%)]" />
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-20 bg-[linear-gradient(rgba(204,231,250,.14)_1px,transparent_1px),linear-gradient(90deg,rgba(204,231,250,.14)_1px,transparent_1px)] bg-size-[44px_44px] mask-[radial-gradient(ellipse_at_center,black,transparent_74%)]" />
               <div
                 ref={mountRef}
                 onPointerEnter={() => { isHoveredRef.current = true; }}
                 onPointerLeave={() => { isHoveredRef.current = false; }}
-                className="relative z-10 flex aspect-square w-full select-none items-center justify-center touch-pan-y [cursor:grab] active:[cursor:grabbing] sm:max-h-[520px] lg:aspect-[1.1] lg:max-h-[680px]"
+                className="relative z-10 flex aspect-square w-full select-none items-center justify-center touch-pan-y cursor-grab active:cursor-grabbing sm:max-h-[520px] lg:aspect-[1.1] lg:max-h-[680px]"
                 aria-label={locale === 'en' ? 'Interactive 3D globe. Drag to turn it or select a stop above.' : 'Globo 3D interactivo. Arrastra para girarlo o elige una parada arriba.'}
               >
                 {!isSceneReady && webglSupported && (
@@ -1013,11 +1013,11 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                   </div>
                 )}
                 {!webglSupported && (
-                <div className="w-full h-full min-h-[380px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-slate-100 to-emerald-50 dark:from-slate-950 dark:to-emerald-950/80 rounded-2xl border border-amber-400/40 relative overflow-hidden">
+                <div className="w-full h-full min-h-[380px] flex flex-col items-center justify-center p-6 bg-linear-to-b from-slate-100 to-emerald-50 dark:from-slate-950 dark:to-emerald-950/80 rounded-2xl border border-amber-400/40 relative overflow-hidden">
                   <div className="relative w-64 h-64 flex items-center justify-center my-4">
                     <div className="absolute inset-0 rounded-full border-2 border-emerald-400/40 animate-[spin_20s_linear_infinite]" />
                     <div className="absolute inset-4 rounded-full border-2 border-dashed border-amber-400/50 animate-[spin_15s_linear_infinite_reverse]" />
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-white via-slate-100 to-emerald-100 dark:from-emerald-950 dark:via-slate-900 dark:to-emerald-900 border-2 border-amber-400/70 shadow-2xl flex flex-col items-center justify-center text-center p-3">
+                    <div className="w-32 h-32 rounded-full bg-linear-to-tr from-white via-slate-100 to-emerald-100 dark:from-emerald-950 dark:via-slate-900 dark:to-emerald-900 border-2 border-amber-400/70 shadow-2xl flex flex-col items-center justify-center text-center p-3">
                       <Compass className="w-9 h-9 text-amber-500 animate-pulse" />
                       <span className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-300 mt-1">
                         {activeDestination.country[locale] || activeDestination.country.es}
@@ -1041,14 +1041,14 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               {/* Botón Parada Anterior */}
               <button
                 onClick={handlePrevLocation}
-                className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-amber-300 hover:bg-amber-100 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-amber-400 dark:hover:text-slate-950 sm:flex-none"
+                className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:border-amber-300 hover:bg-amber-100 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-amber-400 dark:hover:text-slate-950 sm:flex-none"
               >
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                 <span>{copy('Parada anterior', 'Previous stop')}</span>
               </button>
 
               {/* Indicador de Etapa y Controles de Cámara */}
-              <div className="order-first flex w-full items-center justify-center gap-2 rounded-full border border-[#d8e1d5] bg-white px-3.5 py-1.5 shadow-sm dark:border-slate-700 dark:bg-slate-950/90 sm:order-none sm:w-auto">
+              <div className="order-first flex w-full items-center justify-center gap-2 rounded-full border border-[#d8e1d5] bg-white px-3.5 py-1.5 shadow-xs dark:border-slate-700 dark:bg-slate-950/90 sm:order-0 sm:w-auto">
                 <span className="text-[11px] font-mono font-black text-amber-600 dark:text-amber-400 tracking-wider">
                   {copy('ETAPA', 'STOP')} {activeIndex + 1}/{locationsList.length}
                 </span>
@@ -1075,7 +1075,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
               {/* Botón Siguiente Parada */}
               <button
                 onClick={handleNextLocation}
-                className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-amber-300 hover:bg-amber-100 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-amber-400 dark:hover:text-slate-950 sm:flex-none"
+                className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:border-amber-300 hover:bg-amber-100 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-amber-400 dark:hover:text-slate-950 sm:flex-none"
               >
                 <span>{copy('Siguiente parada', 'Next stop')}</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -1084,11 +1084,11 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
           </div>
 
           {/* Ficha de Expedición del Destino Seleccionado */}
-          <div className="relative z-10 rounded-[1.75rem] border border-[#e7dfc7] bg-gradient-to-b from-[#fffefa] via-white to-[#fbfaf3] p-5 shadow-[0_18px_55px_rgba(65,68,44,0.08)] dark:border-amber-300/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 sm:p-7 lg:col-span-4">
+          <div className="relative z-10 rounded-[1.75rem] border border-[#e7dfc7] bg-linear-to-b from-[#fffefa] via-white to-[#fbfaf3] p-5 shadow-[0_18px_55px_rgba(65,68,44,0.08)] dark:border-amber-300/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 sm:p-7 lg:col-span-4">
             {/* Distintivo de Pasaporte y Monumento 3D Oficial */}
             <div className="mb-4 flex flex-col gap-3 border-b border-slate-200 pb-4 dark:border-slate-800 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-300 px-2.5 py-1 font-mono text-[11px] font-bold text-[#342a17] shadow-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-300 px-2.5 py-1 font-mono text-[11px] font-bold text-[#342a17] shadow-xs">
                   <span>{activeMonumentName}</span>
                 </span>
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold border border-slate-300 dark:border-slate-700">
@@ -1183,7 +1183,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                     return (
                       <div
                         key={charSlug}
-                        className="inline-flex items-center gap-2 pr-3 pl-1 py-1 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-sm"
+                        className="inline-flex items-center gap-2 pr-3 pl-1 py-1 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-xs"
                       >
                         <CharacterAvatarImage
                           slug={charSlug}
@@ -1295,7 +1295,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
                 placeholder={locale === 'en' ? 'Search places, countries or story moments…' : 'Buscar lugares, países o momentos del relato…'}
                 value={milestoneSearch}
                 onChange={(e) => setMilestoneSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:border-amber-400"
               />
             </div>
 

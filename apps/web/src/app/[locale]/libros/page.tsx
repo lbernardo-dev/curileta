@@ -74,7 +74,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
               : (isEn ? 'To be announced' : 'Fecha por anunciar');
 
             return (
-              <article key={book.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/[0.08]">
+              <article key={book.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_18px_60px_rgba(24,54,41,0.08)] ring-1 ring-[#20352c]/8">
                 <div className="relative">
                   <BookCoverPanel
                     src={coverImage.url}
@@ -83,7 +83,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
                     upcoming={!isPublished}
                     frame={coverFrame}
                   />
-                  <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/60 bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#254537] shadow-sm">
+                  <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/60 bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#254537] shadow-xs">
                     {isPublished ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" /> : <Clock3 className="h-3.5 w-3.5 text-amber-700" />}
                     {isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Coming soon' : 'Próximamente')}
                   </div>
@@ -95,7 +95,7 @@ export default async function BooksPage({ params }: { params: Promise<{ locale: 
                     {book.pageCount && <span>{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
                     {format && <span>{format}</span>}
                     {book.author && <span>{isEn ? 'By ' : 'De '}{authorPage
-                      ? <Link href={`/${locale}/autora/${authorPage.slug}`} className="font-semibold text-emerald-800 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">{authorPage.name[locale] || authorPage.name.es}</Link>
+                      ? <Link href={`/${locale}/autora/${authorPage.slug}`} className="font-semibold text-emerald-800 underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600">{authorPage.name[locale] || authorPage.name.es}</Link>
                       : book.author}</span>}
                   </div>
                   <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">{title}</h2>

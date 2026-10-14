@@ -81,7 +81,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   if (variant === 'segmented') {
     return (
       <div
-        className={`inline-flex items-center p-1 rounded-2xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700/80 backdrop-blur-md shadow-sm ${className}`}
+        className={`inline-flex items-center p-1 rounded-2xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700/80 backdrop-blur-md shadow-xs ${className}`}
         role="group"
         aria-label={locale === 'en' ? 'Appearance theme selector' : 'Selector de tema visual'}
       >
@@ -112,7 +112,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-9 items-center gap-1.5 px-2.5 sm:px-3 rounded-full bg-slate-100 dark:bg-slate-900/90 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 cursor-pointer"
+        className="flex h-9 items-center gap-1.5 px-2.5 sm:px-3 rounded-full bg-slate-100 dark:bg-slate-900/90 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all duration-700 ease-fluid shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 cursor-pointer"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label={locale === 'en' ? `Switch theme. Current theme: ${theme}` : `Cambiar tema. Tema actual: ${theme}`}

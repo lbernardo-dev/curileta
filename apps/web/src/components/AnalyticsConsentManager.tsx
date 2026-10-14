@@ -74,7 +74,7 @@ export function AnalyticsConsentManager() {
     <aside
       aria-label={isEn ? 'Cookie preferences' : 'Preferencias de cookies'}
       aria-live="polite"
-      className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xl dark:border-slate-700 dark:bg-[#181818] dark:text-white"
+      className="fixed inset-x-4 bottom-4 z-100 mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xl dark:border-slate-700 dark:bg-[#181818] dark:text-white"
     >
       <h2 className="text-lg font-semibold">
         {isEn ? 'Choose your cookie preferences' : 'Elige tus preferencias de cookies'}
@@ -90,7 +90,7 @@ export function AnalyticsConsentManager() {
           : 'Puedes cambiar tu elección en el pie de página. Lee la '}
         <Link
           href={`/${isEn ? 'en' : 'es'}/cookies`}
-          className="rounded-sm font-semibold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
+          className="rounded-xs font-semibold underline underline-offset-4 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
         >
           {isEn ? 'cookie notice' : 'política de cookies'}
         </Link>
@@ -101,7 +101,7 @@ export function AnalyticsConsentManager() {
           type="checkbox"
           checked={hasAdultConfirmation}
           onChange={(event) => setAdultConfirmed(event.currentTarget.checked)}
-          className="mt-1 size-4 shrink-0 accent-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
+          className="mt-1 size-4 shrink-0 accent-emerald-700 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
         />
         <span>
           {isEn
@@ -113,7 +113,7 @@ export function AnalyticsConsentManager() {
         <button
           type="button"
           onClick={() => choose('rejected')}
-          className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
+          className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-[#27634e] active:scale-[0.98] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
         >
           {isEn ? 'Reject optional cookies' : 'Rechazar cookies opcionales'}
         </button>
@@ -121,7 +121,7 @@ export function AnalyticsConsentManager() {
           type="button"
           onClick={() => choose('accepted')}
           disabled={!hasAdultConfirmation}
-          className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1c493b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
+          className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-fluid hover:bg-[#27634e] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1c493b] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
         >
           {isEn ? 'Accept optional cookies' : 'Aceptar cookies opcionales'}
         </button>

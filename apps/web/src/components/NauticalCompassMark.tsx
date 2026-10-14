@@ -1,6 +1,6 @@
 export function NauticalCompassMark({ className = 'h-10 w-10' }: { className?: string }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 48 48" className={`${className} shrink-0 rounded-2xl shadow-sm transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105`} fill="none">
+    <svg aria-hidden="true" viewBox="0 0 48 48" className={`${className} shrink-0 rounded-2xl shadow-xs transition-transform duration-700 ease-fluid group-hover:scale-105`} fill="none">
       <rect width="48" height="48" rx="16" fill="#1C493B" />
       <circle cx="24" cy="24" r="17.5" stroke="#FCD878" strokeOpacity=".72" strokeWidth="1.25" />
       <circle cx="24" cy="24" r="13.5" stroke="#FCD878" strokeOpacity=".28" strokeWidth=".75" />

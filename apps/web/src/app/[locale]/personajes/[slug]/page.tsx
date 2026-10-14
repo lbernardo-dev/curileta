@@ -125,7 +125,7 @@ export default async function CharacterDetailPage({
         </div>
 
         {/* Ficha Principal de Pasaporte de Explorador */}
-        <div className="rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-emerald-500/40 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl bg-linear-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-emerald-500/40 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           {/* Marca de agua */}
           <div className="absolute right-4 -bottom-10 opacity-5 pointer-events-none font-black text-9xl text-amber-400 select-none">
             {character.id.toUpperCase()}
@@ -138,7 +138,7 @@ export default async function CharacterDetailPage({
                   <ContentImage
                     src={character.mainImage.url}
                     alt={character.mainImage.alt[locale] || character.mainImage.alt.es}
-                    className="h-full w-full object-cover object-[50%_100%] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.025]"
+                    className="h-full w-full object-cover object-[50%_100%] transition-transform duration-700 ease-fluid group-hover:scale-[1.025]"
                   />
               </div>
             </div>
@@ -214,8 +214,8 @@ export default async function CharacterDetailPage({
           </h2>
           {(relatedBooks.length || relatedEpisodes.length || storyMoments.length) ? (
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {relatedBooks.map((book) => <Link key={book.slug} href={`/${locale}/libros/${book.slug}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Book' : 'Libro'}</span><span className="mt-1 block font-semibold text-white">{book.title[locale] || book.title.es}</span>{book.subtitle && <span className="mt-1 block text-sm text-slate-300">{book.subtitle[locale] || book.subtitle.es}</span>}</Link>)}
-              {relatedEpisodes.map((episode) => <a key={episode.slug} href={episode.youtubeId ? `https://www.youtube.com/watch?v=${episode.youtubeId}` : `/${locale}/videos`} target={episode.youtubeId ? '_blank' : undefined} rel={episode.youtubeId ? 'noopener noreferrer' : undefined} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Episode' : 'Episodio'}{episode.episodeNumber ? ` ${episode.episodeNumber}` : ''}</span><span className="mt-1 block font-semibold text-white">{episode.title[locale] || episode.title.es}</span></a>)}
+              {relatedBooks.map((book) => <Link key={book.slug} href={`/${locale}/libros/${book.slug}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-fluid hover:border-amber-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Book' : 'Libro'}</span><span className="mt-1 block font-semibold text-white">{book.title[locale] || book.title.es}</span>{book.subtitle && <span className="mt-1 block text-sm text-slate-300">{book.subtitle[locale] || book.subtitle.es}</span>}</Link>)}
+              {relatedEpisodes.map((episode) => <a key={episode.slug} href={episode.youtubeId ? `https://www.youtube.com/watch?v=${episode.youtubeId}` : `/${locale}/videos`} target={episode.youtubeId ? '_blank' : undefined} rel={episode.youtubeId ? 'noopener noreferrer' : undefined} className="rounded-2xl border border-slate-700 bg-slate-950 p-4 transition-all duration-700 ease-fluid hover:border-amber-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400"><span className="text-xs font-semibold uppercase tracking-wide text-amber-300">{locale === 'en' ? 'Episode' : 'Episodio'}{episode.episodeNumber ? ` ${episode.episodeNumber}` : ''}</span><span className="mt-1 block font-semibold text-white">{episode.title[locale] || episode.title.es}</span></a>)}
               {storyMoments.slice(0, 6).map((moment) => <article key={`${moment.order}-${moment.place.es}`} className="rounded-2xl border border-slate-700 bg-slate-950 p-4"><span className="text-xs font-semibold uppercase tracking-wide text-emerald-300">{locale === 'en' ? `Story moment ${moment.order}` : `Momento ${moment.order} del relato`}</span><h3 className="mt-1 font-semibold text-white">{moment.place[locale] || moment.place.es}</h3><p className="mt-2 text-sm leading-6 text-slate-300">{moment.whatHappens[locale] || moment.whatHappens.es}</p></article>)}
             </div>
           ) : <p className="mt-4 text-sm text-slate-300">{locale === 'en' ? 'Story appearances will appear when this character is linked to a published book or episode.' : 'Las apariciones aparecerán cuando el personaje se vincule a un libro o episodio publicado.'}</p>}

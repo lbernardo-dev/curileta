@@ -1,89 +1,131 @@
-@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@source "../../../../packages";
 
-:root {
-  --font-geist: 'Geist Variable', sans-serif;
-  --font-display: var(--font-geist);
+@custom-variant dark (&:where(.dark, .dark *));
 
-  /* Brand Primitive Colors */
-  --color-curileta-green: #1B8A44;
-  --color-curileta-green-light: #34D399;
-  --color-curileta-green-dark: #0D5C2C;
-  --color-adventure-gold: #F59E0B;
-  --color-adventure-gold-light: #FCD34D;
-  --color-sky: #38BDF8;
-  --color-sky-light: #BAE6FD;
-  --color-forest: #064E3B;
-  --color-sand: #FEF3C7;
-  --color-ocean: #0284C7;
-  --color-sunset: #F97316;
-  --color-berry: #BE185D;
+@theme inline {
+  --color-curileta-green: var(--color-curileta-green);
+  --color-curileta-green-light: var(--color-curileta-green-light);
+  --color-curileta-green-dark: var(--color-curileta-green-dark);
+  --color-curileta-gold: var(--color-adventure-gold);
+  --color-curileta-gold-light: var(--color-adventure-gold-light);
+  --color-curileta-sky: var(--color-sky);
+  --color-curileta-sky-light: var(--color-sky-light);
+  --color-curileta-forest: var(--color-forest);
+  --color-curileta-sand: var(--color-sand);
+  --color-curileta-ocean: var(--color-ocean);
 
-  /* Event themes override these shared accents for the duration of a campaign. */
-  --seasonal-accent: var(--color-adventure-gold);
-  --seasonal-accent-strong: #b45309;
-  --seasonal-banner-start: #102d23;
-  --seasonal-banner-end: #174635;
-  --seasonal-header-light: rgba(251, 252, 248, 0.96);
-  --seasonal-header-dark: rgba(2, 6, 23, 0.96);
-  --seasonal-footer-light: #fbfcf8;
-  --seasonal-footer-dark: #020617;
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-display: var(--font-geist), system-ui, sans-serif;
 
-  /* Semantic Tokens - Light Theme */
-  --background-primary: #FFFFFF;
-  --background-secondary: #F8FAFC;
-  --background-elevated: #FFFFFF;
-  --background-canvas: #FAFDF7;
-  --background-accent: #ECFDF5;
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
 
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
-  --text-inverted: #FFFFFF;
-
-  --interactive-primary: #1B8A44;
-  --interactive-primary-hover: #156F36;
-  --interactive-accent: #F59E0B;
-  --interactive-focus: #38BDF8;
-
-  --border-subtle: #E2E8F0;
-  --border-strong: #CBD5E1;
-
-  /* Radii */
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-full: 9999px;
-
-  /* Motion Tokens */
-  --motion-fast: 150ms;
-  --motion-standard: 300ms;
-  --motion-slow: 600ms;
-  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
-  --ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1.0);
-  --distance-small: 8px;
-  --distance-medium: 24px;
-  --distance-large: 64px;
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-html.dark {
-  /* Semantic Tokens - Dark Theme (Strictly B4 Palette: #000000, #181818, #1F1F1F, #272727, #313131, #131209) */
-  --background-primary: #181818;
-  --background-secondary: #1F1F1F;
-  --background-elevated: #272727;
-  --background-canvas: #000000;
-  --background-accent: #131209;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #CBD5E1;
-  --text-muted: #9B9B9B;
-  --text-inverted: #000000;
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
-  --border-subtle: #272727;
-  --border-strong: #313131;
+@layer utilities {
+  :root {
+    --font-geist: 'Geist Variable', sans-serif;
+    --font-display: var(--font-geist);
+
+    /* Brand Primitive Colors */
+    --color-curileta-green: #1b8a44;
+    --color-curileta-green-light: #34d399;
+    --color-curileta-green-dark: #0d5c2c;
+    --color-adventure-gold: #f59e0b;
+    --color-adventure-gold-light: #fcd34d;
+    --color-sky: #38bdf8;
+    --color-sky-light: #bae6fd;
+    --color-forest: #064e3b;
+    --color-sand: #fef3c7;
+    --color-ocean: #0284c7;
+    --color-sunset: #f97316;
+    --color-berry: #be185d;
+
+    /* Event themes override these shared accents for the duration of a campaign. */
+    --seasonal-accent: var(--color-adventure-gold);
+    --seasonal-accent-strong: #b45309;
+    --seasonal-banner-start: #102d23;
+    --seasonal-banner-end: #174635;
+    --seasonal-header-light: rgba(251, 252, 248, 0.96);
+    --seasonal-header-dark: rgba(2, 6, 23, 0.96);
+    --seasonal-footer-light: #fbfcf8;
+    --seasonal-footer-dark: #020617;
+
+    /* Semantic Tokens - Light Theme */
+    --background-primary: #ffffff;
+    --background-secondary: #f8fafc;
+    --background-elevated: #ffffff;
+    --background-canvas: #fafdf7;
+    --background-accent: #ecfdf5;
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-inverted: #ffffff;
+
+    --interactive-primary: #1b8a44;
+    --interactive-primary-hover: #156f36;
+    --interactive-accent: #f59e0b;
+    --interactive-focus: #38bdf8;
+
+    --border-subtle: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    /* Radii */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+
+    /* Motion Tokens */
+    --motion-fast: 150ms;
+    --motion-standard: 300ms;
+    --motion-slow: 600ms;
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
+    --distance-small: 8px;
+    --distance-medium: 24px;
+    --distance-large: 64px;
+  }
+
+  html.dark {
+    /* Semantic Tokens - Dark Theme (Strictly B4 Palette: #000000, #181818, #1F1F1F, #272727, #313131, #131209) */
+    --background-primary: #181818;
+    --background-secondary: #1f1f1f;
+    --background-elevated: #272727;
+    --background-canvas: #000000;
+    --background-accent: #131209;
+
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #9b9b9b;
+    --text-inverted: #000000;
+
+    --border-subtle: #272727;
+    --border-strong: #313131;
+  }
 }
 
 @layer base {

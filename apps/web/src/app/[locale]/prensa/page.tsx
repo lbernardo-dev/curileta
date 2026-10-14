@@ -42,18 +42,18 @@ export default async function PressPage({ params }: { params: Promise<{ locale: 
       <div className="grid gap-5 md:grid-cols-3">
         {requests.map((item) => (
           <SitePageCard key={item.title}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--background-secondary)] text-[var(--seasonal-accent-strong)]">{item.icon}</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-(--background-secondary) text-(--seasonal-accent-strong)">{item.icon}</div>
             <h2 className="mt-5 font-display text-xl font-semibold">{item.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{item.text}</p>
+            <p className="mt-2 text-sm leading-6 text-(--text-secondary)">{item.text}</p>
           </SitePageCard>
         ))}
       </div>
       <SitePageCard className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
         <div className="flex items-start gap-4">
-          <UserRound className="mt-1 h-5 w-5 shrink-0 text-[var(--seasonal-accent-strong)]" />
+          <UserRound className="mt-1 h-5 w-5 shrink-0 text-(--seasonal-accent-strong)" />
           <div>
             <h2 className="font-display text-xl font-semibold">{isEn ? 'Tell us about your request' : 'Cuéntanos qué necesitas'}</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-(--text-secondary)">
               {isEn
                 ? 'Please include your name, outlet, intended use and deadline. Requests are reviewed individually and do not guarantee that a specific asset or interview is available.'
                 : 'Incluye tu nombre, medio, uso previsto y plazo. Revisamos cada solicitud de forma individual; no podemos garantizar la disponibilidad de un material o entrevista concretos.'}

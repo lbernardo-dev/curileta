@@ -37,8 +37,8 @@ const colorFields: Array<{ key: keyof EventPalette; label: string }> = [
   { key: 'textDark', label: 'Texto oscuro' },
 ];
 
-const fieldClass = 'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
-const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-wait disabled:opacity-60';
+const fieldClass = 'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-hidden transition-all duration-700 ease-fluid focus:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-[#414141] dark:bg-[#181818] dark:text-white';
+const buttonClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-700 ease-fluid active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:cursor-wait disabled:opacity-60';
 const cardClass = 'rounded-xl border border-slate-200 bg-white p-5 dark:border-[#313131] dark:bg-[#1f1f1f] sm:p-6';
 
 function dateInputFromNow(deltaMinutes: number) {
@@ -389,7 +389,7 @@ export default function EventsManager() {
         </div>
 
         {loading ? (
-          <div className={`${cardClass} animate-pulse`} aria-label="Cargando eventos"><div className="h-5 w-48 rounded bg-slate-200 dark:bg-[#313131]" /><div className="mt-4 h-20 rounded-lg bg-slate-100 dark:bg-[#272727]" /></div>
+          <div className={`${cardClass} animate-pulse`} aria-label="Cargando eventos"><div className="h-5 w-48 rounded-sm bg-slate-200 dark:bg-[#313131]" /><div className="mt-4 h-20 rounded-lg bg-slate-100 dark:bg-[#272727]" /></div>
         ) : events.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
             {events.map((event) => {
@@ -489,9 +489,9 @@ export default function EventsManager() {
                 </label>
               </div>
               <div className="flex flex-wrap items-center gap-4">
-                <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.enabled} onChange={(event) => setField('enabled', event.target.checked)} className="h-4 w-4 rounded accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Evento habilitado</label>
-                <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.activationMode === 'manual'} onChange={(event) => setField('activationMode', event.target.checked ? 'manual' : 'scheduled')} className="h-4 w-4 rounded accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Activación manual</label>
-                {form.activationMode === 'manual' && <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.manualActive} onChange={(event) => setField('manualActive', event.target.checked)} className="h-4 w-4 rounded accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Activo manualmente</label>}
+                <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.enabled} onChange={(event) => setField('enabled', event.target.checked)} className="h-4 w-4 rounded-sm accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Evento habilitado</label>
+                <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.activationMode === 'manual'} onChange={(event) => setField('activationMode', event.target.checked ? 'manual' : 'scheduled')} className="h-4 w-4 rounded-sm accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Activación manual</label>
+                {form.activationMode === 'manual' && <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.manualActive} onChange={(event) => setField('manualActive', event.target.checked)} className="h-4 w-4 rounded-sm accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Activo manualmente</label>}
               </div>
             </div>
           </section>
@@ -595,7 +595,7 @@ export default function EventsManager() {
             <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">Ajusta el fondo, las superficies y los acentos del tema claro y oscuro.</p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {colorFields.map(({ key, label }) => <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm font-semibold dark:border-[#313131]">
-                <input type="color" aria-label={label} value={form.palette[key]} onChange={(event) => setPalette(key, event.target.value)} className="h-10 w-12 cursor-pointer rounded border-0 bg-transparent p-0" />
+                <input type="color" aria-label={label} value={form.palette[key]} onChange={(event) => setPalette(key, event.target.value)} className="h-10 w-12 cursor-pointer rounded-sm border-0 bg-transparent p-0" />
                 <span className="min-w-0"><span className="block">{label}</span><span className="block font-mono text-xs text-slate-500 dark:text-slate-400">{form.palette[key]}</span></span>
               </label>)}
             </div>
@@ -634,7 +634,7 @@ export default function EventsManager() {
             </>}
           </section>
 
-          <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-end gap-3 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur dark:border-[#313131] dark:bg-[#1f1f1f]/95">
+          <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-end gap-3 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur-sm dark:border-[#313131] dark:bg-[#1f1f1f]/95">
             <button type="button" onClick={cancelForm} className={`${buttonClass} text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-[#272727]`}>Cancelar</button>
             <button type="submit" disabled={saving || Object.values(uploads).some(Boolean)} className={`${buttonClass} min-w-40 bg-emerald-800 text-white hover:bg-emerald-700`}>
               {saving || Object.values(uploads).some(Boolean) ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
