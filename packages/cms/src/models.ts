@@ -280,6 +280,26 @@ export interface SeasonalEvent {
     scareEffectsEnabled: boolean;
     scareFrequency?: 'rare' | 'regular';
   };
+  campaignContent?: {
+    title: LocalizedString;
+    intro: LocalizedString;
+    activities: Array<{
+      id: string;
+      kind: 'reveal' | 'riddleSet' | 'download' | 'maskLibrary';
+      icon: string;
+      title: LocalizedString;
+      description: LocalizedString;
+      reveal: LocalizedString;
+      resourceUrl: string;
+      resourcePath: string;
+      riddles?: Array<{
+        id: string;
+        title: LocalizedString;
+        prompt: LocalizedString;
+        answer: LocalizedString;
+      }>;
+    }>;
+  };
   ambientDecorations: {
     glowColor: string;
     accentColor: string;

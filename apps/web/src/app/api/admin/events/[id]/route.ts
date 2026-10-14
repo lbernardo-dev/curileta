@@ -15,12 +15,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const body = await readJson(request);
   if (!body) return NextResponse.json({ success: false, error: 'El evento no tiene un formato válido o supera el tamaño permitido.' }, { status: 400, headers: noStore });
   const event = normalizeEventBody(body);
-  if (!event) return NextResponse.json({ success: false, error: 'Revisa el nombre, las fechas, la temática, la paleta, los efectos y los archivos del evento.' }, { status: 400, headers: noStore });
+  if (!event) return NextResponse.json({ success: false, error: 'Revisa el nombre, las fechas, la temática, la campaña bilingüe, los acertijos, las actividades, los archivos, la paleta y los efectos del evento.' }, { status: 400, headers: noStore });
 
   const supabase = createSupabaseAdminClient();
   const { data: previous, error: readError } = await supabase
     .from('site_events')
-    .select('updated_at, hero_video_path, ambient_audio_path, scare_sound_path')
+    .select('updated_at, artwork_path, hero_video_path, ambient_audio_path, scare_sound_path, campaign_content')
     .eq('id', id)
     .maybeSingle();
   if (readError) return NextResponse.json({ success: false, error: 'No se pudo comprobar el evento existente.' }, { status: 503, headers: noStore });
@@ -41,9 +41,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
   if (!updated) return NextResponse.json({ success: false, error: 'El evento cambió desde que lo abriste. Actualiza la lista e inténtalo de nuevo.' }, { status: 404, headers: noStore });
 
-  const replacedMedia = [previous.hero_video_path, previous.ambient_audio_path, previous.scare_sound_path]
+  const replacedMedia = [previous.artwork_path, previous.hero_video_path, previous.ambient_audio_path, previous.scare_sound_path, ...campaignResourcePaths(previous.campaign_content)]
     .filter((path): path is string => typeof path === 'string' && Boolean(path))
-    .filter((path) => path !== event.hero_video_path && path !== event.ambient_audio_path && path !== event.scare_sound_path);
+    .filter((path) => path !== event.artwork_path && path !== event.hero_video_path && path !== event.ambient_audio_path && path !== event.scare_sound_path);
   await Promise.all(replacedMedia.map((path) => removeUnreferencedEventMedia(path).catch(() => false)));
   revalidateEventPages();
   return NextResponse.json({ success: true }, { headers: noStore });
@@ -74,7 +74,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const supabase = createSupabaseAdminClient();
   const { data: event, error: readError } = await supabase
     .from('site_events')
-    .select('hero_video_path, ambient_audio_path, scare_sound_path')
+    .select('artwork_path, hero_video_path, ambient_audio_path, scare_sound_path, campaign_content')
     .eq('id', id)
     .maybeSingle();
   if (readError) return NextResponse.json({ success: false, error: 'No se pudo comprobar el evento existente.' }, { status: 503, headers: noStore });
@@ -88,13 +88,23 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const { data: removed, error } = await supabase.from('site_events').delete().eq('id', id).select('id').maybeSingle();
   if (error) return NextResponse.json({ success: false, error: 'No se pudo eliminar el evento.' }, { status: 503, headers: noStore });
   if (!removed) return NextResponse.json({ success: false, error: 'El evento cambió desde que lo abriste. Actualiza la lista e inténtalo de nuevo.' }, { status: 404, headers: noStore });
-  const media = [event.hero_video_path, event.ambient_audio_path, event.scare_sound_path].filter((path): path is string => typeof path === 'string' && Boolean(path));
+  const media = [event.artwork_path, event.hero_video_path, event.ambient_audio_path, event.scare_sound_path, ...campaignResourcePaths(event.campaign_content)].filter((path): path is string => typeof path === 'string' && Boolean(path));
   await Promise.all(media.map((path) => removeUnreferencedEventMedia(path).catch(() => false)));
   revalidateEventPages();
   return new NextResponse(null, { status: 204, headers: noStore });
 }
 
-async function readJson(request: Request, maxLength = 32_000): Promise<Record<string, unknown> | null> {
+function campaignResourcePaths(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+  const activities = (value as Record<string, unknown>).activities;
+  if (!Array.isArray(activities)) return [];
+  return activities.flatMap((activity) => activity && typeof activity === 'object' && !Array.isArray(activity)
+    && typeof (activity as Record<string, unknown>).resourcePath === 'string'
+    ? [(activity as Record<string, unknown>).resourcePath as string]
+    : []);
+}
+
+async function readJson(request: Request, maxLength = 64_000): Promise<Record<string, unknown> | null> {
   try {
     const raw = await request.text();
     if (raw.length > maxLength) return null;

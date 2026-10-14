@@ -79,7 +79,7 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
                 onClick={openAnalyticsPreferences}
                 className={`${linkClass} rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300`}
               >
-                {isEn ? 'Analytics preferences' : 'Preferencias de analítica'}
+                {isEn ? 'Cookie preferences' : 'Preferencias de cookies'}
               </button>
             )}
             <Link href={`/${locale}/legal`} className={linkClass}>{isEn ? 'Legal notice' : 'Aviso legal'}</Link>

@@ -255,37 +255,37 @@ html.dark[data-seasonal-theme] {
   --background-canvas: var(--seasonal-footer-dark);
 }
 
-html[data-seasonal-theme] header[data-seasonal-surface="header"] {
+html:is([data-seasonal-theme], [data-site-base-theme]) header[data-seasonal-surface="header"] {
   background-color: var(--seasonal-header-light);
   border-color: color-mix(in srgb, var(--seasonal-accent) 20%, #e5e9df);
 }
 
-html.dark[data-seasonal-theme] header[data-seasonal-surface="header"] {
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) header[data-seasonal-surface="header"] {
   background-color: var(--seasonal-header-dark);
   border-color: color-mix(in srgb, var(--seasonal-accent) 28%, #1e293b);
 }
 
-html[data-seasonal-theme] footer[data-seasonal-surface="footer"] {
+html:is([data-seasonal-theme], [data-site-base-theme]) footer[data-seasonal-surface="footer"] {
   background-color: var(--seasonal-footer-light);
   border-color: color-mix(in srgb, var(--seasonal-accent) 20%, #e2e7dd);
 }
 
-html.dark[data-seasonal-theme] footer[data-seasonal-surface="footer"] {
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) footer[data-seasonal-surface="footer"] {
   background-color: var(--seasonal-footer-dark);
   border-color: color-mix(in srgb, var(--seasonal-accent) 28%, #1e293b);
 }
 
-html[data-seasonal-theme] ::selection {
+html:is([data-seasonal-theme], [data-site-base-theme]) ::selection {
   background-color: var(--seasonal-accent-strong);
   color: #ffffff;
 }
 
-html[data-seasonal-theme] ::-webkit-scrollbar-thumb {
+html:is([data-seasonal-theme], [data-site-base-theme]) ::-webkit-scrollbar-thumb {
   background: var(--seasonal-accent);
 }
 
-html[data-seasonal-theme] :focus-visible {
-  outline-color: var(--seasonal-accent-strong);
+html:is([data-seasonal-theme], [data-site-base-theme]) :focus-visible {
+  outline-color: var(--seasonal-text-accent, var(--seasonal-accent-strong));
 }
 
 html[data-seasonal-theme] {
@@ -302,44 +302,295 @@ html.dark[data-seasonal-theme] {
   --text-primary: var(--seasonal-text-dark);
 }
 
+
+html[data-site-base-theme] {
+  --background-canvas: var(--seasonal-canvas-light);
+  --background-secondary: var(--seasonal-surface-light);
+  --background-primary: var(--seasonal-canvas-light);
+  --text-primary: var(--seasonal-text-light);
+}
+
+html.dark[data-site-base-theme] {
+  --background-canvas: var(--seasonal-canvas-dark);
+  --background-secondary: var(--seasonal-surface-dark);
+  --background-primary: var(--seasonal-canvas-dark);
+  --text-primary: var(--seasonal-text-dark);
+}
+
+/* Apply the selected palette to the public experience, including older pages
+   that still use literal Tailwind colors. The provider only sets these root
+   attributes inside the localized public layout, so /admin stays untouched. */
+html:is([data-seasonal-theme], [data-site-base-theme]) {
+  --background-elevated: var(--seasonal-surface-light);
+  --background-accent: color-mix(in srgb, var(--seasonal-accent) 12%, var(--seasonal-canvas-light));
+  --interactive-primary: var(--seasonal-accent-strong);
+  --interactive-primary-hover: var(--seasonal-accent);
+  --interactive-accent: var(--seasonal-accent);
+  --interactive-focus: var(--seasonal-accent);
+  --border-subtle: color-mix(in srgb, var(--seasonal-accent) 16%, var(--seasonal-surface-light));
+  --border-strong: color-mix(in srgb, var(--seasonal-accent) 32%, var(--seasonal-surface-light));
+  --text-secondary: color-mix(in srgb, var(--seasonal-text-light) 76%, var(--seasonal-canvas-light));
+  --text-muted: color-mix(in srgb, var(--seasonal-text-light) 58%, var(--seasonal-canvas-light));
+  --seasonal-text-accent: var(--seasonal-accent-strong);
+  --color-curileta-green: var(--seasonal-accent-strong);
+  --color-curileta-green-light: var(--seasonal-accent);
+  --color-curileta-green-dark: var(--seasonal-accent-strong);
+  --color-adventure-gold: var(--seasonal-accent);
+  --color-adventure-gold-light: color-mix(in srgb, var(--seasonal-accent) 55%, white);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) {
+  --background-elevated: color-mix(in srgb, var(--seasonal-surface-dark) 82%, white);
+  --background-accent: color-mix(in srgb, var(--seasonal-accent) 22%, var(--seasonal-canvas-dark));
+  --border-subtle: color-mix(in srgb, var(--seasonal-accent) 24%, var(--seasonal-surface-dark));
+  --border-strong: color-mix(in srgb, var(--seasonal-accent) 44%, var(--seasonal-surface-dark));
+  --text-secondary: color-mix(in srgb, var(--seasonal-text-dark) 76%, var(--seasonal-canvas-dark));
+  --text-muted: color-mix(in srgb, var(--seasonal-text-dark) 58%, var(--seasonal-canvas-dark));
+  --seasonal-text-accent: color-mix(in srgb, var(--seasonal-accent) 70%, white);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) body {
+  background-color: var(--background-canvas);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) body {
+  background-color: var(--seasonal-canvas-dark);
+}
+
+/* Shared public page and card surfaces. */
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-[#faf9f4]"], [class~="bg-[#f8f6ef]"], [class~="bg-[#f7f8f3]"],
+  [class~="bg-[#fbfcf8]"], [class~="bg-slate-50"], [class~="bg-gray-50"]
+) {
+  background-color: var(--background-canvas);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-white"], [class~="bg-[#fffdf8]"], [class~="bg-[#f0eee6]"],
+  [class~="bg-[#f1f3eb]"], [class~="bg-[#f2f3ec]"], [class~="bg-[#f3f6f3]"],
+  [class~="bg-[#f4f3ec]"], [class~="bg-[#eef2ea]"], [class~="bg-[#eff2ec]"],
+  [class~="bg-[#e9efe4]"], [class~="bg-slate-100"], [class~="bg-slate-200"]
+) {
+  background-color: var(--background-elevated);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="dark:bg-slate-950"], [class~="dark:bg-slate-950/95"], [class~="dark:bg-slate-950/85"],
+  [class~="dark:bg-slate-950/80"], [class~="dark:bg-slate-950/70"], [class~="dark:bg-slate-950/50"],
+  [class~="dark:bg-[#181818]"], [class~="dark:bg-[#000000]"]
+) {
+  background-color: var(--seasonal-canvas-dark);
+}
+
+html.dark:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="dark:bg-slate-900"], [class~="dark:bg-slate-900/95"], [class~="dark:bg-slate-900/90"],
+  [class~="dark:bg-slate-900/80"], [class~="dark:bg-slate-800"], [class~="dark:bg-[#1f1f1f]"],
+  [class~="dark:bg-[#272727]"]
+) {
+  background-color: var(--background-elevated);
+}
+
+/* Brand green and gold controls follow the selected event accent. */
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-[#1c493b]"], [class~="bg-[#174438]"], [class~="bg-[#205844]"],
+  [class~="bg-emerald-600"], [class~="bg-emerald-700"], [class~="bg-emerald-800"]
+) {
+  background-color: var(--seasonal-accent-strong);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="hover:bg-[#27634e]"], [class~="hover:bg-emerald-700"], [class~="hover:bg-emerald-800"]
+):hover {
+  background-color: var(--seasonal-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-amber-50"],
+  [class~="bg-amber-500/10"], [class~="bg-amber-950/40"], [class~="bg-amber-950/70"],
+  [class~="bg-rose-50"], [class~="bg-rose-950/40"], [class~="bg-sky-50"]
+) {
+  background-color: var(--background-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="bg-amber-200"], [class~="bg-amber-300"], [class~="bg-amber-400"],
+  [class~="bg-amber-500"], [class~="bg-amber-700"], [class~="bg-amber-950"],
+  [class~="bg-emerald-400"], [class~="bg-emerald-950"]
+) {
+  background-color: var(--seasonal-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="text-[#20352c]"], [class~="text-[#254537]"], [class~="text-[#302a1c]"],
+  [class~="text-[#352c1b]"], [class~="text-[#3e5548]"], [class~="text-[#486454]"],
+  [class~="text-[#4b5846]"], [class~="text-[#4d5f54]"], [class~="text-[#54472c]"],
+  [class~="text-[#594c32]"], [class~="text-[#5c6b61]"], [class~="text-[#647268]"],
+  [class~="text-[#665630]"], [class~="text-[#675b41]"], [class~="text-[#6b5722]"],
+  [class~="text-[#71603b]"], [class~="text-[#718076]"], [class~="text-[#718078]"],
+  [class~="text-[#74643b]"], [class~="text-[#775b1c]"], [class~="text-[#867345]"],
+  [class~="text-[#8e7a4f]"], [class~="text-[#9b6332]"], [class~="text-slate-900"],
+  [class~="text-slate-800"], [class~="text-gray-900"]
+) {
+  color: var(--text-primary);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="text-slate-700"], [class~="text-slate-600"], [class~="text-slate-500"],
+  [class~="text-[#5c6b61]"], [class~="text-[#647268]"], [class~="text-[#718076]"],
+  [class~="text-[#718078]"]
+) {
+  color: var(--text-secondary);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="text-[var(--seasonal-accent-strong)]"], [class~="text-emerald-700"],
+  [class~="text-emerald-800"], [class~="text-emerald-900"], [class~="text-emerald-950"],
+  [class~="text-emerald-300"], [class~="text-emerald-400"], [class~="text-emerald-500"],
+  [class~="text-emerald-600"], [class~="text-emerald-100"], [class~="text-emerald-200"],
+  [class~="text-amber-100"], [class~="text-amber-200"], [class~="text-amber-300"],
+  [class~="text-amber-400"], [class~="text-amber-500"], [class~="text-amber-600"],
+  [class~="text-amber-700"], [class~="text-sky-300"], [class~="text-sky-400"],
+  [class~="text-purple-400"], [class~="text-indigo-400"], [class~="text-[#9b6332]"]
+) {
+  color: var(--seasonal-text-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="hover:text-emerald-700"], [class~="hover:text-emerald-800"],
+  [class~="hover:text-emerald-600"], [class~="hover:text-amber-700"]
+):hover {
+  color: var(--seasonal-text-accent);
+}
+
+html:is([data-seasonal-theme], [data-site-base-theme]) :is(
+  [class~="border-slate-100"], [class~="border-slate-200"], [class~="border-[#cbd6c8]"],
+  [class~="border-[#cfd9d1]"], [class~="border-[#dbe1d4]"], [class~="border-[#e2e7dd]"],
+  [class~="border-[#e5e9df]"], [class~="border-[#e7eae2]"], [class~="border-emerald-100"],
+  [class~="border-emerald-300"], [class~="border-emerald-700"], [class~="border-emerald-800"]
+) {
+  border-color: var(--border-subtle);
+}
+
 .seasonal-decoration-layer {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 20;
   overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.seasonal-decoration-layer > span {
+  position: absolute;
   pointer-events: none;
 }
 
-.seasonal-decoration-layer span {
-  position: absolute;
-  top: 104%;
+.seasonal-theme-frame {
+  position: fixed;
+  inset: 6px;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--seasonal-accent) 30%, transparent);
+  border-radius: 1rem;
+}
+
+.seasonal-decoration-layer .seasonal-decoration {
+  top: -3rem;
   font-size: 1.25rem;
+  line-height: 1;
   will-change: transform;
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--seasonal-accent) 35%, transparent);
 }
 
-.seasonal-decoration {
-  animation: seasonal-drift linear infinite;
-}
-
-.seasonal-decoration-still {
-  top: auto !important;
-  bottom: 8%;
-  animation: none;
-}
-
-html[data-seasonal-motion="off"] .seasonal-decoration {
+.seasonal-decoration-layer .seasonal-decoration-still {
   top: auto;
-  bottom: 8%;
-  animation: none;
+  bottom: 12%;
+  font-size: 1.5rem;
 }
+
+.seasonal-decoration--snow {
+  animation-name: seasonal-snowfall;
+  font-size: 1.4rem;
+}
+
+.seasonal-decoration:not(.seasonal-decoration--snow) {
+  animation-name: seasonal-drift;
+}
+
+.seasonal-decoration-layer .seasonal-decoration { animation-timing-function: linear; animation-iteration-count: infinite; }
 
 @keyframes seasonal-drift {
-  from { transform: translate3d(0, 0, 0) rotate(0deg); }
-  to { transform: translate3d(2rem, -115vh, 0) rotate(28deg); }
+  from { transform: translate3d(-1rem, 0, 0) rotate(-12deg); }
+  to { transform: translate3d(2rem, 115vh, 0) rotate(24deg); }
+}
+
+@keyframes seasonal-snowfall {
+  from { transform: translate3d(0, -4vh, 0) rotate(0deg); }
+  to { transform: translate3d(2rem, 110vh, 0) rotate(220deg); }
+}
+
+.seasonal-fog {
+  inset: auto -4vw -2rem;
+  z-index: 2;
+  height: 8rem;
+  border-radius: 50%;
+  background: var(--seasonal-accent);
+  filter: blur(3rem);
+  opacity: 0.1;
+}
+
+.seasonal-corner-web {
+  top: 5rem;
+  z-index: 3;
+  color: var(--seasonal-accent);
+  font-size: clamp(2rem, 5vw, 4rem);
+  opacity: 0.5;
+}
+
+.seasonal-corner-web--left { left: 0.25rem; }
+.seasonal-corner-web--right { right: 0.25rem; transform: scaleX(-1); }
+
+.seasonal-snowbank {
+  bottom: -1.5rem;
+  z-index: 3;
+  width: min(22vw, 18rem);
+  height: 5.5rem;
+  border-radius: 58% 42% 0 0;
+  background: #f5fbff;
+  box-shadow: 0 -0.5rem 0.9rem rgb(255 255 255 / 0.35);
+  opacity: 0.86;
+}
+
+.seasonal-snowbank--left { left: -3rem; transform: rotate(-5deg); }
+.seasonal-snowbank--right { right: -3rem; transform: rotate(5deg); }
+
+.seasonal-snowman {
+  right: clamp(1.5rem, 6vw, 5rem);
+  bottom: 2.5rem;
+  z-index: 4;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  filter: drop-shadow(0 2px 8px rgb(20 35 30 / 0.2));
+}
+
+.seasonal-firefly {
+  z-index: 3;
+  color: #f4ce68;
+  text-shadow: 0 0 1.5rem #f4ce68;
+  animation: seasonal-glow 3s cubic-bezier(0.32, 0.72, 0, 1) infinite alternate;
+}
+
+.seasonal-firefly--one { left: 14%; top: 42%; }
+.seasonal-firefly--two { right: 16%; top: 64%; animation-delay: -1.2s; }
+
+@keyframes seasonal-glow {
+  from { opacity: 0.3; transform: scale(0.82); }
+  to { opacity: 0.95; transform: scale(1.18); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .seasonal-decoration { animation: none; top: auto; bottom: 8%; }
+  .seasonal-decoration,
+  .seasonal-firefly { animation: none !important; }
+  .seasonal-decoration-layer .seasonal-decoration { top: auto; bottom: 12%; }
+  .seasonal-snowman { transform: none; }
 }
 
 /* ============================================================

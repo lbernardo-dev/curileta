@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   GOOGLE_ANALYTICS_CONSENT_CHANGE_EVENT,
+  clearGoogleAnalyticsCookies,
+  clearGoogleAnalyticsConsent,
+  clearLegacyGoogleAnalyticsConsent,
   getGoogleAnalyticsConsent,
   isAnalyticsDoNotTrackEnabled,
   isGoogleAnalyticsConfigured,
@@ -32,9 +35,20 @@ function subscribeToConsent(onChange: () => void) {
 export function AnalyticsConsentManager() {
   const pathname = usePathname();
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [adultConfirmed, setAdultConfirmed] = useState(false);
   const mounted = useClientHydrated();
   const consentChoice = useSyncExternalStore(subscribeToConsent, getGoogleAnalyticsConsent, () => null);
+  const hasAdultConfirmation = adultConfirmed || consentChoice === 'accepted';
   const isEn = pathname === '/en' || pathname.startsWith('/en/');
+
+  useEffect(() => {
+    clearLegacyGoogleAnalyticsConsent();
+    if (!isGoogleAnalyticsConfigured() || isAnalyticsDoNotTrackEnabled()) {
+      clearGoogleAnalyticsConsent();
+      return;
+    }
+    if (getGoogleAnalyticsConsent() !== 'accepted') clearGoogleAnalyticsCookies();
+  }, []);
 
   useEffect(() => {
     const openPreferences = () => {
@@ -49,7 +63,8 @@ export function AnalyticsConsentManager() {
     && (preferencesOpen || (mounted && !consentChoice));
 
   function choose(choice: GoogleAnalyticsConsentChoice) {
-    saveGoogleAnalyticsConsent(choice);
+    saveGoogleAnalyticsConsent(choice, hasAdultConfirmation);
+    if (choice === 'rejected') setAdultConfirmed(false);
     setPreferencesOpen(false);
   }
 
@@ -57,17 +72,17 @@ export function AnalyticsConsentManager() {
 
   return (
     <aside
-      aria-label={isEn ? 'Optional analytics preferences' : 'Preferencias de analítica opcional'}
+      aria-label={isEn ? 'Cookie preferences' : 'Preferencias de cookies'}
       aria-live="polite"
       className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xl dark:border-slate-700 dark:bg-[#181818] dark:text-white"
     >
       <h2 className="text-lg font-semibold">
-        {isEn ? 'Choose whether to allow analytics' : 'Elige si permites la analítica'}
+        {isEn ? 'Choose your cookie preferences' : 'Elige tus preferencias de cookies'}
       </h2>
       <p className="mt-4 text-sm leading-6 text-slate-700 dark:text-slate-300">
         {isEn
-          ? 'Optional Google Analytics helps us understand which pages families use. It starts only after an adult accepts. If you are under 18, please ask an adult in your family to choose. Rejecting it does not affect the site.'
-          : 'Google Analytics nos ayuda a conocer qué páginas interesan a las familias. Solo se activa si una persona adulta lo acepta. Si eres menor, pide a una persona adulta de tu familia que elija. Rechazarlo no afecta al sitio.'}
+          ? 'Optional cookies help us understand which parts of the site are useful to families and improve the experience. If you are under the age of adulthood where you live, ask an adult or your parent or guardian to choose. Rejecting them does not affect the site.'
+          : 'Las cookies opcionales nos ayudan a conocer qué partes de la web resultan útiles a las familias y a mejorar la experiencia. Si aún no tienes la mayoría de edad en tu lugar de residencia, pide a una persona adulta o a tu madre, padre o tutor legal que elija. Rechazarlas no afecta al sitio.'}
       </p>
       <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
         {isEn
@@ -81,20 +96,34 @@ export function AnalyticsConsentManager() {
         </Link>
         {isEn ? ' for details.' : ' para más información.'}
       </p>
+      <label className="mt-4 flex items-start gap-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
+        <input
+          type="checkbox"
+          checked={hasAdultConfirmation}
+          onChange={(event) => setAdultConfirmed(event.currentTarget.checked)}
+          className="mt-1 size-4 shrink-0 accent-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
+        />
+        <span>
+          {isEn
+            ? 'I confirm that I am an adult or an authorized parent or guardian making this choice.'
+            : 'Confirmo que soy una persona adulta o madre, padre o tutor legal autorizado para tomar esta decisión.'}
+        </span>
+      </label>
       <div className="mt-4 flex flex-col gap-4 sm:flex-row">
         <button
           type="button"
           onClick={() => choose('rejected')}
           className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
         >
-          {isEn ? 'Reject analytics' : 'Rechazar analítica'}
+          {isEn ? 'Reject optional cookies' : 'Rechazar cookies opcionales'}
         </button>
         <button
           type="button"
           onClick={() => choose('accepted')}
-          className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
+          disabled={!hasAdultConfirmation}
+          className="min-h-12 flex-1 rounded-lg bg-[#1c493b] px-3 py-2 text-base font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#27634e] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1c493b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 dark:focus-visible:outline-emerald-300"
         >
-          {isEn ? 'Accept analytics' : 'Aceptar analítica'}
+          {isEn ? 'Accept optional cookies' : 'Aceptar cookies opcionales'}
         </button>
       </div>
     </aside>

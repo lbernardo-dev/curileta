@@ -21,7 +21,13 @@ export const cmsProvider = new Proxy(cmsContentSource, {
     if (property === 'getActiveEvent') {
       return async (locale?: string, referenceDate?: Date) => {
         const managed = await getManagedEventState(referenceDate);
-        if (managed.configured && managed.hasManagedEvents) return managed.event;
+        if (managed.configured && managed.hasManagedEvents) {
+          if (!managed.event) return null;
+          const sourceEvent = await target.getActiveEvent(locale, referenceDate).catch(() => null);
+          return sourceEvent?.slug === managed.event.slug && sourceEvent.specialChapter
+            ? { ...managed.event, specialChapter: sourceEvent.specialChapter }
+            : managed.event;
+        }
         return target.getActiveEvent(locale, referenceDate);
       };
     }

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { removeSiteMediaAsset } from '@/lib/site-media.server';
 import { removeUnreferencedYouTubeMedia } from '@/lib/youtube-media.server';
+import { removeUnreferencedEventMedia } from '@/lib/event-media.server';
+import { removeUnreferencedCharacterMaskMedia } from '@/lib/character-masks.server';
 import { requireAdmin } from '@/lib/supabase/admin';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
@@ -14,6 +16,8 @@ const targets = {
   'upcoming-book-cover': { prefix: 'books/upcoming', kind: 'book' },
   'letter-photo': { prefix: 'letters/photos', kind: 'letter' },
   'editorial-image': { prefix: 'editorial/content', kind: 'editorial' },
+  'event-artwork': { prefix: 'events/artwork', kind: 'event' },
+  'character-mask-preview': { prefix: 'masks/previews', kind: 'characterMask' },
 } as const;
 
 export async function DELETE(request: Request) {
@@ -42,7 +46,11 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'La imagen no pertenece a la carpeta seleccionada.' }, { status: 400 });
   }
 
-  if (target.kind === 'youtube') {
+  if (target.kind === 'event') {
+    await removeUnreferencedEventMedia(value.path);
+  } else if (target.kind === 'characterMask') {
+    await removeUnreferencedCharacterMaskMedia(value.path);
+  } else if (target.kind === 'youtube') {
     const { data } = createSupabaseAdminClient().storage.from('curileta-site-media').getPublicUrl(value.path);
     await removeUnreferencedYouTubeMedia([data.publicUrl]);
   } else {

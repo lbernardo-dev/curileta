@@ -7,6 +7,7 @@ import {
   DEFAULT_EVENT_EFFECTS,
   EVENT_DECORATIONS,
   EVENT_PALETTE_PRESETS,
+  type EventCampaignContent,
   isManagedEventActive,
   type EventEffects,
   type EventPalette,
@@ -108,6 +109,8 @@ export function normalizeManagedEvent(value: unknown) {
   const priority = body.priority;
   const palette = normalizePalette(body.palette, themeKey);
   const effects = normalizeEffects(body.effects);
+  const artworkUrl = typeof body.artworkUrl === 'string' ? body.artworkUrl.trim() : '';
+  const artworkPath = typeof body.artworkPath === 'string' ? body.artworkPath.trim() : '';
   const heroVideoUrl = typeof body.heroVideoUrl === 'string' ? body.heroVideoUrl.trim() : '';
   const heroVideoPath = typeof body.heroVideoPath === 'string' ? body.heroVideoPath.trim() : '';
   const ambientAudioUrl = typeof body.ambientAudioUrl === 'string' ? body.ambientAudioUrl.trim() : '';
@@ -123,6 +126,7 @@ export function normalizeManagedEvent(value: unknown) {
     || (activationMode !== 'manual' && activationMode !== 'scheduled')
     || typeof body.enabled !== 'boolean' || typeof body.manualActive !== 'boolean'
     || typeof priority !== 'number' || !Number.isInteger(priority) || priority < 0 || priority > 100
+    || !validOptionalEventMedia(artworkUrl, artworkPath, 'image')
     || !validOptionalEventMedia(heroVideoUrl, heroVideoPath, 'video')
     || !validOptionalEventMedia(ambientAudioUrl, ambientAudioPath, 'audio')
     || !validOptionalEventMedia(scareSoundUrl, scareSoundPath, 'audio')) return null;
@@ -139,12 +143,15 @@ export function normalizeManagedEvent(value: unknown) {
     enabled: body.enabled,
     manual_active: body.manualActive,
     priority,
+    artwork_url: artworkUrl,
+    artwork_path: artworkPath,
     hero_video_url: heroVideoUrl,
     hero_video_path: heroVideoPath,
     ambient_audio_url: ambientAudioUrl,
     ambient_audio_path: ambientAudioPath,
     scare_sound_url: scareSoundUrl,
     scare_sound_path: scareSoundPath,
+    campaign_content: mapCampaignContent(body.campaignContent),
     palette,
     effects,
   };
@@ -178,12 +185,15 @@ export function mapManagedEvent(row: EventRow): ManagedEvent {
     enabled: row.enabled === true,
     manualActive: row.manual_active === true,
     priority: finiteNumber(row.priority, 0),
+    artworkUrl: stringValue(row.artwork_url),
+    artworkPath: stringValue(row.artwork_path),
     heroVideoUrl: stringValue(row.hero_video_url),
     heroVideoPath: stringValue(row.hero_video_path),
     ambientAudioUrl: stringValue(row.ambient_audio_url),
     ambientAudioPath: stringValue(row.ambient_audio_path),
     scareSoundUrl: stringValue(row.scare_sound_url),
     scareSoundPath: stringValue(row.scare_sound_path),
+    campaignContent: mapCampaignContent(row.campaign_content),
     palette,
     effects: {
       decorationsEnabled: effectsValue.decorationsEnabled === true,
@@ -198,6 +208,32 @@ export function mapManagedEvent(row: EventRow): ManagedEvent {
     createdAt: stringValue(row.created_at),
     updatedAt: stringValue(row.updated_at),
   };
+}
+
+function mapCampaignContent(value: unknown): EventCampaignContent {
+  const content = objectValue(value);
+  const activities = Array.isArray(content.activities) ? content.activities.flatMap((value) => {
+    const activity = objectValue(value);
+    const kind = activity.kind;
+    if (kind !== 'reveal' && kind !== 'riddleSet' && kind !== 'download' && kind !== 'maskLibrary') return [];
+    return [{
+      id: stringValue(activity.id),
+      kind: kind as EventCampaignContent['activities'][number]['kind'],
+      icon: stringValue(activity.icon, '✨'),
+      title: localizedValue(activity.title),
+      description: localizedValue(activity.description),
+      reveal: localizedValue(activity.reveal),
+      resourceUrl: stringValue(activity.resourceUrl),
+      resourcePath: stringValue(activity.resourcePath),
+      riddles: Array.isArray(activity.riddles) ? activity.riddles.flatMap((value) => {
+        const riddle = objectValue(value);
+        const id = stringValue(riddle.id);
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) return [];
+        return [{ id, title: localizedValue(riddle.title), prompt: localizedValue(riddle.prompt), answer: localizedValue(riddle.answer) }];
+      }) : undefined,
+    }];
+  }) : [];
+  return { title: localizedValue(content.title), intro: localizedValue(content.intro), activities };
 }
 
 export function toSeasonalEvent(event: ManagedEvent, referenceDate = new Date(), forceActive = false): SeasonalEvent {
@@ -215,7 +251,7 @@ export function toSeasonalEvent(event: ManagedEvent, referenceDate = new Date(),
     startDate: event.startsAt,
     endDate: event.endsAt,
     timeZone: event.timeZone,
-    bannerImage: '',
+    bannerImage: event.artworkUrl,
     managed: true,
     heroVideoUrl: event.heroVideoUrl,
     heroVideoPath: event.heroVideoPath,
@@ -225,6 +261,7 @@ export function toSeasonalEvent(event: ManagedEvent, referenceDate = new Date(),
     scareSoundPath: event.scareSoundPath,
     palette: event.palette,
     effects: event.effects,
+    campaignContent: event.campaignContent,
     ambientDecorations: {
       glowColor: event.palette.accent,
       accentColor: event.palette.accent,
@@ -306,7 +343,7 @@ function normalizeEffects(value: unknown): EventEffects | null {
   };
 }
 
-function validOptionalEventMedia(url: string, path: string, kind: 'video' | 'audio') {
+function validOptionalEventMedia(url: string, path: string, kind: 'video' | 'audio' | 'image') {
   if (!url && !path) return true;
   return isEventMediaAsset(url, path, kind);
 }

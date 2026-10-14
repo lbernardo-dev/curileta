@@ -9,6 +9,7 @@ type ContactRequestBody = {
   answers?: unknown;
   honeypot?: unknown;
   turnstileToken?: unknown;
+  privacyOptOut?: unknown;
 };
 
 const MAX_REQUEST_LENGTH = 24_000;
@@ -174,11 +175,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'No se pudo guardar el mensaje. Inténtalo de nuevo más tarde.' }, { status: 503 });
   }
 
-  await supabase.rpc('record_public_analytics', {
-    p_event_name: 'contact_submit',
-    p_path: `/${locale}/contacto`,
-    p_locale: locale,
-  });
+  const privacyOptOut = body.privacyOptOut === true
+    || request.headers.get('dnt') === '1'
+    || request.headers.get('sec-gpc') === '1';
+  if (!privacyOptOut) {
+    await supabase.rpc('record_public_analytics', {
+      p_event_name: 'contact_submit',
+      p_path: `/${locale}/contacto`,
+      p_locale: locale,
+    });
+  }
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.CONTACT_FROM_EMAIL;

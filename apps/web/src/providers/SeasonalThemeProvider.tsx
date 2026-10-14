@@ -2,7 +2,8 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { SeasonalEvent } from '@curileta/cms';
-import { EVENT_PALETTE_PRESETS } from '@/lib/events';
+import type { ManagedBaseTheme } from '@/lib/events';
+import { EVENT_DECORATIONS, EVENT_PALETTE_PRESETS } from '@/lib/events';
 import { removeBrowserStorageValue, setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 
 interface SeasonalThemeContextType {
@@ -16,6 +17,9 @@ interface SeasonalThemeContextType {
   toggleAmbientAudio: () => void;
   canPlayScareSound: boolean;
   playScareSound: () => void;
+  canToggleDecorations: boolean;
+  decorationsVisible: boolean;
+  toggleDecorations: () => void;
   canEnableMotion: boolean;
   motionEnabled: boolean;
   toggleMotion: () => void;
@@ -36,6 +40,9 @@ const SeasonalThemeContext = createContext<SeasonalThemeContextType>({
   toggleAmbientAudio: () => {},
   canPlayScareSound: false,
   playScareSound: () => {},
+  canToggleDecorations: false,
+  decorationsVisible: false,
+  toggleDecorations: () => {},
   canEnableMotion: false,
   motionEnabled: false,
   toggleMotion: () => {},
@@ -63,13 +70,15 @@ const getCampaignStorageKey = (event: SeasonalEvent, now = new Date()) => {
   return `${STORAGE_KEY_PREFIX}${event.id}:${campaignStartYear}`;
 };
 
-export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null; children: React.ReactNode }> = ({ activeEvent, children }) => {
+export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null; baseTheme?: ManagedBaseTheme | null; children: React.ReactNode }> = ({ activeEvent, baseTheme = null, children }) => {
   const campaignStorageKey = activeEvent ? getCampaignStorageKey(activeEvent) : null;
   const scopedValue = useBrowserStorageValue('local', campaignStorageKey);
   const legacyValue = useBrowserStorageValue('local', LEGACY_STORAGE_KEY);
   const motionPreferenceKey = campaignStorageKey ? `${campaignStorageKey}:motion` : null;
+  const decorationsPreferenceKey = campaignStorageKey ? `${campaignStorageKey}:decorations` : null;
   const scarePreferenceKey = campaignStorageKey ? `${campaignStorageKey}:scares` : null;
   const motionPreference = useBrowserStorageValue('local', motionPreferenceKey);
+  const decorationsPreference = useBrowserStorageValue('local', decorationsPreferenceKey);
   const scarePreference = useBrowserStorageValue('local', scarePreferenceKey);
   const mounted = useClientHydrated();
   const reducedMotion = useReducedMotionPreference();
@@ -89,6 +98,8 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
   const canPlayAmbientAudio = Boolean(isSeasonalActive && activeEvent?.effects?.soundEnabled && activeEvent.ambientAudioUrl);
   const ambientAudioPlaying = Boolean(canPlayAmbientAudio && activeEvent && playingEventId === activeEvent.id);
   const canPlayScareSound = Boolean(isSeasonalActive && activeEvent?.effects?.scareEffectsEnabled && activeEvent.scareSoundUrl);
+  const canToggleDecorations = Boolean(isSeasonalActive && activeEvent?.effects?.decorationsEnabled && activeEvent.effects.decorationCount > 0);
+  const decorationsVisible = Boolean(canToggleDecorations && decorationsPreference !== 'false');
   const canEnableMotion = Boolean(isSeasonalActive && activeEvent?.effects?.decorationsEnabled && activeEvent.effects.motionEnabled !== false && !reducedMotion);
   const motionEnabled = Boolean(canEnableMotion && motionPreference !== 'false');
   const scareEffectsEnabled = Boolean(canPlayScareSound && scarePreference === 'true');
@@ -97,10 +108,12 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
     if (!mounted) return;
     const root = document.documentElement;
     const properties = [
+      '--color-adventure-gold', '--color-adventure-gold-light', '--seasonal-header-light', '--seasonal-header-dark', '--seasonal-footer-light', '--seasonal-footer-dark',
       '--seasonal-accent', '--seasonal-accent-strong', '--seasonal-canvas-light', '--seasonal-surface-light', '--seasonal-text-light',
       '--seasonal-canvas-dark', '--seasonal-surface-dark', '--seasonal-text-dark', '--seasonal-banner-start', '--seasonal-banner-end',
     ];
     if (isSeasonalActive && themeKey) {
+      root.removeAttribute('data-site-base-theme');
       root.setAttribute('data-seasonal-theme', themeKey);
       root.setAttribute('data-seasonal-motion', motionEnabled ? 'on' : 'off');
       const palette = activeEvent?.palette || EVENT_PALETTE_PRESETS[themeKey] || EVENT_PALETTE_PRESETS.custom;
@@ -114,16 +127,38 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
       root.style.setProperty('--seasonal-text-dark', palette.textDark);
       root.style.setProperty('--seasonal-banner-start', palette.accentStrong);
       root.style.setProperty('--seasonal-banner-end', palette.accent);
+    } else if (baseTheme) {
+      root.removeAttribute('data-seasonal-theme');
+      root.removeAttribute('data-seasonal-motion');
+      root.setAttribute('data-site-base-theme', 'active');
+      root.style.setProperty('--color-adventure-gold', baseTheme.palette.accent);
+      root.style.setProperty('--color-adventure-gold-light', baseTheme.palette.accent);
+      root.style.setProperty('--seasonal-accent', baseTheme.palette.accent);
+      root.style.setProperty('--seasonal-accent-strong', baseTheme.palette.accentStrong);
+      root.style.setProperty('--seasonal-canvas-light', baseTheme.palette.canvasLight);
+      root.style.setProperty('--seasonal-surface-light', baseTheme.palette.surfaceLight);
+      root.style.setProperty('--seasonal-text-light', baseTheme.palette.textLight);
+      root.style.setProperty('--seasonal-canvas-dark', baseTheme.palette.canvasDark);
+      root.style.setProperty('--seasonal-surface-dark', baseTheme.palette.surfaceDark);
+      root.style.setProperty('--seasonal-text-dark', baseTheme.palette.textDark);
+      root.style.setProperty('--seasonal-banner-start', baseTheme.palette.accentStrong);
+      root.style.setProperty('--seasonal-banner-end', baseTheme.palette.accent);
+      root.style.setProperty('--seasonal-header-light', baseTheme.palette.surfaceLight);
+      root.style.setProperty('--seasonal-header-dark', baseTheme.palette.surfaceDark);
+      root.style.setProperty('--seasonal-footer-light', baseTheme.palette.canvasLight);
+      root.style.setProperty('--seasonal-footer-dark', baseTheme.palette.canvasDark);
     } else {
       root.removeAttribute('data-seasonal-theme');
       root.removeAttribute('data-seasonal-motion');
+      root.removeAttribute('data-site-base-theme');
     }
     return () => {
       root.removeAttribute('data-seasonal-theme');
+      root.removeAttribute('data-site-base-theme');
       root.removeAttribute('data-seasonal-motion');
       for (const property of properties) root.style.removeProperty(property);
     };
-  }, [activeEvent, mounted, isSeasonalActive, motionEnabled, themeKey]);
+  }, [activeEvent, baseTheme, mounted, isSeasonalActive, motionEnabled, themeKey]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -154,6 +189,11 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
     setBrowserStorageValue('local', motionPreferenceKey, motionEnabled ? 'false' : 'true');
   };
 
+  const toggleDecorations = () => {
+    if (!decorationsPreferenceKey || !canToggleDecorations) return;
+    setBrowserStorageValue('local', decorationsPreferenceKey, decorationsVisible ? 'false' : 'true');
+  };
+
   const toggleScareEffects = () => {
     if (!scarePreferenceKey || !canPlayScareSound) return;
     setBrowserStorageValue('local', scarePreferenceKey, scareEffectsEnabled ? 'false' : 'true');
@@ -181,6 +221,9 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
       toggleAmbientAudio,
       canPlayScareSound,
       playScareSound,
+      canToggleDecorations,
+      decorationsVisible,
+      toggleDecorations,
       canEnableMotion,
       motionEnabled,
       toggleMotion,
@@ -200,7 +243,7 @@ export const SeasonalThemeProvider: React.FC<{ activeEvent: SeasonalEvent | null
         onPause={() => setPlayingEventId((current) => current === activeEvent.id ? '' : current)}
       />}
       {canPlayScareSound && <audio ref={scareSoundRef} src={activeEvent?.scareSoundUrl} preload="none" aria-hidden="true" className="hidden" />}
-      <SeasonalDecorations event={activeEvent} active={isSeasonalActive} motionEnabled={motionEnabled} />
+      <SeasonalDecorations event={activeEvent} active={decorationsVisible} motionEnabled={motionEnabled} />
       {children}
     </SeasonalThemeContext.Provider>
   );
@@ -210,15 +253,32 @@ export const useSeasonalTheme = () => useContext(SeasonalThemeContext);
 
 function SeasonalDecorations({ event, active, motionEnabled }: { event: SeasonalEvent | null; active: boolean; motionEnabled: boolean }) {
   const effects = event?.effects;
-  const decorations = event?.ambientDecorations.floatingEmojis || [];
-  if (!active || !effects?.decorationsEnabled || !decorations.length || effects.decorationCount <= 0) return null;
+  const selected = event?.effects?.decorations || [];
+  const decorationItems = selected.flatMap((key) => {
+    const item = EVENT_DECORATIONS.find((decoration) => decoration.key === key);
+    return item ? [item] : [];
+  });
+  if (!active || !effects?.decorationsEnabled || !decorationItems.length || effects.decorationCount <= 0) return null;
   const count = Math.min(effects.decorationCount, 32);
   const speed = effects.decorationSpeed === 'quick' ? 15 : effects.decorationSpeed === 'slow' ? 34 : 24;
-  return <div aria-hidden="true" className="seasonal-decoration-layer">{Array.from({ length: count }, (_, index) => <span
-    key={`${decorations[index % decorations.length]}-${index}`}
-    className={motionEnabled ? 'seasonal-decoration' : 'seasonal-decoration-still'}
-    style={{ left: `${(index * 37 + 9) % 100}%`, animationDelay: `${-(index * 3 % speed)}s`, animationDuration: `${speed + (index * 7 % 12)}s`, opacity: effects.decorationOpacity }}
-  >{decorations[index % decorations.length]}</span>)}</div>;
+  const has = (key: string) => selected.includes(key);
+  return <div aria-hidden="true" className={`seasonal-decoration-layer seasonal-scene seasonal-scene--${event?.themeKey || 'custom'}`}>
+    <span className="seasonal-theme-frame" />
+    {has('fog') && <span className="seasonal-fog" />}
+    {has('cornerWebs') && <><span className="seasonal-corner-web seasonal-corner-web--left">🕸️</span><span className="seasonal-corner-web seasonal-corner-web--right">🕸️</span></>}
+    {has('snowbanks') && <><span className="seasonal-snowbank seasonal-snowbank--left" /><span className="seasonal-snowbank seasonal-snowbank--right" /></>}
+    {has('snowman') && <span className="seasonal-snowman">⛄</span>}
+    {has('fireflies') && <span className="seasonal-firefly seasonal-firefly--one">✦</span>}
+    {has('fireflies') && <span className="seasonal-firefly seasonal-firefly--two">✦</span>}
+    {Array.from({ length: count }, (_, index) => {
+      const item = decorationItems[index % decorationItems.length];
+      return <span
+        key={`${item.key}-${index}`}
+        className={`${motionEnabled ? 'seasonal-decoration' : 'seasonal-decoration-still'} seasonal-decoration--${item.key}`}
+        style={{ left: `${(index * 37 + 9) % 100}%`, animationDelay: `${-(index * 3 % speed)}s`, animationDuration: `${speed + (index * 7 % 12)}s`, opacity: effects.decorationOpacity }}
+      >{item.glyph}</span>;
+    })}
+  </div>;
 }
 
 function useReducedMotionPreference() {

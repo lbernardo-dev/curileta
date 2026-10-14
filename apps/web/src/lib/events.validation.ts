@@ -1,4 +1,4 @@
-import { EVENT_DECORATIONS, type EventActivationMode, type EventEffects, type EventPalette, type ManagedBaseTheme } from './events';
+import { EVENT_DECORATIONS, type EventActivationMode, type EventCampaignContent, type EventEffects, type EventPalette, type ManagedBaseTheme } from './events';
 import { isEventMediaAsset } from './event-media.server';
 
 export interface NormalizedEventData {
@@ -13,12 +13,15 @@ export interface NormalizedEventData {
   enabled: boolean;
   manual_active: boolean;
   priority: number;
+  artwork_url: string;
+  artwork_path: string;
   hero_video_url: string;
   hero_video_path: string;
   ambient_audio_url: string;
   ambient_audio_path: string;
   scare_sound_url: string;
   scare_sound_path: string;
+  campaign_content: EventCampaignContent;
   palette: EventPalette;
   effects: EventEffects;
 }
@@ -35,6 +38,9 @@ export function normalizeEventBody(body: Record<string, unknown>): NormalizedEve
   const priority = body.priority;
   const palette = normalizePalette(body.palette);
   const effects = normalizeEffects(body.effects);
+  const campaignContent = normalizeCampaignContent(body.campaignContent);
+  const artworkUrl = typeof body.artworkUrl === 'string' ? body.artworkUrl : '';
+  const artworkPath = typeof body.artworkPath === 'string' ? body.artworkPath : '';
   const heroVideoUrl = typeof body.heroVideoUrl === 'string' ? body.heroVideoUrl : '';
   const heroVideoPath = typeof body.heroVideoPath === 'string' ? body.heroVideoPath : '';
   const ambientAudioUrl = typeof body.ambientAudioUrl === 'string' ? body.ambientAudioUrl : '';
@@ -45,17 +51,20 @@ export function normalizeEventBody(body: Record<string, unknown>): NormalizedEve
   if (!name || !description || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80
     || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(themeKey) || themeKey.length > 48
     || !startsAt || !endsAt || Date.parse(endsAt) <= Date.parse(startsAt)
-    || !isTimeZone(timeZone)
+    || !isTimeZone(timeZone) || !campaignContent
     || (activationMode !== 'scheduled' && activationMode !== 'manual')
     || typeof body.enabled !== 'boolean' || typeof body.manualActive !== 'boolean'
     || typeof priority !== 'number' || !Number.isInteger(priority) || priority < 0 || priority > 100
     || !palette || !effects
+    || artworkUrl.length > 2_048 || artworkPath.length > 180
     || heroVideoUrl.length > 2_048 || heroVideoPath.length > 180
     || ambientAudioUrl.length > 2_048 || ambientAudioPath.length > 180
     || scareSoundUrl.length > 2_048 || scareSoundPath.length > 180
+    || Boolean(artworkUrl) !== Boolean(artworkPath)
     || Boolean(heroVideoUrl) !== Boolean(heroVideoPath)
     || Boolean(ambientAudioUrl) !== Boolean(ambientAudioPath)
     || Boolean(scareSoundUrl) !== Boolean(scareSoundPath)
+    || (artworkPath && !isEventMediaAsset(artworkUrl, artworkPath, 'image'))
     || (heroVideoPath && !isEventMediaAsset(heroVideoUrl, heroVideoPath, 'video'))
     || (ambientAudioPath && !isEventMediaAsset(ambientAudioUrl, ambientAudioPath, 'audio'))) return null;
   if (scareSoundPath && !isEventMediaAsset(scareSoundUrl, scareSoundPath, 'audio')) return null;
@@ -72,15 +81,78 @@ export function normalizeEventBody(body: Record<string, unknown>): NormalizedEve
     enabled: body.enabled,
     manual_active: body.manualActive,
     priority,
+    artwork_url: artworkUrl,
+    artwork_path: artworkPath,
     hero_video_url: heroVideoUrl,
     hero_video_path: heroVideoPath,
     ambient_audio_url: ambientAudioUrl,
     ambient_audio_path: ambientAudioPath,
     scare_sound_url: scareSoundUrl,
     scare_sound_path: scareSoundPath,
+    campaign_content: campaignContent,
     palette,
     effects,
   };
+}
+
+function normalizeCampaignContent(value: unknown): EventCampaignContent | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const content = value as Record<string, unknown>;
+  const title = readLocalized(content.title, 140, true);
+  const intro = readLocalized(content.intro, 1200, true);
+  if (!title || !intro || !Array.isArray(content.activities) || content.activities.length > 6) return null;
+  const ids = new Set<string>();
+  const activities = [];
+  let riddleSetCount = 0;
+  for (const raw of content.activities) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const activity = raw as Record<string, unknown>;
+    const id = typeof activity.id === 'string' ? activity.id.trim() : '';
+    const kind = activity.kind;
+    const icon = typeof activity.icon === 'string' ? activity.icon.trim() : '';
+    const activityTitle = readLocalized(activity.title, 100, true);
+    const description = readLocalized(activity.description, 320, true);
+    const reveal = readLocalized(activity.reveal, 640, kind === 'reveal');
+    const riddles = kind === 'riddleSet' ? normalizeRiddles(activity.riddles) : undefined;
+    const resourceUrl = typeof activity.resourceUrl === 'string' ? activity.resourceUrl.trim() : '';
+    const resourcePath = typeof activity.resourcePath === 'string' ? activity.resourcePath.trim() : '';
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || id.length > 48 || ids.has(id)
+      || (kind !== 'reveal' && kind !== 'riddleSet' && kind !== 'download' && kind !== 'maskLibrary') || !icon || icon.length > 12
+      || !activityTitle || !description || !reveal
+      || resourceUrl.length > 2048 || resourcePath.length > 180
+      || Boolean(resourceUrl) !== Boolean(resourcePath)
+      || (kind === 'download' && !isOptionalEventResource(resourceUrl, resourcePath))) return null;
+    if (kind === 'riddleSet' && (!riddles || riddles.length < 1 || riddles.length > 24)) return null;
+    if (kind === 'riddleSet' && ++riddleSetCount > 1) return null;
+    if (kind !== 'riddleSet' && activity.riddles !== undefined) return null;
+    if ((kind === 'reveal' || kind === 'riddleSet' || kind === 'maskLibrary') && (resourceUrl || resourcePath)) return null;
+    if (kind === 'download' && (!resourceUrl || !resourcePath)) return null;
+    ids.add(id);
+    activities.push({ id, kind: kind as EventCampaignContent['activities'][number]['kind'], icon, title: activityTitle, description, reveal, resourceUrl, resourcePath, ...(riddles ? { riddles } : {}) });
+  }
+  return { title, intro, activities };
+}
+
+function normalizeRiddles(value: unknown) {
+  if (!Array.isArray(value)) return null;
+  const ids = new Set<string>();
+  const riddles = [];
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const riddle = raw as Record<string, unknown>;
+    const id = typeof riddle.id === 'string' ? riddle.id.trim() : '';
+    const title = readLocalized(riddle.title, 80, true);
+    const prompt = readLocalized(riddle.prompt, 320, true);
+    const answer = readLocalized(riddle.answer, 240, true);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || id.length > 48 || ids.has(id) || !title || !prompt || !answer) return null;
+    ids.add(id);
+    riddles.push({ id, title, prompt, answer });
+  }
+  return riddles;
+}
+
+function isOptionalEventResource(url: string, path: string) {
+  return isEventMediaAsset(url, path, 'pdf');
 }
 
 export function normalizeBaseThemeBody(body: Record<string, unknown>): Omit<ManagedBaseTheme, 'updatedAt'> | null {

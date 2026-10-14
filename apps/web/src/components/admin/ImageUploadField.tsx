@@ -19,7 +19,9 @@ export type AdminImageTarget =
   | 'gallery-image'
   | 'upcoming-book-cover'
   | 'letter-photo'
-  | 'editorial-image';
+  | 'editorial-image'
+  | 'event-artwork'
+  | 'character-mask-preview';
 
 interface UploadTicket {
   bucket: string;
@@ -40,6 +42,7 @@ interface ImageUploadFieldProps {
   onPathChange?: (path: string) => void;
   onCensoredImageChange?: (value: string, path: string) => void;
   onUploadingChange: (uploading: boolean) => void;
+  preserveOnUnmount?: boolean;
 }
 
 async function convertAdminImage(file: File): Promise<EncodedAdminImage> {
@@ -115,6 +118,7 @@ export function ImageUploadField({
   onPathChange,
   onCensoredImageChange,
   onUploadingChange,
+  preserveOnUnmount = false,
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(false);
@@ -145,14 +149,14 @@ export function ImageUploadField({
     return () => {
       mountedRef.current = false;
       if (lifecycleGenerationRef.current === generation) lifecycleGenerationRef.current += 1;
-      recentUploadPathsRef.current.forEach(discardRecentUpload);
+      if (!preserveOnUnmount) recentUploadPathsRef.current.forEach(discardRecentUpload);
       recentUploadPathsRef.current = [];
       if (uploadingRef.current) {
         uploadingRef.current = false;
         onUploadingChangeRef.current(false);
       }
     };
-  }, [discardRecentUpload]);
+  }, [discardRecentUpload, preserveOnUnmount]);
 
   async function upload(file?: File) {
     if (!file || uploadingRef.current) return;

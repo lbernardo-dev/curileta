@@ -7,7 +7,8 @@ export function GalleryDownloadLink({ slug, locale }: { slug: string; locale: st
   const safeLocale = locale === 'en' ? 'en' : 'es';
 
   function trackDownload() {
-    if (navigator.doNotTrack === '1') return;
+    const privacyNavigator = navigator as Navigator & { globalPrivacyControl?: boolean };
+    if (navigator.doNotTrack === '1' || privacyNavigator.globalPrivacyControl === true) return;
     void fetch('/api/admin/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

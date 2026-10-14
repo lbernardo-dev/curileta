@@ -16,7 +16,7 @@ curileta-web/
 │   ├── motion/                 # MotionSceneEngine (Full, Adaptive, Reduced Motion)
 │   ├── cms/                    # Modelos TypeScript, proveedores Supabase y datos locales
 │   ├── i18n/                   # Localización next-intl (ES / EN) y diccionarios
-│   ├── analytics/              # Telemetría de negocio sin PII (privacidad infantil)
+│   ├── analytics/              # Eventos agregados con controles de privacidad
 │   ├── seo/                    # Generadores de Schema.org JSON-LD
 │   └── config/                 # Tsconfig y configuraciones compartidas
 ├── docs/                       # Especificaciones maestras y plan de implementación
@@ -53,10 +53,10 @@ La aplicación web estará disponible en [http://localhost:3000](http://localhos
    - **Full Motion:** Escritorio con animaciones ricas y 3D.
    - **Adaptive Motion:** Móviles con transiciones suaves y carruseles táctiles.
    - **Reduced Motion:** Usuarios con `prefers-reduced-motion` activado.
-3. **Privacidad Infantil Garantizada (RGPD-K / COPPA):**
-   - Cero cookies invasivas de terceros.
-   - Sin recopilación de datos personales de menores.
-   - Formularios y canales profesionales estrictamente para adultos.
+3. **Privacidad por diseño para una experiencia familiar:**
+   - Google Analytics permanece desactivado por defecto; las señales DNT y GPC omiten las métricas agregadas propias.
+   - Los controles antispam externos se cargan cuando se inicia una acción que los necesita.
+   - El formulario profesional está dirigido a personas adultas; el responsable debe completar la revisión legal, contractual y de audiencia documentada en [la auditoría de privacidad](./Docs/PRIVACY_COMPLIANCE_AUDIT.md).
 
 ---
 
@@ -66,3 +66,4 @@ La aplicación web estará disponible en [http://localhost:3000](http://localhos
 - [Plan de Implementación Operativo](./Docs/PLAN_IMPLEMENTACION.md)
 - [Configuración del backend y conexión de servicios](./Docs/BACKEND_SETUP.md)
 - [Referencia técnica viva del backend](./Docs/BACKEND_TECHNICAL_REFERENCE.md)
+- [Auditoría de privacidad y cookies](./Docs/PRIVACY_COMPLIANCE_AUDIT.md)

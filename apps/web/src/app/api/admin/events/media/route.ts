@@ -11,6 +11,7 @@ const uploadTypes = {
   'audio/mp4': { extension: 'm4a', kind: 'ambientAudio', maxBytes: 25 * 1024 * 1024 },
   'audio/ogg': { extension: 'ogg', kind: 'ambientAudio', maxBytes: 25 * 1024 * 1024 },
   'audio/webm': { extension: 'webm', kind: 'ambientAudio', maxBytes: 25 * 1024 * 1024 },
+  'application/pdf': { extension: 'pdf', kind: 'activityPdf', maxBytes: 12 * 1024 * 1024 },
 } as const;
 
 export async function POST(request: Request) {
@@ -32,7 +33,8 @@ export async function POST(request: Request) {
   const type = typeof contentType === 'string' && Object.prototype.hasOwnProperty.call(uploadTypes, contentType)
     ? uploadTypes[contentType as keyof typeof uploadTypes]
     : null;
-  const acceptedKind = type && (value.kind === type.kind || (type.kind === 'ambientAudio' && value.kind === 'scareSound'));
+  const acceptedKind = type && (value.kind === type.kind || (type.kind === 'ambientAudio' && value.kind === 'scareSound')
+    || (type.kind === 'activityPdf' && value.kind === 'eventPrintablePdf'));
   if (!type || !acceptedKind || typeof value.fileSize !== 'number' || !Number.isInteger(value.fileSize)
     || value.fileSize < 1 || value.fileSize > type.maxBytes) {
     return NextResponse.json({ error: 'El formato o el tamaño del archivo no está permitido para este campo.' }, { status: 400 });
@@ -40,7 +42,11 @@ export async function POST(request: Request) {
 
   try {
     const admin = createSupabaseAdminClient();
-    const path = `events/${crypto.randomUUID()}.${type.extension}`;
+    const path = value.kind === 'eventPrintablePdf'
+      ? `events/printables/${crypto.randomUUID()}.pdf`
+      : type.kind === 'activityPdf'
+        ? `events/materials/${crypto.randomUUID()}.pdf`
+      : `events/${crypto.randomUUID()}.${type.extension}`;
     const { data, error } = await admin.storage.from(bucket).createSignedUploadUrl(path);
     if (error || !data?.token) throw error || new Error('Supabase no devolvió un permiso de subida.');
 
@@ -78,9 +84,12 @@ export async function DELETE(request: Request) {
   }
   const path = (body as Record<string, unknown>).path as string;
   const extension = path.split('.').at(-1)?.toLowerCase();
-  const mediaKind = extension === 'mp4' || extension === 'webm' && path.startsWith('events/') ? 'video' : 'audio';
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl || !isEventMediaAsset(`${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`, path, mediaKind)) {
+  const publicUrl = supabaseUrl ? `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}` : '';
+  const validAsset = Boolean(supabaseUrl) && ['image', 'video', 'audio', 'pdf'].some((kind) => (
+    isEventMediaAsset(publicUrl, path, kind as 'image' | 'video' | 'audio' | 'pdf')
+  ));
+  if (!validAsset || !extension) {
     return NextResponse.json({ error: 'El archivo no pertenece a la biblioteca de eventos.' }, { status: 400 });
   }
 

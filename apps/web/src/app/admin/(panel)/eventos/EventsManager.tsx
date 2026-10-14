@@ -1,20 +1,25 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { CalendarClock, Check, Clapperboard, LoaderCircle, Palette, Plus, Save, Sparkles, Trash2, X } from 'lucide-react';
 import { EventMediaUploadField } from '@/components/admin/EventMediaUploadField';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
+import { EventThemeControlPanel } from './EventThemeControlPanel';
 import {
   DEFAULT_EVENT_EFFECTS,
   EVENT_DECORATIONS,
   EVENT_PALETTE_PRESETS,
+  EVENT_THEME_OPTIONS,
   dateTimeValueInTimeZone,
   eventDateTimeToIso,
   eventStatusLabel,
   type EventPalette,
+  type EventCampaignActivity,
   type ManagedEvent,
 } from '@/lib/events';
 
-type MediaKind = 'heroVideo' | 'ambientAudio' | 'scareSound';
+type MediaKind = 'heroVideo' | 'ambientAudio' | 'scareSound' | 'activityPdf';
 type MediaValue = { url: string; path: string };
 type EventForm = Omit<ManagedEvent, 'id' | 'createdAt'> & {
   startsAt: string;
@@ -42,7 +47,7 @@ function dateInputFromNow(deltaMinutes: number) {
 }
 
 function emptyForm(): EventForm {
-  const themeKey = 'halloween';
+  const themeKey = 'custom';
   return {
     slug: '',
     name: { es: '', en: '' },
@@ -55,15 +60,18 @@ function emptyForm(): EventForm {
     enabled: false,
     manualActive: false,
     priority: 0,
+    artworkUrl: '',
+    artworkPath: '',
     heroVideoUrl: '',
     heroVideoPath: '',
     ambientAudioUrl: '',
     ambientAudioPath: '',
     scareSoundUrl: '',
     scareSoundPath: '',
+    campaignContent: { title: { es: '', en: '' }, intro: { es: '', en: '' }, activities: [] },
     updatedAt: '',
     palette: EVENT_PALETTE_PRESETS[themeKey],
-    effects: { ...DEFAULT_EVENT_EFFECTS, decorations: ['bats', 'leaves', 'pumpkins', 'cornerWebs', 'cornerSpiders'] },
+    effects: { ...DEFAULT_EVENT_EFFECTS, decorations: [] },
   };
 }
 
@@ -80,12 +88,15 @@ function toForm(event: ManagedEvent): EventForm {
     enabled: event.enabled,
     manualActive: event.manualActive,
     priority: event.priority,
+    artworkUrl: event.artworkUrl,
+    artworkPath: event.artworkPath,
     heroVideoUrl: event.heroVideoUrl,
     heroVideoPath: event.heroVideoPath,
     ambientAudioUrl: event.ambientAudioUrl,
     ambientAudioPath: event.ambientAudioPath,
     scareSoundUrl: event.scareSoundUrl,
     scareSoundPath: event.scareSoundPath,
+    campaignContent: event.campaignContent,
     updatedAt: event.updatedAt,
     palette: event.palette,
     effects: event.effects,
@@ -99,7 +110,7 @@ export default function EventsManager() {
   const [editingId, setEditingId] = useState('');
   const [saving, setSaving] = useState(false);
   const [busyAction, setBusyAction] = useState('');
-  const [uploads, setUploads] = useState<Record<MediaKind, boolean>>({ heroVideo: false, ambientAudio: false, scareSound: false });
+  const [uploads, setUploads] = useState<Record<string, boolean>>({ heroVideo: false, ambientAudio: false, scareSound: false, artwork: false });
   const [deleteId, setDeleteId] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -143,6 +154,52 @@ export default function EventsManager() {
   const setLocalizedField = (field: 'name' | 'description', locale: 'es' | 'en', value: string) => {
     setForm((previous) => previous ? { ...previous, [field]: { ...previous[field], [locale]: value } } : previous);
   };
+  const setCampaignLocalizedField = (field: 'title' | 'intro', locale: 'es' | 'en', value: string) => {
+    setForm((previous) => previous ? {
+      ...previous,
+      campaignContent: {
+        ...previous.campaignContent,
+        [field]: { ...previous.campaignContent[field], [locale]: value },
+      },
+    } : previous);
+  };
+  const setActivityField = <K extends keyof EventCampaignActivity>(id: string, key: K, value: EventCampaignActivity[K]) => {
+    setForm((previous) => previous ? {
+      ...previous,
+      campaignContent: {
+        ...previous.campaignContent,
+        activities: previous.campaignContent.activities.map((activity) => activity.id === id ? { ...activity, [key]: value } : activity),
+      },
+    } : previous);
+  };
+  const setActivityLocalizedField = (id: string, field: 'title' | 'description' | 'reveal', locale: 'es' | 'en', value: string) => {
+    setForm((previous) => previous ? {
+      ...previous,
+      campaignContent: {
+        ...previous.campaignContent,
+        activities: previous.campaignContent.activities.map((activity) => activity.id === id
+          ? { ...activity, [field]: { ...activity[field], [locale]: value } }
+          : activity),
+      },
+    } : previous);
+  };
+  function addActivity() {
+    if (!form || form.campaignContent.activities.length >= 6) return;
+    const activity: EventCampaignActivity = {
+      id: `actividad-${crypto.randomUUID().slice(0, 8)}`,
+      kind: 'reveal', icon: '✨',
+      title: { es: '', en: '' }, description: { es: '', en: '' }, reveal: { es: '', en: '' },
+      resourceUrl: '', resourcePath: '',
+    };
+    setForm((previous) => previous ? { ...previous, campaignContent: { ...previous.campaignContent, activities: [...previous.campaignContent.activities, activity] } } : previous);
+  }
+  function removeActivity(activity: EventCampaignActivity) {
+    const savedPath = editingEvent?.campaignContent.activities.find((item) => item.id === activity.id)?.resourcePath || '';
+    if (activity.resourcePath.startsWith('events/materials/') && activity.resourcePath !== savedPath) {
+      void fetch('/api/admin/events/media', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: activity.resourcePath }) }).catch(() => undefined);
+    }
+    setForm((previous) => previous ? { ...previous, campaignContent: { ...previous.campaignContent, activities: previous.campaignContent.activities.filter((item) => item.id !== activity.id) } } : previous);
+  }
   const setEffect = <K extends keyof EventForm['effects']>(key: K, value: EventForm['effects'][K]) => {
     setForm((previous) => previous ? { ...previous, effects: { ...previous.effects, [key]: value } } : previous);
   };
@@ -179,9 +236,16 @@ export default function EventsManager() {
 
   function cancelForm() {
     if (form) {
+      if (form.artworkPath && form.artworkPath !== (editingEvent?.artworkPath || '')) {
+        void fetch('/api/admin/media/discard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target: 'event-artwork', path: form.artworkPath }) }).catch(() => undefined);
+      }
       void discardIfUncommitted(form.heroVideoPath, editingEvent?.heroVideoPath || '');
       void discardIfUncommitted(form.ambientAudioPath, editingEvent?.ambientAudioPath || '');
       void discardIfUncommitted(form.scareSoundPath, editingEvent?.scareSoundPath || '');
+      form.campaignContent.activities.forEach((activity) => {
+        const savedPath = editingEvent?.campaignContent.activities.find((item) => item.id === activity.id)?.resourcePath || '';
+        if (activity.resourcePath.startsWith('events/materials/') && activity.resourcePath !== savedPath) void discardIfUncommitted(activity.resourcePath, savedPath);
+      });
     }
     setForm(null);
     setEditingId('');
@@ -195,6 +259,15 @@ export default function EventsManager() {
       setError('La fecha y hora de fin deben ser posteriores al inicio.');
       return;
     }
+    if (form.campaignContent.activities.some((activity) => activity.kind === 'riddleSet' && (!activity.riddles?.length || activity.riddles.length > 24))) {
+      setError('Cada colección de acertijos debe incluir entre 1 y 24 acertijos.');
+      return;
+    }
+    if (form.campaignContent.activities.some((activity) => activity.kind === 'riddleSet' && activity.riddles?.some((riddle) =>
+      !riddle.title.es.trim() || !riddle.title.en.trim() || !riddle.prompt.es.trim() || !riddle.prompt.en.trim() || !riddle.answer.es.trim() || !riddle.answer.en.trim()))) {
+      setError('Completa el título, enunciado y respuesta de cada acertijo en español e inglés.');
+      return;
+    }
     const startsAt = eventDateTimeToIso(form.startsAt, form.timeZone);
     const endsAt = eventDateTimeToIso(form.endsAt, form.timeZone, true);
     if (!startsAt || !endsAt) {
@@ -203,6 +276,10 @@ export default function EventsManager() {
     }
     if (Object.values(uploads).some(Boolean)) {
       setError('Espera a que terminen las subidas de archivos.');
+      return;
+    }
+    if (form.campaignContent.activities.some((activity) => activity.kind === 'download' && !activity.resourceUrl)) {
+      setError('Sube un PDF a cada actividad descargable antes de guardar.');
       return;
     }
     setSaving(true);
@@ -300,6 +377,8 @@ export default function EventsManager() {
       {error && <p role="alert" className="rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-[#272727] dark:text-rose-200">{error}</p>}
       {notice && <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-[#1f1f1f] dark:text-emerald-200">{notice}</p>}
 
+      <EventThemeControlPanel events={events} />
+
       <section aria-labelledby="events-list-heading" className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -387,7 +466,7 @@ export default function EventsManager() {
                   const value = event.target.value;
                   setForm((previous) => previous ? { ...previous, themeKey: value, palette: EVENT_PALETTE_PRESETS[value] || previous.palette } : previous);
                 }}>
-                  <option value="halloween">Halloween</option><option value="christmas">Navidad</option><option value="easter">Pascua</option><option value="valentines">Día del amor</option><option value="spring">Primavera</option><option value="summer">Verano</option><option value="custom">Otra temática</option>
+                  {EVENT_THEME_OPTIONS.map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}
                 </select>
                 {(form.themeKey === 'custom' || !(form.themeKey in EVENT_PALETTE_PRESETS)) && <input aria-label="Clave de la temática" className={fieldClass} value={form.themeKey} pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={48} required onChange={(event) => setField('themeKey', event.target.value)} placeholder="aniversario" />}
               </div>
@@ -415,6 +494,86 @@ export default function EventsManager() {
                 {form.activationMode === 'manual' && <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={form.manualActive} onChange={(event) => setField('manualActive', event.target.checked)} className="h-4 w-4 rounded accent-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600" />Activo manualmente</label>}
               </div>
             </div>
+          </section>
+
+          <section className={`${cardClass} space-y-5`} aria-labelledby="event-campaign-heading">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 id="event-campaign-heading" className="flex items-center gap-2 text-lg font-bold"><Sparkles className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />Historia y actividades</h3>
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">Este contenido aparece debajo del hero cuando la temporada está activa. Añade una historia, actividades y colecciones de acertijos.</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/admin/acertijos" className={`${buttonClass} border border-emerald-700 text-emerald-900 hover:bg-emerald-50 dark:text-emerald-200 dark:hover:bg-[#183d2c]`}>Gestionar acertijos</Link>
+                <button type="button" onClick={addActivity} disabled={form.campaignContent.activities.length >= 6} className={`${buttonClass} border border-emerald-700 text-emerald-900 hover:bg-emerald-50 disabled:opacity-50 dark:text-emerald-200 dark:hover:bg-[#183d2c]`}><Plus className="h-4 w-4" />Añadir actividad</button>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <TextField label="Título de la sección en español" value={form.campaignContent.title.es} maxLength={140} required onChange={(value) => setCampaignLocalizedField('title', 'es', value)} />
+              <TextField label="Section title in English" value={form.campaignContent.title.en} maxLength={140} required onChange={(value) => setCampaignLocalizedField('title', 'en', value)} />
+              <TextAreaField label="Presentación en español" value={form.campaignContent.intro.es} maxLength={1200} required onChange={(value) => setCampaignLocalizedField('intro', 'es', value)} />
+              <TextAreaField label="Introduction in English" value={form.campaignContent.intro.en} maxLength={1200} required onChange={(value) => setCampaignLocalizedField('intro', 'en', value)} />
+            </div>
+            {form.campaignContent.activities.map((activity, index) => <fieldset key={activity.id} className="space-y-4 rounded-xl border border-slate-200 p-4 dark:border-[#313131]">
+              <legend className="px-2 text-sm font-bold">Actividad {index + 1}</legend>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className="grid flex-1 gap-4 sm:grid-cols-[7rem_1fr]">
+                  <TextField label="Icono" value={activity.icon} maxLength={12} required onChange={(value) => setActivityField(activity.id, 'icon', value)} hint="Emoji o símbolo corto." />
+                  <label className="block text-sm font-semibold">Tipo de actividad<select value={activity.kind} className={fieldClass} onChange={(event) => {
+                    const kind = event.target.value as EventCampaignActivity['kind'];
+                    setActivityField(activity.id, 'kind', kind);
+                      if (kind !== 'download') {
+                      setActivityField(activity.id, 'resourceUrl', '');
+                      setActivityField(activity.id, 'resourcePath', '');
+                      }
+                      if (kind !== 'reveal') {
+                      setActivityField(activity.id, 'reveal', { es: '', en: '' });
+                    }
+                    setActivityField(activity.id, 'riddles', kind === 'riddleSet' ? (activity.riddles || []) : undefined);
+                  }}><option value="reveal">Reto interactivo con respuesta</option><option value="riddleSet" disabled>Colección de acertijos, gestionar en su sección</option><option value="download">Material descargable</option><option value="maskLibrary">Biblioteca de máscaras</option></select></label>
+                </div>
+                <button type="button" onClick={() => removeActivity(activity)} className={`${buttonClass} text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-[#272727]`} aria-label={`Eliminar actividad ${index + 1}`}><Trash2 className="h-4 w-4" />Quitar actividad</button>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <TextField label="Título en español" value={activity.title.es} maxLength={100} required onChange={(value) => setActivityLocalizedField(activity.id, 'title', 'es', value)} />
+                <TextField label="Title in English" value={activity.title.en} maxLength={100} required onChange={(value) => setActivityLocalizedField(activity.id, 'title', 'en', value)} />
+                <TextAreaField label="Descripción en español" value={activity.description.es} maxLength={320} required onChange={(value) => setActivityLocalizedField(activity.id, 'description', 'es', value)} />
+                <TextAreaField label="Description in English" value={activity.description.en} maxLength={320} required onChange={(value) => setActivityLocalizedField(activity.id, 'description', 'en', value)} />
+              </div>
+              {activity.kind === 'reveal' ? <div className="grid gap-4 sm:grid-cols-2">
+                <TextAreaField label="Respuesta que se revela en español" value={activity.reveal.es} maxLength={640} required onChange={(value) => setActivityLocalizedField(activity.id, 'reveal', 'es', value)} />
+                <TextAreaField label="Answer revealed in English" value={activity.reveal.en} maxLength={640} required onChange={(value) => setActivityLocalizedField(activity.id, 'reveal', 'en', value)} />
+              </div> : activity.kind === 'riddleSet' ? <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950 dark:border-emerald-900 dark:bg-[#183d2c] dark:text-emerald-100">
+                Esta colección incluye {activity.riddles?.length || 0} acertijos. Para añadir, editar o cambiar su orden, abre <Link href="/admin/acertijos" className="font-semibold underline underline-offset-2">la gestión de acertijos</Link>.
+              </div> : activity.kind === 'maskLibrary' ? <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950 dark:border-emerald-900 dark:bg-[#183d2c] dark:text-emerald-100">
+                Esta actividad muestra las máscaras publicadas en <strong>/admin/mascaras</strong>, con selector, vista previa y descargas por personaje. La lista de personajes y sus archivos se configura en esa sección.
+              </div> : <EventMediaUploadField
+                kind="activityPdf"
+                label="PDF descargable"
+                hint="Sube una ficha, máscara, actividad o cuaderno para imprimir."
+                url={activity.resourceUrl}
+                onUploadingChange={(busy) => setUploads((state) => ({ ...state, [`activity-${activity.id}`]: busy }))}
+                onChange={(media) => {
+                  setActivityField(activity.id, 'resourceUrl', media.url);
+                  setActivityField(activity.id, 'resourcePath', media.path);
+                }}
+              />}
+            </fieldset>)}
+            {!form.campaignContent.activities.length && <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600 dark:bg-[#181818] dark:text-slate-300">Aún no hay actividades. Añade un reto con respuesta o una descarga para dar vida a esta temporada.</p>}
+          </section>
+
+          <section className={`${cardClass} space-y-5`} aria-labelledby="event-artwork-heading">
+            <h3 id="event-artwork-heading" className="flex items-center gap-2 text-lg font-bold"><Palette className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />Imagen de temporada</h3>
+            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">La portada acompaña el anuncio y la sección del evento. Puedes usar la ilustración del pack o subir una imagen propia.</p>
+            <ImageUploadField
+              label="Ilustración del evento"
+              hint="Imagen cuadrada o apaisada. Se optimiza antes de subirla."
+              target="event-artwork"
+              value={form.artworkUrl}
+              onChange={(value) => setField('artworkUrl', value)}
+              onPathChange={(value) => setField('artworkPath', value)}
+              onUploadingChange={(busy) => setUploads((state) => ({ ...state, artwork: busy }))}
+              preserveOnUnmount
+            />
           </section>
 
           <section className={`${cardClass} space-y-5`} aria-labelledby="event-media-heading">

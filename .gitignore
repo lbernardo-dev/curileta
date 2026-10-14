@@ -31,7 +31,9 @@ lerna-debug.log*
 
 # Editor & OS files
 .DS_Store
+# macOS AppleDouble resource fork sidecars
 ._*
+**/._*
 .Spotlight-V100
 .Trashes
 Thumbs.db

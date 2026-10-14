@@ -8,6 +8,7 @@ import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 import { SkipLink } from '@curileta/design-system';
 import { SeasonalBanner } from './SeasonalBanner';
+import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
 import { NauticalCompassMark } from './NauticalCompassMark';
 import { Menu, X, BookOpen, ArrowRight } from 'lucide-react';
 
@@ -140,7 +141,22 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
             </div>
           </div>
         )}
+        <SeasonalHeaderTrim />
       </header>
     </>
   );
 };
+
+function SeasonalHeaderTrim() {
+  const { activeEvent, isSeasonalActive } = useSeasonalTheme();
+  const decorations = activeEvent?.effects?.decorations || [];
+  if (!isSeasonalActive || !activeEvent?.effects?.decorationsEnabled) return null;
+  if (activeEvent.themeKey === 'christmas' && decorations.includes('garlands')) {
+    return <svg aria-hidden="true" viewBox="0 0 1440 44" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 top-0 z-[42] h-7 w-full overflow-visible text-emerald-800 dark:text-emerald-300">
+      <path d="M0 2 C180 42 340 42 520 2 S860 42 1040 2 S1260 22 1440 2" fill="none" stroke="currentColor" strokeWidth="3" />
+      {[70, 190, 310, 430, 550, 670, 790, 910, 1030, 1150, 1270, 1390].map((x, index) => <circle key={x} cx={x} cy={index % 2 === 0 ? 17 : 25} r="5" fill={index % 3 === 0 ? '#ef6551' : index % 3 === 1 ? '#f1c453' : '#4dba89'} stroke="white" strokeWidth="1" />)}
+    </svg>;
+  }
+  if (activeEvent.themeKey === 'halloween' && (decorations.includes('bats') || decorations.includes('cornerWebs'))) return <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1 z-[42] -translate-x-1/2 text-lg opacity-80">🦇　🕸️　🦇</span>;
+  return null;
+}
