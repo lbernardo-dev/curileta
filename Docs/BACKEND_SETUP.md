@@ -109,6 +109,10 @@ Comprobaciones habituales del repositorio:
 
 Estas comprobaciones deben corresponder al commit que se vaya a desplegar. Comprueba el resultado de CI y el despliegue en el proveedor; una build local o una migración remota no demuestran por sí solas que la web ya esté publicada.
 
+## Monitorización de dependencias
+
+Dependabot alerts está habilitado en la configuración de GitHub; el gráfico de dependencias también quedó habilitado porque es un requisito de las alertas. Las actualizaciones automáticas de seguridad siguen desactivadas. El primer análisis del 14 de octubre de 2026 encontró nueve alertas abiertas en `package-lock.json`: cinco de `js-yaml` y una de cada paquete `braces`, `sprintf-js`, `uuid` y `postcss-selector-parser`. Revisa cada aviso y valida las actualizaciones en una rama antes de integrarlas. No cierres alertas sin resolver o documentar el motivo.
+
 ## Limitaciones conocidas
 
 - El contador de reproducción del sitio mide inicios confirmados por el reproductor, no las vistas oficiales de YouTube.
