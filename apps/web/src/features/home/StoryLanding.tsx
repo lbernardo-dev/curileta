@@ -218,8 +218,8 @@ export function StoryLanding({ locale, locations, characters, books, upcomingCha
                 {featuredBook.pageCount && <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white/90">{featuredBook.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
                 <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white/90">{isEn ? `${publishedBooks.length} published` : `${publishedBooks.length} publicado${publishedBooks.length === 1 ? '' : 's'}`}</span>
               </div>
-              <div className="mt-9 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                <Link href={`/${locale}/libros/${featuredBook.slug}`} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-[#20352c] transition hover:bg-amber-200">
+              <div className="mt-9 flex w-full max-w-sm flex-col items-stretch gap-4">
+                <Link href={`/${locale}/libros/${featuredBook.slug}`} className="inline-flex min-h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-amber-300 px-6 py-3 text-base font-semibold text-[#20352c] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-200">
                   {isEn ? 'Read about the book' : 'Conocer el libro'} <ArrowRight className="h-4 w-4" />
                 </Link>
                 {nextBook && <span className="text-xs text-white/65">{isEn ? 'Another voyage is on the horizon' : 'Una nueva travesía se prepara'}</span>}

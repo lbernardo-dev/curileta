@@ -38,26 +38,26 @@ export function AmazonMarketplaceLink({
   }
 
   return (
-    <div className={`flex flex-col gap-2 ${compact ? 'items-start' : 'items-start sm:flex-row sm:items-center'}`}>
+    <div className={`flex flex-col gap-3 ${compact ? 'w-full max-w-sm items-stretch' : 'items-start sm:flex-row sm:items-center'}`}>
       <a
         href={getAmazonBookUrl(country, identifier)}
         onClick={() => analytics.track({ name: 'book_purchase_click', properties: { bookId: identifier, storeName: 'Amazon' } })}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#ffcf65] px-5 py-3 text-sm font-bold text-[#20352c] shadow-md transition hover:-translate-y-0.5 hover:bg-[#ffd980] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+        className={`inline-flex min-h-12 min-w-0 flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full bg-[#ffcf65] px-5 py-3 text-base font-semibold !text-[#20352c] shadow-xs transition-all duration-700 ease-fluid hover:-translate-y-0.5 hover:bg-[#ffd980] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800 ${compact ? 'w-full' : ''}`}
       >
         <span>{isEn ? 'Buy on Amazon' : 'Comprar en Amazon'}</span>
-        <span className="text-xs font-semibold text-[#4b5846]">{marketplace.name[locale]}</span>
+        {!compact && <span className="min-w-0 text-center text-xs font-semibold text-[#4b5846]">{marketplace.name[locale]}</span>}
         <ExternalLink className="h-4 w-4" aria-hidden="true" />
       </a>
-      <label htmlFor={selectId} className="flex items-center gap-2 text-xs font-medium text-current/75">
+      <label htmlFor={selectId} className={`text-xs font-medium text-current/75 ${compact ? "flex w-full flex-col items-start gap-1.5" : "flex items-center gap-2"}`}>
         <span>{isEn ? 'Store:' : 'Tienda:'}</span>
         <select
           id={selectId}
           value={country}
           onChange={(event) => changeCountry(event.target.value)}
           aria-label={isEn ? 'Choose Amazon marketplace' : 'Elegir tienda de Amazon'}
-          className="max-w-[190px] rounded-full border border-current/20 bg-white/75 px-3 py-2 text-xs text-[#20352c] shadow-xs outline-hidden transition focus-visible:ring-2 focus-visible:ring-emerald-700"
+          className={`max-w-[190px] rounded-full border border-current/20 bg-white/75 px-3 py-2 text-xs !text-[#20352c] shadow-xs outline-hidden transition-all duration-700 ease-fluid focus-visible:ring-2 focus-visible:ring-emerald-700 ${compact ? 'w-full max-w-none' : ''}`}
         >
           {AMAZON_MARKETPLACES.map((market) => (
             <option key={market.country} value={market.country}>
