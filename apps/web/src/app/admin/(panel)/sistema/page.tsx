@@ -9,11 +9,17 @@ const requiredTables = [
   ['contact_forms', 'Formularios'],
   ['contact_submissions', 'Consultas'],
   ['site_events', 'Eventos y temas'],
-  ['managed_destinations', 'Destinos'],
+  ['managed_destinations', 'Destinos en atlas'],
   ['author_pages', 'Perfiles de autoras'],
-  ['gallery_items', 'Galería'],
-  ['youtube_content_overrides', 'Canal de YouTube'],
+  ['gallery_items', 'Galería de imágenes'],
+  ['gallery_categories', 'Categorías de galería'],
+  ['youtube_content_overrides', 'Vídeos y música de YouTube'],
+  ['youtube_channel_settings', 'Configuración del canal de YouTube'],
   ['book_catalog_settings', 'Catálogo de libros'],
+  ['event_printables', 'PDF de eventos e imprimibles'],
+  ['character_masks', 'Máscaras descargables'],
+  ['home_upcoming_episode_characters', 'Personajes del próximo episodio'],
+  ['image_frame_settings', 'Ajustes de encuadres de imagen'],
 ] as const;
 
 function StatusPill({ ok }: { ok: boolean }) {
