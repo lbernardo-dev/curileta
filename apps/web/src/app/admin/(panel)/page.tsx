@@ -5,10 +5,10 @@ import { getRequestTimestamp } from '@/lib/request-time.server';
 
 function MetricCard({ label, value, detail }: { label: string; value: number; detail: string }) {
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#313131] dark:bg-[#1f1f1f]">
-      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{label}</p>
-      <p className="mt-3 text-4xl font-bold tabular-nums">{value.toLocaleString('es-ES')}</p>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{detail}</p>
+    <article className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-emerald-300/60 hover:shadow-md dark:border-[#313131] dark:bg-[#1f1f1f]">
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-3 text-3xl font-extrabold tabular-nums text-slate-900 dark:text-white sm:text-4xl">{value.toLocaleString('es-ES')}</p>
+      <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">{detail}</p>
     </article>
   );
 }
@@ -45,35 +45,43 @@ export default async function AdminOverviewPage() {
   const recentSubmissions = recent.data || [];
   const shortcuts = canReadInbox
     ? [
-        { href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' },
+        { href: '/admin/libros', title: 'Catálogo de libros', description: 'Selección de obras destacadas en la portada, orden y publicación' },
         { href: '/admin/autoras', title: 'Páginas de autoras', description: 'Perfiles públicos, libros asociados y orden de aparición' },
-        { href: '/admin/galeria', title: 'Galería', description: 'Categorías, imágenes descargables y opciones para compartir' },
-        { href: '/admin/cartas', title: 'Cartas', description: 'Edita cartas y fotos y controla su publicación en la landing' },
+        { href: '/admin/cartas', title: 'Cartas a Pompón', description: 'Edita cartas y fotos y controla su publicación en la landing' },
+        { href: '/admin/destinos', title: 'Destinos en atlas', description: 'Coordenadas geográficas, fotos y waypoints para el mapa 3D' },
+        { href: '/admin/youtube', title: 'Canal de YouTube', description: 'Sincronización del canal oficial, episodios, cortos y estrenos' },
+        { href: '/admin/galeria', title: 'Galería de arte', description: 'Categorías, imágenes descargables y opciones para compartir' },
+        { href: '/admin/contenidos', title: 'Contenidos generales', description: 'Edición de textos, vídeos y secciones del sitio' },
+        { href: '/admin/encuadres', title: 'Encuadres y máscaras', description: 'Ajustes de relación de aspecto y puntos focales de imagen' },
         { href: '/admin/eventos', title: 'Eventos y ambientes', description: 'Programa temporadas, temas, vídeos, sonidos y ambientación' },
-        { href: '/admin/acertijos', title: 'Acertijos de temporada', description: 'Crea colecciones bilingües, ordena sus preguntas y gestiona las respuestas' },
-        { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra los personajes, las vistas previas, los PDF y sus descargas' },
-        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y otros recursos imprimibles' },
+        { href: '/admin/acertijos', title: 'Acertijos de temporada', description: 'Crea colecciones bilingües, ordena preguntas y gestiona respuestas' },
+        { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra personajes, vistas previas, PDF y descargas' },
+        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y recursos imprimibles' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
-        { href: '/admin/forms', title: 'Formularios', description: 'Campos y configuración de contacto' },
-        { href: '/admin/consultas', title: 'Consultas', description: 'Mensajes recibidos y estado de atención' },
-        { href: '/admin/leads', title: 'Oportunidades', description: 'Fases y notas de seguimiento' },
-        { href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' },
-        { href: '/admin/sistema', title: 'Estado del sistema', description: 'Conexiones, biblioteca de imágenes e historial administrativo' },
+        { href: '/admin/forms', title: 'Formularios', description: 'Campos y configuración de formularios de contacto' },
+        { href: '/admin/consultas', title: 'Bandeja de consultas', description: 'Mensajes recibidos y estado de atención' },
+        { href: '/admin/leads', title: 'Oportunidades', description: 'Fases comerciales y notas de seguimiento' },
+        { href: '/admin/estadisticas', title: 'Estadísticas agregadas', description: 'Tráfico, eventos, descargas y tendencias del sitio' },
+        { href: '/admin/sistema', title: 'Estado del sistema', description: 'Conexiones de tablas, biblioteca de medios e historial' },
       ]
     : identity.role === 'editor'
       ? [
-        { href: '/admin/contenidos', title: 'Contenidos', description: 'Edición, vídeos, eventos y secciones del sitio' },
+        { href: '/admin/libros', title: 'Catálogo de libros', description: 'Selección de obras destacadas en la portada, orden y publicación' },
         { href: '/admin/autoras', title: 'Páginas de autoras', description: 'Perfiles públicos, libros asociados y orden de aparición' },
-        { href: '/admin/galeria', title: 'Galería', description: 'Categorías, imágenes descargables y opciones para compartir' },
-        { href: '/admin/cartas', title: 'Cartas', description: 'Edita cartas y fotos y controla su publicación en la landing' },
+        { href: '/admin/cartas', title: 'Cartas a Pompón', description: 'Edita cartas y fotos y controla su publicación en la landing' },
+        { href: '/admin/destinos', title: 'Destinos en atlas', description: 'Coordenadas geográficas, fotos y waypoints para el mapa 3D' },
+        { href: '/admin/youtube', title: 'Canal de YouTube', description: 'Sincronización del canal oficial, episodios, cortos y estrenos' },
+        { href: '/admin/galeria', title: 'Galería de arte', description: 'Categorías, imágenes descargables y opciones para compartir' },
+        { href: '/admin/contenidos', title: 'Contenidos generales', description: 'Edición de textos, vídeos y secciones del sitio' },
+        { href: '/admin/encuadres', title: 'Encuadres y máscaras', description: 'Ajustes de relación de aspecto y puntos focales de imagen' },
         { href: '/admin/eventos', title: 'Eventos y ambientes', description: 'Programa temporadas, temas, vídeos, sonidos y ambientación' },
-        { href: '/admin/acertijos', title: 'Acertijos de temporada', description: 'Crea colecciones bilingües, ordena sus preguntas y gestiona las respuestas' },
-        { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra los personajes, las vistas previas, los PDF y sus descargas' },
-        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y otros recursos imprimibles' },
+        { href: '/admin/acertijos', title: 'Acertijos de temporada', description: 'Crea colecciones bilingües, ordena preguntas y gestiona respuestas' },
+        { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra personajes, vistas previas, PDF y descargas' },
+        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y recursos imprimibles' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
       ]
-      : [{ href: '/admin/estadisticas', title: 'Estadísticas', description: 'Actividad agregada del sitio' }];
-  if (identity.role === 'owner') shortcuts.push({ href: '/admin/equipo', title: 'Equipo', description: 'Permisos por función y accesos administrativos' });
+      : [{ href: '/admin/estadisticas', title: 'Estadísticas agregadas', description: 'Tráfico, eventos, descargas y tendencias del sitio' }];
+  if (identity.role === 'owner') shortcuts.push({ href: '/admin/equipo', title: 'Equipo y accesos', description: 'Permisos por función y accesos administrativos' });
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
