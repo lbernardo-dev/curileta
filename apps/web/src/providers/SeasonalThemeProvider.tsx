@@ -258,8 +258,17 @@ function SeasonalDecorations({ event, active, motionEnabled }: { event: Seasonal
     const item = EVENT_DECORATIONS.find((decoration) => decoration.key === key);
     return item ? [item] : [];
   });
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const evaluateScreen = () => setIsMobile(window.innerWidth < 768);
+    evaluateScreen();
+    window.addEventListener('resize', evaluateScreen);
+    return () => window.removeEventListener('resize', evaluateScreen);
+  }, []);
+
   if (!active || !effects?.decorationsEnabled || !decorationItems.length || effects.decorationCount <= 0) return null;
-  const count = Math.min(effects.decorationCount, 32);
+  const maxDecorations = isMobile ? 8 : 24;
+  const count = Math.min(effects.decorationCount, maxDecorations);
   const speed = effects.decorationSpeed === 'quick' ? 15 : effects.decorationSpeed === 'slow' ? 34 : 24;
   const has = (key: string) => selected.includes(key);
   return <div aria-hidden="true" className={`seasonal-decoration-layer seasonal-scene seasonal-scene--${event?.themeKey || 'custom'}`}>

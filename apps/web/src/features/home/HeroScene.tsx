@@ -28,6 +28,20 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [baseVideoIndex, setBaseVideoIndex] = useState<number | null>(null);
+  const [canPlayVideo, setCanPlayVideo] = useState(false);
+
+  useEffect(() => {
+    const evaluatePlaybackEligibility = () => {
+      const isMobile = window.innerWidth < 768;
+      const isSaveData = Boolean((navigator as unknown as { connection?: { saveData?: boolean } })?.connection?.saveData);
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setCanPlayVideo(!isMobile && !isSaveData && !prefersReducedMotion);
+    };
+
+    evaluatePlaybackEligibility();
+    window.addEventListener('resize', evaluatePlaybackEligibility);
+    return () => window.removeEventListener('resize', evaluatePlaybackEligibility);
+  }, []);
 
   const togglePlayback = () => {
     if (!videoRef.current) return;
@@ -55,6 +69,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
     : undefined;
   const heroPoster = heroVideo?.poster ?? seasonalVideo?.poster ?? HERO_BASE_VIDEOS[0].poster;
   const hasBaseVideoIndex = baseVideoIndex !== null;
+  const isVideoActive = Boolean(heroVideo && canPlayVideo);
 
   useEffect(() => {
     if (!seasonalThemeReady || eventVideo) return;
@@ -118,7 +133,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
           className="object-cover object-[78%_center] sm:object-center"
         />
 
-        {heroVideo && (
+        {isVideoActive && heroVideo && (
           <video
             ref={videoRef}
             key={heroVideo.url}
@@ -193,7 +208,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
         <ArrowDown className="h-4 w-4" aria-hidden="true" />
       </a>
 
-      {heroVideo && (
+      {isVideoActive && heroVideo && (
         <button
           type="button"
           onClick={togglePlayback}

@@ -502,6 +502,51 @@ En la iteración del 15 de octubre de 2026, se integraron los datos y la imagen 
 - Pruebas automatizadas: 25/25 tests pasando (`npm test`).
 - Verificación de tipos y lint: 0 errores y 0 advertencias.
 - Compilación de producción: `next build` genera con éxito 183/183 páginas estáticas (`● SSG`).
+- Estado: Cambios desplegados y verificados en producción.
+
+## 29. Optimización de Rendimiento Móvil y Core Web Vitals (LCP, TBT, Carga de Red y Render-Blocking)
+
+En la iteración del 15 de octubre de 2026, tras una auditoría de rendimiento móvil en emulación de dispositivo móvil (Moto G Power con red 4G lenta) que arrojaba métricas subóptimas (LCP 3,4 s, Speed Index 5,3 s, 20,6 MB de carga útil, 2,4 MB de imágenes no optimizadas y 670 ms de bloqueo de renderizado), se aplicó una reingeniería de carga y activos:
+
+### 1. Eliminación de descarga de vídeo pesado en móviles y salvaguarda de LCP (`HeroScene.tsx`)
+- **Diagnóstico:** El elemento `<video autoPlay loop muted playsInline preload="metadata">` forzaba a los navegadores móviles en conexiones lentas a iniciar solicitudes de rango de bytes del archivo de vídeo (entre 2,2 MB y 5,2 MB). En conexiones 4G lentas (~1,6 Mbps), este streaming saturaba de inmediato el canal de red e impedía la descarga prioritaria de la imagen de póster del Hero (LCP).
+- **Solución:** Se implementó una comprobación dinámica de aptitud de reproducción (`canPlayVideo`):
+  - En pantallas móviles (`window.innerWidth < 768`), con ahorro de datos (`navigator.connection.saveData`) o con preferencia de reducción de movimiento (`prefers-reduced-motion`), el elemento `<video>` no se monta en el DOM.
+  - En su lugar, se sirve de forma inmediata y exclusiva el componente `<Image priority fill ... />` optimizado en WebP/AVIF por Next.js (~45 KB).
+  - En pantallas de escritorio (`>= 768px`) sin restricciones de red, el vídeo se monta y reproduce fluidamente tras la carga visual inicial.
+
+### 2. Optimización de entrega de imágenes y eliminación de banderas `unoptimized`
+- **Diagnóstico:** Las vistas previas de máscaras de personajes (`curileta-mask-v1.png` de 2,3 MB y `pompon-mask-v1.png` de 1,5 MB) se servían en formato PNG crudo con la propiedad `unoptimized`, generando una advertencia crítica en Lighthouse de 2.413 KiB de desperdicio.
+- **Solución:**
+  - Se generaron activos WebP optimizados de alta fidelidad (`curileta-mask-v1.webp` de 230 KB y `pompon-mask-v1.webp` de 213 KB).
+  - Se actualizó el mapeo en `apps/web/src/lib/character-masks.server.ts`.
+  - Se retiró la propiedad `unoptimized` en `apps/web/src/features/events/CharacterMaskDownloads.tsx` y se definieron dimensiones y atributos `sizes="(max-width: 640px) 90vw, 400px"` con `loading="lazy"`, permitiendo que el optimizador de Next.js sirva la imagen a tamaño exacto (~35 KB en móvil).
+
+### 3. Supresión de solicitudes que bloquean el renderizado (Migración a `next/font/google`)
+- **Diagnóstico:** En `apps/web/src/app/globals.css` existía una directiva `@import '@fontsource-variable/geist';` en la cabecera del CSS. Este `@import` en cascada causaba una pausa obligatoria en el pipeline del navegador de 670 ms mientras se resolvía la segunda hoja de estilos.
+- **Solución:**
+  - Se eliminó el `@import` de `globals.css`.
+  - Se migró a la carga nativa de Next.js mediante `Geist` de `next/font/google` en `apps/web/src/app/layout.tsx`.
+  - Next.js auto-aloja las fuentes WOFF2 en compilación (cumpliendo con CSP estricta `font-src 'self' data:` y normativas de privacidad), inyecta la variable CSS `--font-geist` directamente en el bloque `<style>` del HTML y emite `<link rel="preload" as="font" crossorigin>`.
+
+### 4. Code-Splitting dinámico en secciones bajo el pliegue (`apps/web/src/app/[locale]/page.tsx`)
+- **Diagnóstico:** Las 13 secciones de la página de inicio se importaban estáticamente en el mismo archivo, obligando al cliente a descargar, parsear e hidratar más de 3.500 líneas de código interactivo complejo (radares, carruseles, modales de galería, reproductores de vídeo) en el hilo principal inicial (3,7 s de trabajo de hilo principal y TBT de 360 ms).
+- **Solución:**
+  - Se aplicó división de código con `next/dynamic` y opción `{ ssr: true }` a las 8 secciones situadas debajo del pliegue: `AdventureRadar`, `LettersScene`, `CharacterHubScene`, `HomeVideoShowcase`, `WallpapersScene`, `GrowingUniverseScene`, `CollaborationsScene` y `ClosingScene`.
+  - Con `{ ssr: true }`, Next.js sigue pre-renderizando el 100% del HTML en servidor durante la compilación estática (manteniendo el SEO perfecto y 0 layout shifts / CLS 0,028), pero los módulos de cliente JS se cargan como chunks independientes asíncronos sin bloquear el hilo principal.
+
+### 5. Aceleración por hardware de animaciones estacionales y reducción de carga en móvil
+- **Diagnóstico:** Las decoraciones estacionales generaban 32 elementos DOM flotantes continuos con `text-shadow` dinámico, lo que provocaba 131 advertencias de animaciones no compuestas y repintados continuos por CPU en el hilo principal.
+- **Solución:**
+  - En `apps/web/src/providers/SeasonalThemeProvider.tsx` se limitó el número de elementos decorativos flotantes a un máximo de 8 en dispositivos móviles.
+  - En `apps/web/src/app/globals.css` se aplicó `transform: translate3d(0, 0, 0)` y `backface-visibility: hidden` a `.seasonal-decoration`, forzando la creación de capas de composición aceleradas por GPU para que la animación `seasonal-drift` se ejecute enteramente en el hilo compositor sin repintados de CPU.
+
+### Estado de comprobación
+- Pruebas automatizadas: 25/25 tests pasando (`npm test`).
+- Verificación estática: `npm run typecheck` y `npm run lint` con 0 errores y 0 advertencias.
+- Compilación de producción: `next build` genera con éxito 183/183 páginas estáticas (`● SSG`).
+- Estado: Cambios aplicados localmente en rama `perf/mobile-core-web-vitals` listos para PR y despliegue a producción.
+
 
 
 

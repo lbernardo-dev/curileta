@@ -1,12 +1,9 @@
-@import '@fontsource-variable/geist';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-geist: 'Geist Variable', sans-serif;
-  --font-display: var(--font-geist);
+  --font-display: var(--font-geist, sans-serif);
 
   /* Brand Primitive Colors */
   --color-curileta-green: #1B8A44;
@@ -518,6 +515,8 @@ html:is([data-seasonal-theme], [data-site-base-theme]) :is(
   font-size: 1.25rem;
   line-height: 1;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   text-shadow: 0 1px 12px color-mix(in srgb, var(--seasonal-accent) 35%, transparent);
 }
 

@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
 import './globals.css';
 import { generateOrganizationSchema } from '@curileta/seo';
+
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
+  display: 'swap',
+});
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com').replace(/\/$/, '');
 const organizationSchema = generateOrganizationSchema(siteUrl);
@@ -102,7 +109,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-300 selection:text-emerald-950 transition-colors duration-300">
+      <body className={`${geist.variable} font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-300 selection:text-emerald-950 transition-colors duration-300`}>
         <ThemeProvider>
           <AnalyticsConsentManager />
           <AnalyticsRouteTracker />

@@ -3,20 +3,46 @@ import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 
 export const revalidate = 3600;
+import dynamic from 'next/dynamic';
 import { HeroScene } from '@/features/home/HeroScene';
 import { StoryLanding } from '@/features/home/StoryLanding';
 import { SeasonalEventSectionWrapper } from '@/features/events/SeasonalEventSectionWrapper';
-import { AdventureRadar } from '@/features/home/AdventureRadar';
 import { Globe3DSceneDynamic } from '@/features/home/Globe3DSceneDynamic';
-import { LettersScene } from '@/features/home/LettersScene';
-import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
-import { HomeVideoShowcase } from '@/features/home/HomeVideoShowcase';
 import { TaglineRevealSection } from '@/features/home/TaglineRevealSection';
-import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
-import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
-import { CollaborationsScene } from '@/features/home/CollaborationsScene';
-import { ClosingScene } from '@/features/home/ClosingScene';
+
+const AdventureRadar = dynamic(
+  () => import('@/features/home/AdventureRadar').then((mod) => mod.AdventureRadar),
+  { ssr: true }
+);
+const LettersScene = dynamic(
+  () => import('@/features/home/LettersScene').then((mod) => mod.LettersScene),
+  { ssr: true }
+);
+const CharacterHubScene = dynamic(
+  () => import('@/features/home/CharacterHubScene').then((mod) => mod.CharacterHubScene),
+  { ssr: true }
+);
+const HomeVideoShowcase = dynamic(
+  () => import('@/features/home/HomeVideoShowcase').then((mod) => mod.HomeVideoShowcase),
+  { ssr: true }
+);
+const WallpapersScene = dynamic(
+  () => import('@/features/wallpapers/WallpapersScene').then((mod) => mod.WallpapersScene),
+  { ssr: true }
+);
+const GrowingUniverseScene = dynamic(
+  () => import('@/features/home/GrowingUniverseScene').then((mod) => mod.GrowingUniverseScene),
+  { ssr: true }
+);
+const CollaborationsScene = dynamic(
+  () => import('@/features/home/CollaborationsScene').then((mod) => mod.CollaborationsScene),
+  { ssr: true }
+);
+const ClosingScene = dynamic(
+  () => import('@/features/home/ClosingScene').then((mod) => mod.ClosingScene),
+  { ssr: true }
+);
 import { cmsProvider } from '@/lib/cms';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';

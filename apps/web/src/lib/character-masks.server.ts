@@ -7,8 +7,8 @@ export const CHARACTER_MASKS_BUCKET = 'curileta-site-media';
 
 const staticAssets = {
   preview: {
-    'static:character-mask:curileta-preview-v1': '/images/events/masks/curileta-mask-v1.png',
-    'static:character-mask:pompon-preview-v1': '/images/events/masks/pompon-mask-v1.png',
+    'static:character-mask:curileta-preview-v1': '/images/events/masks/curileta-mask-v1.webp',
+    'static:character-mask:pompon-preview-v1': '/images/events/masks/pompon-mask-v1.webp',
   },
   pdf: {
     'static:character-mask:curileta-printable-v1': '/files/events/masks/curileta-mask-v1.pdf',
