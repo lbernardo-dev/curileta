@@ -482,6 +482,27 @@ En la iteración técnica del 15 de octubre de 2026, se diagnosticó y corrigió
 - Pruebas automatizadas: 25/25 tests pasando (`npm test`).
 - Verificación estática: `npm run typecheck` y `npm run lint` con 0 errores y 0 advertencias.
 - Comprobación binaria: Validación con la utilidad `file` confirmando que `favicon.ico` es un recurso MS Windows icon con 3 imágenes (16x16, 32x32, 48x48 RGBA).
+- Estado: Cambios desplegados y verificados en producción.
+
+## 28. Integración del perfil oficial de autora (SweetyTaless, ilustración oficial y rutas SSG)
+
+En la iteración del 15 de octubre de 2026, se integraron los datos y la imagen oficial proporcionada por el titular para el perfil de la autora del universo Curileta:
+
+### Identidad oficial y activos de imagen
+- **Seudónimo literario:** `SweetyTaless` (asociado al registro de autoría en Amazon KDP y a las publicaciones oficiales de la serie).
+- **Activos de imagen:**
+  - Se incorporó la ilustración oficial de la autora en su mesa de trabajo con cuaderno de historias y pluma en `apps/web/public/images/author/sweety-taless.jpg` y versión optimizada `apps/web/public/images/author/sweety-taless.webp`.
+- **Lógica de normalización y vinculación con catálogo:**
+  - En `apps/web/src/lib/author-pages.ts` se optimizó `normalizeAuthorName` para eliminar espacios en blanco y tildes, permitiendo vincular de forma robusta el campo `book.author` (`Sweety Taless`) con el perfil de `SweetyTaless`.
+  - En `apps/web/src/lib/author-pages.server.ts` se estableció `DEFAULT_AUTHOR_PAGES` con el perfil editorial oficial de SweetyTaless para garantizar que las páginas de autora nunca dependan de inicializaciones externas en Supabase ni devuelvan 404.
+  - Soporte de alias de URL: `/autora/sweety-taless` y `/autora/laura-bernardo` resuelven ambas al perfil oficial sin desfases ni enlaces rotos.
+  - En `apps/web/src/app/[locale]/autora/[slug]/page.tsx` se amplió `generateStaticParams()` pre-compilando estáticamente tanto `sweety-taless` como `laura-bernardo` para todos los idiomas (`183/183` rutas SSG).
+
+### Estado de comprobación
+- Pruebas automatizadas: 25/25 tests pasando (`npm test`).
+- Verificación de tipos y lint: 0 errores y 0 advertencias.
+- Compilación de producción: `next build` genera con éxito 183/183 páginas estáticas (`● SSG`).
+
 
 
 
