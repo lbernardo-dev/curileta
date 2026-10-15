@@ -3,7 +3,7 @@
 import { ContentImage } from '@/components/ContentImage';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, BookOpen, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUp, BookOpen, Plus, Save, Trash2 } from 'lucide-react';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
 import type { AuthorPage } from '@/lib/author-pages';
 
@@ -163,6 +163,29 @@ export default function AuthorPagesManager() {
       <div className="mt-2 flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-900 dark:bg-[#272727] dark:text-emerald-200"><BookOpen className="h-5 w-5" /></span><h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Páginas de autoras</h1></div>
       <p className="mt-3 max-w-3xl text-base leading-6 text-slate-600 dark:text-slate-300">Crea perfiles bilingües enlazados a los libros por el nombre de autoría que figura en el catálogo. Los perfiles publicados aparecen en la portada y en las páginas de sus libros.</p>
     </header>
+
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-amber-200/80 bg-amber-50/60 p-5 dark:border-amber-900/40 dark:bg-[#201d14]">
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+          <BookOpen className="h-5 w-5" />
+        </span>
+        <div>
+          <p className="font-semibold text-slate-900 dark:text-amber-100">
+            ¿Quieres añadir o editar los libros del carrusel de la autora?
+          </p>
+          <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
+            En la portada, junto al perfil de la autora, se muestra una baraja interactiva con solapas. Puedes gestionar esos títulos, cubiertas, temáticas y enlaces de Amazon desde la sección de catálogo.
+          </p>
+        </div>
+      </div>
+      <Link
+        href="/admin/libros"
+        className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-amber-400 px-4 py-2 text-xs font-bold text-slate-950 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-300 active:scale-[0.98]"
+      >
+        <span>Ir a catálogo y libros</span>
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </div>
 
     {loading ? <div role="status" className="h-40 animate-pulse rounded-2xl bg-slate-200 dark:bg-[#272727]" /> : <>
       {data && !data.storageAvailable && <p role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-[#272727] dark:text-amber-200">No se pudo leer la tabla de autoras. Aplica la migración de gestión de autoras y galería en Supabase para guardar cambios.</p>}

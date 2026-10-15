@@ -34,7 +34,7 @@ export async function PUT(request: Request) {
   let body: Record<string, unknown>;
   try {
     const raw = await request.text();
-    if (raw.length > 24_000) return NextResponse.json({ error: 'El formulario supera el tamaño permitido.' }, { status: 413 });
+    if (raw.length > 64_000) return NextResponse.json({ error: 'El formulario supera el tamaño permitido.' }, { status: 413 });
     body = JSON.parse(raw) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: 'El formulario no tiene un formato válido.' }, { status: 400 });
@@ -74,12 +74,57 @@ export async function PUT(request: Request) {
       || (hasCoverImage && !isSiteMediaAsset(coverImageUrl, coverImagePath, 'books/upcoming'))) {
       return NextResponse.json({ error: 'La cubierta debe pertenecer a la biblioteca de imágenes del sitio.' }, { status: 400 });
     }
+
+    const subtitle = value.subtitle && typeof value.subtitle === 'object' && localized(value.subtitle, false)
+      ? {
+          es: String((value.subtitle as Record<string, string>).es || '').trim(),
+          en: String((value.subtitle as Record<string, string>).en || (value.subtitle as Record<string, string>).es || '').trim(),
+        }
+      : undefined;
+
+    const theme = value.theme && typeof value.theme === 'object' && localized(value.theme, false)
+      ? {
+          es: String((value.theme as Record<string, string>).es || '').trim(),
+          en: String((value.theme as Record<string, string>).en || (value.theme as Record<string, string>).es || '').trim(),
+        }
+      : undefined;
+
+    const badge = value.badge && typeof value.badge === 'object' && localized(value.badge, false)
+      ? {
+          es: String((value.badge as Record<string, string>).es || '').trim(),
+          en: String((value.badge as Record<string, string>).en || (value.badge as Record<string, string>).es || '').trim(),
+        }
+      : undefined;
+
+    const ageRange = typeof value.ageRange === 'string' && value.ageRange.length <= 60
+      ? value.ageRange.trim()
+      : undefined;
+
+    const pageCount = typeof value.pageCount === 'number' && Number.isFinite(value.pageCount) && value.pageCount >= 0 && value.pageCount <= 5000
+      ? Math.round(value.pageCount)
+      : undefined;
+
+    const externalUrl = typeof value.externalUrl === 'string' && value.externalUrl.length <= 1024
+      ? value.externalUrl.trim()
+      : undefined;
+
+    const author = typeof value.author === 'string' && value.author.length <= 120 && value.author.trim()
+      ? value.author.trim()
+      : 'Sweety Taless';
+
     upcomingBooks.push({
       id: `upcoming-${value.slug}`,
       slug: value.slug,
       title: { es: title.es.trim(), en: title.en.trim() },
+      subtitle,
       description: { es: description.es.trim(), en: description.en.trim() },
-      publicationDate: value.publicationDate as string,
+      theme,
+      badge,
+      ageRange,
+      pageCount,
+      externalUrl,
+      author,
+      publicationDate: (value.publicationDate as string) || '',
       isPublished: value.isPublished !== false,
       coverImageUrl,
       coverImagePath,
@@ -127,6 +172,8 @@ export async function PUT(request: Request) {
     revalidatePath('/[locale]/libros', 'page');
     revalidatePath('/[locale]/libros/[slug]', 'page');
     revalidatePath('/[locale]/novedades', 'page');
+    revalidatePath('/[locale]/autora', 'page');
+    revalidatePath('/[locale]/autora/[slug]', 'page');
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: 'No se pudo guardar el catálogo. Comprueba que la migración de gestión de libros esté aplicada.' }, { status: 503 });

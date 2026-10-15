@@ -191,7 +191,7 @@ export default async function HomePage({
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={landingLetters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
-    books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={books} /></>,
+    books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={displayBooks} /></>,
     videos: <HomeVideoShowcase locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,

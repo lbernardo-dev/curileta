@@ -162,6 +162,48 @@ html.dark {
   animation: radar-breathe 14s ease-in-out infinite;
 }
 
+@keyframes sonar-wave {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.35, 1.45);
+    opacity: 0;
+  }
+}
+
+@keyframes beacon-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes compass-needle-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(12deg); }
+}
+
+.animate-sonar-wave {
+  animation: sonar-wave 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-beacon-shimmer {
+  background-size: 200% auto;
+  animation: beacon-shimmer 3.5s linear infinite;
+}
+
+.animate-compass-wobble {
+  animation: compass-needle-wobble 2.8s ease-in-out infinite;
+}
+
 /* Reduced motion global overrides */
 @media (prefers-reduced-motion: reduce) {
   *,

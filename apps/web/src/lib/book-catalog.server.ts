@@ -33,11 +33,19 @@ function isUpcomingBookRecord(value: unknown): value is BookCatalogSettings['upc
   const localized = (field: unknown) => Boolean(field && typeof field === 'object'
     && typeof (field as Record<string, unknown>).es === 'string'
     && typeof (field as Record<string, unknown>).en === 'string');
+  const optionalLocalized = (field: unknown) => field === undefined || localized(field);
   return typeof book.id === 'string' && typeof book.slug === 'string'
     && localized(book.title) && localized(book.description)
-    && typeof book.publicationDate === 'string'
+    && optionalLocalized(book.subtitle)
+    && optionalLocalized(book.theme)
+    && optionalLocalized(book.badge)
+    && (book.publicationDate === undefined || typeof book.publicationDate === 'string')
     && (book.coverImageUrl === undefined || typeof book.coverImageUrl === 'string')
     && (book.coverImagePath === undefined || typeof book.coverImagePath === 'string')
+    && (book.ageRange === undefined || typeof book.ageRange === 'string')
+    && (book.pageCount === undefined || typeof book.pageCount === 'number')
+    && (book.externalUrl === undefined || typeof book.externalUrl === 'string')
+    && (book.author === undefined || typeof book.author === 'string')
     && (book.isPublished === undefined || typeof book.isPublished === 'boolean');
 }
 
