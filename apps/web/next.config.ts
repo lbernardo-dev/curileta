@@ -31,15 +31,6 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_SUPABASE_IMAGE_HOST: supabaseImagePattern?.hostname ?? '',
   },
-  async redirects() {
-    return [
-      {
-        source: '/favicon.ico',
-        destination: '/favicon.svg',
-        permanent: true,
-      },
-    ];
-  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

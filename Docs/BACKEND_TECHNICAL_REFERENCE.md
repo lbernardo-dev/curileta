@@ -454,5 +454,34 @@ En la iteración de optimización del 15 de octubre de 2026, se ejecutaron las s
 - Pruebas automatizadas: 25/25 tests ejecutados satisfactoriamente (`npm test`).
 - Verificación estática: `npm run typecheck` y `npm run lint` completados con 0 errores y 0 advertencias en todos los paquetes.
 - Compilación de producción: `next build` en `apps/web` compila con éxito 179/179 páginas estáticas (`● SSG`).
+- Estado: Cambios desplegados y verificados en producción.
+
+## 27. Corrección del favicon para indexación en Google Search (eliminación de redirección 308, formato binario ICO multi-resolución, PNGs en múltiplos de 48px y Web App Manifest)
+
+En la iteración técnica del 15 de octubre de 2026, se diagnosticó y corrigió el motivo por el cual el robot de Google Search no mostraba el favicon oficial de Curileta en los snippets de resultados de búsqueda (mostrando en su lugar el icono de globo terráqueo gris genérico):
+
+### Diagnóstico de la causa raíz en Google Search
+1. **Redirección permanente HTTP 308 no soportada:** `apps/web/next.config.ts` contenía una regla de redirección `redirects()` que reenviaba `/favicon.ico` hacia `/favicon.svg`. Las directrices oficiales de Google Search Central (*Define a favicon to show in search results*) prohíben expresamente las redirecciones en la URL del favicon y exigen que la ruta responda directamente con código HTTP 200.
+2. **Requisito de formato ráster y múltiplos de 48px:** El crawler especializado `Googlebot-Image` / `Google Favicon` requiere ficheros ráster de dimensiones cuadradas múltiplos de 48 píxeles (48x48, 96x96, etc.) para renderizar los iconos en las SERP de escritorio y móviles. Al disponer exclusivamente de `/favicon.svg`, el pipeline de indexación de snippets de Google descartaba la imagen y aplicaba el fallback del globo.
+
+### Solución técnica implementada
+- **Eliminación de la redirección:** Se eliminó la regla `redirects()` de `apps/web/next.config.ts`, permitiendo a Vercel servir ficheros estáticos directamente desde `public/`.
+- **Generación de activos de favicon conformes con Google Search Central:**
+  - `apps/web/public/favicon.ico`: Fichero binario ICO multi-resolución que encapsula imágenes RGBA de 16x16, 32x32 y 48x48 píxeles con la brújula náutica oficial de Curileta sobre fondo verde esmeralda (`#1C493B`) y detalles dorados (`#FCD878`).
+  - `apps/web/public/favicon-48x48.png`: Imagen PNG exacta de 48x48 píxeles (tamaño mínimo canónico recomendado por Google).
+  - `apps/web/public/favicon-96x96.png`: Imagen PNG de 96x96 píxeles para pantallas de alta densidad (Retina/DPI).
+  - `apps/web/public/apple-touch-icon.png`: Imagen de 180x180 píxeles para Safari y dispositivos Apple.
+  - `apps/web/public/icon-192.png` y `apps/web/public/icon-512.png`: Iconos para la especificación PWA y Web App.
+- **Configuración en el Web App Manifest (`apps/web/public/site.webmanifest`):**
+  - Se creó el manifiesto oficial con tema `#1C493B` y declaración de los iconos en todos los formatos.
+- **Actualización de metadatos en [apps/web/src/app/layout.tsx]:**
+  - Se actualizó el objeto `icons` de Next.js Metadata para emitir enlaces `<link rel="icon">` explícitos para `/favicon.ico` (`sizes="any"`), `/favicon-48x48.png` (`sizes="48x48"`), `/favicon-96x96.png` (`sizes="96x96"`), `/favicon.svg` y `<link rel="apple-touch-icon">`.
+  - Se vinculó `manifest: '/site.webmanifest'`.
+
+### Estado de comprobación
+- Pruebas automatizadas: 25/25 tests pasando (`npm test`).
+- Verificación estática: `npm run typecheck` y `npm run lint` con 0 errores y 0 advertencias.
+- Comprobación binaria: Validación con la utilidad `file` confirmando que `favicon.ico` es un recurso MS Windows icon con 3 imágenes (16x16, 32x32, 48x48 RGBA).
+
 
 
