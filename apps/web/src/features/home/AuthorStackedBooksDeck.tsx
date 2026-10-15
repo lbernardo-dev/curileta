@@ -29,6 +29,8 @@ interface AuthorStackedBooksDeckProps {
   authorName: string;
 }
 
+import { INITIAL_AUTHOR_COMPANION_BOOKS } from '@/lib/book-catalog';
+
 export function AuthorStackedBooksDeck({
   locale,
   books = [],
@@ -36,148 +38,76 @@ export function AuthorStackedBooksDeck({
 }: AuthorStackedBooksDeckProps) {
   const isEn = locale === 'en';
 
-  // Base list of published and collection works by the author
-  const deckBooks: AuthorDeckBook[] = [
-    {
-      id: 'las-aventuras-de-curileta',
-      slug: 'las-aventuras-de-curileta',
-      title: {
-        es: 'Las Aventuras de Curileta',
-        en: 'The Adventures of Curileta',
-      },
-      subtitle: {
-        es: 'La Vuelta al Mundo de una Pequeña Lagartija',
-        en: 'The Round the World Journey of a Little Lizard',
-      },
-      theme: {
-        es: 'Viajes, Geografía y Amistad',
-        en: 'Travel, Geography & Friendship',
-      },
-      badge: {
-        es: 'Libro Oficial • Novedad 2026',
-        en: 'Official Book • 2026 Novelty',
-      },
-      ageRange: '5–12 años',
-      pageCount: 80,
-      coverUrl: '/images/hero/curileta-world-expedition-clean-v1.png',
-      description: {
-        es: 'La historia oficial de una pequeña lagartija que viaja por diez países enviando cartas a su amigo Pompón.',
-        en: 'The official story of a curious lizard traveling ten countries while mailing letters to her friend Pompón.',
-      },
-      url: `/${locale}/libros/las-aventuras-de-curileta`,
-      isExternal: false,
-    },
-    {
-      id: 'curileta-y-el-misterio-marino',
-      slug: 'curileta-y-el-misterio-marino',
-      title: {
-        es: 'Curileta y el Misterio Marino',
-        en: 'Curileta and the Marine Mystery',
-      },
-      subtitle: {
-        es: 'Volumen 2 — El Mar de Filipinas y las Marianas',
-        en: 'Volume 2 — The Philippine Sea & the Marianas',
-      },
-      theme: {
-        es: 'Océanos, Misterio y Arrecifes',
-        en: 'Oceans, Mystery & Coral Reefs',
-      },
-      badge: {
-        es: 'Volumen 2 • Próxima Expedición',
-        en: 'Volume 2 • Upcoming Expedition',
-      },
-      ageRange: '5–11 años',
-      pageCount: 56,
-      coverUrl: '/images/characters/pez-volador-main.webp',
-      description: {
-        es: 'Inspirado en la travesía en velero con el pez volador Glub y las aguas bioluminiscentes de las Marianas.',
-        en: 'Inspired by the sailboat crossing alongside Glub the flying fish and the bioluminescent abyssal waters.',
-      },
-      url: `/${locale}/libros/curileta-y-el-misterio-marino`,
-      isExternal: false,
-    },
-    {
-      id: 'cuaderno-actividades-curileta',
-      title: {
-        es: 'El Cuaderno Secreto de Curileta & Pompón',
-        en: 'Curileta & Pompón Secret Activity Book',
-      },
-      subtitle: {
-        es: 'Actividades, Mapas y Colorear por el Mundo',
-        en: 'Activities, World Maps & Creative Coloring',
-      },
-      theme: {
-        es: 'Creatividad, Pasatiempos y Destreza',
-        en: 'Creativity, Puzzles & World Games',
-      },
-      badge: {
-        es: 'Actividades & Creatividad',
-        en: 'Activities & Creativity',
-      },
-      ageRange: '4–10 años',
-      pageCount: 64,
-      coverUrl: '/images/books/las-aventuras-de-curileta/portada.webp',
-      description: {
-        es: 'Laberintos, sellos de pasaporte, banderas del mundo y láminas para colorear con personajes de la historia.',
-        en: 'Mazes, passport stamps, world flags, and coloring sheets featuring characters from the story.',
-      },
-      url: 'https://www.amazon.com/dp/B0H2CT8S14',
-      isExternal: true,
-    },
-    {
-      id: 'cuentos-buenas-noches-bosque',
-      title: {
-        es: 'Cuentos de Buenas Noches del Bosque Encantado',
-        en: 'Bedtime Tales of the Enchanted Forest',
-      },
-      subtitle: {
-        es: 'Historias Breves de Amistad y Naturaleza',
-        en: 'Gentle Stories of Friendship & Nature',
-      },
-      theme: {
-        es: 'Lecturas de Buenas Noches y Valores',
-        en: 'Bedtime Stories & Calm Values',
-      },
-      badge: {
-        es: 'Cuentos para Soñar',
-        en: 'Bedtime Tales',
-      },
-      ageRange: '3–8 años',
-      pageCount: 48,
-      coverUrl: '/images/characters/curileta-main.webp',
-      description: {
-        es: 'Relatos breves y tiernos sobre las criaturas del bosque antes de que caiga la noche y comiencen los sueños.',
-        en: 'Short and gentle stories about forest animals before evening falls and dreams begin.',
-      },
-      url: `/${locale}/autora/sweety-taless`,
-      isExternal: false,
-    },
-  ];
+  // Assemble the deck books dynamically from all catalog books (canonical + admin-managed)
+  const deckBooks: AuthorDeckBook[] = React.useMemo(() => {
+    const list: AuthorDeckBook[] = [];
+    const seenSlugs = new Set<string>();
 
-  // Merge any additional CMS books matching this author if not already in deck
-  if (books.length > 0) {
+    // 1. Process books passed from page (includes canonical CMS books + admin book catalog settings)
     for (const b of books) {
-      if (!deckBooks.some((d) => d.slug === b.slug)) {
-        deckBooks.push({
+      if (b.slug && !seenSlugs.has(b.slug)) {
+        seenSlugs.add(b.slug);
+        const externalUrl = b.purchaseLinks?.[0]?.url;
+        const isExternal = Boolean(externalUrl && externalUrl.startsWith('http'));
+        list.push({
           id: b.id,
           slug: b.slug,
           title: { es: b.title.es, en: b.title.en || b.title.es },
-          subtitle: { es: b.subtitle?.es || '', en: b.subtitle?.en || b.subtitle?.es || '' },
-          theme: { es: 'Colección de literatura infantil', en: 'Children literature collection' },
-          badge: { es: b.badge?.es || 'Publicación', en: b.badge?.en || 'Published' },
+          subtitle: {
+            es: b.subtitle?.es || '',
+            en: b.subtitle?.en || b.subtitle?.es || '',
+          },
+          theme: {
+            es: b.colorTheme || 'Literatura infantil',
+            en: b.colorTheme || 'Children literature',
+          },
+          badge: {
+            es: b.badge?.es || (isExternal ? 'Edición en Amazon' : 'Libro oficial'),
+            en: b.badge?.en || (isExternal ? 'Amazon Edition' : 'Official book'),
+          },
           ageRange: b.ageRange || '5–12 años',
-          pageCount: b.pageCount || 60,
+          pageCount: b.pageCount || 64,
           coverUrl: b.coverImage?.url || '/images/books/las-aventuras-de-curileta/portada.webp',
-          description: { es: b.description.es, en: b.description.en || b.description.es },
-          url: `/${locale}/libros/${b.slug}`,
-          isExternal: false,
+          description: {
+            es: b.description.es,
+            en: b.description.en || b.description.es,
+          },
+          url: isExternal && externalUrl ? externalUrl : `/${locale}/libros/${b.slug}`,
+          isExternal,
         });
       }
     }
-  }
+
+    // 2. If list has fewer than 2 items (e.g. fresh installation or no upcoming books set yet),
+    // provide the initial companion books so the interactive deck is rich and playable.
+    if (list.length < 2) {
+      for (const companion of INITIAL_AUTHOR_COMPANION_BOOKS) {
+        if (!seenSlugs.has(companion.slug)) {
+          seenSlugs.add(companion.slug);
+          const isExternal = Boolean(companion.externalUrl);
+          list.push({
+            id: companion.id,
+            slug: companion.slug,
+            title: companion.title,
+            subtitle: companion.subtitle || { es: '', en: '' },
+            theme: companion.theme || { es: 'Literatura infantil', en: 'Children literature' },
+            badge: companion.badge || { es: 'Novedad editorial', en: 'New release' },
+            ageRange: companion.ageRange || '5–12 años',
+            pageCount: companion.pageCount || 56,
+            coverUrl: companion.coverImageUrl || '/images/books/las-aventuras-de-curileta/portada.webp',
+            description: companion.description,
+            url: companion.externalUrl || `/${locale}/libros/${companion.slug}`,
+            isExternal,
+          });
+        }
+      }
+    }
+
+    return list;
+  }, [books, locale]);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeBook = deckBooks[activeIndex];
+  const activeBook = deckBooks[activeIndex] || deckBooks[0];
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % deckBooks.length);

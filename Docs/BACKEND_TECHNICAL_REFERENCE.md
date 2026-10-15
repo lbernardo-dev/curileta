@@ -731,11 +731,109 @@ En la iteración del 15 de octubre de 2026, se ejecutó una auditoría exhaustiv
 - `apps/web/src/app/admin/(panel)/sistema/page.tsx`: Inclusión de las 18 tablas operativas en el diagnóstico del servidor.
 - `Docs/BACKEND_TECHNICAL_REFERENCE.md`: Documentación de la auditoría y mejoras administrativas.
 
-### Estado de comprobación
-- Pruebas automatizadas: 28/28 tests pasando (`npm test`).
-- Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
-- Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
-- Estado: Cambios aplicados en rama `feat/admin-ui-ux-enhancements`.
+---
+
+## 34. Libros adicionales de la autora desde /admin, corrección de permisos de geolocalización y animación de radar de expedición
+
+### 1. Diagnóstico y causa raíz
+
+1. **Gestión de libros adicionales de la autora en `/admin`:**
+   - La sección de la autora en la portada (`AuthorLandingFeature.tsx` y `AuthorStackedBooksDeck.tsx`) utilizaba una lista estática en código duro (`deckBooks`) con cuatro libros prefijados.
+   - La página de inicio (`apps/web/src/app/[locale]/page.tsx`) enviaba a `AuthorLandingFeature` la propiedad `books={books}` (solo libros canónicos del CMS) en lugar de `books={displayBooks}` (que consolida los libros canónicos y los administrados en `book_catalog_settings`).
+   - El editor editorial de `/admin/libros` carecía de campos para atributos literarios clave de la baraja solapada (subtítulo, temática, distintivo/badge, edad recomendada, número de páginas, firma de autora y enlace a tienda externa/Amazon).
+
+2. **Error al solicitar permiso de geolocalización en el navegador:**
+   - En `apps/web/next.config.ts`, la cabecera HTTP de seguridad `Permissions-Policy` estaba configurada como:
+     `camera=(), microphone=(), geolocation=(), browsing-topics=()`
+   - La directiva `geolocation=()` deshabilitaba expresamente la API de geolocalización para todos los orígenes, incluido `self`. Como resultado, cualquier llamada a `navigator.geolocation.getCurrentPosition` era rechazada de inmediato por el motor del navegador con error `PERMISSION_DENIED` sin llegar a mostrar el diálogo de confirmación al usuario.
+
+3. **Visibilidad y temática del botón de geolocalización:**
+   - El botón interactivo del radar en `AdventureRadar.tsx` requería una animación destacada y acorde a la identidad de aventura, brújula y radar náutico de Curileta para invitar a los exploradores a activar la medición de distancias.
+
+---
+
+### 2. Soluciones implementadas
+
+#### A. Gestión editorial de libros adicionales de la autora (`/admin/libros` y `/admin/autoras`)
+- **Extensión del modelo de datos (`apps/web/src/lib/book-catalog.ts` y `book-catalog.server.ts`):**
+  - Se añadieron a `UpcomingBookRecord` los campos opcionales:
+    - `subtitle?: { es: string; en: string }`
+    - `theme?: { es: string; en: string }`
+    - `badge?: { es: string; en: string }`
+    - `ageRange?: string`
+    - `pageCount?: number`
+    - `externalUrl?: string` (URL directa a la ficha en Amazon KDP o librería)
+    - `author?: string` (firma de la autora, ej. «Sweety Taless»)
+  - Se definió `INITIAL_AUTHOR_COMPANION_BOOKS` con las obras iniciales de Sweety Taless («Curileta y el Misterio Marino», «El Cuaderno Secreto de Curileta & Pompón» con enlace a Amazon, y «Cuentos de Buenas Noches del Bosque Encantado»).
+  - Función `upcomingBookToBook` actualizada para mapear todos estos atributos en objetos `Book`, incluyendo enlaces de compra externos (`purchaseLinks`).
+  - Validador en servidor `isUpcomingBookRecord` actualizado para admitir estos metadatos con tipos seguros.
+
+- **Ruta de API (`apps/web/src/app/api/admin/book-catalog/route.ts`):**
+  - El método `PUT` valida y persiste los campos extendidos en la columna `upcoming_books` (JSONB) de `book_catalog_settings`.
+  - Límite del cuerpo de la petición elevado a `64_000` bytes para soportar múltiples obras con descripciones bilingües.
+  - Revalidación automática de rutas tras guardar: `/[locale]`, `/[locale]/libros`, `/[locale]/libros/[slug]`, `/[locale]/novedades`, `/[locale]/autora` y `/[locale]/autora/[slug]`.
+
+- **Editor editorial en `/admin/libros` (`BookCatalogEditor.tsx`):**
+  - Título y alcance actualizados: «Catálogo y obras de autoras».
+  - Sección ampliada: «Obras de la autora y libros adicionales» con formulario para título, subtítulo, temática, distintivo, descripción bilingüe, edad, páginas, enlace a Amazon, firma de autora, fecha prevista y subida de cubierta con `ImageUploadField`.
+  - Botón de un solo clic para cargar obras de muestra de Sweety Taless si la lista está vacía.
+  - Listado con tarjetas completas que muestran portada, distintivos de temática, edad, páginas, enlace a Amazon y controles de edición, visibilidad y eliminación.
+
+- **Navegación cruzada y accesibilidad:**
+  - En `AdminShell.tsx`, la opción del menú se renombró a «Catálogo y libros de autoras».
+  - En `/admin/autoras` (`AuthorPagesManager.tsx`), se incorporó un banner directo que guía al administrador a `/admin/libros` para gestionar las obras que acompañan al perfil de la autora.
+
+- **Baraja interactiva dinámica (`AuthorStackedBooksDeck.tsx` y `page.tsx`):**
+  - Eliminación de datos estáticos en código duro. La baraja se genera dinámicamente mediante `useMemo` a partir de `books` (recibiendo `displayBooks` desde `page.tsx`).
+  - Las obras con `externalUrl` enlazan a Amazon con icono externo; las internas dirigen a la ficha de Curileta.
+
+#### B. Corrección de la política de permisos de geolocalización
+- En `apps/web/next.config.ts`, se actualizó la cabecera `Permissions-Policy`:
+  - Anterior: `geolocation=()`
+  - Corregido: `geolocation=(self)`
+  - Permite al navegador ejecutar la geolocalización solicitada por el usuario en el propio dominio de Curileta, manteniendo aislados los iframes de terceros no autorizados.
+- En `AdventureRadar.tsx`:
+  - `navigator.geolocation.getCurrentPosition` configurado con `{ timeout: 15000, enableHighAccuracy: false, maximumAge: 300000 }`.
+  - `enableHighAccuracy: false` permite resolver coordenadas por red/Wi-Fi en ordenadores de sobremesa y portátiles sin receptor GPS dedicado.
+  - Manejo detallado de estados de error: `PERMISSION_DENIED` (código 1), `POSITION_UNAVAILABLE` (código 2) y `TIMEOUT` (código 3) con explicaciones comprensibles y opciones de recuperación.
+
+#### C. Animación temática del botón de radar de expedición
+- En `apps/web/src/app/globals.css`, se crearon las animaciones:
+  - `@keyframes sonar-wave`: ondas de sonar náutico que pulsan y se expanden radialmente (`animate-sonar-wave`).
+  - `@keyframes beacon-shimmer`: barrido lumínico continuo sobre el fondo dorado-esmeralda (`animate-beacon-shimmer`).
+  - `@keyframes compass-needle-wobble`: sutil oscilación marina de la aguja de la brújula (`animate-compass-wobble`).
+- En `AdventureRadar.tsx`, el botón se transformó en una baliza de exploración:
+  - Doble onda de sonar exterior con retardo escalonado (`border-amber-300/70` y `border-emerald-300/50`).
+  - Halo ambiental resplandeciente (`bg-gradient-to-r from-amber-400 via-emerald-400 to-amber-300 blur-md`).
+  - Punto de baliza parpadeante tipo sonar (`animate-ping`) junto al icono de localización.
+  - Efecto de barrido de luz especular al pasar el cursor y transición con curva física `cubic-bezier(0.32,0.72,0,1)`.
+  - Textos temáticos de acción: «Activar radar de expedición», «Calibrando radar de expedición…» y «Actualizar mi ubicación».
+
+---
+
+### 3. Archivos afectados
+- `apps/web/next.config.ts`: Modificación de `Permissions-Policy` a `geolocation=(self)`.
+- `apps/web/src/app/globals.css`: Keyframes y clases `animate-sonar-wave`, `animate-beacon-shimmer` y `animate-compass-wobble`.
+- `apps/web/src/features/home/AdventureRadar.tsx`: Botón animado de baliza de expedición y robustecimiento de geolocalización.
+- `apps/web/src/lib/book-catalog.ts`: Interfaz `UpcomingBookRecord` enriquecida, `INITIAL_AUTHOR_COMPANION_BOOKS` y mapeo en `upcomingBookToBook`.
+- `apps/web/src/lib/book-catalog.server.ts`: Actualización del validador de registros `isUpcomingBookRecord`.
+- `apps/web/src/app/api/admin/book-catalog/route.ts`: Persistencia de metadatos de autoría y revalidaciones de caché.
+- `apps/web/src/app/admin/(panel)/libros/BookCatalogEditor.tsx`: Interfaz de administración para libros de la autora y cubiertas.
+- `apps/web/src/app/admin/(panel)/autoras/AuthorPagesManager.tsx`: Banner de enlace a la gestión de libros de la autora.
+- `apps/web/src/app/admin/(panel)/AdminShell.tsx`: Actualización del enlace de navegación editorial.
+- `apps/web/src/app/[locale]/page.tsx`: Traspaso de `displayBooks` a `AuthorLandingFeature`.
+- `apps/web/src/features/home/AuthorStackedBooksDeck.tsx`: Carga dinámica de la baraja solapada desde el catálogo administrado.
+- `Docs/BACKEND_TECHNICAL_REFERENCE.md`: Documentación técnica de la sección 34.
+
+---
+
+### 4. Estado de comprobación
+- Pruebas unitarias y de integración: 28/28 tests pasando (`npm test`).
+- Verificación de tipos: `npm run typecheck --workspace=web` sin errores.
+- Análisis estático: `npm run lint --workspace=web` limpio (0 errores, 0 advertencias).
+- Compilación de producción: `npm run build --workspace=web` exitosa con generación de 183/183 páginas estáticas (`● SSG`).
+- Estado: Cambios completados en rama `feat/author-books-admin-and-geolocation-fix`.
+
 
 
 

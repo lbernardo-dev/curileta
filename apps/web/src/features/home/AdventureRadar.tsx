@@ -109,7 +109,11 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
   const handleRequestLocation = () => {
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setGeoState('unsupported');
-      setGeoFeedback(isEn ? 'Browser geolocation is not available on this device.' : 'Tu navegador no admite geolocalización.');
+      setGeoFeedback(
+        isEn
+          ? 'Browser geolocation is not available on this device.'
+          : 'Tu navegador o dispositivo no admite geolocalización.'
+      );
       return;
     }
 
@@ -136,13 +140,27 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
       },
       (err) => {
         setGeoState('denied');
-        setGeoFeedback(
-          err.code === 1
-            ? (isEn ? 'Location permission was denied. You can select any city from the list.' : 'Permiso de ubicación denegado. Puedes pulsar cualquier ciudad de la lista.')
-            : (isEn ? 'Unable to retrieve your current location. Please choose a city below.' : 'No se pudo leer la ubicación. Elige una ciudad de la lista.')
-        );
+        let explanation = '';
+        if (err.code === 1) {
+          explanation = isEn
+            ? 'Location permission was denied. You can enable it in your browser address bar or pick any city below.'
+            : 'El permiso de ubicación fue denegado en el navegador. Puedes activarlo en los ajustes del sitio o elegir una ciudad de la lista.';
+        } else if (err.code === 2) {
+          explanation = isEn
+            ? 'Coordinates could not be determined from your network. Please choose a city below.'
+            : 'No se pudo determinar tu posición desde la red. Elige una de las ciudades de referencia.';
+        } else if (err.code === 3) {
+          explanation = isEn
+            ? 'Radar location request timed out. Please try again or select a city below.'
+            : 'La búsqueda de señal tardó demasiado tiempo. Puedes reintentar o elegir una ciudad.';
+        } else {
+          explanation = isEn
+            ? 'Unable to retrieve location. Please choose a city below.'
+            : 'No se pudo leer la ubicación. Elige una ciudad de la lista.';
+        }
+        setGeoFeedback(explanation);
       },
-      { timeout: 12000, enableHighAccuracy: false, maximumAge: 120000 }
+      { timeout: 15000, enableHighAccuracy: false, maximumAge: 300000 }
     );
   };
 
@@ -222,25 +240,60 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
 
           {/* Botón interactivo de geolocalización y selector de ciudades */}
           <div className="mt-8 flex flex-col items-center justify-center gap-4">
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={handleRequestLocation}
-                disabled={geoState === 'requesting'}
-                className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-amber-300 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-950/30 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-60 cursor-pointer"
-              >
-                <Locate className={`h-4 w-4 ${geoState === 'requesting' ? 'animate-spin' : ''}`} />
-                <span>
-                  {geoState === 'requesting'
-                    ? (isEn ? 'Locating your device…' : 'Localizando tu dispositivo…')
-                    : geoState === 'granted'
-                    ? (isEn ? 'Update my location' : 'Actualizar mi ubicación')
-                    : (isEn ? 'Use my current location' : 'Usar mi ubicación actual')}
-                </span>
-              </button>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="relative group inline-flex items-center justify-center">
+                {/* Onda de sonar exterior 1 */}
+                <span
+                  className="pointer-events-none absolute -inset-2 rounded-3xl border-2 border-amber-300/70 opacity-0 animate-sonar-wave"
+                  aria-hidden="true"
+                />
+                {/* Onda de sonar exterior 2 desfasada */}
+                <span
+                  className="pointer-events-none absolute -inset-4 rounded-3xl border border-emerald-300/50 opacity-0 animate-sonar-wave [animation-delay:1.1s]"
+                  aria-hidden="true"
+                />
+                {/* Halo resplandeciente ambiental */}
+                <span
+                  className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-400 via-emerald-400 to-amber-300 opacity-70 blur-md transition-opacity duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:opacity-100 animate-pulse"
+                  aria-hidden="true"
+                />
 
-              <div className="flex items-center gap-1.5 rounded-2xl border border-emerald-400/30 bg-[#071b17] px-3.5 py-2 text-xs text-emerald-300">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <button
+                  type="button"
+                  onClick={handleRequestLocation}
+                  disabled={geoState === 'requesting'}
+                  className="relative inline-flex min-h-12 items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-amber-300 via-amber-200 to-amber-300 px-6 py-3 text-sm font-bold text-slate-950 shadow-xl shadow-amber-950/40 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-60 cursor-pointer animate-beacon-shimmer"
+                >
+                  {/* Barrido de luz especular interno */}
+                  <span
+                    className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-1000 ease-out group-hover:translate-x-full"
+                    aria-hidden="true"
+                  />
+
+                  {/* Baliza pulsante con punto de sonar */}
+                  <span className="relative flex h-3 w-3 shrink-0 items-center justify-center" aria-hidden="true">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-700 opacity-75" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-900" />
+                  </span>
+
+                  <Locate
+                    className={`h-4.5 w-4.5 shrink-0 ${
+                      geoState === 'requesting' ? 'animate-spin text-emerald-950' : 'animate-compass-wobble'
+                    }`}
+                  />
+
+                  <span className="font-extrabold tracking-tight">
+                    {geoState === 'requesting'
+                      ? (isEn ? 'Calibrating expedition radar…' : 'Calibrando radar de expedición…')
+                      : geoState === 'granted'
+                      ? (isEn ? 'Update my location' : 'Actualizar mi ubicación')
+                      : (isEn ? 'Activate expedition radar' : 'Activar radar de expedición')}
+                  </span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-2xl border border-emerald-400/30 bg-[#071b17] px-4 py-2.5 text-xs text-emerald-300 shadow-md">
+                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span>{isEn ? 'Calculated privately in your browser' : 'Cálculo privado en tu propio navegador'}</span>
               </div>
             </div>

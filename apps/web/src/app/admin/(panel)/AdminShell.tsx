@@ -52,7 +52,7 @@ const navigationGroups: NavGroup[] = [
   {
     category: 'Editorial & Libros',
     items: [
-      { href: '/admin/libros', label: 'Catálogo de libros', icon: BookOpen, roles: ['owner', 'admin', 'editor'] },
+      { href: '/admin/libros', label: 'Catálogo y libros de autoras', icon: BookOpen, roles: ['owner', 'admin', 'editor'] },
       { href: '/admin/autoras', label: 'Páginas de autoras', icon: Feather, roles: ['owner', 'admin', 'editor'] },
       { href: '/admin/cartas', label: 'Cartas a Pompón', icon: Mail, roles: ['owner', 'admin', 'editor'] },
       { href: '/admin/contenidos', label: 'Contenido general', icon: FileText, roles: ['owner', 'admin', 'editor'] },
