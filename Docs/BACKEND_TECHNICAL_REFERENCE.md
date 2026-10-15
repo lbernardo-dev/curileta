@@ -352,9 +352,12 @@ En octubre de 2026 se completó una auditoría y refactorización técnica integ
 - `packages/analytics/src/index.ts` y `/api/admin/analytics/route.ts`: Registro del país en eventos `book_purchase_click` y normalización de rutas en `analytics_daily`.
 
 ### Estado de comprobación
-- Código modificado y presente localmente en el repositorio.
-- 25 pruebas unitarias automatizadas superadas (`npm test`).
-- 0 errores en verificación de tipos (`npm run typecheck`).
-- 0 errores o advertencias en análisis de código (`npm run lint`).
-- Compilación de producción validada: 155/155 páginas estáticas generadas exitosamente con `npm run build --workspace=apps/web`.
-- Despliegue en producción de Vercel pendiente de integración de commits en `main`.
+- Código integrado en `main` mediante el PR #58 con el commit `a9d680f350104d002e34cd86bb302c7e373d229d`.
+- Pipeline de integración continua aprobado: validación de ESLint, verificación de tipos en todos los paquetes, 25/25 pruebas unitarias automatizadas (`npm test`), y compilación completa de Next.js y Sanity Studio.
+- Despliegue en producción completado en Vercel y comprobado en `https://www.curileta.com` y `https://curileta.com`.
+- Comprobaciones en producción en vivo:
+  - Cabeceras HTTP de seguridad verificadas: `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin` y `Permissions-Policy`.
+  - Edge Proxy (`apps/web/src/proxy.ts`): Emite cookie `curileta-geo-country=ES` y gestiona redirecciones de idioma raíz.
+  - Caché y SSG/ISR: Rutas de portada (`/es`), catálogo (`/es/libros`), detalle (`/es/libros/las-aventuras-de-curileta`) y vídeos (`/es/videos`) devuelven `x-vercel-cache: PRERENDER` con `x-nextjs-prerender: 1` y TTFB inmediato.
+  - Entrega WebM: `curileta-base-mapa-mundo.webm` verificado en producción con HTTP 200 y `content-type: video/webm` (3.14 MB).
+  - Datos estructurados JSON-LD: Verificada la presencia e integridad de esquemas Schema.org `Book` y `VideoObject` / `ItemList` en el HTML entregado.
