@@ -651,7 +651,49 @@ En la iteración del 15 de octubre de 2026, se abordaron dos requerimientos clav
 - Pruebas automatizadas: 28/28 tests pasando (`npm test`).
 - Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
 - Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
-- Estado: Cambios validados localmente en rama `feat/radar-geolocation-and-author-card-deck`.
+- Estado: Cambios desplegados y verificados en producción en PR #66.
+
+## 32. Ritmo de identidades atmosféricas a lo ancho completo en la portada principal
+
+En la iteración del 15 de octubre de 2026, se rediseñó el sistema de fondos y atmósferas de la página de inicio (`apps/web/src/app/[locale]/page.tsx`) para erradicar la monotonía visual provocada por múltiples secciones consecutivas compartiendo el mismo color de lienzo (`#FAFDF7`):
+
+### 1. Diagnóstico del problema visual
+- Con anterioridad, hasta 5 secciones consecutivas utilizaban el fondo neutro `#FAFDF7`, provocando que el scroll perdiera ritmo narrativo, que las divisiones parecieran planas y que el usuario no percibiera transiciones temáticas de identidad al avanzar por el sitio.
+
+### 2. Criterio de alternancia rítmica y atmósferas maestras
+Se estableció una alternancia deliberada a lo ancho completo de la pantalla (`w-full`), asignando a cada sección o grupo de secciones una identidad visual propia y coherente con su contenido narrativo:
+
+1. **`HeroScene` (Atardecer y bosque expedicionario):** Lienzo nocturno/crepuscular inmersivo con arte original y llamada a la acción en tonos cálidos ámbar y esmeralda.
+2. **`TaglineRevealSection` (Transición de apertura):** Fondo claro puro (`bg-[#FAFDF7] dark:bg-[#181818]`) con revelación de texto palabra por palabra al hacer scroll.
+3. **`StoryLanding` (Ruta y paradas del relato):** Alternancia entre verde salvia sutil (`bg-[#F4F7F1]`), lienzo blanco y tarjeta interior esmeralda para el libro principal.
+4. **`Globe3DScene` (Lienzo pergamino de cartógrafo):** Fondo de pergamino de navegación cálido (`bg-[#F6F3E7] dark:bg-[#121A17]`) con encabezados en verde bosque cartográfico (`text-[#1d392f] dark:text-white`), evocando atlas físicos de explorador.
+5. **`AdventureRadar` (Cabina nocturna de telemetría y radar):** Fondo en esmeralda bosque oscuro (`bg-[#102925] text-white`), pantalla de radar circular, aguja azimutal y tarjetas de instrumentación.
+6. **`LettersScene` (Lino postal y correspondencia epistolar aérea):** Fondo de papel de carta vintage (`bg-[#FBF7EE] dark:bg-[#1B1915]`), con tarjetas en lino marfil, sellos postales y matasellos ilustrados.
+7. **`CharacterHubScene` (Galería luminosa de personajes):** Lienzo blanco luminoso (`bg-[#FAFDF7] dark:bg-[#181818]`) donde los retratos y fichas de los personajes destacan con nitidez cristalina.
+8. **`BooksScene` (Biblioteca de prestigio editorial en esmeralda profundo):** Fondo a ancho completo en verde esmeralda distinguido (`bg-[#12382E] text-white dark:bg-[#0E2620]`), con títulos en blanco nítido, tarjetas de libros en blanco puro con sombras físicas envolventes (`shadow-2xl`) y enlace al catálogo con borde ámbar luminoso.
+9. **`AuthorLandingFeature` (Atelier literario en pergamino de taller):** Fondo cálido en pergamino de estudio de escritora (`bg-[#F8F5EC] dark:bg-[#1C1B17] border-t border-amber-200/50`), separando nítidamente la biblioteca del espacio audiovisual siguiente.
+10. **`HomeVideoShowcase` (Sala de cine cinematográfica oscura):** Fondo en negro teatro esmerilado (`bg-[#0B1513] text-white dark:bg-[#070E0C]`), tarjetas de vídeo en esmeralda noche (`bg-[#122320] border-emerald-900/50 text-white`), selector de capítulos con contrastes en rojo YouTube y dorado ámbar.
+11. **`WallpapersScene` (Galería de arte y paisajes en verde salvia):** Fondo relajado en salvia suave (`bg-[#F4F7F1] dark:bg-[#1A1F1B]`), proporcionando un descanso visual tras la intensidad oscura del cine.
+12. **`GrowingUniverseScene` (Línea de tiempo expedicionaria nocturna):** Fondo en esmeralda noche cósmico (`bg-[#0E2721] text-white dark:bg-[#091C17]`), con tarjetas de hoja de ruta iluminadas en relieve (`bg-[#14362E] border-emerald-500/20 text-white shadow-xl`).
+13. **`CollaborationsScene` (Lienzo institucional ejecutivo en salvia):** Fondo sereno en salvia (`bg-[#F4F7F1] dark:bg-[#1F1F1F]`) con tarjeta central blanca estructurada para socios y editoriales.
+14. **`ClosingScene` (Gran final crepuscular de regreso al hogar):** Fondo en crepúsculo profundo (`bg-[#102925] text-white dark:bg-[#0A1A17]`), con sendero luminoso dorado hacia el horizonte, resplandor esmeralda y llamada final a la acción con máxima visibilidad.
+
+### Archivos afectados
+- `apps/web/src/features/home/Globe3DScene.tsx`: Estilo de pergamino cálido de cartógrafo (`#F6F3E7`) y tipografía verde bosque.
+- `apps/web/src/features/home/LettersScene.tsx`: Estilo de correspondencia aérea y lino postal (`#FBF7EE`).
+- `apps/web/src/features/home/BooksScene.tsx`: Transformación a biblioteca de prestigio en esmeralda profundo (`#12382E`).
+- `apps/web/src/features/home/AuthorLandingFeature.tsx`: Estilo de atelier literario en pergamino (`#F8F5EC`) con borde superior ámbar.
+- `apps/web/src/features/home/HomeVideoShowcase.tsx`: Transformación a sala de cine oscura (`#0B1513`) con tarjetas esmeralda de alto contraste.
+- `apps/web/src/features/home/GrowingUniverseScene.tsx`: Transformación a línea de tiempo expedicionaria nocturna (`#0E2721`) con tarjetas iluminadas.
+- `apps/web/src/features/home/ClosingScene.tsx`: Transformación a gran final crepuscular (`#102925`) con horizonte iluminado.
+- `Docs/BACKEND_TECHNICAL_REFERENCE.md`: Documentación de la arquitectura de ritmos atmosféricos.
+
+### Estado de comprobación
+- Pruebas automatizadas: 28/28 tests pasando (`npm test`).
+- Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
+- Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
+- Estado: Cambios aplicados localmente en rama `feat/homepage-sections-atmospheric-identity`.
+
 
 
 

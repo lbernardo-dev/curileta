@@ -105,7 +105,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
     <section
       id="videos-destacados"
       aria-labelledby="home-videos-title"
-      className="relative z-10 border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-[#20352c] transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12"
+      className="relative z-10 border-t border-emerald-950/60 bg-[#0B1513] px-5 py-24 text-white transition-colors duration-500 dark:border-[#272727] dark:bg-[#070E0C] sm:px-8 sm:py-28 lg:px-12"
     >
       <div className="mx-auto max-w-7xl">
         <SectionEmblem
@@ -116,17 +116,17 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
 
         <div className="grid items-end gap-6 md:grid-cols-[1fr_auto]">
           <div>
-            <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-red-600 dark:text-red-400">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+            <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-red-400">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
               <span>{isEn ? 'Stories in motion' : 'Historias en movimiento'}</span>
             </p>
             <h2
               id="home-videos-title"
-              className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl"
+              className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl"
             >
               {isEn ? 'Curileta’s latest adventures on screen.' : 'Las aventuras de Curileta en pantalla.'}
             </h2>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">
               {isEn
                 ? 'Join Curileta and Pompón through animated episodes, real destinations, songs and short videos made for curious families.'
                 : 'Acompaña a Curileta y Pompón por episodios animados, destinos reales, canciones y vídeos cortos para disfrutar en familia.'}
@@ -145,9 +145,9 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
               href={subscribeUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:border-[#313131] dark:bg-[#1f1f1f] dark:text-slate-200 dark:hover:bg-[#272727]"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-950/60 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-900/80 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
             >
-              <Youtube className="h-4 w-4 text-red-600" aria-hidden="true" />
+              <Youtube className="h-4 w-4 text-red-500" aria-hidden="true" />
               <span>{isEn ? 'Subscribe' : 'Suscribirme'}</span>
             </a>
           </div>
@@ -156,7 +156,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
         {/* Showcase Grid */}
         <div className="mt-12 grid gap-6 lg:grid-cols-12 lg:gap-8">
           {/* Main Premiere Hero Card (col-span 7 or 8) */}
-          <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:shadow-2xl dark:border-[#313131] dark:bg-[#1F1F1F] lg:col-span-7 xl:col-span-8">
+          <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-emerald-900/50 bg-[#122320] shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-emerald-700/60 lg:col-span-7 xl:col-span-8">
             <div className="relative aspect-video w-full overflow-hidden bg-slate-950">
               <Image
                 src={resolveHighQualityThumbnail(latestEpisode)}
@@ -198,21 +198,21 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
 
             <div className="flex flex-1 flex-col justify-between p-6 sm:p-8">
               <div>
-                <h3 className="text-balance font-display text-2xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
+                <h3 className="text-balance font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
                   {latestTitle}
                 </h3>
                 {latestDesc && (
-                  <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+                  <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-300 sm:text-base">
                     {latestDesc}
                   </p>
                 )}
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-5 dark:border-[#272727]">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-emerald-900/40 pt-5">
                 <button
                   type="button"
                   onClick={() => setActiveModalVideo(latestEpisode)}
-                  className="inline-flex items-center gap-2 text-sm font-bold text-red-600 transition-colors hover:text-red-700 dark:text-amber-400 dark:hover:text-amber-300"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-amber-300 transition-colors hover:text-amber-200"
                 >
                   <Play className="h-4 w-4 fill-current" aria-hidden="true" />
                   <span>{isEn ? 'Watch episode now' : 'Ver capítulo ahora'}</span>
@@ -222,7 +222,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
                   href={`https://www.youtube.com/watch?v=${latestEpisode.youtubeId}`}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-slate-200"
                 >
                   <span>{isEn ? 'Open in YouTube' : 'Abrir en YouTube'}</span>
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -237,7 +237,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
             {featuredShort && (
               <div
                 onClick={() => setActiveModalVideo(featuredShort)}
-                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-xl dark:border-[#313131] dark:bg-[#1F1F1F]"
+                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-emerald-900/50 bg-[#122320] p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-emerald-700/60 hover:shadow-xl"
               >
                 <div className="relative aspect-[9/16] h-32 shrink-0 overflow-hidden rounded-xl bg-slate-950 sm:h-36">
                   <Image
@@ -255,15 +255,15 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
 
                 <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
                   <div>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-950/60 px-2.5 py-0.5 text-[11px] font-bold text-rose-300">
                       <Smartphone className="h-3 w-3" aria-hidden="true" />
                       <span>{isEn ? 'YouTube Short' : 'Corto animado'}</span>
                     </span>
-                    <h4 className="mt-2 line-clamp-2 font-display text-base font-bold text-slate-900 transition-colors group-hover:text-red-600 dark:text-white dark:group-hover:text-amber-300">
+                    <h4 className="mt-2 line-clamp-2 font-display text-base font-bold text-white transition-colors group-hover:text-amber-300">
                       {localized(featuredShort.title, locale)}
                     </h4>
                   </div>
-                  <p className="text-xs font-semibold text-red-600 dark:text-amber-400">
+                  <p className="text-xs font-semibold text-amber-300">
                     {isEn ? 'Watch in 60s' : 'Ver en 60 segundos'} →
                   </p>
                 </div>
@@ -274,7 +274,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
             {secondaryVideo && (
               <div
                 onClick={() => setActiveModalVideo(secondaryVideo)}
-                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-xl dark:border-[#313131] dark:bg-[#1F1F1F]"
+                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-emerald-900/50 bg-[#122320] p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-emerald-700/60 hover:shadow-xl"
               >
                 <div className="relative aspect-video h-24 shrink-0 overflow-hidden rounded-xl bg-slate-950 sm:h-28">
                   <Image
@@ -292,16 +292,16 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
 
                 <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
                   <div>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-950/60 px-2.5 py-0.5 text-[11px] font-bold text-amber-300">
                       {secondaryVideo.type === 'song' ? <Music className="h-3 w-3" aria-hidden="true" /> : <Film className="h-3 w-3" aria-hidden="true" />}
                       <span>{secondaryVideo.type === 'song' ? (isEn ? 'Song' : 'Canción') : (isEn ? 'Episode' : 'Episodio')}</span>
                     </span>
-                    <h4 className="mt-2 line-clamp-2 font-display text-base font-bold text-slate-900 transition-colors group-hover:text-red-600 dark:text-white dark:group-hover:text-amber-300">
+                    <h4 className="mt-2 line-clamp-2 font-display text-base font-bold text-white transition-colors group-hover:text-amber-300">
                       {localized(secondaryVideo.title, locale)}
                     </h4>
                   </div>
                   {secondaryVideo.duration && (
-                    <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-mono font-medium text-slate-400">
                       {secondaryVideo.duration}
                     </span>
                   )}
@@ -310,29 +310,29 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
             )}
 
             {/* Features summary box */}
-            <div className="rounded-[1.65rem] border border-amber-200/80 bg-[#FFFDF7] p-5 shadow-sm dark:border-[#313131] dark:bg-[#1F1F1F]">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
+            <div className="rounded-[1.65rem] border border-emerald-800/40 bg-[#0E1E1B] p-5 shadow-sm">
+              <h5 className="text-xs font-bold uppercase tracking-wider text-amber-300">
                 {isEn ? 'What you will find in our channel' : 'Qué encontrarás en el canal'}
               </h5>
-              <ul className="mt-3 space-y-2 text-xs font-medium text-slate-700 dark:text-slate-300">
+              <ul className="mt-3 space-y-2 text-xs font-medium text-slate-200">
                 <li className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-slate-900 dark:bg-amber-900/60 dark:text-amber-200">✓</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-900/70 text-amber-300">✓</span>
                   <span>{isEn ? 'Animated weekly episodes' : 'Capítulos animados semanales'}</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-slate-900 dark:bg-amber-900/60 dark:text-amber-200">✓</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-900/70 text-amber-300">✓</span>
                   <span>{isEn ? 'Real world destinations and curious facts' : 'Destinos del mundo real y datos curiosos'}</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-slate-900 dark:bg-amber-900/60 dark:text-amber-200">✓</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-900/70 text-amber-300">✓</span>
                   <span>{isEn ? 'Original songs and illustrated learning' : 'Canciones originales y aprendizaje ilustrado'}</span>
                 </li>
               </ul>
 
-              <div className="mt-4 pt-3 border-t border-amber-200/60 dark:border-[#313131]">
+              <div className="mt-4 border-t border-emerald-900/40 pt-3">
                 <Link
                   href={`/${locale}/videos`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 transition-colors hover:text-red-700 dark:text-amber-400 dark:hover:text-amber-300"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 transition-colors hover:text-amber-200"
                 >
                   <span>{isEn ? 'View all videos & songs' : 'Ver catálogo completo de vídeos'}</span>
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

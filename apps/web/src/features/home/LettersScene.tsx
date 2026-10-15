@@ -89,7 +89,7 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
   const activePhotoIsCensored = isCensored || activePhoto?.visibility === 'censored';
 
   return (
-    <section id="escena-cartas" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#F4F7F1] px-5 py-24 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#1F1F1F] dark:text-white sm:px-8 sm:py-28 lg:px-12">
+    <section id="escena-cartas" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#FBF7EE] px-5 py-24 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#1B1915] dark:text-white sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-7xl">
         {/* Encabezado */}
         <div className="mx-auto mb-14 max-w-3xl text-center">

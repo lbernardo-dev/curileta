@@ -994,7 +994,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   }, [focusLocation, locationsList]);
 
   return (
-    <section id="escena-mapa" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-[#1d392f] transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12">
+    <section id="escena-mapa" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#F6F3E7] px-5 py-24 text-[#1d392f] transition-colors duration-500 dark:border-[#272727] dark:bg-[#121A17] dark:text-white sm:px-8 sm:py-28 lg:px-12">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(132,204,167,0.2),transparent_75%)] dark:bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(16,185,129,0.1),transparent_75%)]" />
 
       <div className="mx-auto max-w-7xl">

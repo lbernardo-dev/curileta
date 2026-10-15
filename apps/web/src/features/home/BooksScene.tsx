@@ -30,14 +30,14 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
   };
 
   return (
-    <section id="escena-libros" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12">
+    <section id="escena-libros" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#12382E] px-5 py-24 text-white transition-colors duration-500 dark:border-[#272727] dark:bg-[#0E2620] sm:px-8 sm:py-28 lg:px-12">
       <div className="relative mx-auto max-w-7xl">
         <header className="mx-auto mb-14 max-w-3xl text-center sm:mb-16">
           <SectionEmblem icon={BookOpen} tone="amber" label={isEn ? 'Curileta books' : 'Libros de Curileta'} />
-          <h2 className="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
+          <h2 className="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
             {isEn ? 'Every page opens a new place.' : 'Cada página abre un lugar nuevo.'}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
             {isEn
               ? 'Follow Curileta across the world and read the letters she sends home to Pompón.'
               : 'Acompaña a Curileta por el mundo y descubre las cartas que envía a casa para Pompón.'}
@@ -59,7 +59,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             return (
               <article
                 key={book.id || book.slug}
-                className={`group ${books.length === 1 ? 'mx-auto w-full max-w-5xl lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]' : 'flex flex-col'} h-full min-w-0 overflow-hidden rounded-3xl border border-slate-200/80 bg-[#fbfaf5] shadow-[0_20px_60px_rgba(24,54,41,0.08)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(24,54,41,0.14)] dark:border-[#313131] dark:bg-[#181818]`}
+                className={`group ${books.length === 1 ? 'mx-auto w-full max-w-5xl lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]' : 'flex flex-col'} h-full min-w-0 overflow-hidden rounded-3xl border border-emerald-950/40 bg-white text-slate-900 shadow-[0_24px_70px_rgba(2,18,13,0.3)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-2xl dark:border-[#383838] dark:bg-[#1F1F1F] dark:text-white`}
               >
                 <div className={`relative overflow-hidden ${books.length === 1 ? 'aspect-[5/4] lg:aspect-auto lg:min-h-[30rem]' : 'aspect-[5/4] sm:aspect-[16/10]'}`}>
                   <BookCoverPanel
@@ -83,17 +83,17 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
                         {isPublished ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> : <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />}
                         {badge || (isPublished ? (isEn ? 'Published' : 'Publicado') : (isEn ? 'Coming soon' : 'Próximamente'))}
                       </span>
-                      {book.ageRange && <span className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-[#272727] dark:text-slate-300">{isEn ? `${book.ageRange.replace(/\baños\b/i, 'years')}${book.languages?.length === 1 && book.languages.includes('Español') ? ' · Spanish edition' : ''}` : book.ageRange}</span>}
+                      {book.ageRange && <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-[#272727] dark:text-slate-300">{isEn ? `${book.ageRange.replace(/\baños\b/i, 'years')}${book.languages?.length === 1 && book.languages.includes('Español') ? ' · Spanish edition' : ''}` : book.ageRange}</span>}
                     </div>
 
-                    <h3 className="mt-5 font-display text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl">{title}</h3>
+                    <h3 className="mt-5 font-display text-2xl font-semibold leading-tight tracking-[-0.03em] text-slate-950 dark:text-white sm:text-3xl">{title}</h3>
                     {subtitle && <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">{subtitle}</p>}
                     <p className="mt-4 line-clamp-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
 
                     <div className="mt-5 flex flex-wrap gap-2">
-                      {format && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{format}</span>}
-                      {book.pageCount && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
-                      {book.author && <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{isEn ? `By ${book.author}` : `De ${book.author}`}</span>}
+                      {format && <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{format}</span>}
+                      {book.pageCount && <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{book.pageCount} {isEn ? 'pages' : 'páginas'}</span>}
+                      {book.author && <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:border-[#313131] dark:bg-[#272727] dark:text-slate-300">{isEn ? `By ${book.author}` : `De ${book.author}`}</span>}
                     </div>
 
                     {book.destinations && book.destinations.length > 0 && (
@@ -129,7 +129,7 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
         </div>
 
         <div className="mt-12 text-center">
-          <Link href={`/${locale}/libros`} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-emerald-800 hover:bg-emerald-50 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">
+          <Link href={`/${locale}/libros`} className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-slate-950/40 px-6 py-3 text-sm font-semibold text-amber-300 transition hover:bg-amber-300 hover:text-slate-950">
             {isEn ? 'Explore the book catalogue' : 'Explorar el catálogo de libros'}
             <ExternalLink className="h-4 w-4" aria-hidden="true" />
           </Link>

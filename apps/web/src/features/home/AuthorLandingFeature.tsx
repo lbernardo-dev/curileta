@@ -25,7 +25,7 @@ export function AuthorLandingFeature({
   return (
     <section
       aria-labelledby={headingId}
-      className="relative z-10 border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-20 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-24 lg:px-12"
+      className="relative z-10 border-t border-amber-200/50 bg-[#F8F5EC] px-5 py-20 text-slate-900 transition-colors duration-500 dark:border-[#313131] dark:bg-[#1C1B17] dark:text-white sm:px-8 sm:py-24 lg:px-12"
     >
       <div className="mx-auto max-w-7xl">
         <header className="mb-10 max-w-2xl">
