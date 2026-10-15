@@ -1,12 +1,24 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Locale, isValidLocale } from '@curileta/i18n';
+import { Locale, isValidLocale, locales } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Compass, MapPin, Mountain } from 'lucide-react';
 import { ShareActions } from '@/components/ShareActions';
 import { DestinationMediaGallery } from '@/features/destinations/DestinationMediaGallery';
 import { getPublicDestinations } from '@/lib/destinations.server';
 import { cmsProvider } from '@/lib/cms';
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const locations = await getPublicDestinations('es');
+  return locales.flatMap((locale) =>
+    locations.map((loc) => ({
+      locale,
+      slug: loc.slug,
+    }))
+  );
+}
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 

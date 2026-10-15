@@ -32,6 +32,14 @@
   --seasonal-footer-light: #fbfcf8;
   --seasonal-footer-dark: #020617;
 
+  /* Hero Surface Tokens */
+  --hero-overlay-start: rgba(9, 36, 31, 0.96);
+  --hero-overlay-mid: rgba(9, 36, 31, 0.76);
+  --hero-overlay-end: rgba(9, 36, 31, 0.20);
+  --hero-badge-bg: rgba(23, 55, 46, 0.70);
+  --hero-badge-text: #ecfdf5;
+  --hero-badge-border: rgba(255, 255, 255, 0.20);
+
   /* Semantic Tokens - Light Theme */
   --background-primary: #FFFFFF;
   --background-secondary: #F8FAFC;
@@ -188,6 +196,12 @@ html[data-seasonal-theme="halloween"] {
   --seasonal-footer-dark: #0b100e;
   --background-canvas: #fbf8f1;
   --background-secondary: #f5f0e6;
+  --hero-overlay-start: rgba(11, 16, 14, 0.96);
+  --hero-overlay-mid: rgba(69, 35, 19, 0.82);
+  --hero-overlay-end: rgba(249, 115, 22, 0.15);
+  --hero-badge-bg: rgba(67, 30, 16, 0.75);
+  --hero-badge-text: #fff7ed;
+  --hero-badge-border: rgba(249, 115, 22, 0.35);
 }
 
 html[data-seasonal-theme="christmas"] {
@@ -293,6 +307,12 @@ html[data-seasonal-theme] {
   --background-secondary: var(--seasonal-surface-light);
   --background-primary: var(--seasonal-canvas-light);
   --text-primary: var(--seasonal-text-light);
+  --hero-overlay-start: color-mix(in srgb, var(--seasonal-canvas-dark, #0b100e) 96%, transparent);
+  --hero-overlay-mid: color-mix(in srgb, var(--seasonal-banner-end, #174635) 78%, transparent);
+  --hero-overlay-end: color-mix(in srgb, var(--seasonal-accent) 18%, transparent);
+  --hero-badge-bg: color-mix(in srgb, var(--seasonal-banner-end, #174635) 72%, transparent);
+  --hero-badge-text: #ffffff;
+  --hero-badge-border: color-mix(in srgb, var(--seasonal-accent) 35%, transparent);
 }
 
 html.dark[data-seasonal-theme] {

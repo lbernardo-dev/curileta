@@ -51,6 +51,32 @@ export default async function LocaleLayout({
 
   return (
     <SeasonalThemeProvider activeEvent={activeEvent} baseTheme={baseTheme}>
+      {activeEvent?.active && activeEvent.themeKey ? (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var eid = ${JSON.stringify(activeEvent.id)};
+                var tkey = ${JSON.stringify(activeEvent.themeKey)};
+                var isDismissed = localStorage.getItem('curileta-seasonal-disabled:' + eid + ':2026') === 'true' || localStorage.getItem('curileta-seasonal-disabled') === 'true';
+                if (!isDismissed) {
+                  document.documentElement.setAttribute('data-seasonal-theme', tkey);
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      ) : baseTheme ? (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                document.documentElement.setAttribute('data-site-base-theme', 'active');
+              } catch (e) {}
+            `,
+          }}
+        />
+      ) : null}
       <Header locale={locale as Locale} />
       <main id="main-content" className="flex-grow">
         {children}

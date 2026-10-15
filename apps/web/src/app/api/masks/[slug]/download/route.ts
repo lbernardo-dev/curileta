@@ -2,7 +2,45 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPublishedCharacterMask, isCharacterMaskAsset } from '@/lib/character-masks.server';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
+const RATE_LIMIT_MAX_DOWNLOADS = 20;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const ipDownloadTracker = new Map<string, { count: number; resetAt: number }>();
+
+function checkDownloadRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const tracker = ipDownloadTracker.get(ip);
+
+  if (ipDownloadTracker.size > 2000) {
+    for (const [key, val] of ipDownloadTracker.entries()) {
+      if (val.resetAt < now) ipDownloadTracker.delete(key);
+    }
+  }
+
+  if (!tracker || tracker.resetAt < now) {
+    ipDownloadTracker.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (tracker.count >= RATE_LIMIT_MAX_DOWNLOADS) {
+    return false;
+  }
+
+  tracker.count += 1;
+  return true;
+}
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'anonymous';
+
+  if (!checkDownloadRateLimit(ip)) {
+    return NextResponse.json(
+      { error: 'Demasiadas descargas en poco tiempo. Por favor espera un momento.' },
+      { status: 429, headers: { 'Retry-After': '60' } },
+    );
+  }
+
   const { slug } = await params;
   const locale = request.nextUrl.searchParams.get('locale');
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || (locale !== 'es' && locale !== 'en')) {

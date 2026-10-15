@@ -12,6 +12,7 @@ import { LettersScene } from '@/features/home/LettersScene';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
 import { HomeVideoShowcase } from '@/features/home/HomeVideoShowcase';
+import { TaglineRevealSection } from '@/features/home/TaglineRevealSection';
 import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
@@ -158,6 +159,7 @@ export default async function HomePage({
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} masks={characterMasks} printables={eventPrintables} />,
+    taglineReveal: <TaglineRevealSection locale={locale as Locale} />,
     story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
     globe: <Globe3DSceneDynamic locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
