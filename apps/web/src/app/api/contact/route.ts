@@ -13,6 +13,32 @@ type ContactRequestBody = {
 };
 
 const MAX_REQUEST_LENGTH = 24_000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const ipSubmissionTracker = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const tracker = ipSubmissionTracker.get(ip);
+
+  if (ipSubmissionTracker.size > 2000) {
+    for (const [key, val] of ipSubmissionTracker.entries()) {
+      if (val.resetAt < now) ipSubmissionTracker.delete(key);
+    }
+  }
+
+  if (!tracker || tracker.resetAt < now) {
+    ipSubmissionTracker.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (tracker.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return false;
+  }
+
+  tracker.count += 1;
+  return true;
+}
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (character) => {
@@ -66,6 +92,18 @@ async function verifyTurnstile(token: string, secret: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    request.headers.get('x-real-ip') ||
+    'anonymous';
+
+  if (!checkRateLimit(clientIp)) {
+    return NextResponse.json(
+      { success: false, error: 'Demasiadas solicitudes. Por favor, espera un minuto antes de volver a intentarlo.' },
+      { status: 429 }
+    );
+  }
+
   let body: ContactRequestBody;
   try {
     const rawBody = await request.text();

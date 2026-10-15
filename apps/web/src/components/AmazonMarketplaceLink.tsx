@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useSyncExternalStore } from 'react';
 import type { Locale } from '@curileta/i18n';
 import { analytics } from '@curileta/analytics';
 import { ExternalLink } from 'lucide-react';
@@ -15,21 +15,32 @@ import {
 
 interface AmazonMarketplaceLinkProps {
   locale: Locale;
-  initialCountry: string | null;
+  initialCountry?: string | null;
   identifier?: string;
   compact?: boolean;
 }
 
+const noopSubscribe = () => () => {};
+
+function getClientCookieCountry(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|;\s*)curileta-geo-country=([A-Za-z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
 export function AmazonMarketplaceLink({
   locale,
-  initialCountry,
+  initialCountry = null,
   identifier = CURILETA_BOOK_ASIN,
   compact = false,
 }: AmazonMarketplaceLinkProps) {
   const selectId = useId();
   const defaultCountry = normalizeAmazonCountry(initialCountry, locale);
-  const savedCountry = useBrowserStorageValue('local', 'curileta-amazon-market', defaultCountry);
-  const country = normalizeAmazonCountry(savedCountry, locale);
+  const savedCountry = useBrowserStorageValue('local', 'curileta-amazon-market', null);
+  const cookieCountry = useSyncExternalStore(noopSubscribe, getClientCookieCountry, () => null);
+
+  const activeCountry = savedCountry || cookieCountry || defaultCountry;
+  const country = normalizeAmazonCountry(activeCountry, locale);
   const marketplace = useMemo(() => findAmazonMarketplace(country), [country]);
   const isEn = locale === 'en';
 
@@ -41,7 +52,7 @@ export function AmazonMarketplaceLink({
     <div className={`flex flex-col gap-3 ${compact ? 'w-full max-w-sm items-stretch' : 'items-start sm:flex-row sm:items-center'}`}>
       <a
         href={getAmazonBookUrl(country, identifier)}
-        onClick={() => analytics.track({ name: 'book_purchase_click', properties: { bookId: identifier, storeName: 'Amazon' } })}
+        onClick={() => analytics.track({ name: 'book_purchase_click', properties: { bookId: identifier, storeName: 'Amazon', country } })}
         target="_blank"
         rel="noopener noreferrer"
         className={`inline-flex min-h-12 min-w-0 flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full bg-[#ffcf65] px-5 py-3 text-base font-semibold !text-[#20352c] shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:bg-[#ffd980] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800 ${compact ? "w-full" : ""}`}

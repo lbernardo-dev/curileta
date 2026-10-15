@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
+
+export const revalidate = 3600;
 import { HeroScene } from '@/features/home/HeroScene';
 import { StoryLanding } from '@/features/home/StoryLanding';
 import { SeasonalEventSectionWrapper } from '@/features/events/SeasonalEventSectionWrapper';
-import { Globe3DScene } from '@/features/home/Globe3DScene';
 import { AdventureRadar } from '@/features/home/AdventureRadar';
+import { Globe3DSceneDynamic } from '@/features/home/Globe3DSceneDynamic';
 import { LettersScene } from '@/features/home/LettersScene';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
@@ -15,7 +16,6 @@ import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
-import { detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
 import { cmsProvider } from '@/lib/cms';
 import { getVideoVoteCounts } from '@/lib/video-votes';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
@@ -44,6 +44,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const isEn = locale === 'en';
   const baseUrl = siteUrl.replace(/\/$/, '');
+  const socialImageUrl = `${baseUrl}/images/hero/curileta-world-expedition-clean-v1.jpg`;
 
   return {
     title: isEn ? 'Official Website' : 'Web Oficial',
@@ -53,22 +54,39 @@ export async function generateMetadata({
     alternates: {
       canonical: `${baseUrl}/${locale}`,
       languages: {
+        es: `${baseUrl}/es`,
+        en: `${baseUrl}/en`,
         'es-ES': `${baseUrl}/es`,
         'en-US': `${baseUrl}/en`,
+        'x-default': `${baseUrl}/es`,
       },
     },
     openGraph: {
+      type: 'website',
       title: isEn ? 'Curileta — Official Website' : 'Curileta — Web Oficial',
       description: isEn
         ? 'An illustrated journey through books, places and friendship.'
         : 'Un viaje ilustrado por libros, lugares y amistad.',
       url: `${baseUrl}/${locale}`,
-      images: [HERO_SOCIAL_IMAGE],
+      images: [
+        {
+          url: socialImageUrl,
+          width: 1200,
+          height: 630,
+          alt: isEn ? 'Curileta - Official Website' : 'Curileta - Web Oficial',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: isEn ? 'Curileta — Official Website' : 'Curileta — Web Oficial',
+      description: isEn
+        ? 'An illustrated journey through books, places and friendship.'
+        : 'Un viaje ilustrado por libros, lugares y amistad.',
+      images: [socialImageUrl],
     },
   };
 }
-
-const HERO_SOCIAL_IMAGE = '/images/hero/curileta-world-expedition-clean-v1.jpg';
 
 export default async function HomePage({
   params,
@@ -92,7 +110,6 @@ export default async function HomePage({
     settings,
     videoVoteCounts,
     imageFrames,
-    requestHeaders,
     characterRankings,
     upcomingCharacterSlugs,
     bookCatalogSettings,
@@ -112,7 +129,6 @@ export default async function HomePage({
     cmsProvider.getSiteSettings(locale),
     getVideoVoteCounts(),
     getImageFrameSettings(),
-    headers(),
     getCharacterFavoriteRankings(locale),
     getUpcomingEpisodeCharacterSlugs(),
     getBookCatalogSettings(),
@@ -140,13 +156,13 @@ export default async function HomePage({
   const publishedBooksCount = books.filter(
     (book) => Date.parse(`${book.publicationDate}T23:59:59.999Z`) <= currentTimestamp
   ).length;
-  const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
+  const amazonCountry = null;
 
   const sectionComponents = {
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} masks={characterMasks} printables={eventPrintables} />,
     story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
-    globe: <Globe3DScene locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
+    globe: <Globe3DSceneDynamic locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={landingLetters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,

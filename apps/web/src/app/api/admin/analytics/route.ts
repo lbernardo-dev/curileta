@@ -134,7 +134,12 @@ export async function POST(request: NextRequest) {
   ]);
   if (isPrivacyOptOut && aggregateOnlyEvents.has(eventName)) return new NextResponse(null, { status: 204 });
 
-  const isContentInteraction = shareEvents.includes(eventName) || eventName === 'video_vote' || eventName === 'gallery_download' || eventName === 'video_play';
+  const isContentInteraction =
+    shareEvents.includes(eventName) ||
+    eventName === 'video_vote' ||
+    eventName === 'gallery_download' ||
+    eventName === 'video_play' ||
+    (eventName === 'book_purchase_click' && body.contentType === 'book');
   if (eventName === 'gallery_download' && body.contentType !== 'gallery') return NextResponse.json({ success: false }, { status: 400 });
   if (eventName === 'video_play' && body.contentType !== 'video') return NextResponse.json({ success: false }, { status: 400 });
   if (eventName === 'video_vote') {

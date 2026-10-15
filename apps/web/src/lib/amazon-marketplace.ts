@@ -67,7 +67,9 @@ export function findAmazonMarketplace(country: string): AmazonMarketplace {
 
 export function getAmazonBookUrl(country: string, identifier = CURILETA_BOOK_ASIN): string {
   const marketplace = findAmazonMarketplace(country);
-  return `https://www.${marketplace.domain}/dp/${encodeURIComponent(identifier)}`;
+  const affiliateTag = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG?.trim();
+  const baseUrl = `https://www.${marketplace.domain}/dp/${encodeURIComponent(identifier)}`;
+  return affiliateTag ? `${baseUrl}?tag=${encodeURIComponent(affiliateTag)}` : baseUrl;
 }
 
 export function getAmazonIdentifier(purchaseLinks: Array<{ storeName: string; url: string }> = []): string | undefined {

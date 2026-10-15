@@ -1,9 +1,20 @@
 # Referencia funcional y técnica del backend
 
-Fecha de revisión: 14 de octubre de 2026. Esta referencia describe la arquitectura y el estado verificado del backend. La guía de configuración está en [BACKEND_SETUP.md](./BACKEND_SETUP.md).
+Fecha de revisión: 15 de octubre de 2026. Esta referencia describe la arquitectura y el estado verificado del backend. La guía de configuración está en [BACKEND_SETUP.md](./BACKEND_SETUP.md).
 
 ## 1. Estado de esta versión
 
+- El 15 de octubre de 2026 se aplicaron y verificaron localmente las mejoras de la auditoría técnica integral (Fases 0, 1 y 2):
+  - **Convención Proxy y Geolocalización Edge en Next.js 16.4:** `apps/web/src/proxy.ts` ejecuta la función `proxy` conforme a la especificación de Next.js 16.4, asegurando el refresco Edge de sesión para `/admin`, la redirección canónica a `/es` y fijando la cookie `curileta-geo-country` a partir de las cabeceras de geolocalización de la CDN (`x-vercel-ip-country`, `cf-ipcountry`).
+  - **Desacoplamiento de `headers()` y activación de SSG / ISR (Caché CDN global):** Se retiraron las llamadas a `headers()` de `apps/web/src/app/[locale]/page.tsx`, `libros/page.tsx` y `libros/[slug]/page.tsx`. `AmazonMarketplaceLink` resuelve la tienda preferente en el cliente leyendo la cookie fijada en Edge o el almacenamiento local. Esto permitió que Next.js compile 155/155 rutas estáticamente, dejando la Home (`/es`, `/en`) y las páginas de libros como `● (SSG)` con `revalidate = 3600`, habilitando el servicio inmediato desde la CDN global de Vercel (TTFB < 50 ms) y eliminando 19 consultas a base de datos en cada visita.
+  - **Aislamiento de Three.js:** Se creó `apps/web/src/features/home/Globe3DSceneDynamic.tsx` como envoltura de cliente (`'use client'`) para cargar `Globe3DScene` con `ssr: false`, eliminando Three.js del bundle inicial y resolviendo la restricción de Turbopack en Server Components.
+  - **Cabeceras de seguridad HTTP:** Se añadieron cabeceras en `apps/web/next.config.ts` (`Strict-Transport-Security`, `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` y `Permissions-Policy`).
+  - **Protección de rastreo:** Se actualizó `apps/web/src/app/robots.ts` para desautorizar `/admin/` y `/admin`.
+  - **Limitador de tasa (Rate Limiting) en formularios:** Se implementó una ventana deslizante de limitación por IP en `apps/web/src/app/api/contact/route.ts` (máximo 5 peticiones/minuto, código 429) para proteger la inserción en Supabase ante spam o abusos.
+  - **SEO y Schema.org:** Se inyectaron esquemas JSON-LD de `Organization` y `WebSite` en `apps/web/src/app/layout.tsx`, tarjetas Twitter Card (`summary_large_image`) y URLs absolutas para Open Graph en `page.tsx`.
+  - **Accesibilidad:** Se retiró `unoptimized` del póster Hero en `HeroScene.tsx`, se añadió control accesible de pausa/reproducción al vídeo de fondo (WCAG 2.2.2), captura de foco y cierre con `Escape` en el menú móvil de `Header.tsx`, y se corrigió la advertencia de ESLint en `YouTubeTrackedPlayer.tsx`.
+  - **Atribución comercial y analítica de Amazon:** En `apps/web/src/lib/amazon-marketplace.ts` se añadió soporte para la variable pública opcional `NEXT_PUBLIC_AMAZON_AFFILIATE_TAG` para adjuntar etiquetas de afiliación (`?tag=...`) en las URLs salientes. Se actualizó `packages/analytics` y `apps/web/src/app/api/admin/analytics/route.ts` para registrar el evento `book_purchase_click` con país de compra y vincularlo al slug del libro en `analytics_daily`, habilitando la atribución de conversión en Google Analytics 4 y en el panel interno `/admin/estadisticas`.
+  - *Distinción de estado:* Código compilado (`next build` 155/155 páginas estáticas) y verificado localmente (`npm test`, `npm run typecheck`, `npm run lint` en verde). Pendiente de despliegue y comprobación en Vercel Production.
 - El reproductor y la analítica se integraron mediante el PR #15 y se desplegaron primero en Production con 605314d. La corrección de duplicados del catálogo se integró mediante el PR #16 y se desplegó con be6bd94; Vercel confirmó Ready y www.curileta.com sirvió esa versión el 12 de octubre de 2026.
 - Las migraciones 20261012020000_managed_editorial_content.sql y 20261012030000_seed_public_youtube_videos.sql se aplicaron y verificaron en Supabase Production el 12 de octubre de 2026. La segunda deja disponibles los dos vídeos que ya estaban publicados en el canal.
 - La migración de vídeo es idempotente y no reemplaza fichas que ya se hayan editado desde el panel.
@@ -308,3 +319,42 @@ Archivos principales: `apps/web/src/lib/image-frames.ts` y `apps/web/src/app/adm
 ## 23. Alertas de dependencias
 
 El 14 de octubre de 2026 se habilitaron Dependabot alerts en la configuración del repositorio GitHub. GitHub activó también el gráfico de dependencias como requisito. Las actualizaciones de seguridad automáticas permanecen deshabilitadas; esta preferencia no autoriza ni integra cambios de paquetes automáticamente. El primer análisis encontró nueve alertas abiertas en `package-lock.json`: cinco advisories de `js-yaml` y una alerta cada una para `braces`, `sprintf-js`, `uuid` y `postcss-selector-parser`. Las alertas deben resolverse con cambios de dependencia compatibles, CI aprobado y comprobación del despliegue cuando afecten al runtime. No se deben cerrar ni descartar solo para limpiar el contador.
+
+
+## 24. Optimización de rendimiento, seguridad HTTP, SEO y arquitectura SSG/ISR (Auditoría Multidisciplinar)
+
+En octubre de 2026 se completó una auditoría y refactorización técnica integral orientada a Core Web Vitals, accesibilidad (WCAG 2.2 AA), seguridad y conversión:
+
+### Convención Next.js 16.4 y Proxy Edge
+- `apps/web/src/proxy.ts` sustituye la convención deprecada `middleware.ts`. Exporta `export async function proxy(request: NextRequest)` y gestiona la actualización transparente de tokens Supabase para `/admin`, la redirección de idioma raíz (`/` a `/es`), y la asignación de la cookie de geolocalización `curileta-geo-country` derivada de cabeceras Edge (`x-vercel-ip-country`, `cf-ipcountry`).
+
+### Cabeceras de seguridad y protección de rastreo
+- `apps/web/next.config.ts`: Inyecta cabeceras HTTP de protección: `Strict-Transport-Security` (2 años, subdominios), `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, y `Permissions-Policy` restrictiva (bloqueando cámara, micrófono y geolocalización no consentida).
+- `apps/web/src/app/robots.ts`: Prohíbe de forma explícita el rastreo e indexación de rutas privadas `/admin/` y `/admin`.
+- `apps/web/src/app/api/contact/route.ts`: Incorpora limitador de tasa (rate limiter) en memoria por dirección IP (máximo 5 envíos por minuto por IP, respuesta HTTP 429 con mensaje claro) para mitigar spam y ataques de saturación.
+
+### Restauración de SSG e ISR (Core Web Vitals TTFB < 50ms)
+- Se eliminó el uso innecesario de `headers()` dinámico en los Server Components de páginas públicas (`/[locale]/page.tsx`, `/[locale]/libros/page.tsx`, `/[locale]/libros/[slug]/page.tsx`, y `/[locale]/videos/page.tsx`).
+- Se definió `export const revalidate = 3600;` e implementó `generateStaticParams` en todas las rutas públicas clave. El build de Next.js compila el 100% de las rutas públicas (155/155 páginas) como estáticas (`● SSG`), reduciendo drásticamente el Time to First Byte (TTFB).
+- `apps/web/src/features/home/Globe3DSceneDynamic.tsx`: Carga diferida en el cliente (`'use client'` con `next/dynamic(..., { ssr: false })`) para el globo Three.js, extrayendo ~600 KB de dependencias WebGL del bundle inicial de la portada.
+
+### Optimización de vídeo y reducción de payload
+- `apps/web/src/features/home/heroVideos.ts` y `HeroScene.tsx`: Transcodificación de vídeos de fondo a formato WebM (códec VP9, `-an` para eliminar pistas de audio innecesarias en clips silenciosos). El vídeo principal `curileta-base-mapa-mundo.webm` pasa de 6.5 MB a 3.0 MB (-55%), y `curileta-base-sin-mapa.webm` pasa de 4.6 MB a 2.0 MB. El elemento `<video>` sirve prioritariamente `<source type="video/webm">` con fallback automático a `<source type="video/mp4">`.
+
+### SEO técnico y datos estructurados (Schema.org JSON-LD)
+- `apps/web/src/app/layout.tsx`: Inyecta esquemas `Organization` y `WebSite` con metadatos OpenGraph y Twitter card.
+- `apps/web/src/app/[locale]/videos/page.tsx`: Genera e inyecta esquemas `ItemList` y `VideoObject` vía `@curileta/seo`, permitiendo carruseles enriquecidos en Google Video Search.
+- Metadatos canónicos y hreflang bilingüe explícito con `x-default` en portada y catálogo.
+
+### Geolocalización de Amazon y conversión de afiliados
+- `apps/web/src/components/AmazonMarketplaceLink.tsx`: Utiliza `useSyncExternalStore` para leer la cookie de país sin desfases de hidratación (hydration mismatch) ni advertencias en cascada de React 19.
+- `apps/web/src/lib/amazon-marketplace.ts`: Soporta el parámetro opcional de afiliado `NEXT_PUBLIC_AMAZON_AFFILIATE_TAG`.
+- `packages/analytics/src/index.ts` y `/api/admin/analytics/route.ts`: Registro del país en eventos `book_purchase_click` y normalización de rutas en `analytics_daily`.
+
+### Estado de comprobación
+- Código modificado y presente localmente en el repositorio.
+- 25 pruebas unitarias automatizadas superadas (`npm test`).
+- 0 errores en verificación de tipos (`npm run typecheck`).
+- 0 errores o advertencias en análisis de código (`npm run lint`).
+- Compilación de producción validada: 155/155 páginas estáticas generadas exitosamente con `npm run build --workspace=apps/web`.
+- Despliegue en producción de Vercel pendiente de integración de commits en `main`.

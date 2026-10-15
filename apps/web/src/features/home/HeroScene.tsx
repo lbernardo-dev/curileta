@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import type { Locale } from '@curileta/i18n';
 import type { SeasonalEvent, SiteSettings } from '@curileta/cms';
-import { ArrowDown, ArrowRight, Compass, MapPin, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowRight, Compass, MapPin, Pause, Play, Sparkles } from 'lucide-react';
 import { useSeasonalTheme } from '@/providers/SeasonalThemeProvider';
 import routeData from './heroRoute.json';
 import {
@@ -25,7 +25,20 @@ const route = routeData;
 
 export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishedBooksCount }) => {
   const { activeEvent, isReady: seasonalThemeReady, isSeasonalActive, themeKey } = useSeasonalTheme();
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [baseVideoIndex, setBaseVideoIndex] = useState<number | null>(null);
+
+  const togglePlayback = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      void videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
   const seasonalVideo = isSeasonalActive && themeKey
     ? activeEvent?.heroVideoUrl
       ? { url: activeEvent.heroVideoUrl, poster: HERO_EVENT_VIDEOS[themeKey as SeasonalEvent['themeKey']]?.poster || HERO_BASE_VIDEOS[0].poster }
@@ -97,12 +110,12 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
           fill
           priority
           sizes="100vw"
-          unoptimized
           className="object-cover object-[78%_center] sm:object-center"
         />
 
         {heroVideo && (
           <video
+            ref={videoRef}
             key={heroVideo.url}
             aria-hidden="true"
             autoPlay
@@ -113,6 +126,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
             poster={heroPoster}
             className="absolute inset-0 h-full w-full object-cover object-[78%_center] motion-reduce:hidden sm:object-center"
           >
+            {heroVideo.webmUrl && <source src={heroVideo.webmUrl} type="video/webm" />}
             <source src={heroVideo.url} type={heroVideo.url.split('?')[0].toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
           </video>
         )}
@@ -173,6 +187,36 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
         <span>{isEn ? 'Scroll to begin' : 'Desliza para empezar'}</span>
         <ArrowDown className="h-4 w-4" aria-hidden="true" />
       </a>
+
+      {heroVideo && (
+        <button
+          type="button"
+          onClick={togglePlayback}
+          aria-label={
+            isPlaying
+              ? isEn
+                ? 'Pause background video'
+                : 'Pausar vídeo de fondo'
+              : isEn
+              ? 'Play background video'
+              : 'Reproducir vídeo de fondo'
+          }
+          aria-pressed={!isPlaying}
+          className="absolute bottom-6 right-6 z-20 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md transition hover:bg-black/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          {isPlaying ? (
+            <>
+              <Pause className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="sr-only sm:not-sr-only sm:text-[11px]">{isEn ? 'Pause video' : 'Pausar'}</span>
+            </>
+          ) : (
+            <>
+              <Play className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="sr-only sm:not-sr-only sm:text-[11px]">{isEn ? 'Play video' : 'Reproducir'}</span>
+            </>
+          )}
+        </button>
+      )}
     </section>
   );
 };

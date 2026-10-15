@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Locale, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
 import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock3 } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
-import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
+import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
 import { getBookCoverImage } from '@/lib/book-art';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { getImageFrame } from '@/lib/image-frames';
@@ -18,6 +17,8 @@ import { getBookAuthorPage } from '@/lib/author-pages';
 import { getRequestTimestamp } from '@/lib/request-time.server';
 import { AuthorLandingFeature } from '@/features/home/AuthorLandingFeature';
 
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return locale === 'en'
@@ -28,15 +29,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BooksPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
-  const [baseBooks, requestHeaders, imageFrames, catalogSettings, authorPages] = await Promise.all([
+  const [baseBooks, imageFrames, catalogSettings, authorPages] = await Promise.all([
     cmsProvider.getBooks(locale),
-    headers(),
     getImageFrameSettings(),
     getBookCatalogSettings(),
     getAuthorPages(),
   ]);
   const books = mergeBookCatalog(baseBooks, catalogSettings);
-  const amazonCountry = detectAmazonCountryFromHeaders(requestHeaders);
+  const amazonCountry = null;
   const isEn = locale === 'en';
   const now = getRequestTimestamp();
 
