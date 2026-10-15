@@ -12,10 +12,13 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const pages = await getAuthorPages({ publishedOnly: true });
+  const slugs = new Set<string>(pages.map((author) => author.slug));
+  slugs.add('sweety-taless');
+  slugs.add('laura-bernardo');
   return locales.flatMap((locale) =>
-    pages.map((author) => ({
+    Array.from(slugs).map((slug) => ({
       locale,
-      slug: author.slug,
+      slug,
     }))
   );
 }

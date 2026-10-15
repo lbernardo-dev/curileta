@@ -14,10 +14,30 @@ export interface AuthorPage {
 }
 
 export function normalizeAuthorName(value: string) {
-  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase();
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '')
+    .trim()
+    .toLocaleLowerCase();
 }
 
 export function getBookAuthorPage<T extends { author?: string }>(book: T, pages: AuthorPage[]) {
   const author = book.author?.trim();
-  return author ? pages.find((page) => normalizeAuthorName(page.author_name) === normalizeAuthorName(author)) || null : null;
+  if (!author) return null;
+  const normalized = normalizeAuthorName(author);
+  return (
+    pages.find((page) => {
+      const pageAuthor = normalizeAuthorName(page.author_name);
+      const pageNameEs = normalizeAuthorName(page.name?.es || '');
+      const pageNameEn = normalizeAuthorName(page.name?.en || '');
+      return (
+        pageAuthor === normalized ||
+        pageNameEs === normalized ||
+        pageNameEn === normalized ||
+        pageAuthor.includes(normalized) ||
+        normalized.includes(pageAuthor)
+      );
+    }) || null
+  );
 }

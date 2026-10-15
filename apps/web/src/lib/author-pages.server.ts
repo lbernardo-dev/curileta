@@ -3,6 +3,32 @@ import 'server-only';
 import type { AuthorPage } from './author-pages';
 import { createSupabaseAdminClient } from './supabase/server';
 
+export const DEFAULT_AUTHOR_PAGES: AuthorPage[] = [
+  {
+    slug: 'sweety-taless',
+    author_name: 'Sweety Taless',
+    name: {
+      es: 'SweetyTaless',
+      en: 'SweetyTaless',
+    },
+    biography: {
+      es: 'Autora e ilustradora de literatura infantil y creadora de historias pensadas para despertar la imaginación, la curiosidad por el mundo y los valores de la amistad en los más pequeños. Creadora de «Las Aventuras de Curileta», junto a otras publicaciones infantiles disponibles en Amazon.',
+      en: 'Author and illustrator of children’s literature, crafting stories to spark curiosity, global exploration, and enduring values of friendship in young readers. Creator of “The Adventures of Curileta” alongside other children’s books available on Amazon.',
+    },
+    quote: {
+      es: '«Cada historia es un viaje que comienza con una página y nos conecta con amigos en cualquier rincón del mundo.»',
+      en: '“Every story is a journey that begins with a page and connects us with friends across the world.”',
+    },
+    portrait_url: '/images/author/sweety-taless.webp',
+    portrait_path: '',
+    website_url: 'https://www.curileta.com',
+    instagram_url: '',
+    youtube_url: 'https://www.youtube.com/@AventurasdeCurileta',
+    sort_order: 1,
+    is_published: true,
+  },
+];
+
 export async function getAuthorPages(options: { publishedOnly?: boolean } = {}): Promise<AuthorPage[]> {
   try {
     let query = createSupabaseAdminClient()
@@ -12,16 +38,28 @@ export async function getAuthorPages(options: { publishedOnly?: boolean } = {}):
       .order('author_name', { ascending: true });
     if (options.publishedOnly !== false) query = query.eq('is_published', true);
     const { data, error } = await query;
-    if (error) return [];
-    return (data || []).map((row) => normalizeAuthorPage(row as Record<string, unknown>));
+    if (error || !data || data.length === 0) return DEFAULT_AUTHOR_PAGES;
+    const pages = data.map((row) => normalizeAuthorPage(row as Record<string, unknown>));
+    return pages.length > 0 ? pages : DEFAULT_AUTHOR_PAGES;
   } catch {
-    return [];
+    return DEFAULT_AUTHOR_PAGES;
   }
 }
 
 export async function getAuthorPageBySlug(slug: string, publishedOnly = true): Promise<AuthorPage | null> {
   const pages = await getAuthorPages({ publishedOnly });
-  return pages.find((page) => page.slug === slug) || null;
+  const normalizedSlug = slug.toLowerCase();
+  return (
+    pages.find((page) => {
+      const pageSlug = page.slug.toLowerCase();
+      return (
+        pageSlug === normalizedSlug ||
+        (normalizedSlug === 'sweetytaless' && pageSlug === 'sweety-taless') ||
+        (normalizedSlug === 'sweety-taless' && pageSlug === 'sweetytaless') ||
+        (normalizedSlug === 'laura-bernardo' && (pageSlug === 'sweety-taless' || pageSlug === 'sweetytaless'))
+      );
+    }) || null
+  );
 }
 
 function localized(value: unknown) {
