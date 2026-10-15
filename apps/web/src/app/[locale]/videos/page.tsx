@@ -1,18 +1,66 @@
 import { ContentImage } from '@/components/ContentImage';
 import React from 'react';
 import type { Metadata } from 'next';
-import { Locale, isValidLocale } from '@curileta/i18n';
+import { locales, isValidLocale, type Locale } from '@curileta/i18n';
 import { notFound } from 'next/navigation';
 import { YouTubeScene } from '@/features/home/YouTubeScene';
 import { cmsProvider } from '@/lib/cms';
 import { getVideoVoteCounts } from '@/lib/video-votes';
 import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';
+import { generateVideoSchema } from '@curileta/seo';
+
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  return locale === 'en'
-    ? { title: 'Videos', description: 'Watch published episodes and videos from Curileta’s official channel.' }
-    : { title: 'Vídeos', description: 'Mira los episodios y vídeos publicados en el canal oficial de Curileta.' };
+  const isEn = locale === 'en';
+  const title = isEn ? 'Videos' : 'Vídeos';
+  const description = isEn
+    ? 'Watch published episodes and videos from Curileta’s official channel.'
+    : 'Mira los episodios y vídeos publicados en el canal oficial de Curileta.';
+  const pageUrl = `${siteUrl}/${locale}/videos`;
+  const ogImageUrl = `${siteUrl}/images/hero/curileta-world-expedition-clean-v1.jpg`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: pageUrl,
+      languages: {
+        es: `${siteUrl}/es/videos`,
+        en: `${siteUrl}/en/videos`,
+        'x-default': `${siteUrl}/es/videos`,
+      },
+    },
+    openGraph: {
+      title: `${title} | Las Aventuras de Curileta`,
+      description,
+      url: pageUrl,
+      siteName: 'Las Aventuras de Curileta',
+      locale: isEn ? 'en_US' : 'es_ES',
+      type: 'website',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: 'Las Aventuras de Curileta',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Las Aventuras de Curileta`,
+      description,
+      images: [ogImageUrl],
+    },
+  };
 }
 
 function getChannelHandle(channelUrl: string, locale: Locale) {
@@ -60,8 +108,43 @@ export default async function VideosPage({
     : `${listedVideoCount} ${videos.length === 1 ? 'vídeo' : 'vídeos'}`;
   const channelAvatar = settings.youtubeChannelAvatarUrl || '/images/characters/avatars/curileta.webp';
 
+  const videoSchemas = videos.map((v) => {
+    const videoTitle = typeof v.title === 'string' ? v.title : v.title[locale as Locale] || v.title.es || '';
+    const videoDesc = typeof v.description === 'string' ? v.description : v.description?.[locale as Locale] || v.description?.es || (isEn ? `Watch ${videoTitle} on Curileta` : `Ver ${videoTitle} en Curileta`);
+    const thumbUrl = v.thumbnail?.startsWith('http') ? v.thumbnail : `${siteUrl}${v.thumbnail || '/images/hero/curileta-world-expedition-clean-v1.jpg'}`;
+
+    return generateVideoSchema({
+      title: videoTitle,
+      description: videoDesc,
+      thumbnailUrl: [thumbUrl],
+      uploadDate: v.publishedAt || '2025-01-01T00:00:00Z',
+      embedUrl: v.youtubeId ? `https://www.youtube.com/embed/${v.youtubeId}` : undefined,
+      contentUrl: v.youtubeId ? `https://www.youtube.com/watch?v=${v.youtubeId}` : undefined,
+    });
+  });
+
+  const jsonLd = videoSchemas.length > 0
+    ? videoSchemas.length === 1
+      ? videoSchemas[0]
+      : {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          itemListElement: videoSchemas.map((schema, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            item: schema,
+          })),
+        }
+    : null;
+
   return (
     <div className="min-h-screen bg-[#f3f6f3] text-slate-900 transition-colors duration-300 dark:bg-[#131209] dark:text-white">
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         <section
           className="overflow-hidden rounded-2xl bg-[#181818]"

@@ -113,7 +113,15 @@ export function YouTubeTrackedPlayer({
   const [playerReady, setPlayerReady] = useState(false);
   const [trackingUnavailable, setTrackingUnavailable] = useState(false);
   const [playbackError, setPlaybackError] = useState(false);
+  const [prevVideoKey, setPrevVideoKey] = useState(`${thumbnail}:${videoId}`);
   const [thumbnailIndex, setThumbnailIndex] = useState(0);
+
+  const currentVideoKey = `${thumbnail}:${videoId}`;
+  if (prevVideoKey !== currentVideoKey) {
+    setPrevVideoKey(currentVideoKey);
+    setThumbnailIndex(0);
+  }
+
   const invalidVideoId = !/^[A-Za-z0-9_-]{11}$/.test(videoId);
   const youtubeThumbnails = invalidVideoId
     ? []
@@ -123,8 +131,6 @@ export function YouTubeTrackedPlayer({
       ];
   const thumbnailSources = [...new Set([thumbnail.trim(), ...youtubeThumbnails].filter(Boolean))];
   const fallbackThumbnail = thumbnailSources[thumbnailIndex] || '';
-
-  useEffect(() => setThumbnailIndex(0), [thumbnail, videoId]);
 
   function useNextThumbnail() {
     setThumbnailIndex((current) => Math.min(current + 1, thumbnailSources.length));

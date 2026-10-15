@@ -1,7 +1,7 @@
 export type AnalyticsEvent =
   | { name: 'page_view'; properties: { path: string; locale: string } }
   | { name: 'book_view'; properties: { bookId: string; slug: string } }
-  | { name: 'book_purchase_click'; properties: { bookId: string; storeName: string } }
+  | { name: 'book_purchase_click'; properties: { bookId: string; storeName: string; country?: string } }
   | { name: 'video_play'; properties: { videoId: string; videoSlug: string; title: string } }
   | { name: 'youtube_channel_click'; properties: { source: string } }
   | { name: 'character_view'; properties: { characterId: string; name: string } }
@@ -243,6 +243,13 @@ function trackGoogleAnalyticsEvent(event: AnalyticsEvent): void {
     page_path: pagePath,
     language: locale,
     ...(contentTypes[event.name] ? { content_type: contentTypes[event.name] } : {}),
+    ...(event.name === 'book_purchase_click'
+      ? {
+          book_id: event.properties.bookId,
+          store_name: event.properties.storeName,
+          ...(event.properties.country ? { country: event.properties.country } : {}),
+        }
+      : {}),
   });
 }
 
@@ -307,6 +314,7 @@ class PrivacySafeAnalytics implements AnalyticsProvider {
         path,
         locale,
         ...(event.name === 'video_play' ? { contentType: 'video', contentSlug: event.properties.videoSlug } : {}),
+        ...(event.name === 'book_purchase_click' ? { contentType: 'book', contentSlug: event.properties.bookId } : {}),
       }),
       keepalive: true,
     }).catch(() => undefined);

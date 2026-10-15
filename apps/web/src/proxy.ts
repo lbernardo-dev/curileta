@@ -44,12 +44,35 @@ export async function proxy(request: NextRequest) {
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  if (pathnameHasLocale) return NextResponse.next();
-
   const redirectPath = pathname === '/' ? '' : pathname;
-  return NextResponse.redirect(new URL(`/${defaultLocale}${redirectPath}`, request.url));
+  const response = pathnameHasLocale
+    ? NextResponse.next()
+    : NextResponse.redirect(new URL(`/${defaultLocale}${redirectPath}`, request.url));
+
+  const geoCountry =
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    request.headers.get('cloudfront-viewer-country') ||
+    request.headers.get('x-country-code');
+
+  const normalizedGeo = geoCountry?.trim().toUpperCase();
+  const isValidGeo =
+    normalizedGeo &&
+    /^[A-Z]{2}$/.test(normalizedGeo) &&
+    normalizedGeo !== 'XX' &&
+    normalizedGeo !== 'T1';
+
+  if (isValidGeo && !request.cookies.has('curileta-geo-country')) {
+    response.cookies.set('curileta-geo-country', normalizedGeo, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+    });
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|favicon.svg).*)'],
 };

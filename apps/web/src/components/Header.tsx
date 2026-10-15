@@ -18,6 +18,48 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
   const t = getMessages(locale);
   const isEn = locale === 'en';
 
+  const mobileMenuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+        return;
+      }
+      if (event.key === 'Tab' && mobileMenuRef.current) {
+        const focusableElements = mobileMenuRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
   const handleBrandClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
@@ -109,7 +151,14 @@ export const Header: React.FC<{ locale: Locale }> = ({ locale }) => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div id="mobile-navigation" className="space-y-2 border-t border-emerald-100 bg-white/95 px-4 pb-6 pt-3 shadow-xl backdrop-blur-xl animate-in slide-in-from-top duration-200 dark:border-emerald-900 dark:bg-slate-950/95 md:hidden">
+          <div
+            id="mobile-navigation"
+            ref={mobileMenuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={isEn ? 'Mobile navigation menu' : 'Menú de navegación móvil'}
+            className="space-y-2 border-t border-emerald-100 bg-white/95 px-4 pb-6 pt-3 shadow-xl backdrop-blur-xl animate-in slide-in-from-top duration-200 dark:border-emerald-900 dark:bg-slate-950/95 md:hidden"
+          >
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 dark:border-slate-800">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                 {locale === 'en' ? 'Appearance Theme:' : 'Tema visual:'}

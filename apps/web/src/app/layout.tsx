@@ -1,5 +1,16 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { generateOrganizationSchema } from '@curileta/seo';
+
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com').replace(/\/$/, '');
+const organizationSchema = generateOrganizationSchema(siteUrl);
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Las Aventuras de Curileta',
+  url: siteUrl,
+  inLanguage: ['es', 'en'],
+};
 
 export const metadata: Metadata = {
   title: {
@@ -8,9 +19,32 @@ export const metadata: Metadata = {
   },
   description:
     'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com'),
+  metadataBase: new URL(siteUrl),
   icons: {
     icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Las Aventuras de Curileta',
+    title: 'Las Aventuras de Curileta — Web Oficial',
+    description:
+      'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
+    url: siteUrl,
+    images: [
+      {
+        url: `${siteUrl}/images/hero/curileta-world-expedition-clean-v1.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Las Aventuras de Curileta',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Las Aventuras de Curileta — Web Oficial',
+    description:
+      'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
+    images: [`${siteUrl}/images/hero/curileta-world-expedition-clean-v1.jpg`],
   },
 };
 
@@ -26,6 +60,14 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

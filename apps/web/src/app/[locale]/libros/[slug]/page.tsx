@@ -2,7 +2,6 @@ import { ContentImage } from '@/components/ContentImage';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { locales, isValidLocale } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
@@ -11,7 +10,9 @@ import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { AmazonMarketplaceLink } from '@/components/AmazonMarketplaceLink';
 import { ShareActions } from '@/components/ShareActions';
 import { TrackedAnalyticsLink } from '@/components/TrackedAnalyticsLink';
-import { CURILETA_BOOK_SLUG, detectAmazonCountryFromHeaders } from '@/lib/amazon-marketplace';
+import { CURILETA_BOOK_SLUG } from '@/lib/amazon-marketplace';
+
+export const revalidate = 3600;
 import { CURILETA_BOOK_APLUS, CURILETA_BOOK_BACK_COVER, getBookCoverImage } from '@/lib/book-art';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { getImageFrame } from '@/lib/image-frames';
@@ -86,7 +87,7 @@ export default async function BookDetailPage({
   const subtitle = book.subtitle?.[locale] || book.subtitle?.es;
   const desc = book.description[locale] || book.description.es;
   const format = book.format?.[locale] || book.format?.es;
-  const amazonCountry = detectAmazonCountryFromHeaders(await headers());
+  const amazonCountry = null;
   const isCuriletaBook = book.slug === CURILETA_BOOK_SLUG || book.id === CURILETA_BOOK_SLUG;
   const isPublished = isBookPublished(book);
   const authorPage = getBookAuthorPage(book, authorPages);
