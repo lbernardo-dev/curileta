@@ -5,6 +5,29 @@ import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 const noStore = { 'Cache-Control': 'private, no-store' };
 
+const FAVORITE_RATE_LIMIT_MAX = 30;
+const FAVORITE_RATE_LIMIT_WINDOW_MS = 60_000;
+const favoriteAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function checkFavoriteRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const tracker = favoriteAttempts.get(ip);
+  if (favoriteAttempts.size > 1000) {
+    for (const [key, val] of favoriteAttempts.entries()) {
+      if (val.resetAt < now) favoriteAttempts.delete(key);
+    }
+  }
+  if (!tracker || tracker.resetAt < now) {
+    favoriteAttempts.set(ip, { count: 1, resetAt: now + FAVORITE_RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (tracker.count >= FAVORITE_RATE_LIMIT_MAX) {
+    return false;
+  }
+  tracker.count += 1;
+  return true;
+}
+
 export async function GET(request: NextRequest) {
   const locale = request.nextUrl.searchParams.get('locale') === 'en' ? 'en' : 'es';
   const visitorToken = request.headers.get('x-favorite-visitor');
@@ -31,6 +54,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    request.headers.get('x-real-ip') ||
+    'anonymous';
+
+  if (!checkFavoriteRateLimit(clientIp)) {
+    return NextResponse.json(
+      { success: false, error: 'Demasiadas acciones. Espera un momento.' },
+      { status: 429, headers: noStore }
+    );
+  }
   let body: { locale?: unknown; slug?: unknown; visitorToken?: unknown; favorite?: unknown };
   try {
     const raw = await request.text();

@@ -1,7 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 
+const LOGIN_RATE_LIMIT_MAX = 5;
+const LOGIN_RATE_LIMIT_WINDOW_MS = 15 * 60_000;
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function checkLoginRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const tracker = loginAttempts.get(ip);
+  if (loginAttempts.size > 1000) {
+    for (const [key, val] of loginAttempts.entries()) {
+      if (val.resetAt < now) loginAttempts.delete(key);
+    }
+  }
+  if (!tracker || tracker.resetAt < now) {
+    loginAttempts.set(ip, { count: 1, resetAt: now + LOGIN_RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (tracker.count >= LOGIN_RATE_LIMIT_MAX) {
+    return false;
+  }
+  tracker.count += 1;
+  return true;
+}
+
 export async function POST(request: NextRequest) {
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    request.headers.get('x-real-ip') ||
+    'anonymous';
+
+  if (!checkLoginRateLimit(clientIp)) {
+    return NextResponse.json(
+      { success: false, error: 'Demasiados intentos de acceso. Por favor, espera 15 minutos antes de volver a intentarlo.' },
+      { status: 429, headers: { 'Retry-After': '900' } }
+    );
+  }
+
   let body: { email?: unknown; password?: unknown };
   try {
     const raw = await request.text();
