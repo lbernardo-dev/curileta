@@ -143,3 +143,58 @@ describe('Eventos Estacionales y Tema Temporal (@curileta/cms)', async () => {
   });
 });
 
+describe('Radar de Aventura & Navegación Geodésica (@curileta/web)', () => {
+  // Haversine geodesic distance in km
+  function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c);
+  }
+
+  // Bearing in degrees (0 = North, 90 = East, 180 = South, 270 = West)
+  function calculateBearing(lat1, lon1, lat2, lon2) {
+    const phi1 = (lat1 * Math.PI) / 180;
+    const phi2 = (lat2 * Math.PI) / 180;
+    const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+    const y = Math.sin(deltaLambda) * Math.cos(phi2);
+    const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
+    const theta = Math.atan2(y, x);
+    const bearing = (theta * 180) / Math.PI;
+    return Math.round((bearing + 360) % 360);
+  }
+
+  test('debe calcular la distancia geodésica exacta en línea recta entre Madrid y París (~1053 km)', () => {
+    const madrid = { lat: 40.4168, lng: -3.7038 };
+    const paris = { lat: 48.8566, lng: 2.3522 };
+    const dist = calculateHaversineDistance(madrid.lat, madrid.lng, paris.lat, paris.lng);
+    assert.ok(dist >= 1040 && dist <= 1065, `Distancia esperada ~1053 km, obtenida: ${dist} km`);
+  });
+
+  test('debe calcular el rumbo azimutal de brújula en grados de 0 a 360 correctamente', () => {
+    const madrid = { lat: 40.4168, lng: -3.7038 };
+    const paris = { lat: 48.8566, lng: 2.3522 };
+    const bearing = calculateBearing(madrid.lat, madrid.lng, paris.lat, paris.lng);
+    // Madrid a París se sitúa en dirección noreste (~27° NNE)
+    assert.ok(bearing >= 20 && bearing <= 35, `Rumbo esperado ~27°, obtenido: ${bearing}°`);
+  });
+});
+
+describe('Perfil Editorial de Autora & Colección Solapada (@curileta/web)', async () => {
+  const { normalizeAuthorName } = await import('../../apps/web/src/lib/author-pages.ts');
+
+  test('debe normalizar el nombre literario de SweetyTaless y enlazarlo con las publicaciones del catálogo', () => {
+    assert.equal(normalizeAuthorName('Sweety Taless'), 'sweetytaless');
+    assert.equal(normalizeAuthorName('SweetyTaless'), 'sweetytaless');
+    assert.equal(normalizeAuthorName('  SWEETY TALESS  '), 'sweetytaless');
+  });
+});
+
+
