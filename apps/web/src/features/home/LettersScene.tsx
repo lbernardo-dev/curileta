@@ -89,24 +89,18 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
   const activePhotoIsCensored = isCensored || activePhoto?.visibility === 'censored';
 
   return (
-    <section id="escena-cartas" className="relative z-10 py-28 bg-amber-50/40 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden">
-      {/* Trazado estético superior */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-rose-500 to-sky-400 shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="escena-cartas" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#F4F7F1] px-5 py-24 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#1F1F1F] dark:text-white sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto max-w-7xl">
         {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="mx-auto mb-14 max-w-3xl text-center">
           <SectionEmblem icon={Mail} tone="amber" label={isEn ? "Expedition's mail chest" : 'Baúl postal de la expedición'} />
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-500/50 text-amber-900 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-            <span>{isEn ? "The Expedition's Mail Chest" : 'El Baúl Postal de la Expedición'}</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            {isEn ? 'Letters to Pompón.' : 'Cartas a Pompón.'}<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-sky-500 dark:from-amber-300 dark:via-rose-300 dark:to-sky-300">
+          <h2 className="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
+            {isEn ? 'Letters to Pompón.' : 'Cartas a Pompón.'}{' '}
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-sky-500 dark:from-amber-300 dark:via-rose-300 dark:to-sky-300">
               {isEn ? 'Words that crossed oceans.' : 'Palabras que cruzaron océanos.'}
             </span>
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
             {isEn
               ? '«Don’t be sad, Pompón: I will write to you whenever I reach a new land». Read all the genuine letters written by Curileta from across the globe.'
               : '«No estés triste, Pompón: te enviaré una carta siempre que llegue a un nuevo sitio». Lee las cartas auténticas escritas por Curileta desde cada rincón del planeta.'}
@@ -127,10 +121,10 @@ export const LettersScene: React.FC<LettersSceneProps> = ({ locale, letters = []
                   setSelectedLetterId(item.id);
                   setActivePhotoIndex(0);
                 }}
-                className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 border cursor-pointer ${
+                className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-2 border cursor-pointer ${
                   isSelected
-                    ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/20 scale-105 font-black'
-                    : 'bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-amber-400/50 hover:bg-amber-50/50 dark:hover:bg-slate-800'
+                    ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/20 scale-105 font-bold'
+                    : 'bg-white dark:bg-[#181818] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-[#313131] hover:border-amber-400/50 hover:bg-amber-50/50 dark:hover:bg-[#272727]'
                 }`}
               >
                 <span className="font-mono text-[10px] opacity-70">#{idx + 1}</span>

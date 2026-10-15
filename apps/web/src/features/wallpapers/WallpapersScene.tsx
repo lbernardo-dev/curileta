@@ -128,29 +128,29 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
   };
 
   return (
-    <section id="galeria-fondos" className={`relative z-10 ${embedded ? 'py-16' : 'py-24'} bg-[#f8f6ef] dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden`}>
+    <section id="galeria-fondos" className={`relative z-10 overflow-hidden border-t border-[var(--border-subtle)] ${embedded ? 'py-20 sm:py-24' : 'py-24 sm:py-28'} bg-[#F4F7F1] px-5 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#1F1F1F] dark:text-white sm:px-8 lg:px-12`}>
       {/* Resplandor ambiental de fondo */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(16,185,129,0.15),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(16,185,129,0.08),transparent)] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative z-10 mx-auto max-w-7xl">
         {/* Cabecera Principal */}
         {!hideHeader && (
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-lg backdrop-blur-md">
-              <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-100 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-emerald-800 shadow-sm backdrop-blur-md dark:border-emerald-500/40 dark:bg-emerald-950/80 dark:text-emerald-300">
+              <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-400" />
               <span>{hasPublishedWallpapers ? copy('Fondos oficiales', 'Official wallpapers') : copy('Colección en preparación', 'Collection in progress')}</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              {copy('Lleva la aventura contigo.', 'Take the adventure with you.')}<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-600 to-sky-600 dark:from-emerald-300 dark:via-amber-300 dark:to-sky-300">
+            <h2 className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
+              {copy('Lleva la aventura contigo.', 'Take the adventure with you.')}{' '}
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-600 to-sky-600 dark:from-emerald-300 dark:via-amber-300 dark:to-sky-300">
                 {hasPublishedWallpapers
                   ? copy('Fondos creados para tu pantalla.', 'Art made for your screen.')
                   : copy('Muy pronto, ilustraciones propias.', 'Original illustrations are on their way.')}
               </span>
             </h2>
 
-            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
               {copy(
                 hasPublishedWallpapers
                   ? 'Descarga ilustraciones oficiales preparadas para móvil y escritorio.'
@@ -160,14 +160,14 @@ export const WallpapersScene: React.FC<WallpapersSceneProps> = ({
                   : 'Original expedition scenes for mobile and desktop are being prepared.'
               )}
             </p>
-            <Link href={`/${locale}/galeria`} className="mt-5 inline-flex min-h-11 items-center rounded-full border border-emerald-800 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-emerald-400 dark:text-emerald-200 dark:hover:bg-[#272727]">
+            <Link href={`/${locale}/galeria`} className="mt-6 inline-flex min-h-11 items-center rounded-full border border-emerald-800 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:border-emerald-400 dark:text-emerald-200 dark:hover:bg-[#272727]">
               {copy('Explorar la galería', 'Explore the gallery')}
             </Link>
           </div>
         )}
 
         {/* Barra de Filtros y Búsqueda */}
-        {hasPublishedWallpapers && <div className="bg-[#fffdf8] dark:bg-slate-900/80 border border-[#e8e1d5] dark:border-slate-800 rounded-3xl p-4 sm:p-6 mb-10 shadow-[0_12px_36px_rgba(24,54,41,0.06)] backdrop-blur-xl space-y-4">
+        {hasPublishedWallpapers && <div className="mb-10 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-md backdrop-blur-xl dark:border-[#313131] dark:bg-[#181818] sm:p-6 space-y-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Filtro por Dispositivo */}
             <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
