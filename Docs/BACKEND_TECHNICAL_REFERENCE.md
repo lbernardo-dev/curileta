@@ -605,7 +605,54 @@ Se completó una auditoría y refactorización exhaustiva de la página principa
 - Pruebas automatizadas: 25/25 tests pasando (`npm test`).
 - Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
 - Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
-- Estado: Cambios aplicados localmente en rama `feat/visual-storytelling-and-hd-thumbnails`, listos para PR y despliegue a producción.
+- Estado: Cambios desplegados y verificados en producción en PR #65.
+
+## 31. Radar de Aventura con geolocalización interactiva, rumbo azimutal y escaparate de libros solapados de autora
+
+En la iteración del 15 de octubre de 2026, se abordaron dos requerimientos clave de diseño y usabilidad en la portada principal (`/[locale]`):
+
+### 1. Radar de Aventura (`AdventureRadar.tsx`)
+- **Ampliación a ancho completo (`max-w-7xl`):**
+  - Se eliminó la restricción artificial `max-w-4xl` de la tarjeta interior de resultados, adaptándola al ancho completo `w-full max-w-7xl` para garantizar simetría visual con las demás secciones maestras de la página.
+- **Geolocalización en navegador interactiva y privada:**
+  - Se implementó el botón interactivo **«Usar mi ubicación actual»** que invoca `navigator.geolocation.getCurrentPosition`.
+  - Tratamiento transparente de estados: solicitud en curso con indicador animado, concesión de permiso, error/rechazo y aviso de no compatibilidad.
+  - Garantía de privacidad explícita: las coordenadas se procesan de forma 100% privada en el navegador del cliente; nunca se envían al servidor ni se persisten en base de datos.
+- **Cálculo geodésico y rumbo azimutal:**
+  - Se utiliza la fórmula del semiverseno (Haversine) para la distancia esférica exacta de gran círculo en kilómetros.
+  - Se incorporó la función `calculateBearing` que determina el ángulo azimutal inicial (0° a 360°) respecto al polo norte magnético/geográfico y su traducción a 16 rumbos cardinales (`N`, `NNE`, `NE`, `ENE`, `E`, `ESE`, `SE`, `SSE`, `S`, `SSO`, `SO`, `OSO`, `O`, `ONO`, `NO`, `NNO`).
+- **Instrumentación dinámica y animada:**
+  - Pantalla de radar circular con cuadrícula cardinal, anillos concéntricos de rango y aguja de brújula que rota físicamente con transición suave (`cubic-bezier(0.32, 0.72, 0, 1)`) orientándose hacia la parada seleccionada.
+  - Estimación dinámica del tiempo de travesía en globo o velero según los kilómetros calculados.
+  - Selector ágil de ciudades de referencia (Madrid, Ciudad de México, Cusco, El Cairo, Tokio, etc.) para visitantes que prefieran no conceder geolocalización.
+  - Lista interactiva inferior con las paradas del relato ordenadas por distancia, permitiendo pulsar cualquier parada para ver rotar la brújula y refrescar la información del hito narrativo.
+
+### 2. Perfil de autora y baraja de libros solapados con solapas (`AuthorLandingFeature.tsx` y `AuthorStackedBooksDeck.tsx`)
+- **Avatar circular (`rounded-full`):**
+  - Se reemplazó el formato rectangular 4:3 anterior por un avatar circular perfecto (`rounded-full aspect-square w-36 h-36 sm:w-44 sm:h-44`) enmarcado en anillo protector con borde ámbar suave, sombra física profunda e icono distintivo de pluma de escritora.
+  - En el panel de administración (`/admin/autoras`, `AuthorPagesManager.tsx`), la lista de perfiles también adopta la previsualización en avatar circular, permitiendo subir o actualizar la imagen de autora mediante `ImageUploadField`.
+- **Disposición de ancho completo (`max-w-7xl`) para autora única:**
+  - Cuando existe un único perfil de autora (`authors.length === 1`), la tarjeta ocupa todo el ancho de la sección (`w-full rounded-3xl p-6 sm:p-10 lg:p-12`), distribuyéndose en dos columnas equilibradas en escritorio (`grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]`).
+- **Escaparate interactivo de libros solapados con solapas (`AuthorStackedBooksDeck.tsx`):**
+  - Situado en el lateral derecho del bloque descriptivo de la autora.
+  - Muestra la colección oficial y otras obras publicadas o series infantiles de la autora (*Las Aventuras de Curileta*, *Curileta y el Misterio Marino*, *El Cuaderno Secreto de Curileta & Pompón*, *Cuentos de Buenas Noches del Bosque Encantado*).
+  - **Barra de solapas superiores:** Pestañas interactivas numeradas con el título de cada obra que permiten conmutar inmediatamente el libro en foco.
+  - **Efecto de cartas solapadas en 3D:** Las cubiertas se muestran apiladas con profundidad física (`z-30`, `z-20`, `z-10`), rotaciones sutiles (`rotate-2`, `rotate-4`) y transiciones fluidas de inercia (`duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]`). Cualquier tarjeta solapada del fondo se puede pulsar para traerla al frente.
+  - **Panel de detalles activos:** Muestra distintivo oficial, rango de edad, número de páginas, temática y botón de acción con enlace directo al libro o compra en Amazon.
+
+### Archivos afectados
+- `apps/web/src/features/home/AdventureRadar.tsx`: Tarjeta a ancho completo (`max-w-7xl`), geolocalización por navegador con `navigator.geolocation`, fórmula Haversine, cálculo de rumbo azimutal (`calculateBearing`), brújula animada e instrumentación de vuelo.
+- `apps/web/src/features/home/AuthorLandingFeature.tsx`: Avatar circular, ancho completo para autora única y maquetación a 2 columnas con la baraja de libros a la derecha.
+- `apps/web/src/features/home/AuthorStackedBooksDeck.tsx`: Componente interactivo de cartas solapadas con solapas, rotaciones dinámicas, selector de obras y enlaces editoriales.
+- `apps/web/src/app/admin/(panel)/autoras/AuthorPagesManager.tsx`: Vista previa en avatar circular en la lista administrativa de perfiles de autoras.
+- `tooling/tests/core.test.mjs`: Pruebas automatizadas de cálculo geodésico, rumbo azimutal de brújula y normalización de perfil editorial de SweetyTaless.
+
+### Estado de comprobación
+- Pruebas automatizadas: 28/28 tests pasando (`npm test`).
+- Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
+- Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
+- Estado: Cambios validados localmente en rama `feat/radar-geolocation-and-author-card-deck`.
+
 
 
 
