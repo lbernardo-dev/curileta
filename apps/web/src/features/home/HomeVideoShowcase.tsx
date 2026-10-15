@@ -33,6 +33,21 @@ const localized = (value: { es: string; en?: string } | string | undefined, loca
   return value[locale] || value.es || '';
 };
 
+export const resolveHighQualityThumbnail = (video: Video | null | undefined): string => {
+  if (!video) return '/images/hero/curileta-world-expedition-clean-v1.jpg';
+  const meta = (video as unknown as { youtubeMetadata?: { thumbnailUrls?: Record<string, string> } })?.youtubeMetadata?.thumbnailUrls;
+  if (meta?.maxres && !meta.maxres.includes('hqdefault')) return meta.maxres;
+  if (meta?.standard && !meta.standard.includes('hqdefault')) return meta.standard;
+  if (meta?.high && !meta.high.includes('hqdefault')) return meta.high;
+  if (video.youtubeId && /^[A-Za-z0-9_-]{11}$/.test(video.youtubeId)) {
+    return `https://i.ytimg.com/vi/${encodeURIComponent(video.youtubeId)}/maxresdefault.jpg`;
+  }
+  if (video.thumbnail && video.thumbnail.includes('i.ytimg.com') && video.thumbnail.includes('/hqdefault.jpg')) {
+    return video.thumbnail.replace('/hqdefault.jpg', '/maxresdefault.jpg');
+  }
+  return video.thumbnail || '/images/hero/curileta-world-expedition-clean-v1.jpg';
+};
+
 export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
   locale,
   videos = [],
@@ -90,7 +105,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
     <section
       id="videos-destacados"
       aria-labelledby="home-videos-title"
-      className="bg-[#faf9f4] px-5 py-20 text-[#20352c] transition-colors duration-300 dark:bg-[#131209] dark:text-white sm:px-8 sm:py-28 lg:px-12"
+      className="relative z-10 border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-[#20352c] transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12"
     >
       <div className="mx-auto max-w-7xl">
         <SectionEmblem
@@ -141,10 +156,10 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
         {/* Showcase Grid */}
         <div className="mt-12 grid gap-6 lg:grid-cols-12 lg:gap-8">
           {/* Main Premiere Hero Card (col-span 7 or 8) */}
-          <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:shadow-2xl dark:border-[#313131] dark:bg-[#181818] lg:col-span-7 xl:col-span-8">
+          <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:shadow-2xl dark:border-[#313131] dark:bg-[#1F1F1F] lg:col-span-7 xl:col-span-8">
             <div className="relative aspect-video w-full overflow-hidden bg-slate-950">
               <Image
-                src={latestEpisode.thumbnail || '/images/hero/curileta-world-expedition-clean-v1.jpg'}
+                src={resolveHighQualityThumbnail(latestEpisode)}
                 alt={latestTitle}
                 fill
                 sizes="(max-width: 1024px) 100vw, 65vw"
@@ -222,11 +237,11 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
             {featuredShort && (
               <div
                 onClick={() => setActiveModalVideo(featuredShort)}
-                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-xl dark:border-[#313131] dark:bg-[#181818]"
+                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-xl dark:border-[#313131] dark:bg-[#1F1F1F]"
               >
                 <div className="relative aspect-[9/16] h-32 shrink-0 overflow-hidden rounded-xl bg-slate-950 sm:h-36">
                   <Image
-                    src={featuredShort.thumbnail || '/images/hero/curileta-world-expedition-clean-v1.jpg'}
+                    src={resolveHighQualityThumbnail(featuredShort)}
                     alt={localized(featuredShort.title, locale)}
                     fill
                     sizes="120px"
@@ -259,11 +274,11 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
             {secondaryVideo && (
               <div
                 onClick={() => setActiveModalVideo(secondaryVideo)}
-                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-xl dark:border-[#313131] dark:bg-[#181818]"
+                className="group relative flex cursor-pointer gap-4 overflow-hidden rounded-[1.65rem] border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-xl dark:border-[#313131] dark:bg-[#1F1F1F]"
               >
                 <div className="relative aspect-video h-24 shrink-0 overflow-hidden rounded-xl bg-slate-950 sm:h-28">
                   <Image
-                    src={secondaryVideo.thumbnail || '/images/hero/curileta-world-expedition-clean-v1.jpg'}
+                    src={resolveHighQualityThumbnail(secondaryVideo)}
                     alt={localized(secondaryVideo.title, locale)}
                     fill
                     sizes="160px"
@@ -295,7 +310,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
             )}
 
             {/* Features summary box */}
-            <div className="rounded-[1.65rem] border border-amber-200/80 bg-[#fff9ed] p-5 shadow-sm dark:border-[#313131] dark:bg-[#1a1912]">
+            <div className="rounded-[1.65rem] border border-amber-200/80 bg-[#FFFDF7] p-5 shadow-sm dark:border-[#313131] dark:bg-[#1F1F1F]">
               <h5 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
                 {isEn ? 'What you will find in our channel' : 'Qué encontrarás en el canal'}
               </h5>
@@ -358,7 +373,7 @@ export const HomeVideoShowcase: React.FC<HomeVideoShowcaseProps> = ({
                   videoId={activeModalVideo.youtubeId}
                   videoSlug={activeModalVideo.slug}
                   title={localized(activeModalVideo.title, locale)}
-                  thumbnail={activeModalVideo.thumbnail}
+                  thumbnail={resolveHighQualityThumbnail(activeModalVideo)}
                   youtubeUrl={`https://www.youtube.com/watch?v=${activeModalVideo.youtubeId}`}
                   locale={locale}
                 />

@@ -99,7 +99,7 @@ export function TaglineRevealSection({ locale }: TaglineRevealSectionProps) {
     <section
       ref={sectionRef}
       aria-label={isEn ? 'Core philosophy' : 'Filosofía central'}
-      className="relative isolate overflow-hidden bg-[var(--background-canvas,#fafdf7)] px-5 py-24 transition-colors duration-500 dark:bg-[#131209] sm:px-8 sm:py-32 lg:px-12"
+      className="relative isolate overflow-hidden border-t border-[var(--border-subtle)] bg-[var(--background-canvas,#FAFDF7)] px-5 py-24 transition-colors duration-500 dark:border-[#272727] dark:bg-[#131209] sm:px-8 sm:py-32 lg:px-12"
     >
       <div className="mx-auto max-w-[680px] text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--background-secondary,#f8fafc)] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--seasonal-accent-strong,#b45309)] shadow-sm dark:border-[#313131] dark:bg-[#1f1f1f]">

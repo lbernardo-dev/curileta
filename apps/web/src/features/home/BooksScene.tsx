@@ -30,14 +30,11 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
   };
 
   return (
-    <section id="escena-libros" className="relative z-10 overflow-hidden bg-white py-24 text-slate-900 transition-colors duration-300 dark:bg-slate-900 dark:text-white sm:py-28">
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+    <section id="escena-libros" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12">
+      <div className="relative mx-auto max-w-7xl">
         <header className="mx-auto mb-14 max-w-3xl text-center sm:mb-16">
           <SectionEmblem icon={BookOpen} tone="amber" label={isEn ? 'Curileta books' : 'Libros de Curileta'} />
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-amber-950 dark:border-amber-500/40 dark:bg-amber-950/70 dark:text-amber-200">
-            {isEn ? 'Stories to read together' : 'Historias para leer en familia'}
-          </div>
-          <h2 className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-5xl">
+          <h2 className="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
             {isEn ? 'Every page opens a new place.' : 'Cada página abre un lugar nuevo.'}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">

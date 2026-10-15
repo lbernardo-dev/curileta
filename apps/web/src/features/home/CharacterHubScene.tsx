@@ -586,28 +586,22 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   const selectedTheme = getCharacterTheme(selectedCharacter.id);
 
   return (
-    <section id="escena-personajes" className="relative z-10 py-24 sm:py-28 bg-[#f7f5ed] dark:bg-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
-      {/* Línea divisoria superior */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-700/45 to-transparent" />
-
+    <section id="escena-personajes" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-slate-900 transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12">
       {/* Partículas de ambiente */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.08),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.06),transparent)] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative z-10 mx-auto max-w-7xl">
         {/* Cabecera */}
         {!hideHeader && (
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
             <SectionEmblem icon={Users} tone="emerald" label={copy(locale, 'Tripulación de exploradores', 'Explorer crew')} />
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-md backdrop-blur-md">
-              <span>{copy(locale, 'Escena 03 — El espacio de los personajes', 'Scene 03 — Meet the characters')}</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              {copy(locale, 'La alianza de los', 'Meet the')}<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
+            <h2 className="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
+              {copy(locale, 'La alianza de los', 'Meet the')}{' '}
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-500 dark:from-emerald-300 dark:via-amber-300 dark:to-emerald-200">
                 {copy(locale, '19 grandes exploradores.', '19 great explorers.')}
               </span>
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
               {copy(
                 locale,
                 'Explora el pasaporte de cada personaje y descubre las habilidades que ayudan a descifrar los enigmas del mundo. Pulsa la lupa para ampliar su diseño 3D en alta definición.',
@@ -618,7 +612,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
         )}
 
         {/* Filtros por Región / Categoría */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+        <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
           {[
             { id: 'todos', label: copy(locale, `Todos los exploradores (${charactersList.length})`, `All explorers (${charactersList.length})`) },
             { id: 'protagonistas', label: copy(locale, 'Protagonistas (2)', 'Main characters (2)') },
@@ -631,10 +625,10 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               <button
                 key={cat.id}
                 onClick={() => setFilterCategory(cat.id as CharacterFilterCategory)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                   isCatActive
-                    ? 'bg-emerald-500 text-white dark:bg-emerald-400 dark:text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/20 scale-105 font-black'
-                    : 'bg-white dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:text-slate-900 dark:hover:text-white shadow-sm'
+                    ? 'bg-emerald-500 text-white dark:bg-emerald-400 dark:text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/20 scale-105 font-bold'
+                    : 'bg-white dark:bg-[#1F1F1F] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-[#313131] hover:border-emerald-500/50 hover:text-slate-900 dark:hover:text-white shadow-sm'
                 }`}
               >
                 {cat.label}

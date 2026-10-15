@@ -994,16 +994,15 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
   }, [focusLocation, locationsList]);
 
   return (
-    <section id="escena-mapa" className="relative z-10 overflow-hidden bg-[#f3f2e8] py-12 text-[#1d392f] transition-colors duration-300 dark:bg-[#071b19] dark:text-white sm:py-24">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(132,204,167,0.25),transparent_75%)] dark:bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(16,185,129,0.14),transparent_75%)]" />
-      <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent" />
+    <section id="escena-mapa" className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#FAFDF7] px-5 py-24 text-[#1d392f] transition-colors duration-500 dark:border-[#272727] dark:bg-[#181818] dark:text-white sm:px-8 sm:py-28 lg:px-12">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(132,204,167,0.2),transparent_75%)] dark:bg-[radial-gradient(ellipse_65%_38%_at_50%_0%,rgba(16,185,129,0.1),transparent_75%)]" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <div className="relative mx-auto mb-9 max-w-3xl text-center sm:mb-14">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#d8c7a5] bg-[#f7f1e1] shadow-[0_12px_32px_rgba(25,74,53,0.16)] ring-4 ring-white/70 dark:border-sky-200/30 dark:bg-[#132d3a] dark:ring-slate-900/60 sm:mb-5 sm:h-20 sm:w-20">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#d8c7a5] bg-[#f7f1e1] shadow-[0_12px_32px_rgba(25,74,53,0.16)] ring-4 ring-white/70 dark:border-[#313131] dark:bg-[#1F1F1F] dark:ring-[#272727] sm:mb-5 sm:h-20 sm:w-20">
             <NauticalRose locale={locale} />
           </div>
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-800/10 bg-white/75 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-900 shadow-sm dark:border-emerald-300/15 dark:bg-emerald-950/50 dark:text-emerald-200">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-800/10 bg-white/75 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-900 shadow-sm dark:border-[#313131] dark:bg-[#1F1F1F] dark:text-emerald-300">
             <Globe className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
             <span>{locale === 'en' ? 'Curileta’s illustrated atlas' : 'El atlas ilustrado de Curileta'}</span>
             <span className="h-1 w-1 rounded-full bg-amber-500" />
@@ -1034,7 +1033,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
         </div>
 
         {/* Panel Cartográfico 3D y Tarjeta de Destino */}
-        <div className="relative grid grid-cols-1 items-start gap-6 overflow-hidden rounded-[2rem] border border-[#d9e3d6] bg-[#fffdf7] p-4 shadow-[0_28px_90px_rgba(25,67,48,0.12)] dark:border-emerald-500/20 dark:bg-[#0d2521] sm:gap-8 sm:p-7 lg:grid-cols-12 lg:p-8">
+        <div className="relative grid grid-cols-1 items-start gap-6 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-4 shadow-[0_28px_90px_rgba(25,67,48,0.12)] dark:border-[#313131] dark:bg-[#1F1F1F] sm:gap-8 sm:p-7 lg:grid-cols-12 lg:p-8">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_45%_at_50%_0%,rgba(221,238,220,0.45),transparent)] dark:bg-[radial-gradient(ellipse_75%_45%_at_50%_0%,rgba(16,185,129,0.08),transparent)]" />
 
           {/* Selector rápido de destinos con iconos de monumentos */}

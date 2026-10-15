@@ -115,7 +115,7 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
   return (
     <section
       id="radar-curileta"
-      className="relative z-10 overflow-hidden bg-[#0b241c] py-24 text-white transition-colors duration-300"
+      className="relative z-10 overflow-hidden border-t border-[var(--border-subtle)] bg-[#102925] px-5 py-24 text-white transition-colors duration-500 dark:border-[#272727] sm:px-8 sm:py-28 lg:px-12"
     >
       {/* Resplandor y círculos de radar de fondo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
@@ -123,26 +123,18 @@ export const AdventureRadar: React.FC<AdventureRadarProps> = ({
         <div className="h-[300px] w-[300px] rounded-full border border-amber-300/45 sm:h-[500px] sm:w-[500px]" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative z-10 mx-auto max-w-7xl">
         {/* El atlas se presenta como una herramienta de exploración, sin atribuirlo a otro personaje. */}
-        <div className="relative max-w-4xl mx-auto mb-14 text-center">
+        <div className="relative mx-auto mb-14 max-w-4xl text-center">
           <SectionEmblem icon={Compass} tone="emerald" label={locale === 'en' ? 'Interactive expedition atlas' : 'Atlas interactivo de la expedición'} />
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
-            <div className="text-center sm:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/80 border border-emerald-400/50 text-emerald-300 text-xs font-black uppercase tracking-widest mb-3 shadow-md backdrop-blur-md">
-                <span>{locale === 'en' ? 'Interactive expedition atlas' : 'Atlas interactivo de la expedición'}</span>
-              </div>
+          <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-[-0.04em] text-white sm:text-5xl md:text-6xl">
+            {locale === 'en' ? 'Which stop is near you?' : '¿Qué parada queda cerca?'}{' '}
+            <span className="block text-amber-300">
+              {locale === 'en' ? 'Choose a city and follow the route.' : 'Elige una ciudad y sigue la ruta.'}
+            </span>
+          </h2>
 
-              <h2 className="text-balance text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-                {locale === 'en' ? 'Which stop is near you?' : '¿Qué parada queda cerca?'}<br />
-                <span className="text-amber-300">
-                  {locale === 'en' ? 'Choose a city and follow the route.' : 'Elige una ciudad y sigue la ruta.'}
-                </span>
-              </h2>
-            </div>
-          </div>
-
-          <p className="mt-3 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
             {locale === 'en'
               ? 'Pick a sample city to find the closest place from the book in a straight line. We never request or store your location.'
               : 'Elige una ciudad de ejemplo y descubre qué lugar del libro queda más cerca en línea recta. No pedimos ni guardamos tu ubicación.'}

@@ -545,7 +545,68 @@ En la iteración del 15 de octubre de 2026, tras una auditoría de rendimiento m
 - Pruebas automatizadas: 25/25 tests pasando (`npm test`).
 - Verificación estática: `npm run typecheck` y `npm run lint` con 0 errores y 0 advertencias.
 - Compilación de producción: `next build` genera con éxito 183/183 páginas estáticas (`● SSG`).
-- Estado: Cambios aplicados localmente en rama `perf/mobile-core-web-vitals` listos para PR y despliegue a producción.
+- Estado: Integrado en `main` mediante PR #64, commit `0bce941`. Despliegue en producción completado.
+
+
+## 30. Armonización visual, narrativa de acogida y resolución HD en miniaturas de vídeo
+
+Se completó una auditoría y refactorización exhaustiva de la página principal (`/` y `/[locale]`) para transformar la experiencia de bienvenida en un recorrido narrativo envolvente, armónico y de máxima calidad estética, cumpliendo rigurosamente las directrices de diseño (`AGENTS.md`).
+
+### 1. Resolución de miniaturas de vídeo en Alta Definición (1280x720)
+- **Diagnóstico:** Los vídeos importados desde el canal de YouTube almacenaban y servían URLs con `hqdefault.jpg` (480x360 píxeles en relación 4:3 con bandas negras/letterboxing quemadas). Al expandirse en tarjetas 16:9 en pantallas de alta densidad (Retina/4K), las imágenes aparecían borrosas, comprimidas y con artefactos visuales.
+- **Solución:**
+  - Se implementó la utilidad `resolveHighQualityThumbnail(video)` en `apps/web/src/features/home/HomeVideoShowcase.tsx`.
+  - Esta función inspecciona la estructura `youtubeMetadata.thumbnailUrls` y resuelve la URL canónica de máxima resolución: `https://i.ytimg.com/vi/{youtubeId}/maxresdefault.jpg` (1280x720, 16:9 real a pantalla completa).
+  - Incluye cascada de respaldo elegante hacia `standard` (`sddefault.jpg`), `high` y el activo vectorial de la expedición.
+  - Se conectó la utilidad a todos los puntos de renderizado: tarjeta principal de estreno, tarjeta de formato corto (Short), tarjeta secundaria de canción/episodio y reproductor modal interactivo `YouTubeTrackedPlayer`.
+  - Se verificó por red que los identificadores de YouTube del proyecto (`mFOrs8Ear38`, `SXs2jss-guI`, `zoKLYfBLu3w`) responden con HTTP 200 y archivos JPEG de alta fidelidad (~180–230 KB).
+
+### 2. Armonización de lienzos y cumplimiento estricto de la regla B4 (Fondos planos sin gradientes)
+- **Diagnóstico:** La página principal transitaba desordenadamente entre más de 8 tonos de blanco y crema distintos (`#faf9f4`, `#e9efe4`, `#fffdf7`, `#f2f0e6`, `#f3f2e8`, `amber-50`, `#f7f5ed`, `slate-50`), y presentaba gradientes en fondos de sección (`bg-gradient-to-b` en `GrowingUniverseScene` y `ClosingScene`, y `bg-gradient-to-br` en `CollaborationsScene`), contraviniendo la Regla B4 ("Never use gradients in backgrounds. Backgrounds are flat") y provocando saltos cromáticos discordantes hacia `dark:bg-slate-950` en modo oscuro.
+- **Solución:**
+  - Se unificó el ritmo de la página en una secuencia alternada de dos lienzos principales estandarizados:
+    - **Lienzo A:** `bg-[#FAFDF7] dark:bg-[#181818]` (Fondo claro natural / modo oscuro neutro carbón).
+    - **Lienzo B (Superficie sutil):** `bg-[#F4F7F1] dark:bg-[#1F1F1F]` (Lienzo de contraste suave para secciones alternas).
+    - **Anclas temáticas profundas:** `#102925` / `#163b32` (Verde bosque expedición en Radar de aventura y tarjeta destacada de libro).
+  - Se eliminaron todos los gradientes de fondo en `GrowingUniverseScene`, `CollaborationsScene` y `ClosingScene`, sustituyéndolos por fondos planos acordes con la paleta estricta permitida (`#000000`, `#181818`, `#1F1F1F`, `#272727`, `#313131`, `#131209`).
+  - Se aplicaron divisores limpios con borde sutil `border-t border-[var(--border-subtle)] dark:border-[#272727]`.
+
+### 3. Simetría de espaciados, contención y tipografía (Reglas B1, B2 y B3)
+- **Espaciados y paddings:** Se estandarizó el relleno vertical de todas las secciones a `px-5 py-24 sm:px-8 sm:py-28 lg:px-12` sobre contenedores `mx-auto max-w-7xl`, eliminando discordancias donde algunas secciones usaban `py-16`, `py-20` o anchos de `px-4 sm:px-6`.
+- **Soporte completo de modo oscuro:** `StoryLanding.tsx` carecía casi por completo de clases `dark:`, lo que provocaba que en modo oscuro las tarjetas y textos permanecieran en fondos claros con textos oscuros. Se implementó soporte integral para temas oscuros en tarjetas de destinos, tripulación, libro destacado y panel de próxima parada.
+- **Jerarquía tipográfica:** Se eliminaron las clases `font-black` (peso 900 prohibido por Regla B1) en `AdventureRadar`, `LettersScene`, `CharacterHubScene`, `GrowingUniverseScene` y `CollaborationsScene`, sustituyéndolas por `font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl`.
+
+### 4. Supresión de etiquetas de storyboard internas y duplicación de insignias
+- **Diagnóstico:** Se mostraban al usuario público textos procedentes de guiones técnicos internos de desarrollo:
+  - `Escena 03 — El espacio de los personajes` (en `CharacterHubScene`)
+  - `Scene 08 — The Universe Keeps Growing` / `Escena 08 — El Universo Sigue Creciendo` (en `GrowingUniverseScene`)
+  - `Scene 09 — Professional Alliances & Licensing` / `Escena 09 — Alianzas Profesionales & Licencias` (en `CollaborationsScene`)
+  - Asimismo, se apilaban dos insignias/badges redundantes consecutivas con el mismo texto en `AdventureRadar`, `LettersScene`, `CharacterHubScene`, `BooksScene` y `ClosingScene`.
+- **Solución:**
+  - Se eliminaron los textos de escena técnicos y se reemplazaron por insignias editoriales de categoría mediante `SectionEmblem` (`El universo en expansión`, `Alianzas y licencias`, `Tripulación de exploradores`).
+  - Se suprimieron las insignias duplicadas apiladas, manteniendo una única cabecera elegante por sección.
+
+### Archivos modificados
+- `apps/web/src/features/home/HomeVideoShowcase.tsx`: Función `resolveHighQualityThumbnail`, miniaturas HD (1280x720), tarjeta de estreno, corto y secundaria alineadas, contenedor y colores de lienzo.
+- `apps/web/src/features/home/StoryLanding.tsx`: Eliminación de saltos tonales incoherentes, soporte total de modo oscuro, unificación de paddings (`py-24 sm:py-28`) y tarjetas simétricas.
+- `apps/web/src/features/home/Globe3DScene.tsx`: Padding estándar `py-24 sm:py-28`, sustitución de fondo `#f3f2e8` / `#071b19` por lienzo de diseño `#FAFDF7` / `#181818` y bordes de tarjeta `#313131`.
+- `apps/web/src/features/home/AdventureRadar.tsx`: Supresión de insignia duplicada apilada, peso semibold/display y contenedor con padding estándar.
+- `apps/web/src/features/home/LettersScene.tsx`: Sustitución de `dark:bg-slate-950` por `#1F1F1F`, supresión de badge duplicado y corrección tipográfica.
+- `apps/web/src/features/home/CharacterHubScene.tsx`: Eliminación de etiqueta `Escena 03`, sustitución de `dark:bg-slate-950` por `#181818`, corrección de peso de fuente a semibold.
+- `apps/web/src/features/home/BooksScene.tsx`: Supresión de badge redundante apilado, cambio de `dark:bg-slate-900` a `#181818`.
+- `apps/web/src/features/home/AuthorLandingFeature.tsx`: Unificación de padding horizontal y vertical con el resto de la página (`px-5 sm:px-8 lg:px-12`) y bordes refinados.
+- `apps/web/src/features/wallpapers/WallpapersScene.tsx`: Sustitución de `dark:bg-slate-950` por `#1F1F1F`, corrección de pesos tipográficos y márgenes.
+- `apps/web/src/features/home/GrowingUniverseScene.tsx`: Eliminación de gradientes de fondo (Regla B4), supresión de etiqueta `Escena 08` y adopción de `SectionEmblem`.
+- `apps/web/src/features/home/CollaborationsScene.tsx`: Eliminación de gradiente en tarjeta, eliminación de etiqueta `Escena 09`, integración de `SectionEmblem` y tokens de superficie planos.
+- `apps/web/src/features/home/ClosingScene.tsx`: Supresión de gradiente de fondo, supresión de badge duplicado y centrado tipográfico con fluid dynamics.
+- `apps/web/src/features/home/TaglineRevealSection.tsx`: Inclusión de borde superior sutil de separación.
+
+### Estado de comprobación
+- Pruebas automatizadas: 25/25 tests pasando (`npm test`).
+- Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
+- Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
+- Estado: Cambios aplicados localmente en rama `feat/visual-storytelling-and-hd-thumbnails`, listos para PR y despliegue a producción.
+
 
 
 
