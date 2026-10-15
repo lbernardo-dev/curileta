@@ -33,9 +33,10 @@ export function CharacterMaskDownloads({ masks, locale }: { masks: CharacterMask
         <Image
           src={selected.previewImageUrl}
           alt={selected.title[locale] || selected.title.es}
-          width={760}
-          height={600}
-          unoptimized
+          width={480}
+          height={380}
+          sizes="(max-width: 640px) 90vw, 400px"
+          loading="lazy"
           className="max-h-64 w-full object-contain"
         />
       </div>
