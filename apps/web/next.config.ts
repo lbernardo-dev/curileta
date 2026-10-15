@@ -12,6 +12,20 @@ const supabaseImagePattern = (() => {
   }
 })();
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://challenges.cloudflare.com https://www.googletagmanager.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://cdn.sanity.io https://i.ytimg.com https://images.unsplash.com https://*.supabase.co https://*.supabase.in https://avatars.githubusercontent.com",
+  "media-src 'self' blob: data: https://*.supabase.co https://*.supabase.in",
+  "connect-src 'self' https://*.supabase.co https://*.supabase.in https://www.google-analytics.com https://challenges.cloudflare.com",
+  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://challenges.cloudflare.com",
+  "font-src 'self' data:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   env: {
@@ -58,6 +72,7 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
+          { key: 'Content-Security-Policy', value: contentSecurityPolicy },
         ],
       },
     ];

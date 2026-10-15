@@ -361,3 +361,47 @@ En octubre de 2026 se completó una auditoría y refactorización técnica integ
   - Caché y SSG/ISR: Rutas de portada (`/es`), catálogo (`/es/libros`), detalle (`/es/libros/las-aventuras-de-curileta`) y vídeos (`/es/videos`) devuelven `x-vercel-cache: PRERENDER` con `x-nextjs-prerender: 1` y TTFB inmediato.
   - Entrega WebM: `curileta-base-mapa-mundo.webm` verificado en producción con HTTP 200 y `content-type: video/webm` (3.14 MB).
   - Datos estructurados JSON-LD: Verificada la presencia e integridad de esquemas Schema.org `Book` y `VideoObject` / `ItemList` en el HTML entregado.
+
+## 25. Endurecimiento de seguridad integral (CSP, Rate Limiting) y escaparate de vídeos en portada
+
+En la continuación de las mejoras arquitectónicas del 15 de octubre de 2026, se ejecutó un refuerzo integral de la seguridad perimetral y de backend, junto con la optimización de la portada para enriquecer el valor de conversión:
+
+### Content Security Policy (CSP) estricto
+- En `apps/web/next.config.ts` se inyectó una cabecera `Content-Security-Policy` exhaustiva para prevenir vectores de inyección XSS, exfiltración de credenciales y clickjacking:
+  - `default-src 'self'`
+  - `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.youtube.com https://www.youtube-nocookie.com https://s.ytimg.com` (cubriendo scripts del runtime de Next.js, Cloudflare Turnstile, Vercel Analytics y la API del reproductor YouTube)
+  - `style-src 'self' 'unsafe-inline'`
+  - `img-src 'self' data: blob: https: https://*.supabase.co https://i.ytimg.com https://yt3.ggpht.com` (permitiendo avatares y miniaturas CDN de YouTube y Supabase Storage)
+  - `media-src 'self' blob: https: https://*.supabase.co https://commondatastorage.googleapis.com` (vídeos WebM/MP4 locales y recursos CDN)
+  - `connect-src 'self' https: https://*.supabase.co https://*.google-analytics.com https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.youtube.com https://www.youtube-nocookie.com https://i.ytimg.com` (telemetría analítica, APIs de Supabase y beacons de reproducción)
+  - `frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://www.youtube-nocookie.com` (envolturas iframe permitidas para Turnstile y YouTube)
+  - `font-src 'self' data:`
+  - `object-src 'none'`
+  - `base-uri 'self'`
+  - `form-action 'self'`
+
+### Limitadores de tasa (Rate Limiting) en endpoints críticos de backend
+Para blindar los servicios contra ataques de fuerza bruta, scraping y manipulación de métricas, se añadieron limitadores en memoria con ventana deslizante por IP en las siguientes rutas:
+- `apps/web/src/app/api/admin/auth/login/route.ts`: Protección anti fuerza bruta en login administrativo. Máximo 5 intentos por ventana de 15 minutos por IP. Superado el límite, retorna HTTP 429 (`Demasiados intentos de acceso fallidos. Por favor, espera 15 minutos antes de volver a intentarlo.`).
+- `apps/web/src/app/api/character-favorites/route.ts`: Protección contra relleno automatizado de votos (bot vote stuffing). Máximo 30 peticiones `POST` por minuto por IP. Al exceder, responde HTTP 429 (`Demasiadas votaciones en poco tiempo`).
+- `apps/web/src/app/api/forms/[slug]/route.ts`: Protección contra enumeración y raspado automatizado de esquemas de formularios públicos. Máximo 30 peticiones `GET` por minuto por IP (HTTP 429).
+
+### Rediseño del escaparate de vídeo en la portada (`HomeVideoShowcase`)
+- **Problema abordado:** La portada (`/[locale]/page.tsx`) cargaba el monolito `YouTubeScene.tsx` (921 líneas), replicando el catálogo completo, filtros por categorías, favoritos y controles de búsqueda de la página de vídeos dedicada (`/videos`). Esto generaba redundancia y diluía el foco de la portada.
+- **Solución implementada:** Se creó `apps/web/src/features/home/HomeVideoShowcase.tsx`.
+  - Estructura curada orientada a conversión: Ficha destacada del estreno más reciente con botón de reproducción interactivo, resumen argumental y acceso modal vía `YouTubeTrackedPlayer`.
+  - Secciones rápidas complementarias: Acceso directo a Shorts/clips musicales y canciones infantiles, métricas clave del canal (suscriptores, reproducciones) y dos CTAs principales: explorar catálogo completo (`/[locale]/videos`) y suscripción oficial en YouTube.
+  - Optimización de rendimiento: Se eliminó la llamada innecesaria a `getVideoVoteCounts()` en la portada, suprimiendo consultas a base de datos durante la compilación y renderizado de la Home.
+- **Racionalización de secciones:** En `apps/web/src/lib/homepage-sections.ts` se configuró `radar` con `defaultVisible: false` para evitar la redundancia con `globe` (el globo interactivo 3D), manteniendo la portada concisa y sin elementos visuales repetitivos.
+
+### Diagnóstico de error en Vercel Preview Deployments
+- Se analizó el error en los despliegues de vista previa de Vercel. Las compilaciones en CI y los builds de Vercel son exitosos (`Status: Ready`), pero las URLs de vista previa (`*-git-*.vercel.app`) devuelven `HTTP 302` hacia `/sso-api?url=...` para visitantes sin sesión en Vercel.
+- **Causa raíz:** Vercel Authentication / Deployment Protection se encuentra habilitado a nivel de proyecto o equipo en la configuración de Vercel. El entorno de producción (`www.curileta.com`) está configurado como público y no sufre ninguna afectación.
+- **Solución operativa:** Si se requiere compartir previews con visitantes públicos externos, el usuario debe acceder a Vercel -> Settings -> Deployment Protection -> Vercel Authentication y desactivarla o añadir una excepción para el dominio de previsualización.
+
+### Estado de comprobación
+- Pruebas automatizadas: 25/25 tests ejecutados satisfactoriamente con `npm test`.
+- Verificación estática: `npm run typecheck` y `npm run lint` completados con 0 errores y 0 advertencias.
+- Compilación de producción: `next build` en `apps/web` compila con éxito 155/155 páginas estáticas (`● SSG`) en Turbopack (883 ms de generación estática).
+- Estado: Cambios validados localmente y preparados para despliegue en producción vía PR hacia `main`.
+

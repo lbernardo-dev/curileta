@@ -11,13 +11,12 @@ import { Globe3DSceneDynamic } from '@/features/home/Globe3DSceneDynamic';
 import { LettersScene } from '@/features/home/LettersScene';
 import { CharacterHubScene } from '@/features/home/CharacterHubScene';
 import { BooksScene } from '@/features/home/BooksScene';
-import { YouTubeScene } from '@/features/home/YouTubeScene';
+import { HomeVideoShowcase } from '@/features/home/HomeVideoShowcase';
 import { WallpapersScene } from '@/features/wallpapers/WallpapersScene';
 import { GrowingUniverseScene } from '@/features/home/GrowingUniverseScene';
 import { CollaborationsScene } from '@/features/home/CollaborationsScene';
 import { ClosingScene } from '@/features/home/ClosingScene';
 import { cmsProvider } from '@/lib/cms';
-import { getVideoVoteCounts } from '@/lib/video-votes';
 import { getImageFrameSettings } from '@/lib/image-frame-settings.server';
 import { resolveYouTubeChannelSettings } from '@/lib/youtube-channel-settings.server';
 import { getBookCatalogSettings } from '@/lib/book-catalog.server';
@@ -108,7 +107,6 @@ export default async function HomePage({
     universeRoadmap,
     collaborations,
     settings,
-    videoVoteCounts,
     imageFrames,
     characterRankings,
     upcomingCharacterSlugs,
@@ -127,7 +125,6 @@ export default async function HomePage({
     cmsProvider.getUniverseRoadmap(locale),
     cmsProvider.getCollaborations(locale),
     cmsProvider.getSiteSettings(locale),
-    getVideoVoteCounts(),
     getImageFrameSettings(),
     getCharacterFavoriteRankings(locale),
     getUpcomingEpisodeCharacterSlugs(),
@@ -167,7 +164,7 @@ export default async function HomePage({
     letters: <LettersScene locale={locale as Locale} letters={landingLetters} />,
     characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
     books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={books} /></>,
-    videos: <YouTubeScene locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} voteCounts={videoVoteCounts} />,
+    videos: <HomeVideoShowcase locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,
     collaborations: <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />,
