@@ -56,7 +56,7 @@ export function generateOrganizationSchema(siteUrl: string) {
     url: siteUrl,
     logo: `${siteUrl}/images/curileta-logo.png`,
     sameAs: [
-      'https://www.youtube.com/@curileta',
+      'https://www.youtube.com/@AventurasdeCurileta',
     ],
   };
 }

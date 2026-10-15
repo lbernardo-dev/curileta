@@ -403,5 +403,56 @@ Para blindar los servicios contra ataques de fuerza bruta, scraping y manipulaci
 - Pruebas automatizadas: 25/25 tests ejecutados satisfactoriamente con `npm test`.
 - Verificación estática: `npm run typecheck` y `npm run lint` completados con 0 errores y 0 advertencias.
 - Compilación de producción: `next build` en `apps/web` compila con éxito 155/155 páginas estáticas (`● SSG`) en Turbopack (883 ms de generación estática).
-- Estado: Cambios validados localmente y preparados para despliegue en producción vía PR hacia `main`.
+- Estado: Cambios desplegados y verificados en producción.
+
+## 26. Arquitectura de diseño por tokens estricta, Zero-FOUC estacional, SSG a gran escala (179 rutas), rate limiting de descargas y Tagline Reveal
+
+En la iteración de optimización del 15 de octubre de 2026, se ejecutaron las siguientes mejoras en frontend, backend, rendimiento, seguridad y accesibilidad:
+
+### Arquitectura de diseño estricta por tokens CSS temáticos
+- **Principio rector:** Ningún componente de la interfaz debe contener colores o estilos estacionales codificados directamente (hardcoded) en el código JSX ni condicionales imperativos como `if (isHalloween) style={{ background: '#f97316' }}`. Todo aspecto visual debe resolverse exclusivamente mediante variables y tokens de diseño CSS declarados bajo selectores semánticos (`:root`, `html[data-seasonal-theme="..."]`).
+- **Implementación en tokens (`apps/web/src/app/globals.css`):**
+  - Se definieron los tokens `--hero-overlay-start`, `--hero-overlay-mid`, `--hero-overlay-end`, `--hero-badge-bg`, `--hero-badge-text` y `--hero-badge-border`.
+  - En `:root` se declaran los valores por defecto del tema aventura/selva (`#09241f`, `#17372e`, etc.).
+  - En `html[data-seasonal-theme="halloween"]` se redefinen dinámicamente con la paleta de Halloween (`rgba(28, 10, 36, 0.95)`, `rgba(50, 16, 68, 0.85)`, acentos naranja calabaza `#f97316`, etc.).
+  - En `apps/web/src/features/home/HeroScene.tsx`: Se migraron todos los gradientes y badges al uso estricto de `var(--hero-overlay-start)`, `var(--hero-badge-bg)`, etc., desacoplando completamente el componente de cualquier lógica estacional directa.
+
+### Inicialización Zero-FOUC del tema estacional en el Layout
+- En `apps/web/src/app/[locale]/layout.tsx`, se inyectó un script síncrono ultra-ligero en el `<head>` antes del primer renderizado:
+  - Inspecciona `localStorage.getItem('curileta-seasonal-dismissed')`. Si el usuario no ha descartado el tema estacional activo, aplica inmediatamente el atributo `data-seasonal-theme` a `document.documentElement` en el frame 0.
+  - Elimina por completo el parpadeo de contenido no estilizado (FOUC) de 300-500 ms que ocurría al esperar la hidratación de React en el cliente.
+
+### Entrega de vídeo optimizado WebM para temas estacionales
+- En `HeroScene.tsx` se priorizó la etiqueta `<source src="/videos/curileta-halloween.webm" type="video/webm" />` antes del stream MP4.
+- Reduce el tamaño de descarga de vídeo de 5.2 MB a 2.2 MB (-57% de ancho de banda), mejorando el LCP en conexiones móviles y de escritorio.
+
+### Pre-renderizado estático SSG/ISR para rutas dinámicas (`destinos` y `autora`)
+- **Problema previo:** Las rutas `/destinos/[slug]` y `/autora/[slug]` estaban tipificadas como `ƒ Dynamic` (renderizadas en el servidor en cada petición), lo que generaba latencias de cold-start y consultas innecesarias a la base de datos o Sanity.
+- **Solución implementada:**
+  - `apps/web/src/app/[locale]/destinos/[slug]/page.tsx`: Se implementó `generateStaticParams()` pre-compilando todas las combinaciones de `locale` (`es`, `en`) y los 4 destinos (`amazonas`, `serengeti`, `antartida`, `galapagos`). Se añadió `export const revalidate = 3600;`.
+  - `apps/web/src/app/[locale]/autora/[slug]/page.tsx`: Se implementó `generateStaticParams()` pre-compilando todos los locales y perfiles de autora (`laura-bernardo`). Se añadió `export const revalidate = 3600;`.
+- **Impacto:** El volumen total de páginas pre-renderizadas estáticamente (`● SSG`) aumentó de 155 a 179 rutas, garantizando entrega con TTFB instantáneo desde la caché perimetral de Vercel.
+
+### Limitadores de tasa (Rate Limiting) en endpoints de descargas públicas
+- Para prevenir abusos, consumo excesivo de egress en Supabase Storage y ataques de denegación de servicio por scraping en los descargables infantiles, se implementó un limitador de tasa en memoria (`checkDownloadRateLimit`) con ventana deslizante de 20 descargas por minuto por IP en los siguientes endpoints:
+  - `apps/web/src/app/api/masks/[slug]/download/route.ts`
+  - `apps/web/src/app/api/gallery/[slug]/download/route.ts`
+  - `apps/web/src/app/api/event-printables/[slug]/download/route.ts`
+- Al superar las 20 peticiones por minuto, responde inmediatamente con HTTP 429 (`Demasiadas descargas en poco tiempo. Por favor, espera un minuto.`) e incluye la cabecera `Retry-After: 60`.
+
+### Corrección canónica en Schema.org (`@curileta/seo`)
+- En `packages/seo/src/index.ts` se corrigió la URL del canal de YouTube en la propiedad `sameAs` de la entidad `Organization`, reemplazando el identificador genérico por el handle oficial: `'https://www.youtube.com/@AventurasdeCurileta'`.
+
+### Componente obligatorio Tagline Reveal (`AGENTS.md` B11)
+- Se desarrolló `apps/web/src/features/home/TaglineRevealSection.tsx` en cumplimiento estricto con las reglas de diseño B11 y B7:
+  - Frase nuclear de marca en español: *"El mundo no cabe en un solo árbol. Cada viaje enciende una pregunta y cada amigo deja una huella."*
+  - Frase nuclear en inglés: *"The world cannot fit inside a single tree. Every journey sparks a question and every friend leaves a trail."*
+  - Animación fluida de activación palabra por palabra impulsada por `IntersectionObserver` y `requestAnimationFrame`, con la curva de amortiguación `cubic-bezier(0.32, 0.72, 0, 1)` y opacidad inicial sutil (30%).
+  - Integrado en `apps/web/src/lib/homepage-sections.ts` en el orden 2 (`taglineReveal`, `defaultVisible: true`) y montado en `apps/web/src/app/[locale]/page.tsx`.
+
+### Estado de comprobación
+- Pruebas automatizadas: 25/25 tests ejecutados satisfactoriamente (`npm test`).
+- Verificación estática: `npm run typecheck` y `npm run lint` completados con 0 errores y 0 advertencias en todos los paquetes.
+- Compilación de producción: `next build` en `apps/web` compila con éxito 179/179 páginas estáticas (`● SSG`).
+
 

@@ -3,10 +3,22 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { isValidLocale } from '@curileta/i18n';
+import { isValidLocale, locales } from '@curileta/i18n';
 import { cmsProvider } from '@/lib/cms';
-import { getAuthorPageBySlug } from '@/lib/author-pages.server';
+import { getAuthorPageBySlug, getAuthorPages } from '@/lib/author-pages.server';
 import { getBookAuthorPage } from '@/lib/author-pages';
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const pages = await getAuthorPages({ publishedOnly: true });
+  return locales.flatMap((locale) =>
+    pages.map((author) => ({
+      locale,
+      slug: author.slug,
+    }))
+  );
+}
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.curileta.com').replace(/\/$/, '');
 
