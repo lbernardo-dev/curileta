@@ -691,8 +691,7 @@ Se estableció una alternancia deliberada a lo ancho completo de la pantalla (`w
 ### Estado de comprobación
 - Pruebas automatizadas: 28/28 tests pasando (`npm test`).
 - Verificación estática: `npm run typecheck --workspace=web` y `npm run lint --workspace=web` con 0 errores y 0 advertencias.
-- Compilación de producción: `npm run build --workspace=web` genera con éxito 183/183 páginas estáticas (`● SSG`).
-- Estado: Cambios aplicados localmente en rama `feat/homepage-sections-atmospheric-identity`.
+- Estado: Cambios desplegados y verificados en producción en PR #67.
 
 
 
