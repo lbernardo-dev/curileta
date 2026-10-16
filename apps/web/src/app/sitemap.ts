@@ -47,6 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es${path}`,
             en: `${baseUrl}/en${path}`,
+            'x-default': `${baseUrl}/es${path}`,
           },
         },
       });
@@ -65,6 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/personajes/${char.slug}`,
             en: `${baseUrl}/en/personajes/${char.slug}`,
+            'x-default': `${baseUrl}/es/personajes/${char.slug}`,
           },
         },
       });
@@ -83,6 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/libros/${book.slug}`,
             en: `${baseUrl}/en/libros/${book.slug}`,
+            'x-default': `${baseUrl}/es/libros/${book.slug}`,
           },
         },
       });
@@ -100,6 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/autora/${author.slug}`,
             en: `${baseUrl}/en/autora/${author.slug}`,
+            'x-default': `${baseUrl}/es/autora/${author.slug}`,
           },
         },
       });
@@ -117,6 +121,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/destinos/${destination.slug}`,
             en: `${baseUrl}/en/destinos/${destination.slug}`,
+            'x-default': `${baseUrl}/es/destinos/${destination.slug}`,
           },
         },
       });
@@ -136,6 +141,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/galeria?${new URLSearchParams({ categoria: category.slug }).toString()}`,
             en: `${baseUrl}/en/galeria?${new URLSearchParams({ categoria: category.slug }).toString()}`,
+            'x-default': `${baseUrl}/es/galeria?${new URLSearchParams({ categoria: category.slug }).toString()}`,
           },
         },
       });
@@ -152,6 +158,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             es: `${baseUrl}/es/galeria?imagen=${encodeURIComponent(item.slug)}`,
             en: `${baseUrl}/en/galeria?imagen=${encodeURIComponent(item.slug)}`,
+            'x-default': `${baseUrl}/es/galeria?imagen=${encodeURIComponent(item.slug)}`,
           },
         },
       });

@@ -834,6 +834,102 @@ En la iteración del 15 de octubre de 2026, se ejecutó una auditoría exhaustiv
 - Compilación de producción: `npm run build --workspace=web` exitosa con generación de 183/183 páginas estáticas (`● SSG`).
 - Estado: Cambios completados en rama `feat/author-books-admin-and-geolocation-fix`.
 
+---
+
+## 35. Auditoría y optimización integral de SEO (Posicionamiento orgánico de "Curileta" y "Serie animada en español")
+
+El 16 de octubre de 2026 se ejecutó una auditoría y refactorización profunda del SEO técnico y semántico para asegurar el primer puesto orgánico en búsquedas de marca ("Curileta", "Las Aventuras de Curileta") y posicionamiento en términos clave de categoría ("serie animada en español", "serie infantil animada", "dibujos animados", "episodios y canciones"):
+
+### 1. Desbloqueo de recursos estáticos en Robots.txt (`apps/web/src/app/robots.ts`)
+- **Problema diagnosticado:** `robots.ts` contenía `disallow: ['/api/', '/_next/', '/admin/', '/admin']`. Bloquear `/_next/` impedía que Googlebot descargara los archivos CSS, scripts de JavaScript y fuentes empaquetados por Next.js. Esto provocaba advertencias de "recursos bloqueados" en Google Search Console, degradando el renderizado móvil y penalizando severamente la indexación.
+- **Solución aplicada:** Se retiró `/_next/` de las directivas `disallow`, dejando restringidas únicamente las rutas no públicas (`/api/` y `/admin/`). Googlebot ahora puede renderizar la página con total fidelidad.
+
+### 2. Redirección canónica raíz permanente HTTP 308 (`apps/web/src/proxy.ts`)
+- **Problema diagnosticado:** Al solicitar `https://curileta.com/`, el proxy ejecutaba `NextResponse.redirect(...)` que por defecto en Next.js emite un código HTTP 307 (Temporary Redirect). Un código 307 no transfiere la autoridad de dominio ni consolida el PageRank en la versión localizada `/es`.
+- **Solución aplicada:** Se configuró explícitamente el código `308` (Permanent Redirect). De este modo, los buscadores transfieren el 100% del valor de marca y enlaces entrantes de `curileta.com` hacia `curileta.com/es`.
+
+### 3. Densidad semántica, títulos absolutos y metadatos (`apps/web/src/app/[locale]/page.tsx` y `layout.tsx`)
+- **Problema diagnosticado:** El título de la portada era `Web Oficial | Las Aventuras de Curileta`. La palabra "Curileta" estaba al final, "Web Oficial" al inicio, y los términos "serie animada en español" o "infantil" no figuraban en el título ni en la meta descripción.
+- **Solución aplicada:**
+  - Título prioritario absoluto: `Curileta — Serie Animada en Español y Libros Infantiles | Web Oficial` (y en inglés: `Curileta — Animated Children’s Series & Adventure Books | Official Site`).
+  - Meta descripción enriquecida: destacando "serie animada infantil original en español", "episodios", "canciones", "libros de aventuras" y "Curileta y Pompón".
+  - Array de `keywords` en metadatos para consolidar la intención de búsqueda.
+  - Sincronización completa con OpenGraph y Twitter Cards.
+
+### 4. Encabezado principal H1 y propuesta de valor (`apps/web/src/features/home/HeroScene.tsx`)
+- **Problema diagnosticado:** El `<h1>` de la portada era `El mundo está lleno de historias.`, sin mención a "Curileta" ni a "serie animada". Para los motores de búsqueda, la temática principal parecía ser una cita literaria genérica.
+- **Solución aplicada:**
+  - Badge temático: `Serie animada infantil original en español` (`Original animated series & adventure books`).
+  - `<h1>` optimizado: `Curileta: la serie animada que despierta la curiosidad por el mundo.` con límite de ancho `max-w-[680px]` conforme a la regla B5 del sistema de diseño.
+  - Párrafo de apoyo con mención expresa a los episodios animados, viajes por los cinco continentes y canciones.
+
+### 5. Datos estructurados avanzados: Schema.org `TVSeries`, `ItemList` y `FAQPage` (`packages/seo`)
+- En `packages/seo/src/index.ts`:
+  - Se potenció `generateSeriesSchema`: Genera el marcado Schema.org de tipo `TVSeries` con nombre, nombres alternativos (`alternateName`: `["Curileta", "Curileta Serie Animada", "Las Aventuras de Curileta Serie", "Curileta serie animada española"]`), país de origen (`countryOfOrigin`: España), descripción, géneros (`["Serie animada", "Serie animada española", "Serie infantil de animación", "Viajes por el mundo", "Aventuras infantiles", "Geografía y diversidad cultural", "Dibujos animados educativos", "Familiar"]`), personajes completos (cada uno como `Person` con nombre, descripción y URL), localizaciones de viaje completas (`contentLocation` y `spatialCoverage` como `Place` con país), compañía productora y enlace al tráiler de YouTube.
+  - Se crearon `generateCharactersItemListSchema` y `generateDestinationsItemListSchema`: Inyectan listas estructuradas `ItemList` enlazando individualmente cada personaje y cada destino del recorrido mundial.
+  - Se creó `generateFAQSchema`: Genera el esquema `FAQPage` para activar fragmentos enriquecidos (Rich Snippets) en las SERP de Google.
+  - Se reforzó `generateOrganizationSchema` y `WebSite` en `layout.tsx` asignando `name: 'Curileta'`, `alternateName`, `@id` canónicos y `potentialAction` (`SearchAction`).
+
+### 6. Nueva sección de índice semántico del universo (`apps/web/src/features/home/LandingSeoUniverseIndex.tsx`)
+- Se implementó un componente visual y crawlable que referencia obligatoriamente en el DOM de la landing:
+  - Cada personaje publicado (Curileta, Pompón, Bao, Quetzal, Lulú, Emi, Picu, Zipi-Bot, Kiki, Gino, Lola, Mamá Canguro, Canguro Bebé, Joey, Glub, etc.) con avatar, rol y enlace directo a `/personajes/[slug]`.
+  - Cada localización y país de la ruta de viajes por el mundo (España, México, Perú, Egipto, Japón, Australia, China, etc.) con país y enlace a `/destinos/[slug]`.
+  - Destacados de producción de animación española, viajes por los cinco continentes y contenidos audiovisuales.
+- Se integró en `apps/web/src/lib/homepage-sections.ts` con la clave `'seoUniverse'`.
+
+### 7. Nueva sección de Preguntas Frecuentes (`apps/web/src/features/home/HomeFaqSection.tsx`)
+- Se implementó un componente de FAQ en portada con 8 preguntas estratégicas en español e inglés respondiendo a las consultas más habituales (qué es Curileta, producción y serie animada española, personajes principales y secundarios, países y localizaciones de viaje visitadas, dónde ver los episodios, público y edades recomendadas, libros y recursos, y estrenos).
+- Cumple con las directrices visuales del sistema (tipografía Geist, acordeón accesible con micro-animaciones fluidas `cubic-bezier(0.32,0.72,0,1)`, modos claro/oscuro) e inyecta dinámicamente el esquema `FAQPage`.
+- Se integró en `apps/web/src/lib/homepage-sections.ts` con la clave `'faq'`.
+
+### 8. Hreflang internacional con `x-default` en Sitemap (`apps/web/src/app/sitemap.ts`)
+- Se añadió `'x-default'` apuntando a la versión canónica en español en todas las entradas estáticas y dinámicas del sitemap XML.
+
+### 9. Soporte para verificación en Google Search Console (`apps/web/src/app/layout.tsx`)
+- Se conectó la propiedad `verification.google` en los metadatos globales mediante la variable de entorno `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`.
+
+### 10. Estado de verificación técnica
+- `npm run typecheck --workspace=web`: 0 errores.
+- `npm run lint --workspace=web`: 0 errores, 0 advertencias.
+- `npm test`: 32/32 pruebas pasando (incluyendo validaciones de `TVSeries` con personajes, destinos, país España e `ItemList`, y verificación de robots y llms.txt).
+- `npm run build --workspace=web`: 183/183 páginas estáticas generadas exitosamente (`● SSG`) incluyendo `/robots.txt` y `/sitemap.xml`.
+
+---
+
+## 36. Integración de Marketingskills, AI-SEO y Preparación para Agentes (Agent Readiness)
+
+### 1. Análisis e instalación de la suite `marketingskills`
+- **Repositorio de referencia:** `https://github.com/coreyhaines31/marketingskills` (creado por Corey Haines).
+- **Análisis de la arquitectura:** Colección de 50 skills especializadas para agentes de IA estructuradas bajo el estándar *Agent Skills Spec* (`.agents/skills/<skill>/SKILL.md`). El núcleo compartido de la suite se basa en el documento de contexto de producto `.agents/product-marketing.md`, el cual es consultado en primera instancia por todas las skills para alinear la audiencia (ICP), propuesta de valor, diferenciación, objeciones y directrices de voz de marca.
+- **Instalación:** Se instaló la suite completa en el directorio canónico de agentes del espacio de trabajo: `.agents/skills/` (incluyendo `seo-audit`, `ai-seo`, `schema`, `site-architecture`, `cro`, `copywriting`, `product-marketing`, etc.).
+- **Contexto de Producto:** Se redactó y guardó `.agents/product-marketing.md` con la información integral de Curileta (serie animada infantil original española, viajes por el mundo, público de 3 a 9 años, catálogo de libros ilustrados y diferenciadores frente a contenidos sobreestimulantes).
+
+### 2. Aplicación de `ai-seo` y `seo-audit` sobre Curileta
+Con base en los marcos de auditoría de `ai-seo` (optimización para Google AI Overviews, Perplexity, ChatGPT, Claude) y `seo-audit`:
+
+1. **Gobernanza de rastreadores y motores de IA en `robots.ts` (`apps/web/src/app/robots.ts`):**
+   - Se configuraron reglas explícitas de descubrimiento de búsqueda permitiendo el rastreo en la raíz `/` a los agentes:
+     - `Googlebot`
+     - `Bingbot`
+     - `OAI-SearchBot` (búsqueda de ChatGPT / OpenAI)
+     - `PerplexityBot` (motor de respuestas Perplexity)
+     - `Claude-SearchBot` (búsqueda y citas de Anthropic Claude)
+     - `Applebot-Extended`
+   - Se mantiene la protección de endpoints privados (`/api/`, `/admin/`).
+2. **Archivos legibles por máquinas para agentes de IA (`/llms.txt` y `/llms-full.txt`):**
+   - Se crearon en `apps/web/public/` los ficheros estáticos:
+     - `public/llms.txt`: Resumen estructurado del proyecto según el estándar [llmstxt.org], con enlaces canónicos a la portada en español e inglés, libro principal, personajes clave (Curileta, Pompón, Leo, Mateo) y destinos mundiales (Madrid, París, Roma, Tokio, Nueva York, El Cairo).
+     - `public/llms-full.txt`: Documento exhaustivo con sinopsis, caracterización de tripulación, desglose geográfico por continente, enfoque pedagógico de lectura y directrices explícitas para modelos de lenguaje.
+3. **Bloque de respuesta extraíble en el Hero (`apps/web/src/features/home/HeroScene.tsx`):**
+   - Siguiendo el principio de *passage extraction* de la investigación GEO de Princeton (+40% de probabilidad de citación por LLMs), se refinó el párrafo inicial del Hero para proporcionar una definición autónoma de 35–45 palabras que incluye expresamente "serie animada infantil original de producción española", "Curileta y Pompón", "cinco continentes" y "culturas del mundo".
+4. **Verificación automatizada en la suite de pruebas (`tooling/tests/core.test.mjs`):**
+   - Se añadió la suite `AI-SEO y Agent Readiness (@curileta/web & marketingskills)` comprobando:
+     - Que `robots.ts` incluya las directivas de acceso para bots de IA sin bloqueos indebidos de assets.
+     - Que `llms.txt` y `llms-full.txt` existan y contengan la información de entidades de la serie.
+   - Resultado: 32/32 tests pasando (`npm test`).
+
+
+
 
 
 

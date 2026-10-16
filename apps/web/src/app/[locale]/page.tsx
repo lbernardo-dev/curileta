@@ -10,6 +10,13 @@ import { SeasonalEventSectionWrapper } from '@/features/events/SeasonalEventSect
 import { Globe3DSceneDynamic } from '@/features/home/Globe3DSceneDynamic';
 import { BooksScene } from '@/features/home/BooksScene';
 import { TaglineRevealSection } from '@/features/home/TaglineRevealSection';
+import { HomeFaqSection } from '@/features/home/HomeFaqSection';
+import { LandingSeoUniverseIndex } from '@/features/home/LandingSeoUniverseIndex';
+import {
+  generateSeriesSchema,
+  generateCharactersItemListSchema,
+  generateDestinationsItemListSchema,
+} from '@curileta/seo';
 
 const AdventureRadar = dynamic(
   () => import('@/features/home/AdventureRadar').then((mod) => mod.AdventureRadar),
@@ -72,11 +79,65 @@ export async function generateMetadata({
   const baseUrl = siteUrl.replace(/\/$/, '');
   const socialImageUrl = `${baseUrl}/images/hero/curileta-world-expedition-clean-v1.jpg`;
 
+  const activeLocale: Locale = locale === 'en' ? 'en' : 'es';
+  const [characters, locations] = await Promise.all([
+    cmsProvider.getCharacters(activeLocale),
+    getPublicDestinations(activeLocale),
+  ]);
+  const charNames = characters.map((c) => c.name);
+  const locationNames = locations.map((l) => l.name[activeLocale] || l.name.es);
+  const countryNames = Array.from(new Set(locations.map((l) => l.country[activeLocale] || l.country.es)));
+
+  const title = isEn
+    ? 'Curileta — Spanish Animated Series, World Travel & Children’s Books | Official Site'
+    : 'Curileta — Serie Animada Española, Viajes por el Mundo y Libros Infantiles | Web Oficial';
+  const description = isEn
+    ? `Official website of Curileta: original Spanish animated series and world adventure books. Follow Curileta, Pompon, ${charNames.slice(0, 4).join(', ')} and friends across ${countryNames.slice(0, 5).join(', ')} and the five continents.`
+    : `Web oficial de Curileta: serie animada española original y libros infantiles de aventuras. Sigue a Curileta, Pompón, ${charNames.slice(0, 4).join(', ')} y todos sus amigos en sus viajes por ${countryNames.slice(0, 5).join(', ')} y los cinco continentes.`;
+
   return {
-    title: isEn ? 'Official Website' : 'Web Oficial',
-    description: isEn
-      ? 'Discover Curileta: an illustrated journey through books, places, friendship and the joy of exploring the world together.'
-      : 'Descubre a Curileta: un viaje ilustrado por libros, lugares, amistad y la alegría de explorar el mundo en familia.',
+    title: {
+      absolute: title,
+    },
+    description,
+    keywords: isEn
+      ? [
+          'Curileta',
+          'Spanish animated series',
+          'Curileta series',
+          'animated series for kids',
+          'children animated series',
+          'Curileta Adventures',
+          'world travel cartoon',
+          'geography for kids',
+          'family animation',
+          'Curileta episodes',
+          'children adventure books',
+          'Pompon',
+          ...charNames,
+          ...countryNames,
+          ...locationNames.slice(0, 15),
+        ]
+      : [
+          'Curileta',
+          'serie animada española',
+          'serie animada infantil',
+          'serie de animación española',
+          'dibujos animados en español',
+          'Las Aventuras de Curileta',
+          'viajes por el mundo para niños',
+          'geografía para niños',
+          'serie animada para niños',
+          'episodios de Curileta',
+          'dibujos animados infantiles',
+          'canciones infantiles Curileta',
+          'libros infantiles de aventuras',
+          'Pompón',
+          ...charNames,
+          ...charNames.map((name) => `personaje ${name} Curileta`),
+          ...countryNames,
+          ...locationNames.slice(0, 15),
+        ],
     alternates: {
       canonical: `${baseUrl}/${locale}`,
       languages: {
@@ -89,26 +150,25 @@ export async function generateMetadata({
     },
     openGraph: {
       type: 'website',
-      title: isEn ? 'Curileta — Official Website' : 'Curileta — Web Oficial',
-      description: isEn
-        ? 'An illustrated journey through books, places and friendship.'
-        : 'Un viaje ilustrado por libros, lugares y amistad.',
+      title,
+      description,
       url: `${baseUrl}/${locale}`,
+      siteName: isEn ? 'Curileta Adventures' : 'Las Aventuras de Curileta',
       images: [
         {
           url: socialImageUrl,
           width: 1200,
           height: 630,
-          alt: isEn ? 'Curileta - Official Website' : 'Curileta - Web Oficial',
+          alt: isEn
+            ? 'Curileta - Animated Series and Books Official Website'
+            : 'Curileta - Serie Animada y Libros Oficiales',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: isEn ? 'Curileta — Official Website' : 'Curileta — Web Oficial',
-      description: isEn
-        ? 'An illustrated journey through books, places and friendship.'
-        : 'Un viaje ilustrado por libros, lugares y amistad.',
+      title,
+      description,
       images: [socialImageUrl],
     },
   };
@@ -196,13 +256,72 @@ export default async function HomePage({
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,
     collaborations: <CollaborationsScene locale={locale as Locale} collaborations={collaborations} />,
+    seoUniverse: <LandingSeoUniverseIndex locale={locale as Locale} characters={characters} locations={locations} />,
+    faq: <HomeFaqSection locale={locale as Locale} />,
     closing: <ClosingScene locale={locale as Locale} />,
   };
   const configuredSections = resolveHomepageSections(settings.homepageSections);
+  const seriesSchema = generateSeriesSchema({
+    siteUrl,
+    inLanguage: locale,
+    trailerUrl: resolvedChannelSettings.youtubeChannelUrl,
+    characters: characters.map((c) => ({
+      name: c.name,
+      slug: c.slug,
+      description: c.shortDescription?.[locale] || c.shortDescription?.es || c.name,
+      image: c.mainImage?.url,
+    })),
+    locations: locations.map((l) => ({
+      name: l.name?.[locale] || l.name?.es || l.slug,
+      country: l.country?.[locale] || l.country?.es || '',
+      slug: l.slug,
+      description: l.description?.[locale] || l.description?.es,
+    })),
+    keywords: [
+      'Curileta',
+      'serie animada española',
+      'serie infantil animada',
+      'viajes por el mundo',
+      ...characters.map((c) => c.name),
+      ...locations.map((l) => l.country?.[locale] || l.country?.es || ''),
+    ],
+  });
+
+  const charactersListSchema = generateCharactersItemListSchema(
+    characters.map((c) => ({
+      name: c.name,
+      slug: c.slug,
+      description: c.shortDescription?.[locale] || c.shortDescription?.es,
+    })),
+    siteUrl,
+    locale
+  );
+
+  const destinationsListSchema = generateDestinationsItemListSchema(
+    locations.map((l) => ({
+      name: l.name?.[locale] || l.name?.es || l.slug,
+      country: l.country?.[locale] || l.country?.es || '',
+      slug: l.slug,
+    })),
+    siteUrl,
+    locale
+  );
 
   return (
     <CharacterFavoritesProvider locale={locale as Locale} initialRankings={characterRankings}>
       <article className="relative flex w-full flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(seriesSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(charactersListSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(destinationsListSchema) }}
+        />
         {configuredSections
           .filter((section) => section.visible && section.key in sectionComponents)
           .map((section) => (

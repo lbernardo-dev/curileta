@@ -394,7 +394,7 @@ export interface SiteSettings {
     value: string;
   }>;
   homepageSections?: Array<{
-    key: 'hero' | 'seasonalEvent' | 'story' | 'globe' | 'radar' | 'letters' | 'characters' | 'books' | 'videos' | 'wallpapers' | 'roadmap' | 'collaborations' | 'closing';
+    key: 'hero' | 'seasonalEvent' | 'taglineReveal' | 'story' | 'globe' | 'radar' | 'letters' | 'characters' | 'books' | 'videos' | 'wallpapers' | 'roadmap' | 'collaborations' | 'seoUniverse' | 'faq' | 'closing';
     visible: boolean;
     order: number;
   }>;

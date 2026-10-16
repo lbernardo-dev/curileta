@@ -19,7 +19,10 @@ export async function generateMetadata({
   return {
     title: {
       template: locale === 'en' ? '%s | Curileta Adventures' : '%s | Las Aventuras de Curileta',
-      default: locale === 'en' ? 'Curileta Adventures — Official Website' : 'Las Aventuras de Curileta — Web Oficial',
+      default:
+        locale === 'en'
+          ? 'Curileta — Animated Series & Children’s Books'
+          : 'Curileta — Serie Animada en Español y Libros Infantiles',
     },
   };
 }

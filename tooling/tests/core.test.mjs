@@ -1,6 +1,12 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { generateBookSchema, generateVideoSchema, generateOrganizationSchema } from '../../packages/seo/src/index.ts';
+import {
+  generateBookSchema,
+  generateVideoSchema,
+  generateOrganizationSchema,
+  generateSeriesSchema,
+  generateFAQSchema,
+} from '../../packages/seo/src/index.ts';
 import { isValidLocale, locales, defaultLocale } from '../../packages/i18n/src/config.ts';
 
 describe('Internacionalización (@curileta/i18n)', () => {
@@ -52,6 +58,53 @@ describe('SEO y Schema.org JSON-LD (@curileta/seo)', () => {
     const org = generateOrganizationSchema('https://curileta.com');
     assert.equal(org['@type'], 'Organization');
     assert.equal(org.name, 'Las Aventuras de Curileta');
+    assert.ok(org.alternateName.includes('Curileta'));
+  });
+
+  test('debe generar schema TVSeries para posicionar la serie animada en español', () => {
+    const series = generateSeriesSchema({
+      siteUrl: 'https://www.curileta.com',
+      inLanguage: 'es',
+    });
+    assert.equal(series['@type'], 'TVSeries');
+    assert.ok(series.alternateName.includes('Curileta'));
+    assert.ok(series.alternateName.includes('Curileta Serie Animada'));
+    assert.ok(series.genre.includes('Serie animada'));
+    assert.ok(series.genre.includes('Serie animada española'));
+    assert.ok(series.genre.includes('Viajes por el mundo'));
+    assert.equal(series.countryOfOrigin.name, 'España');
+    assert.ok(series.character.some((c) => c.name === 'Curileta'));
+    assert.ok(series.character.some((c) => c.name === 'Pompón'));
+
+    const seriesWithFullCatalog = generateSeriesSchema({
+      siteUrl: 'https://www.curileta.com',
+      inLanguage: 'es',
+      characters: [
+        { name: 'Curileta', slug: 'curileta', description: 'Exploradora' },
+        { name: 'Bao', slug: 'bao', description: 'Panda de China' },
+      ],
+      locations: [
+        { name: 'Chichén Itzá', country: 'México', slug: 'chichen-itza' },
+        { name: 'Machu Picchu', country: 'Perú', slug: 'machu-picchu' },
+      ],
+    });
+    assert.equal(seriesWithFullCatalog.character.length, 2);
+    assert.equal(seriesWithFullCatalog.contentLocation.length, 2);
+    assert.equal(seriesWithFullCatalog.contentLocation[0].containedInPlace.name, 'México');
+  });
+
+  test('debe generar schema FAQPage para fragmentos enriquecidos (Rich Snippets)', () => {
+    const faq = generateFAQSchema([
+      {
+        question: '¿Qué es Curileta y de qué trata la serie animada?',
+        answer: 'Curileta es una serie animada infantil original en español.',
+      },
+    ]);
+    assert.equal(faq['@type'], 'FAQPage');
+    assert.equal(faq.mainEntity.length, 1);
+    assert.equal(faq.mainEntity[0]['@type'], 'Question');
+    assert.equal(faq.mainEntity[0].name, '¿Qué es Curileta y de qué trata la serie animada?');
+    assert.equal(faq.mainEntity[0].acceptedAnswer.text, 'Curileta es una serie animada infantil original en español.');
   });
 });
 
@@ -196,5 +249,42 @@ describe('Perfil Editorial de Autora & Colección Solapada (@curileta/web)', asy
     assert.equal(normalizeAuthorName('  SWEETY TALESS  '), 'sweetytaless');
   });
 });
+
+describe('AI-SEO y Agent Readiness (@curileta/web & marketingskills)', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  test('robots.ts debe permitir el rastreo de bots de búsqueda y motores de IA', () => {
+    const robotsPath = path.resolve(process.cwd(), 'apps/web/src/app/robots.ts');
+    assert.ok(fs.existsSync(robotsPath), 'robots.ts debe existir');
+    const robotsCode = fs.readFileSync(robotsPath, 'utf-8');
+
+    assert.ok(robotsCode.includes('OAI-SearchBot'), 'Debe incluir OAI-SearchBot');
+    assert.ok(robotsCode.includes('PerplexityBot'), 'Debe incluir PerplexityBot');
+    assert.ok(robotsCode.includes('Claude-SearchBot'), 'Debe incluir Claude-SearchBot');
+    assert.ok(robotsCode.includes('Googlebot'), 'Debe incluir Googlebot');
+    assert.ok(robotsCode.includes("allow: '/'"), 'Debe permitir rastreo en la raíz');
+    assert.ok(robotsCode.includes("disallow: ['/api/', '/admin/', '/admin']"), 'Debe proteger rutas privadas');
+    assert.ok(!robotsCode.includes("'/ _next/'"), 'No debe bloquear /_next/');
+  });
+
+  test('debe existir llms.txt y llms-full.txt en public/ con información para LLMs', () => {
+    const llmsPath = path.resolve(process.cwd(), 'apps/web/public/llms.txt');
+    const llmsFullPath = path.resolve(process.cwd(), 'apps/web/public/llms-full.txt');
+
+    assert.ok(fs.existsSync(llmsPath), 'llms.txt debe existir en apps/web/public/');
+    assert.ok(fs.existsSync(llmsFullPath), 'llms-full.txt debe existir en apps/web/public/');
+
+    const llmsContent = fs.readFileSync(llmsPath, 'utf-8');
+    assert.ok(llmsContent.includes('Curileta'));
+    assert.ok(llmsContent.includes('serie animada infantil original'));
+    assert.ok(llmsContent.includes('Pompón'));
+
+    const llmsFullContent = fs.readFileSync(llmsFullPath, 'utf-8');
+    assert.ok(llmsFullContent.includes('Base de Conocimiento Completa'));
+    assert.ok(llmsFullContent.includes('Personajes Principales'));
+    assert.ok(llmsFullContent.includes('Destinos'));
+  });
+});
+
 
 

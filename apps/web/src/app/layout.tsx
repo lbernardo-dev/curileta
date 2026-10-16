@@ -14,19 +14,29 @@ const organizationSchema = generateOrganizationSchema(siteUrl);
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Las Aventuras de Curileta',
+  '@id': `${siteUrl}/#website`,
+  name: 'Curileta',
+  alternateName: ['Las Aventuras de Curileta', 'Curileta Adventures', 'Curileta — Web Oficial'],
   url: siteUrl,
   inLanguage: ['es', 'en'],
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${siteUrl}/es/videos?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
 };
 
 export const metadata: Metadata = {
   title: {
     template: '%s | Las Aventuras de Curileta',
-    default: 'Las Aventuras de Curileta — Web Oficial',
+    default: 'Curileta — Serie Animada en Español y Libros Infantiles | Web Oficial',
   },
   description:
-    'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
+    'Web oficial de Curileta: serie animada infantil original en español y libros de aventuras para familias. Descubre episodios, canciones, dibujos y viajes por el mundo.',
   metadataBase: new URL(siteUrl),
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -42,9 +52,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Las Aventuras de Curileta',
-    title: 'Las Aventuras de Curileta — Web Oficial',
+    title: 'Curileta — Serie Animada en Español y Libros Infantiles | Web Oficial',
     description:
-      'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
+      'Web oficial de Curileta: serie animada infantil original en español y libros de aventuras para familias. Descubre episodios, canciones, dibujos y viajes por el mundo.',
     url: siteUrl,
     images: [
       {
@@ -57,9 +67,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Las Aventuras de Curileta — Web Oficial',
+    title: 'Curileta — Serie Animada en Español y Libros Infantiles | Web Oficial',
     description:
-      'El universo oficial de Curileta: libros, aventuras, canciones, episodios y amistad para familias y niños exploradores del mundo.',
+      'Web oficial de Curileta: serie animada infantil original en español y libros de aventuras para familias. Descubre episodios, canciones, dibujos y viajes por el mundo.',
     images: [`${siteUrl}/images/hero/curileta-world-expedition-clean-v1.jpg`],
   },
 };

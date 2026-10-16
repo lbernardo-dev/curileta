@@ -47,7 +47,7 @@ export async function proxy(request: NextRequest) {
   const redirectPath = pathname === '/' ? '' : pathname;
   const response = pathnameHasLocale
     ? NextResponse.next()
-    : NextResponse.redirect(new URL(`/${defaultLocale}${redirectPath}`, request.url));
+    : NextResponse.redirect(new URL(`/${defaultLocale}${redirectPath}`, request.url), 308);
 
   const geoCountry =
     request.headers.get('x-vercel-ip-country') ||
