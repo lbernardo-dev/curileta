@@ -928,6 +928,18 @@ Con base en los marcos de auditoría de `ai-seo` (optimización para Google AI O
      - Que `llms.txt` y `llms-full.txt` existan y contengan la información de entidades de la serie.
    - Resultado: 32/32 tests pasando (`npm test`).
 
+### 3. Estado de despliegue y comprobación en producción
+- **Pull Request:** [#71](https://github.com/lbernardo-dev/curileta/pull/71) fusionada en `main` (`1da2f621f69eca3dd626a65a3e18926dd1813603`).
+- **Comprobación en vivo en `https://www.curileta.com` (Vercel):**
+  - `robots.txt` verificado: `/_next/` desbloqueado, reglas explícitas para `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot`, `Bingbot` y `Applebot-Extended`.
+  - `/llms.txt` y `/llms-full.txt` activos y sirviendo contenido Markdown estructurado para agentes de IA.
+  - Título canónico verificado: `<title>Curileta — Serie Animada Española, Viajes por el Mundo y Libros Infantiles | Web Oficial</title>`.
+  - `<h1>` verificado: `Curileta: la serie animada que despierta la curiosidad por el mundo.`
+  - Redirección raíz verificada: `HTTP/2 308` permanente de `/` a `/es`.
+  - Datos estructurados Schema.org verificados en vivo: `TVSeries`, `FAQPage` y `ItemList` (personajes y destinos).
+  - Secciones visuales activas: `#universo-serie-animada` y `#preguntas-frecuentes`.
+
+
 
 
 
