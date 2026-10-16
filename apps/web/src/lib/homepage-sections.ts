@@ -14,7 +14,9 @@ const defaultSections = [
   { key: 'wallpapers', order: 10, defaultVisible: true },
   { key: 'roadmap', order: 11, defaultVisible: true },
   { key: 'collaborations', order: 12, defaultVisible: true },
-  { key: 'closing', order: 13, defaultVisible: true },
+  { key: 'seoUniverse', order: 13, defaultVisible: true },
+  { key: 'faq', order: 14, defaultVisible: true },
+  { key: 'closing', order: 15, defaultVisible: true },
 ] as const;
 
 type SectionKey = (typeof defaultSections)[number]['key'];

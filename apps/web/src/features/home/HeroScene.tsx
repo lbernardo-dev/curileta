@@ -160,16 +160,16 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
         <div className="max-w-[600px]">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[var(--hero-badge-border)] bg-[var(--hero-badge-bg)] px-4 py-2 text-xs font-semibold tracking-wide text-[var(--hero-badge-text)] shadow-lg shadow-black/10 backdrop-blur-md sm:mb-7">
             <Sparkles className="h-4 w-4 text-[var(--color-adventure-gold)]" aria-hidden="true" />
-            <span>{isEn ? 'An illustrated journey for curious families' : 'Una aventura ilustrada para familias curiosas'}</span>
+            <span>{isEn ? 'Original animated series & adventure books' : 'Serie animada infantil original en español'}</span>
           </div>
 
-          <h1 id="hero-title" className="hero-copy-shadow max-w-[12ch] font-display text-5xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
-            {isEn ? 'The world is full of stories.' : 'El mundo está lleno de historias.'}
+          <h1 id="hero-title" className="hero-copy-shadow max-w-[680px] font-display text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
+            {isEn ? 'Curileta: the animated series inspiring curious explorers.' : 'Curileta: la serie animada que despierta la curiosidad por el mundo.'}
           </h1>
-          <p className="hero-copy-shadow mt-5 max-w-xl text-base leading-7 text-white/95 sm:mt-6 sm:text-lg sm:leading-8">
+          <p className="hero-copy-shadow mt-5 max-w-[680px] text-base leading-7 text-white/95 sm:mt-6 sm:text-lg sm:leading-8">
             {tagline || (isEn
-              ? 'Join Curileta as curiosity turns every new place into a story worth sharing.'
-              : 'Acompaña a Curileta: cada lugar nuevo convierte la curiosidad en una historia que merece compartirse.')}
+              ? 'Curileta is an original Spanish animated series and children’s book universe following Curileta and Pompon on expeditions across the five continents, discovering world geography, cultures and family adventures.'
+              : 'Curileta es una serie animada infantil original de producción española y universo de libros de aventuras que acompaña a Curileta y Pompón por los cinco continentes, descubriendo la geografía, las culturas del mundo y el valor de explorar en familia.')}
           </p>
 
           <div className="mt-7 flex flex-col items-start gap-3 sm:mt-8 sm:flex-row sm:items-center">
