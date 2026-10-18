@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Locale } from '@curileta/i18n';
-import { ArrowRight, BookOpen, Compass } from 'lucide-react';
+import { ArrowRight, Compass } from 'lucide-react';
 import { SectionEmblem } from '@/components/SectionEmblem';
 
 export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
@@ -35,19 +35,11 @@ export const ClosingScene: React.FC<{ locale: Locale }> = ({ locale }) => {
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href={`/${locale}/libros/las-aventuras-de-curileta`}
+            href={`/${locale}/videos`}
             className="inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-md transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-amber-300 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
-            <BookOpen className="h-4 w-4 text-emerald-950" />
-            <span>{isEn ? 'Read the story' : 'Conocer el libro'}</span>
+            <span>{isEn ? 'Watch episodes' : 'Ver episodios'}</span>
             <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`/${locale}/mundo`}
-            className="inline-flex min-h-12 items-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-950/60 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-emerald-900/80 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-          >
-            <Compass className="h-4 w-4 text-amber-300" />
-            <span>{isEn ? 'Explore the atlas again' : 'Volver a explorar el atlas'}</span>
           </Link>
         </div>
       </div>

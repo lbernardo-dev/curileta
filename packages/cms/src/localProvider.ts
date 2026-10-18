@@ -2626,8 +2626,8 @@ export const INITIAL_SETTINGS: SiteSettings = {
     en: 'A continuous journey of empathy and curiosity across the world',
   },
   heroSubtitle: {
-    es: 'Sigue el mapa de Curileta: descubre nuevos lugares y las cartas que envía a Pompón desde el camino.',
-    en: 'Follow Curileta’s map, discover new places, and read the letters she sends to Pompón along the way.',
+    es: 'Acompaña a Curileta y Pompón en capítulos animados que recorren lugares reales y despiertan la curiosidad en familia.',
+    en: 'Join Curileta and Pompón in animated episodes that visit real places and spark curiosity for the whole family.',
   },
   totalCountriesCount: 11,
   totalCharactersCount: 19,
@@ -2659,9 +2659,22 @@ export const INITIAL_SETTINGS: SiteSettings = {
     },
   ],
   homepageSections: [
-    'hero', 'seasonalEvent', 'story', 'globe', 'radar', 'letters', 'characters',
-    'books', 'videos', 'wallpapers', 'roadmap', 'collaborations', 'closing',
-  ].map((key, order) => ({ key, visible: true, order })) as SiteSettings['homepageSections'],
+    { key: 'hero', visible: true },
+    { key: 'seasonalEvent', visible: true },
+    { key: 'taglineReveal', visible: true },
+    { key: 'videos', visible: true },
+    { key: 'globe', visible: true },
+    { key: 'characters', visible: true },
+    { key: 'books', visible: true },
+    { key: 'letters', visible: true },
+    { key: 'faq', visible: true },
+    { key: 'closing', visible: true },
+    { key: 'radar', visible: false },
+    { key: 'wallpapers', visible: false },
+    { key: 'roadmap', visible: false },
+    { key: 'collaborations', visible: false },
+    { key: 'seoUniverse', visible: false },
+  ].map((section, order) => ({ ...section, order })) as SiteSettings['homepageSections'],
 };
 
 export class LocalCMSProvider implements CMSProvider {

@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 export const revalidate = 3600;
 import dynamic from 'next/dynamic';
 import { HeroScene } from '@/features/home/HeroScene';
-import { StoryLanding } from '@/features/home/StoryLanding';
 import { SeasonalEventSectionWrapper } from '@/features/events/SeasonalEventSectionWrapper';
 import { Globe3DSceneDynamic } from '@/features/home/Globe3DSceneDynamic';
 import { BooksScene } from '@/features/home/BooksScene';
@@ -246,12 +245,15 @@ export default async function HomePage({
     hero: <HeroScene locale={locale as Locale} settings={settings} publishedBooksCount={publishedBooksCount} />,
     seasonalEvent: <SeasonalEventSectionWrapper locale={locale as Locale} event={activeEvent} masks={characterMasks} printables={eventPrintables} />,
     taglineReveal: <TaglineRevealSection locale={locale as Locale} />,
-    story: <StoryLanding locale={locale as Locale} locations={locations} characters={characters} books={books} upcomingCharacters={upcomingCharacters} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} />,
     globe: <Globe3DSceneDynamic locale={locale as Locale} locations={orderedLocations} milestones={milestones} />,
     radar: <AdventureRadar locale={locale as Locale} locations={locations} milestones={milestones} />,
     letters: <LettersScene locale={locale as Locale} letters={landingLetters} />,
-    characters: <CharacterHubScene locale={locale as Locale} characters={characters} />,
-    books: <><BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp} /><AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={displayBooks} /></>,
+    characters: <CharacterHubScene locale={locale as Locale} characters={characters} upcomingCharacters={upcomingCharacters} />,
+    books: (
+      <BooksScene locale={locale as Locale} books={featuredBooks} amazonCountry={amazonCountry} imageFrames={imageFrames} currentTimestamp={currentTimestamp}>
+        <AuthorLandingFeature locale={locale as Locale} authors={authorPages} books={displayBooks} compact />
+      </BooksScene>
+    ),
     videos: <HomeVideoShowcase locale={locale as Locale} videos={videos} settings={resolvedChannelSettings} />,
     wallpapers: <WallpapersScene locale={locale as Locale} wallpapers={wallpapers} embedded />,
     roadmap: <GrowingUniverseScene locale={locale as Locale} items={universeRoadmap} />,

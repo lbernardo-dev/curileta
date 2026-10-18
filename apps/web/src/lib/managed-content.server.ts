@@ -68,7 +68,7 @@ export function validateManagedContentPayload(type: AdminManagedContentType, val
       || !hasText((badge as Record<string, unknown>).value))) return null;
     if (payload.homepageSections !== undefined) {
       const sections = payload.homepageSections;
-      const allowed = new Set(['hero', 'seasonalEvent', 'story', 'globe', 'radar', 'letters', 'characters', 'books', 'videos', 'wallpapers', 'roadmap', 'collaborations', 'closing']);
+      const allowed = new Set(['hero', 'seasonalEvent', 'taglineReveal', 'videos', 'globe', 'radar', 'characters', 'books', 'letters', 'wallpapers', 'roadmap', 'collaborations', 'seoUniverse', 'faq', 'closing']);
       if (!Array.isArray(sections) || sections.length > allowed.size) return null;
       const keys = new Set<string>();
       for (const section of sections) {

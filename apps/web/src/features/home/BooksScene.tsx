@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import type { Locale } from '@curileta/i18n';
 import type { Book } from '@curileta/cms';
 import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, MapPin } from 'lucide-react';
@@ -19,9 +20,10 @@ interface BooksSceneProps {
   amazonCountry: string | null;
   imageFrames: ImageFrameMap;
   currentTimestamp: number;
+  children?: ReactNode;
 }
 
-export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amazonCountry, imageFrames, currentTimestamp }) => {
+export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amazonCountry, imageFrames, currentTimestamp, children }) => {
   const isEn = locale === 'en';
   const destinationNamesEn: Record<string, string> = {
     México: 'Mexico', Perú: 'Peru', Egipto: 'Egypt', Islandia: 'Iceland', Japón: 'Japan',
@@ -134,6 +136,8 @@ export const BooksScene: React.FC<BooksSceneProps> = ({ locale, books = [], amaz
             <ExternalLink className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
+
+        {children}
       </div>
     </section>
   );
