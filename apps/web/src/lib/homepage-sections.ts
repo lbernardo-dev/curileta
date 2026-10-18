@@ -33,9 +33,13 @@ export function resolveHomepageSections(configured?: SiteSettings['homepageSecti
     }
   }
 
+  const expandedSectionKeys = ['wallpapers', 'roadmap', 'collaborations', 'seoUniverse'] as const;
+  const hasUnreducedExpandedLayout = expandedSectionKeys.every((key) => configuredByKey.get(key)?.visible === true);
+  const useReducedDefaults = hasLegacyStorySection || hasUnreducedExpandedLayout;
+
   return defaultSections
     .map((fallback) => {
-      const section = hasLegacyStorySection ? undefined : configuredByKey.get(fallback.key);
+      const section = useReducedDefaults ? undefined : configuredByKey.get(fallback.key);
       const configuredOrder = section?.order;
       return {
         key: fallback.key,
