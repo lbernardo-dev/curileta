@@ -11,7 +11,6 @@ import { YouTubeTrackedPlayer } from '@/components/YouTubeTrackedPlayer';
 import { SectionEmblem } from '@/components/SectionEmblem';
 import { setBrowserStorageValue, useBrowserStorageValue, useClientHydrated } from '@/lib/browser-storage';
 import {
-  Youtube,
   Play,
   Clock,
   Sparkles,
@@ -24,6 +23,25 @@ import {
   Clapperboard,
   ListVideo,
 } from 'lucide-react';
+
+
+function YouTubeBrandIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M21.58 7.19a2.98 2.98 0 0 0-2.1-2.1C17.63 4.58 12 4.58 12 4.58s-5.63 0-7.48.51a2.98 2.98 0 0 0-2.1 2.1C1.91 9.04 1.91 12 1.91 12s0 2.96.51 4.81a2.98 2.98 0 0 0 2.1 2.1c1.85.51 7.48.51 7.48.51s5.63 0 7.48-.51a2.98 2.98 0 0 0 2.1-2.1c.51-1.85.51-4.81.51-4.81s0-2.96-.51-4.81Z" />
+      <path d="m10 9 5 3-5 3z" />
+    </svg>
+  );
+}
 
 interface YouTubeSceneProps {
   locale: Locale;
@@ -221,12 +239,12 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                 />
               ) : (
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-red-600 text-white shadow-lg sm:h-24 sm:w-24" aria-hidden="true">
-                  <Youtube className="h-10 w-10" />
+                  <YouTubeBrandIcon className="h-10 w-10" />
                 </div>
               )}
               <div className="min-w-0">
                 <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-red-300 bg-red-100 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
-                  <Youtube className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  <YouTubeBrandIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
                   <span>{isEn ? 'Official YouTube channel' : 'Canal oficial de YouTube'}</span>
                 </div>
                 <h2 className="text-balance text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
@@ -869,7 +887,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
                     rel="noopener"
                     className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-black"
                   >
-                    <Youtube className="w-3.5 h-3.5" />
+                    <YouTubeBrandIcon className="w-3.5 h-3.5" />
                     <span>{isEn ? 'Subscribe' : 'Suscribirse al Canal'}</span>
                   </a>
                 </div>
@@ -884,7 +902,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
           <div className="flex items-center gap-5">
             {settings?.youtubeChannelAvatarUrl
               ? <ContentImage src={settings.youtubeChannelAvatarUrl} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20" />
-              : <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-red-600 sm:h-20 sm:w-20"><Youtube className="h-10 w-10 text-white" /></div>}
+              : <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-red-600 sm:h-20 sm:w-20"><YouTubeBrandIcon className="h-10 w-10 text-white" /></div>}
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -910,7 +928,7 @@ export const YouTubeScene: React.FC<YouTubeSceneProps> = ({
             rel="noopener"
             className="px-8 py-4 rounded-2xl font-black text-base bg-red-600 hover:bg-red-500 text-white shadow-xl shadow-red-600/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 whitespace-nowrap cursor-pointer"
           >
-            <Youtube className="w-5 h-5" />
+            <YouTubeBrandIcon className="w-5 h-5" />
             <span>{isEn ? 'Subscribe to Channel' : 'Suscribirme al Canal'}</span>
           </a>
         </div>}
