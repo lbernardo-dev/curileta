@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { CalendarClock, Check, Clapperboard, LoaderCircle, Palette, Plus, Save, Sparkles, Trash2, X } from 'lucide-react';
+import { CalendarClock, Check, Clapperboard, FileDown, LoaderCircle, Palette, Plus, Save, Sparkles, Trash2, X } from 'lucide-react';
 import { EventMediaUploadField } from '@/components/admin/EventMediaUploadField';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
 import { EventThemeControlPanel } from './EventThemeControlPanel';
@@ -369,9 +369,14 @@ export default function EventsManager() {
             Programa temporadas, personaliza su aspecto y ajusta los sonidos y movimientos que verá cada visitante.
           </p>
         </div>
-        <button type="button" onClick={startCreate} className={`${buttonClass} bg-emerald-800 text-white hover:bg-emerald-700`}>
-          <Plus className="h-4 w-4" />Crear evento
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/recursos-imprimibles" className={`${buttonClass} border border-slate-300 text-slate-800 hover:bg-slate-100 dark:border-[#444] dark:text-white dark:hover:bg-[#272727]`}>
+            <FileDown className="h-4 w-4" />Láminas y PDF
+          </Link>
+          <button type="button" onClick={startCreate} className={`${buttonClass} bg-emerald-800 text-white hover:bg-emerald-700`}>
+            <Plus className="h-4 w-4" />Crear evento
+          </button>
+        </div>
       </header>
 
       {error && <p role="alert" className="rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-[#272727] dark:text-rose-200">{error}</p>}

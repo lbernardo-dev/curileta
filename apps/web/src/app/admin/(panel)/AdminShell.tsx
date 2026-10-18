@@ -74,7 +74,7 @@ const navigationGroups: NavGroup[] = [
       { href: '/admin/eventos', label: 'Eventos y ambientes', icon: Sparkles, roles: ['owner', 'admin', 'editor'] },
       { href: '/admin/acertijos', label: 'Acertijos de temporada', icon: HelpCircle, roles: ['owner', 'admin', 'editor'] },
       { href: '/admin/mascaras', label: 'Máscaras descargables', icon: Smile, roles: ['owner', 'admin', 'editor'] },
-      { href: '/admin/recursos-imprimibles', label: 'PDF de eventos', icon: FileDown, roles: ['owner', 'admin', 'editor'] },
+      { href: '/admin/recursos-imprimibles', label: 'Láminas y PDF', icon: FileDown, roles: ['owner', 'admin', 'editor'] },
     ],
   },
   {

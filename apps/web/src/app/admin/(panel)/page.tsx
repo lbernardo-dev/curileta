@@ -56,7 +56,7 @@ export default async function AdminOverviewPage() {
         { href: '/admin/eventos', title: 'Eventos y ambientes', description: 'Programa temporadas, temas, vídeos, sonidos y ambientación' },
         { href: '/admin/acertijos', title: 'Acertijos de temporada', description: 'Crea colecciones bilingües, ordena preguntas y gestiona respuestas' },
         { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra personajes, vistas previas, PDF y descargas' },
-        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y recursos imprimibles' },
+        { href: '/admin/recursos-imprimibles', title: 'Láminas y PDF de temporada', description: 'Sube y publica láminas para colorear y otros recursos por evento' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
         { href: '/admin/forms', title: 'Formularios', description: 'Campos y configuración de formularios de contacto' },
         { href: '/admin/consultas', title: 'Bandeja de consultas', description: 'Mensajes recibidos y estado de atención' },
@@ -77,7 +77,7 @@ export default async function AdminOverviewPage() {
         { href: '/admin/eventos', title: 'Eventos y ambientes', description: 'Programa temporadas, temas, vídeos, sonidos y ambientación' },
         { href: '/admin/acertijos', title: 'Acertijos de temporada', description: 'Crea colecciones bilingües, ordena preguntas y gestiona respuestas' },
         { href: '/admin/mascaras', title: 'Máscaras descargables', description: 'Administra personajes, vistas previas, PDF y descargas' },
-        { href: '/admin/recursos-imprimibles', title: 'PDF de eventos', description: 'Sube y publica láminas, actividades y recursos imprimibles' },
+        { href: '/admin/recursos-imprimibles', title: 'Láminas y PDF de temporada', description: 'Sube y publica láminas para colorear y otros recursos por evento' },
         { href: '/admin/proximo-episodio', title: 'Próximo episodio', description: 'Activa los personajes que aparecerán en la próxima historia' },
       ]
       : [{ href: '/admin/estadisticas', title: 'Estadísticas agregadas', description: 'Tráfico, eventos, descargas y tendencias del sitio' }];

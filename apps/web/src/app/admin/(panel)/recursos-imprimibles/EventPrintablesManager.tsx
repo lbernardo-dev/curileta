@@ -136,10 +136,10 @@ export default function EventPrintablesManager() {
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div>
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">Biblioteca de eventos</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Recursos imprimibles</h1>
-        <p className="mt-3 max-w-3xl text-base leading-6 text-slate-600 dark:text-slate-300">Sube fichas y PDF para cada temporada. Puedes guardar borradores, publicar varios recursos y consultar sus descargas agregadas.</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Láminas y recursos imprimibles</h1>
+        <p className="mt-3 max-w-3xl text-base leading-6 text-slate-600 dark:text-slate-300">Sube láminas para colorear y otros PDF para cada temporada. Puedes guardar borradores, publicar varios recursos y consultar sus descargas agregadas.</p>
       </div>
-      <button type="button" onClick={startNew} disabled={!events.length} className={`${buttonClass} bg-emerald-800 text-white hover:bg-emerald-900`}><Plus className="h-4 w-4" />Nuevo PDF</button>
+      <button type="button" onClick={startNew} disabled={!events.length} className={`${buttonClass} bg-emerald-800 text-white hover:bg-emerald-900`}><Plus className="h-4 w-4" />Añadir lámina o PDF</button>
     </header>
 
     {error && <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-[#272727] dark:text-red-200">{error}</p>}

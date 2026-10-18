@@ -361,6 +361,12 @@ html.dark[data-seasonal-theme] {
   --text-primary: var(--seasonal-text-dark);
 }
 
+/* Keep the Halloween hero artwork clear while retaining a neutral shadow for copy. */
+html[data-seasonal-theme="halloween"] {
+  --hero-overlay-mid: rgba(11, 16, 14, 0.48);
+  --hero-overlay-end: transparent;
+}
+
 
 html[data-site-base-theme] {
   --background-canvas: var(--seasonal-canvas-light);
