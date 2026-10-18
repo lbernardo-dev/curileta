@@ -43,7 +43,6 @@ export function ManagedSeasonalEventSection({ event, locale, masks, printables }
             ? <ContentImage width={1200} height={900} src={event.bannerImage} alt={isEn ? `Illustration for ${name}` : `Ilustración de ${name}`} className="absolute inset-0 h-full w-full object-cover" />
             : <div className="flex h-full min-h-64 items-center justify-center text-8xl" aria-hidden="true">{themeGlyph(event.themeKey)}</div>}
           <div className="pointer-events-none absolute inset-0 border-[12px] border-white/20" aria-hidden="true" />
-          {event.heroVideoUrl && <video controls playsInline preload="none" aria-label={isEn ? `Seasonal video for ${name}` : `Vídeo de temporada de ${name}`} className="absolute inset-x-4 bottom-4 max-h-48 w-[calc(100%-2rem)] rounded-xl bg-black shadow-xl sm:inset-x-6 sm:bottom-6 sm:w-[calc(100%-3rem)]" src={event.heroVideoUrl} />}
         </div>
       </div>
 
