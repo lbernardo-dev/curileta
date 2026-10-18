@@ -941,8 +941,32 @@ Con base en los marcos de auditoría de `ai-seo` (optimización para Google AI O
   - Datos estructurados Schema.org verificados en vivo: `TVSeries`, `FAQPage` y `ItemList` (personajes y destinos).
   - Secciones visuales activas: `#universo-serie-animada` y `#preguntas-frecuentes`.
 
-## 38. Composición simplificada de la portada y claves del CMS
+## 37. Ilustraciones de rutas, colección inicial de fondos y galería localizada
 
+### Alcance y flujo
+- `apps/web/public/images/wallpapers/desktop/` y `mobile/` contienen doce escenas de destino, cada una con composición panorámica para escritorio y composición vertical para móvil. Los JPEG actuales miden entre 1440 × 809 y 1440 × 810 píxeles en escritorio y entre 809 × 1440 y 810 × 1440 en móvil; cada registro del CMS declara la resolución efectiva de su archivo.
+- `packages/cms/src/localProvider.ts` define 24 registros de fondo en `INITIAL_WALLPAPERS`: doce escenas, incluidos la salida y el regreso al Bosque Encantado, en dos formatos. Cada registro declara su ruta local, dispositivo, resolución real, tamaño exacto en bytes, título, descripción, país y etiquetas bilingües. `WallpapersScene` muestra esos datos reales y la extensión descargable; omite filtros cuya categoría no contiene archivos.
+- La ficha local de `las-aventuras-de-curileta` enumera tapa dura, tapa blanda y formato digital en el campo `Book.format`, que reutilizan la portada, el catálogo y la ficha de libro. `getBooks()` prioriza la fila publicada de Supabase para ese libro. El 18 de octubre de 2026 se actualizó en Production solo su campo `payload.format`, conservando el resto del contenido; la acción quedó anotada en `admin_audit_log` como actualización de sistema sin actor administrativo.
+- `apps/web/src/lib/cms/supabase-provider.ts` combina el catálogo local con `managed_content_entries` de tipo `wallpaper`. Si Supabase no devuelve filas o la consulta falla, se conserva el catálogo local. Un registro administrado con el mismo `slug` sustituye sus metadatos; los demás registros locales siguen visibles.
+- `apps/web/src/lib/gallery.server.ts` crea categorías públicas localizadas para los once países de la ruta y una categoría `Especiales`. A partir del catálogo de fondos presenta las escenas de escritorio y móvil, además de la ilustración Halloween existente en `apps/web/public/images/events/halloween-curileta-pompon-wide.webp`. Las categorías e imágenes de `gallery_categories` y `gallery_items` se combinan con los valores locales; un slug administrado coincidente sustituye el valor estático.
+- `GalleryItem.device_type` es opcional y solo etiqueta los fondos estáticos para que las miniaturas verticales de móvil usen `object-contain`; no se añadió una columna a `gallery_items`.
+- `apps/web/src/lib/destinations.server.ts` asigna a los doce destinos narrativos las ilustraciones locales del libro tras fusionar el contenido editorial y las filas de `managed_destinations`. Para esos destinos conserva los vídeos administrados y omite medios fotográficos que volverían a mostrar las fotos reales. Los destinos añadidos fuera de la ruta conocida mantienen su contenido administrado.
+- `apps/web/src/app/api/gallery/[slug]/download/route.ts` mantiene la descarga existente desde el bucket `curileta-site-media` y permite servir archivos estáticos mediante una lista cerrada de rutas locales de fondos y la imagen Halloween aprobada. Conserva el límite de descargas, la validación de slug, `Content-Disposition`, `nosniff` y la política `no-store`.
+
+### Administración, permisos y operación
+- Las rutas públicas de galería siguen siendo accesibles sin autenticación. Las operaciones editoriales dinámicas siguen usando las rutas administrativas y la autorización existente para `owner`, `admin` y `editor`; el acceso a Supabase desde servidor continúa usando `service_role`.
+- Los registros locales y la categoría `Especiales` no se editan ni eliminan desde `/admin/galeria`. El editor administra únicamente las filas de Supabase, que se añaden o sustituyen por slug al mostrarse públicamente. No hay tablas, políticas RLS ni migraciones nuevas para este cambio.
+- Para cambiar una ilustración local, sustituye el JPEG en sus carpetas y conserva la ruta o actualiza `INITIAL_WALLPAPERS`, el mapa `ROUTE_ILLUSTRATIONS` y el recurso de galería correspondiente. La resolución del catálogo debe coincidir con los píxeles del archivo.
+- No se añadieron variables de entorno ni dependencias. La integración dinámica conserva la configuración de Supabase existente; el contenido inicial y las descargas locales no requieren sembrado de base de datos.
+
+### Estado comprobado y límites
+- **Código presente localmente:** catálogo de fondos, combinación con contenido administrado, categorías localizadas, descarga de recursos locales y sustitución temática de las fotografías de los doce destinos de la ruta narrativa.
+- **Base de datos:** no se añadieron migraciones ni se ejecutó un sembrado. La fila publicada del libro se actualizó en Supabase Production con control de concurrencia y se verificó después; no se alteraron otros campos.
+- **Production:** la actualización del formato del libro ya está en Supabase Production. El código de galería, descargas y rutas permanece local hasta que termine su release y verificación pública.
+- La colección intencionalmente es reducida: doce escenas de viaje con dos composiciones de pantalla y un recurso Halloween existente. No contiene nuevas fotografías ni ilustraciones generadas de personajes. Las máscaras se limitan a las dos publicadas de Curileta y Pompón hasta que la titular entregue arte frontal aprobado; varios avatares actuales muestran personajes de perfil o más de un rostro y no permiten alinear guías de ojos fiables. No se alteran esas dos máscaras.
+- La descarga local resuelve archivos bajo `public/` en runtime Node y solo permite extensiones/rutas enumeradas en el endpoint. Los archivos estáticos no aparecen como filas administrables de `gallery_items`.
+
+## 38. Composición simplificada de la portada y claves del CMS
 ### Alcance y comportamiento
 - La portada en `apps/web/src/app/[locale]/page.tsx` conserva la presentación principal de Curileta, el evento estacional, la frase de marca, los vídeos, el mapa 3D, personajes, libro con perfil compacto de la autora, cartas, preguntas frecuentes y cierre. La sección intermedia `StoryLanding` se retiró para evitar repetir enlaces y resúmenes de destinos, personajes, cartas y libros que ya tienen secciones propias.
 - Los favoritos de la comunidad siguen disponibles y ahora aparecen dentro de `CharacterHubScene`; los personajes anunciados en el próximo episodio reciben una marca dentro de su ficha.

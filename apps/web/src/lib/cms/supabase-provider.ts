@@ -138,7 +138,15 @@ export class SupabaseCMSProvider implements CMSProvider {
   }
 
   async getWallpapers(locale?: string): Promise<Wallpaper[]> {
-    return (await this.list<Wallpaper>('wallpaper')) ?? this.fallback.getWallpapers(locale);
+    const [managed, fallback] = await Promise.all([
+      this.list<Wallpaper>('wallpaper'),
+      this.fallback.getWallpapers(locale),
+    ]);
+    if (!managed?.length) return fallback;
+
+    const wallpapersBySlug = new Map(fallback.map((wallpaper) => [wallpaper.slug, wallpaper]));
+    for (const wallpaper of managed) wallpapersBySlug.set(wallpaper.slug, wallpaper);
+    return [...wallpapersBySlug.values()];
   }
 
   async getActiveEvent(locale?: string, referenceDate = new Date()): Promise<SeasonalEvent | null> {
