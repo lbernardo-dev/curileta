@@ -833,11 +833,13 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     let animationFrameId: number;
     let isInViewport = true;
     let hasRenderedFirstFrame = false;
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
+    timer.connect(document);
 
-    const animate = () => {
+    const animate = (timestamp?: number) => {
       animationFrameId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      timer.update(timestamp);
+      const elapsedTime = timer.getElapsed();
 
       // Giro suave automático
       if (isAutoRotatingRef.current && !isDragging && !isHoveredRef.current && !prefersReducedMotionRef.current) {
@@ -945,7 +947,8 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       isInViewport = entry.isIntersecting;
       if (isInViewport) {
-        routeStartedAt = clock.getElapsedTime();
+        timer.update();
+        routeStartedAt = timer.getElapsed();
       }
       if (isInViewport && !animationFrameId) {
         animate();
@@ -970,6 +973,7 @@ export const Globe3DScene: React.FC<Globe3DSceneProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       intersectionObserver.disconnect();
+      timer.dispose();
       window.removeEventListener('resize', handleResize);
       domElement.removeEventListener('pointerenter', onPointerEnter);
       domElement.removeEventListener('pointerleave', onPointerLeave);

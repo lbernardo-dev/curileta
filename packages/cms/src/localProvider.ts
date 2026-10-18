@@ -1347,7 +1347,7 @@ export const INITIAL_BOOKS: Book[] = [
     ageRange: '5–12 años',
     pageCount: 80,
     publisher: 'Amazon Digital Services LLC - KDP',
-    format: { es: 'Tapa blanda', en: 'Paperback · Spanish edition' },
+    format: { es: 'Tapa dura, tapa blanda y digital', en: 'Hardcover, paperback, and digital' },
     purchaseLinks: [{ storeName: 'Amazon', url: 'https://www.amazon.com/dp/B0H2CT8S14' }],
     badge: {
       es: 'Libro Oficial • Novedad 2026',
@@ -1926,7 +1926,153 @@ export const INITIAL_NARRATIVE_MILESTONES: NarrativeMilestone[] = [
 
 export const INITIAL_VIDEOS: Video[] = [];
 
-export const INITIAL_WALLPAPERS: Wallpaper[] = [];
+const WALLPAPER_SCENES: Array<{
+  slug: string;
+  title: { es: string; en: string };
+  country: { es: string; en: string };
+  description: { es: string; en: string };
+  tags: string[];
+}> = [
+  {
+    slug: 'bosque-encantado-01',
+    title: { es: 'Bosque Encantado · salida', en: 'Enchanted Forest · departure' },
+    country: { es: 'España', en: 'Spain' },
+    description: { es: 'El bosque donde comienza la expedición y nace la promesa de escribir a Pompón.', en: 'The forest where the expedition begins and the promise to write to Pompon is made.' },
+    tags: ['España', 'Bosque Encantado', 'Paisajes', 'Aventura', 'Salida'],
+  },
+  {
+    slug: 'bosque-encantado-regreso',
+    title: { es: 'Bosque Encantado · regreso', en: 'Enchanted Forest · homecoming' },
+    country: { es: 'España', en: 'Spain' },
+    description: { es: 'El camino de vuelta al hogar tras recorrer el mundo.', en: 'The way home after travelling around the world.' },
+    tags: ['España', 'Bosque Encantado', 'Paisajes', 'Aventura', 'Regreso'],
+  },
+  {
+    slug: 'mexico-teotihuacan-01',
+    title: { es: 'Teotihuacán', en: 'Teotihuacan' },
+    country: { es: 'México', en: 'Mexico' },
+    description: { es: 'Las pirámides de Teotihuacán bajo el cielo cálido de México.', en: 'The pyramids of Teotihuacan beneath Mexico’s warm skies.' },
+    tags: ['México', 'Teotihuacán', 'Pirámides', 'Paisajes', 'Monumentos'],
+  },
+  {
+    slug: 'peru-machu-picchu-01',
+    title: { es: 'Machu Picchu', en: 'Machu Picchu' },
+    country: { es: 'Perú', en: 'Peru' },
+    description: { es: 'La ciudadela inca entre las cumbres y la niebla de los Andes.', en: 'The Inca citadel among Andean peaks and mist.' },
+    tags: ['Perú', 'Machu Picchu', 'Andes', 'Paisajes', 'Monumentos'],
+  },
+  {
+    slug: 'egipto-guiza-01',
+    title: { es: 'Pirámides de Guiza', en: 'Pyramids of Giza' },
+    country: { es: 'Egipto', en: 'Egypt' },
+    description: { es: 'Las pirámides de Guiza emergen del paisaje dorado del desierto.', en: 'The Giza pyramids rise from the golden desert landscape.' },
+    tags: ['Egipto', 'Guiza', 'Pirámides', 'Desierto', 'Monumentos'],
+  },
+  {
+    slug: 'islandia-laguna-azul-01',
+    title: { es: 'Laguna Azul', en: 'Blue Lagoon' },
+    country: { es: 'Islandia', en: 'Iceland' },
+    description: { es: 'Aguas termales entre roca volcánica y cielos de fuego y hielo.', en: 'Thermal waters among volcanic rock beneath fire and ice skies.' },
+    tags: ['Islandia', 'Laguna Azul', 'Auroras Boreales', 'Hielo', 'Paisajes'],
+  },
+  {
+    slug: 'japon-fuji-cerezos-01',
+    title: { es: 'Monte Fuji y cerezos', en: 'Mount Fuji and cherry blossoms' },
+    country: { es: 'Japón', en: 'Japan' },
+    description: { es: 'El perfil del Monte Fuji enmarcado por flores de cerezo.', en: 'Mount Fuji framed by cherry blossoms.' },
+    tags: ['Japón', 'Monte Fuji', 'Cerezos', 'Paisajes'],
+  },
+  {
+    slug: 'australia-uluru-01',
+    title: { es: 'Uluru', en: 'Uluru' },
+    country: { es: 'Australia', en: 'Australia' },
+    description: { es: 'La roca roja de Uluru cambia de color con la luz del Outback.', en: 'Uluru’s red rock changes colour with the Outback light.' },
+    tags: ['Australia', 'Uluru', 'Tierra Roja', 'Paisajes'],
+  },
+  {
+    slug: 'nueva-zelanda-waitomo-01',
+    title: { es: 'Cuevas de Waitomo', en: 'Waitomo Caves' },
+    country: { es: 'Nueva Zelanda', en: 'New Zealand' },
+    description: { es: 'Una bóveda subterránea iluminada por diminutos puntos azules.', en: 'An underground vault lit by tiny blue points of light.' },
+    tags: ['Nueva Zelanda', 'Waitomo', 'Cuevas luminosas', 'Paisajes'],
+  },
+  {
+    slug: 'china-gran-muralla-01',
+    title: { es: 'Gran Muralla China', en: 'Great Wall of China' },
+    country: { es: 'China', en: 'China' },
+    description: { es: 'La Gran Muralla serpentea por las montañas hasta el horizonte.', en: 'The Great Wall winds across the mountains toward the horizon.' },
+    tags: ['China', 'Gran Muralla', 'Montañas', 'Paisajes', 'Monumentos'],
+  },
+  {
+    slug: 'italia-venecia-01',
+    title: { es: 'Canales de Venecia', en: 'Venice Canals' },
+    country: { es: 'Italia', en: 'Italy' },
+    description: { es: 'Canales, puentes y fachadas históricas en la ciudad flotante.', en: 'Canals, bridges and historic facades in the floating city.' },
+    tags: ['Italia', 'Venecia', 'Canales', 'Paisajes'],
+  },
+  {
+    slug: 'francia-paris-01',
+    title: { es: 'París y la Torre Eiffel', en: 'Paris and the Eiffel Tower' },
+    country: { es: 'Francia', en: 'France' },
+    description: { es: 'La Torre Eiffel se alza sobre los tejados de París al atardecer.', en: 'The Eiffel Tower rises above Paris rooftops at sunset.' },
+    tags: ['Francia', 'París', 'Torre Eiffel', 'Paisajes', 'Monumentos'],
+  },
+];
+
+const WALLPAPER_DEVICES: Array<{
+  type: Wallpaper['deviceType'];
+  label: { es: string; en: string };
+  folder: string;
+  resolution: string;
+}> = [
+  { type: 'desktop', label: { es: 'ordenador', en: 'desktop' }, folder: 'desktop', resolution: '1440 × 810' },
+  { type: 'mobile', label: { es: 'móvil', en: 'mobile' }, folder: 'mobile', resolution: '810 × 1440' },
+];
+
+const WALLPAPER_RESOLUTION_OVERRIDES: Record<string, Partial<Record<Wallpaper['deviceType'], string>>> = {
+  'francia-paris-01': { desktop: '1440 × 809' },
+  'nueva-zelanda-waitomo-01': { desktop: '1440 × 809', mobile: '809 × 1440' },
+};
+
+const WALLPAPER_FILE_SIZES: Record<string, Record<Wallpaper['deviceType'], string>> = {
+  'bosque-encantado-01': { desktop: '541647', mobile: '467089' },
+  'bosque-encantado-regreso': { desktop: '491186', mobile: '520849' },
+  'mexico-teotihuacan-01': { desktop: '392662', mobile: '353854' },
+  'peru-machu-picchu-01': { desktop: '408383', mobile: '379362' },
+  'egipto-guiza-01': { desktop: '413416', mobile: '354072' },
+  'islandia-laguna-azul-01': { desktop: '315424', mobile: '356097' },
+  'japon-fuji-cerezos-01': { desktop: '423473', mobile: '446286' },
+  'australia-uluru-01': { desktop: '389440', mobile: '360613' },
+  'nueva-zelanda-waitomo-01': { desktop: '481021', mobile: '434067' },
+  'china-gran-muralla-01': { desktop: '444822', mobile: '426947' },
+  'italia-venecia-01': { desktop: '423924', mobile: '369460' },
+  'francia-paris-01': { desktop: '412631', mobile: '375863' },
+};
+
+export const INITIAL_WALLPAPERS: Wallpaper[] = WALLPAPER_SCENES.flatMap((scene) => WALLPAPER_DEVICES.map((device) => {
+  const fullImageUrl = `/images/wallpapers/${device.folder}/${scene.slug}.jpg`;
+  const deviceTitle = device.label;
+  return {
+    id: `wallpaper-${scene.slug}-${device.type}`,
+    slug: `${scene.slug}-${device.type}`,
+    title: {
+      es: `${scene.title.es} · ${deviceTitle.es}`,
+      en: `${scene.title.en} · ${deviceTitle.en}`,
+    },
+    deviceType: device.type,
+    category: 'paisajes' as const,
+    resolution: WALLPAPER_RESOLUTION_OVERRIDES[scene.slug]?.[device.type] || device.resolution,
+    fileSizeBytes: WALLPAPER_FILE_SIZES[scene.slug][device.type],
+    thumbnail: fullImageUrl,
+    fullImageUrl,
+    tags: scene.tags,
+    country: scene.country,
+    description: {
+      es: `${scene.description.es} Preparado para ${deviceTitle.es}.`,
+      en: `${scene.description.en} Prepared for ${deviceTitle.en} screens.`,
+    },
+  };
+}));
 
 export const INITIAL_SEASONAL_EVENTS: SeasonalEvent[] = [
   {
@@ -2626,8 +2772,8 @@ export const INITIAL_SETTINGS: SiteSettings = {
     en: 'A continuous journey of empathy and curiosity across the world',
   },
   heroSubtitle: {
-    es: 'Sigue el mapa de Curileta: descubre nuevos lugares y las cartas que envía a Pompón desde el camino.',
-    en: 'Follow Curileta’s map, discover new places, and read the letters she sends to Pompón along the way.',
+    es: 'Acompaña a Curileta y Pompón en capítulos animados que recorren lugares reales y despiertan la curiosidad en familia.',
+    en: 'Join Curileta and Pompón in animated episodes that visit real places and spark curiosity for the whole family.',
   },
   totalCountriesCount: 11,
   totalCharactersCount: 19,
@@ -2659,9 +2805,22 @@ export const INITIAL_SETTINGS: SiteSettings = {
     },
   ],
   homepageSections: [
-    'hero', 'seasonalEvent', 'story', 'globe', 'radar', 'letters', 'characters',
-    'books', 'videos', 'wallpapers', 'roadmap', 'collaborations', 'closing',
-  ].map((key, order) => ({ key, visible: true, order })) as SiteSettings['homepageSections'],
+    { key: 'hero', visible: true },
+    { key: 'seasonalEvent', visible: true },
+    { key: 'taglineReveal', visible: true },
+    { key: 'videos', visible: true },
+    { key: 'globe', visible: true },
+    { key: 'characters', visible: true },
+    { key: 'books', visible: true },
+    { key: 'letters', visible: true },
+    { key: 'faq', visible: true },
+    { key: 'closing', visible: true },
+    { key: 'radar', visible: false },
+    { key: 'wallpapers', visible: false },
+    { key: 'roadmap', visible: false },
+    { key: 'collaborations', visible: false },
+    { key: 'seoUniverse', visible: false },
+  ].map((section, order) => ({ ...section, order })) as SiteSettings['homepageSections'],
 };
 
 export class LocalCMSProvider implements CMSProvider {

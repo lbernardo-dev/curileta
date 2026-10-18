@@ -12,15 +12,89 @@ export function AuthorLandingFeature({
   books,
   headingId = 'home-authors-heading',
   showEmptyState = false,
+  compact = false,
 }: {
   locale: Locale;
   authors: AuthorPage[];
   books: Book[];
   headingId?: string;
   showEmptyState?: boolean;
+  compact?: boolean;
 }) {
   if (!authors.length && !showEmptyState) return null;
   const isEn = locale === 'en';
+
+  if (compact) {
+    return (
+      <aside aria-labelledby={headingId} className="mt-14 border-t border-white/15 pt-10">
+        <div className="mb-6 max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">
+            {isEn ? 'Behind the stories' : 'Detrás de las historias'}
+          </p>
+          <h3 id={headingId} className="mt-2 font-display text-2xl font-semibold text-white sm:text-3xl">
+            {isEn ? 'Meet the author' : 'Conoce a la autora'}
+          </h3>
+        </div>
+
+        <div className={`grid gap-4 ${authors.length > 1 ? 'md:grid-cols-2' : ''}`}>
+          {authors.map((author) => {
+            const authorName = author.name[locale] || author.name.es;
+            const authorBio = author.biography[locale] || author.biography.es;
+            const authoredBooksCount = books.filter(
+              (book) => book.author?.trim().toLocaleLowerCase() === author.author_name.trim().toLocaleLowerCase()
+            ).length;
+
+            return (
+              <article key={author.slug} className="flex flex-col gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 sm:flex-row sm:items-center">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-amber-200/70 bg-[#272727]">
+                  {author.portrait_url ? (
+                    <ContentImage
+                      src={author.portrait_url}
+                      alt={isEn ? `Portrait of ${authorName}` : `Retrato de ${authorName}`}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-3xl font-semibold text-amber-200" aria-hidden="true">
+                      {authorName.slice(0, 1)}
+                    </span>
+                  )}
+                  <span className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-700 text-amber-200" aria-hidden="true">
+                    <Feather className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="font-display text-xl font-semibold text-white">{authorName}</h4>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs font-medium text-emerald-100">
+                      <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                      {isEn ? 'Author and illustrator' : 'Autora e ilustradora'}
+                    </span>
+                  </div>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-200">{authorBio}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-4">
+                    <Link
+                      href={`/${locale}/autora/${author.slug}`}
+                      className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-amber-200 underline decoration-amber-200/50 underline-offset-4 hover:decoration-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200"
+                    >
+                      <span>{isEn ? 'Read the full profile' : 'Ver perfil completo'}</span>
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                    {authoredBooksCount > 0 && (
+                      <span className="text-xs font-medium text-slate-300">
+                        {authoredBooksCount} {isEn ? (authoredBooksCount === 1 ? 'book in the catalogue' : 'books in the catalogue') : (authoredBooksCount === 1 ? 'libro en el catálogo' : 'libros en el catálogo')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <section

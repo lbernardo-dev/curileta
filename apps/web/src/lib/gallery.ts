@@ -13,6 +13,7 @@ export interface GalleryItem {
   alt: { es: string; en: string };
   image_url: string;
   storage_path: string;
+  device_type?: 'mobile' | 'desktop';
   sort_order: number;
   is_published: boolean;
 }

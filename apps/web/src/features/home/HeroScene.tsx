@@ -174,18 +174,18 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
 
           <div className="mt-7 flex flex-col items-start gap-3 sm:mt-8 sm:flex-row sm:items-center">
             <Link
-              href={`/${locale}/libros/las-aventuras-de-curileta`}
+              href={`/${locale}/videos`}
               className="inline-flex min-h-12 w-fit max-w-full items-center justify-center gap-2 rounded-full bg-[var(--color-adventure-gold)] px-6 py-3 text-sm font-semibold text-[#1c3028] shadow-lg shadow-black/15 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:bg-[var(--color-adventure-gold-light)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <span>{isEn ? 'Discover the book' : 'Descubre el libro'}</span>
+              <span>{isEn ? 'Watch episodes' : 'Ver episodios'}</span>
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <a
-              href="#ruta"
+              href="#escena-mapa"
               className="inline-flex min-h-12 w-fit max-w-full items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <Compass className="h-4 w-4" aria-hidden="true" />
-              <span>{isEn ? 'Follow the route' : 'Seguir la ruta'}</span>
+              <span>{isEn ? 'Explore the map' : 'Explorar el mapa'}</span>
             </a>
           </div>
 
@@ -203,7 +203,7 @@ export const HeroScene: React.FC<HeroSceneProps> = ({ locale, settings, publishe
         </div>
       </div>
 
-      <a href="#ruta" className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 text-xs font-medium text-white/75 lg:inline-flex">
+      <a href="#escena-mapa" className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 text-xs font-medium text-white/75 lg:inline-flex">
         <span>{isEn ? 'Scroll to begin' : 'Desliza para empezar'}</span>
         <ArrowDown className="h-4 w-4" aria-hidden="true" />
       </a>
