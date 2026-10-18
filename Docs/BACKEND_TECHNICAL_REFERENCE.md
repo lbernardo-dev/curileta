@@ -941,15 +941,25 @@ Con base en los marcos de auditoría de `ai-seo` (optimización para Google AI O
   - Datos estructurados Schema.org verificados en vivo: `TVSeries`, `FAQPage` y `ItemList` (personajes y destinos).
   - Secciones visuales activas: `#universo-serie-animada` y `#preguntas-frecuentes`.
 
+## 38. Composición simplificada de la portada y claves del CMS
 
+### Alcance y comportamiento
+- La portada en `apps/web/src/app/[locale]/page.tsx` conserva la presentación principal de Curileta, el evento estacional, la frase de marca, los vídeos, el mapa 3D, personajes, libro con perfil compacto de la autora, cartas, preguntas frecuentes y cierre. La sección intermedia `StoryLanding` se retiró para evitar repetir enlaces y resúmenes de destinos, personajes, cartas y libros que ya tienen secciones propias.
+- Los favoritos de la comunidad siguen disponibles y ahora aparecen dentro de `CharacterHubScene`; los personajes anunciados en el próximo episodio reciben una marca dentro de su ficha.
+- `HeroScene` usa como acción principal «Ver episodios» hacia `/{locale}/videos`, y el cierre reutiliza esa misma acción. El enlace secundario del hero y su indicación de desplazamiento apuntan al mapa mediante `#escena-mapa`.
+- `apps/web/src/features/home/Globe3DScene.tsx` usa `THREE.Timer` de la versión instalada de Three.js para medir el tiempo del render y lo libera al desmontar la escena, evitando la advertencia de API obsoleta de `THREE.Clock`.
+- `BooksScene` admite contenido anidado. En portada se usa para integrar el perfil compacto de la autora, mientras la página `/libros` conserva el perfil completo. El componente `AuthorLandingFeature` mantiene ambos modos.
+- Si los ajustes administrados conservan la antigua clave `story`, `resolveHomepageSections` reconoce ese esquema heredado y sirve el orden y las visibilidades reducidas del código. El editor de contenidos recibe esa composición resuelta; al guardar una configuración nueva, deja de necesitar este tratamiento de compatibilidad. No se escribe en Supabase al desplegar.
+- `apps/web/src/lib/homepage-sections.ts` define quince claves reconocidas y el orden de respaldo: `hero`, `seasonalEvent`, `taglineReveal`, `videos`, `globe`, `radar`, `characters`, `books`, `letters`, `wallpapers`, `roadmap`, `collaborations`, `seoUniverse`, `faq` y `closing`. `radar`, `wallpapers`, `roadmap`, `collaborations` y `seoUniverse` están ocultas por defecto para reducir la longitud de la portada; la fila guardada en CMS puede cambiar visibilidad y orden. La clave heredada `story` se ignora.
 
+### Administración, permisos y datos
+- `packages/cms/src/localProvider.ts` declara los valores iniciales bilingües, incluidos el texto conciso del hero y las quince opciones de portada. `packages/cms/src/models.ts` tipa las claves permitidas.
+- `apps/web/src/lib/cms/supabase-provider.ts` conserva la prioridad del registro `siteSettings` administrado en `managed_content_entries` y usa `INITIAL_SETTINGS` como base y fallback. Por tanto, los valores iniciales del código no sobrescriben una configuración de portada guardada en CMS.
+- `apps/web/src/lib/managed-content.server.ts` valida que `homepageSections` solo contenga esas quince claves, sin repeticiones y con visibilidad y orden válidos. Esto mantiene el endpoint existente `apps/web/src/app/api/admin/content/route.ts` alineado con el renderizado y permite guardar las secciones nuevas. La clave retirada `story` ya no es aceptada en escrituras nuevas.
+- El editor sigue sujeto a la autorización administrativa existente. La fila de ajustes se gestiona en `managed_content_entries`; no se añadieron tablas, columnas, permisos ni migraciones. No se añadieron variables de entorno ni dependencias.
 
-
-
-
-
-
-
-
-
-
+### Estado comprobado y límites
+- **Código presente localmente:** nueva composición de portada, acciones unificadas, perfil compacto, favoritos integrados, claves de sección alineadas entre el modelo CMS y el validador administrativo.
+- **Configuración administrada:** el código permite que el CMS determine orden y visibilidad. No se modificó ni sembró ninguna fila de Supabase; la vista local observada muestra las secciones activas resueltas por el proveedor configurado en `.env.local`.
+- **Verificación local:** `http://127.0.0.1:3000/es` renderiza el hero, evento estacional, vídeos, mapa, personajes, libro y autora, cartas, FAQ y cierre. `npm run typecheck --workspace=apps/web -- --incremental false` se ejecutó correctamente después de estos cambios. Tras la sustitución de `THREE.Clock`, el servidor local compiló el cambio y la captura de la portada siguió renderizando. No se ejecutaron pruebas automatizadas.
+- **Production:** este cambio no se ha desplegado ni se ha verificado en producción.

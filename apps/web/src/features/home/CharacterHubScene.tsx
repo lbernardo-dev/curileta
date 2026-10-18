@@ -8,7 +8,7 @@ import { Character, INITIAL_CHARACTERS } from '@curileta/cms';
 import { analytics } from '@curileta/analytics';
 import { getCharacterImageAspectRatio } from '@/lib/character-image';
 import { CharacterAvatarImage } from '@/components/CharacterAvatarImage';
-import { CharacterFavoriteButton, FavoriteRankBadge } from '@/components/CharacterFavoritesProvider';
+import { CharacterFavoriteButton, FavoriteLeaderboard, FavoriteRankBadge } from '@/components/CharacterFavoritesProvider';
 import { SectionEmblem } from '@/components/SectionEmblem';
 import {
   Sparkles,
@@ -27,6 +27,7 @@ import {
 interface CharacterHubSceneProps {
   locale: Locale;
   characters?: Character[];
+  upcomingCharacters?: Character[];
   hideHeader?: boolean;
 }
 
@@ -368,10 +369,11 @@ const CharacterAvatar: React.FC<{
 const TiltCharacterCard: React.FC<{
   character: Character;
   locale: Locale;
+  isUpcoming: boolean;
   isSelected: boolean;
   onSelect: () => void;
   onOpenZoom: (c: Character) => void;
-}> = ({ character, locale, isSelected, onSelect, onOpenZoom }) => {
+}> = ({ character, locale, isUpcoming, isSelected, onSelect, onOpenZoom }) => {
   const theme = getCharacterTheme(character.id);
 
   const roleText = character.passportRole
@@ -402,6 +404,11 @@ const TiltCharacterCard: React.FC<{
             #{character.id.toUpperCase().slice(0, 8)}
           </span>
         </div>
+        {isUpcoming && (
+          <span className="mb-2 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-950 dark:bg-amber-300/15 dark:text-amber-200">
+            {copy(locale, 'Próximo episodio', 'Next episode')}
+          </span>
+        )}
 
         {/* Avatar circular; la ilustración completa se conserva para la ficha ampliada */}
         <div
@@ -515,6 +522,7 @@ const TiltCharacterCard: React.FC<{
 export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
   locale,
   characters: initialCharacters = [],
+  upcomingCharacters = [],
   hideHeader = false,
 }) => {
   const characterSource =
@@ -611,6 +619,15 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
           </div>
         )}
 
+        <FavoriteLeaderboard
+          locale={locale}
+          characters={charactersList.map((character) => ({
+            slug: character.slug,
+            name: characterName(character, locale),
+            image: character.mainImage?.url,
+          }))}
+        />
+
         {/* Filtros por Región / Categoría */}
         <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
           {[
@@ -644,6 +661,7 @@ export const CharacterHubScene: React.FC<CharacterHubSceneProps> = ({
               key={character.id}
               character={character}
               locale={locale}
+              isUpcoming={upcomingCharacters.some((upcoming) => upcoming.slug === character.slug)}
               isSelected={selectedCharacter.id === character.id}
               onSelect={() => openCharacterPassport(character)}
               onOpenZoom={(c) => setLightboxCharacter(c)}
