@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     'Web oficial de Curileta: serie animada infantil original en español y libros de aventuras para familias. Descubre episodios, canciones, dibujos y viajes por el mundo.',
   metadataBase: new URL(siteUrl),
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'Cu5faG3Y2BzA9_A90RDYtacYHvRagDprQaOzKSTY8Kg',
   },
   icons: {
     icon: [
