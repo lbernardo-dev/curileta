@@ -4,10 +4,20 @@ import React from 'react';
 import Link from 'next/link';
 import type { Locale } from '@curileta/i18n';
 import { ThemeToggle } from './ThemeToggle';
-import { Youtube, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { NauticalCompassMark } from './NauticalCompassMark';
 import { isGoogleAnalyticsConfigured } from '@curileta/analytics';
 import { openAnalyticsPreferences } from './AnalyticsConsentManager';
+
+
+function YouTubeBrandIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M21.58 7.19a2.98 2.98 0 0 0-2.1-2.1C17.63 4.58 12 4.58 12 4.58s-5.63 0-7.48.51a2.98 2.98 0 0 0-2.1 2.1C1.91 9.04 1.91 12 1.91 12s0 2.96.51 4.81a2.98 2.98 0 0 0 2.1 2.1c1.85.51 7.48.51 7.48.51s5.63 0 7.48-.51a2.98 2.98 0 0 0 2.1-2.1c.51-1.85.51-4.81.51-4.81s0-2.96-.51-4.81Z" />
+      <path d="m10 9 5 3-5 3z" />
+    </svg>
+  );
+}
 
 export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = ({ locale, youtubeChannelUrl }) => {
   const isEn = locale === 'en';
@@ -30,7 +40,7 @@ export const Footer: React.FC<{ locale: Locale; youtubeChannelUrl?: string }> = 
             </p>
             <div className="mt-5 flex items-center gap-3">
               <a href={channelUrl} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eff2ec] text-slate-700 transition hover:bg-red-600 hover:text-white dark:bg-slate-800 dark:text-slate-200" aria-label={isEn ? 'Curileta on YouTube' : 'Curileta en YouTube'}>
-                <Youtube className="h-5 w-5" />
+                <YouTubeBrandIcon className="h-5 w-5" />
               </a>
               <ThemeToggle locale={locale} variant="segmented" />
             </div>

@@ -4,7 +4,17 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cmsProvider } from '@/lib/cms';
 import { isValidLocale, type Locale } from '@curileta/i18n';
-import { ArrowRight, Disc3, Music2, Youtube } from 'lucide-react';
+import { ArrowRight, Disc3, Music2 } from 'lucide-react';
+
+
+function YouTubeBrandIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M21.58 7.19a2.98 2.98 0 0 0-2.1-2.1C17.63 4.58 12 4.58 12 4.58s-5.63 0-7.48.51a2.98 2.98 0 0 0-2.1 2.1C1.91 9.04 1.91 12 1.91 12s0 2.96.51 4.81a2.98 2.98 0 0 0 2.1 2.1c1.85.51 7.48.51 7.48.51s5.63 0 7.48-.51a2.98 2.98 0 0 0 2.1-2.1c.51-1.85.51-4.81.51-4.81s0-2.96-.51-4.81Z" />
+      <path d="m10 9 5 3-5 3z" />
+    </svg>
+  );
+}
 import { SitePageCard, SitePageLayout } from '@/components/SitePageLayout';
 import { ShareActions } from '@/components/ShareActions';
 import { TrackedAnalyticsLink } from '@/components/TrackedAnalyticsLink';
@@ -45,7 +55,7 @@ export default async function SongsPage({ params }: { params: Promise<{ locale: 
                 {song.description?.[locale] && <p className="mt-2 line-clamp-2 text-sm leading-5 text-[var(--text-secondary)]">{song.description[locale]}</p>}
                 <div className="mt-3 flex flex-wrap gap-3">
                   {song.audioUrl && <TrackedAnalyticsLink href={song.audioUrl} action={{ name: 'song_play', id: song.slug, label: song.title[locale] || song.title.es }} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]">{isEn ? 'Listen' : 'Escuchar'}<ArrowRight className="h-4 w-4" /></TrackedAnalyticsLink>}
-                  {song.youtubeId && <TrackedAnalyticsLink href={'https://www.youtube.com/watch?v=' + song.youtubeId} target="_blank" action={{ name: 'song_play', id: song.slug, label: song.title[locale] || song.title.es }} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]"><Youtube className="h-4 w-4" />YouTube</TrackedAnalyticsLink>}
+                  {song.youtubeId && <TrackedAnalyticsLink href={'https://www.youtube.com/watch?v=' + song.youtubeId} target="_blank" action={{ name: 'song_play', id: song.slug, label: song.title[locale] || song.title.es }} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--seasonal-accent-strong)]"><YouTubeBrandIcon className="h-4 w-4" />YouTube</TrackedAnalyticsLink>}
                 </div>
                 <ShareActions
                   contentType="song"
@@ -74,7 +84,7 @@ export default async function SongsPage({ params }: { params: Promise<{ locale: 
           <p className="mt-2 text-sm text-[var(--text-secondary)]">{isEn ? 'See videos that are actually published.' : 'Descubre los vídeos que sí están publicados.'}</p>
         </div>
         <Link href={'/' + locale + '/videos'} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#1c493b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#27634e]">
-          <Youtube className="h-4 w-4" />{isEn ? 'Videos' : 'Ver vídeos'}
+          <YouTubeBrandIcon className="h-4 w-4" />{isEn ? 'Videos' : 'Ver vídeos'}
         </Link>
       </SitePageCard>
     </SitePageLayout>

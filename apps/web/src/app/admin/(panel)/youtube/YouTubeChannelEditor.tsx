@@ -2,7 +2,17 @@
 
 import { ContentImage } from '@/components/ContentImage';
 import { useEffect, useState } from 'react';
-import { Save, Youtube } from 'lucide-react';
+import { Save } from 'lucide-react';
+
+
+function YouTubeBrandIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M21.58 7.19a2.98 2.98 0 0 0-2.1-2.1C17.63 4.58 12 4.58 12 4.58s-5.63 0-7.48.51a2.98 2.98 0 0 0-2.1 2.1C1.91 9.04 1.91 12 1.91 12s0 2.96.51 4.81a2.98 2.98 0 0 0 2.1 2.1c1.85.51 7.48.51 7.48.51s5.63 0 7.48-.51a2.98 2.98 0 0 0 2.1-2.1c.51-1.85.51-4.81.51-4.81s0-2.96-.51-4.81Z" />
+      <path d="m10 9 5 3-5 3z" />
+    </svg>
+  );
+}
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
 
 interface ChannelConfig {
@@ -105,7 +115,7 @@ export function YouTubeChannelEditor() {
       <header>
         <p className="text-sm font-semibold uppercase tracking-wide text-red-700 dark:text-red-300">Contenido multimedia</p>
         <div className="mt-2 flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-red-100 text-red-700 dark:bg-[#272727] dark:text-red-300"><Youtube className="h-6 w-6" /></span>
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-red-100 text-red-700 dark:bg-[#272727] dark:text-red-300"><YouTubeBrandIcon className="h-6 w-6" /></span>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Canal de YouTube</h1>
         </div>
         <p className="mt-3 max-w-2xl text-base leading-6 text-slate-600 dark:text-slate-300">Configura el avatar, el banner y los textos en español e inglés que se muestran en la portada y en la página de vídeos.</p>
@@ -174,7 +184,7 @@ export function YouTubeChannelEditor() {
             <h2 className="text-lg font-bold">Vista previa</h2>
             {config.youtubeChannelHeaderUrl && <ContentImage src={config.youtubeChannelHeaderUrl} alt="" className="mt-4 h-24 w-full rounded-lg object-cover" />}
             <div className="mt-4 flex items-center gap-3">
-              {config.youtubeChannelAvatarUrl ? <ContentImage src={config.youtubeChannelAvatarUrl} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-600 text-white"><Youtube className="h-7 w-7" /></span>}
+              {config.youtubeChannelAvatarUrl ? <ContentImage src={config.youtubeChannelAvatarUrl} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-600 text-white"><YouTubeBrandIcon className="h-7 w-7" /></span>}
               <p className="min-w-0 text-base font-bold">{config.youtubeChannelTitle.es || 'Título del canal'}</p>
             </div>
             <p className="mt-3 text-sm leading-5 text-slate-600 dark:text-slate-300">{config.youtubeChannelDescription.es || 'Aquí aparecerá la descripción del canal.'}</p>
